@@ -54,8 +54,8 @@ def __report():
             __finished.wait(1)
 
 
-__heartbeat_thread = Thread(name='SkyWalking-heartbeat', target=__heartbeat, daemon=True)
-__report_thread = Thread(name='SkyWalking-report', target=__report, daemon=True)
+__heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
+__report_thread = Thread(name='ReportThread', target=__report, daemon=True)
 __queue = Queue(maxsize=10000)
 __finished = Event()
 __protocol: Protocol

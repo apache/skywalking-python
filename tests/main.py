@@ -17,6 +17,7 @@
 from time import sleep
 
 from skywalking import agent, config, Component, Layer
+from skywalking.decorators import trace
 from skywalking.trace.context import SpanContext, get_context
 
 if __name__ == '__main__':
@@ -24,10 +25,22 @@ if __name__ == '__main__':
     agent.init()
     agent.start()
 
-    for _ in range(1, 200):
+
+    @trace()
+    def test_decorator():
+        sleep(1)
+
+    @trace()
+    def test_nested_decorator():
+        test_decorator()
+        sleep(3)
+
+
+    for _ in range(1, 20):
         context: SpanContext = get_context(op='/users')
         with context.new_entry_span(op='https://github.com/1') as s1:
             s1.component = Component.Http
+            test_nested_decorator()
             print(s1)
             with context.new_entry_span(op='https://github.com/2') as s2:
                 s2.component = Component.Http
