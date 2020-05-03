@@ -24,13 +24,13 @@ from skywalking.trace.context import get_context
 def trace(
         op: str = None,
         layer: Layer = Layer.Unknown,
-        component: Component = Component.Unknown
+        component: Component = Component.Unknown,
 ):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             _op = op or func.__name__
-            context = get_context(op=_op)
+            context = get_context()
             with context.new_local_span(op=_op) as span:
                 span.layer = layer
                 span.component = component

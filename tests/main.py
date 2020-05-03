@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
 
     for _ in range(1, 20):
-        context: SpanContext = get_context(op='/users')
+        context: SpanContext = get_context()
         with context.new_entry_span(op='https://github.com/1') as s1:
             s1.component = Component.Http
             test_nested_decorator()
