@@ -24,7 +24,7 @@ setup:
 gen:
 	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
 
-license:
+license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
 test:
@@ -37,3 +37,4 @@ clean:
 	rm -rf management
 	rm -rf profile
 	rm -rf service_mesh_probe
+	find . -type d -name  "__pycache__" -exec rm -r {} +
