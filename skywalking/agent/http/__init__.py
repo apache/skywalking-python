@@ -14,14 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from queue import Queue
 
-from skywalking.core import Protocol
+from skywalking.agent import Protocol
 
 
 class HttpAgent(Protocol):
-    @property
     def connected(self):
-        yield True
+        return True
 
     def heartbeat(self):
+        pass
+
+    def report(self, queue: Queue):
         pass

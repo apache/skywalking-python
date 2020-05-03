@@ -27,6 +27,9 @@ gen:
 license:
 	python3 tools/check-license-header.py skywalking tests tools
 
+test:
+	python3 -m unittest  -v
+
 clean:
 	rm -rf browser
 	rm -rf common

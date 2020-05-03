@@ -85,7 +85,7 @@ def connected():
 
 def archive(segment: Segment):
     if __queue.full():
-        logger.info('the queue is full, the segment will be abandoned')
+        logger.warn('the queue is full, the segment will be abandoned')
         return
 
     __queue.put(segment)
