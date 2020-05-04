@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-from __future__ import annotations
-
 import logging
 from queue import Queue
 from threading import Thread, Event
@@ -79,7 +77,7 @@ def connected():
     return __protocol.connected
 
 
-def archive(segment: Segment):
+def archive(segment: 'Segment'):
     if __queue.full():
         logger.warning('the queue is full, the segment will be abandoned')
         return

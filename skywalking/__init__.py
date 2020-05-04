@@ -17,7 +17,7 @@
 
 import time
 from collections import namedtuple
-from enum import Enum, auto
+from enum import Enum
 from typing import List
 
 from skywalking import loggings
@@ -40,9 +40,9 @@ class Layer(Enum):
 
 
 class Kind(Enum):
-    Local = auto()
-    Entry = auto()
-    Exit = auto()
+    Local = 0
+    Entry = 1
+    Exit = 1
 
     @property
     def is_local(self):

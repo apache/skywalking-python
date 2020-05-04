@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-from __future__ import annotations
-
 import time
 import traceback
 from abc import ABC
@@ -37,7 +35,7 @@ if TYPE_CHECKING:
 class Span(ABC):
     def __init__(
             self,
-            context: SpanContext,
+            context: 'SpanContext',
             sid: int = -1,
             pid: int = -1,
             op: str = None,
@@ -57,7 +55,7 @@ class Span(ABC):
 
         self.tags: List[Tag] = []
         self.logs: List[Log] = []
-        self.refs: List[SegmentRef] = []  # TODO
+        self.refs: List['SegmentRef'] = []  # TODO
         self.start_time: int = 0
         self.end_time: int = 0
         self.error_occurred: bool = False
@@ -69,19 +67,19 @@ class Span(ABC):
     def stop(self):
         return self.context.stop(self)
 
-    def finish(self, segment: Segment) -> bool:
+    def finish(self, segment: 'Segment') -> bool:
         self.end_time = int(time.time() * 1000)
         segment.archive(self)
         return True
 
-    def raised(self) -> Span:
+    def raised(self) -> 'Span':
         self.error_occurred = True
         self.logs = [Log(items=[
             LogItem(key='Traceback', val=traceback.format_exc()),
         ])]
         return self
 
-    def tag(self, tag: Tag) -> Span:
+    def tag(self, tag: Tag) -> 'Span':
         if not tag.overridable:
             self.tags.append(deepcopy(tag))
             return self
@@ -108,7 +106,7 @@ class Span(ABC):
 class StackedSpan(Span):
     _depth = 0
 
-    def finish(self, segment: Segment) -> bool:
+    def finish(self, segment: 'Segment') -> bool:
         self._depth -= 1
         return self._depth == 0 and Span.finish(self, segment)
 
@@ -117,13 +115,13 @@ class StackedSpan(Span):
 class EntrySpan(StackedSpan):
     def __init__(
             self,
-            context: SpanContext,
+            context: 'SpanContext',
             sid: int = -1,
             pid: int = -1,
             op: str = None,
             peer: str = None,
-            component: Component = None,
-            layer: Layer = None,
+            component: 'Component' = None,
+            layer: 'Layer' = None,
     ):
         StackedSpan.__init__(
             self,
@@ -153,13 +151,13 @@ class EntrySpan(StackedSpan):
 class ExitSpan(StackedSpan):
     def __init__(
             self,
-            context: SpanContext,
+            context: 'SpanContext',
             sid: int = -1,
             pid: int = -1,
             op: str = None,
             peer: str = None,
-            component: Component = None,
-            layer: Layer = None,
+            component: 'Component' = None,
+            layer: 'Layer' = None,
     ):
         StackedSpan.__init__(
             self,
@@ -180,5 +178,5 @@ class ExitSpan(StackedSpan):
 
 @tostring
 class NoopSpan(Span):
-    def __init__(self, context: SpanContext = None, kind: Kind = None):
+    def __init__(self, context: 'SpanContext' = None, kind: 'Kind' = None):
         Span.__init__(self, context=context, kind=kind)

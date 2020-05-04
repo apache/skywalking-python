@@ -15,10 +15,32 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+name: Build
 
-Tag = namedtuple('Tag', 'key val overridable')
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Check license header
+        run: make license
+      - name: Set up grpc tools
+        run: make setup
+      - name: Run unit tests
+        run: make test
