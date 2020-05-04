@@ -22,26 +22,26 @@ from skywalking.decorators import trace
 from skywalking.trace.context import SpanContext, get_context
 
 if __name__ == '__main__':
-    config.init(collector="127.0.0.1:11800", service='Python Service 1')
+    config.init(collector='127.0.0.1:11800', service='Python Service 1')
     agent.init()
     agent.start()
     sleep(3)
 
     @trace()
-    def test_decorator():
+    def some_other_method():
         sleep(1)
 
 
     @trace()
-    def test_nested_decorator():
-        test_decorator()
+    def some_method():
+        some_other_method()
 
 
     for _ in range(1, 20):
         context: SpanContext = get_context()
         with context.new_entry_span(op='https://github.com/1') as s1:
             s1.component = Component.Http
-            test_nested_decorator()
+            some_method()
             print(s1)
             with context.new_entry_span(op='https://github.com/2') as s2:
                 s2.component = Component.Http
