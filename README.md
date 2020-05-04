@@ -12,7 +12,8 @@
 from skywalking import agent, config
 
 config.init(collector='127.0.0.1:11800', service='your awesome service')
-agent.init_and_start()
+agent.init()
+agent.start()
 ```
 
 ## Supported Libraries
