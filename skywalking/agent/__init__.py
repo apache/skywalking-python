@@ -50,7 +50,7 @@ __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=T
 __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
 __queue = Queue(maxsize=10000)
 __finished = Event()
-__protocol: Protocol
+__protocol = Protocol()  # type: Protocol
 
 
 def init():

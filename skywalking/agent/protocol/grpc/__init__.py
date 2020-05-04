@@ -52,7 +52,7 @@ class GrpcProtocol(Protocol):
     def report(self, queue: Queue):
         def generator():
             while True:
-                segment: Segment = queue.get()
+                segment = queue.get()  # type: Segment
 
                 logger.debug('reporting segment %s', segment)
 

@@ -29,14 +29,14 @@ logger = logging.getLogger(__name__)
 
 class SpanContext(object):
     def __init__(self):
-        self.spans: List[Span] = []
-        self.segment: Segment = Segment()
+        self.spans = []  # type: List[Span]
+        self.segment = Segment()  # type: Segment
         self._sid = Counter()
 
     def new_local_span(self, op: str) -> Span:
-        parent: Span = self.spans[-1] if self.spans else None
+        parent = self.spans[-1] if self.spans else None  # type: Span
 
-        pid: int = parent.sid if parent else -1
+        pid = parent.sid if parent else -1  # type: int
 
         return Span(
             context=self,
@@ -47,13 +47,13 @@ class SpanContext(object):
         )
 
     def new_entry_span(self, op: str) -> Span:
-        parent: Span = self.spans[-1] if self.spans else None
+        parent = self.spans[-1] if self.spans else None  # type: Span
 
         if parent is not None and parent.kind.is_entry:
             parent.op = op
             return parent
 
-        pid: int = parent.sid if parent else -1
+        pid = parent.sid if parent else -1  # type: int
 
         return EntrySpan(
             context=self,
@@ -63,12 +63,12 @@ class SpanContext(object):
         )
 
     def new_exit_span(self, op: str, peer: str) -> Span:
-        parent: Span = self.spans[-1] if self.spans else None
+        parent = self.spans[-1] if self.spans else None  # type: Span
 
         if parent is not None and parent.kind.is_exit:
             return parent
 
-        pid: int = parent.sid if parent else -1
+        pid = parent.sid if parent else -1  # type: int
 
         return ExitSpan(
             context=self,

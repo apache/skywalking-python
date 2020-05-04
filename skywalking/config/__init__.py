@@ -17,10 +17,10 @@
 
 import uuid
 
-service_name: str = 'Python Service Name'
-service_instance: str = str(uuid.uuid1()).replace('-', '')
-collector_address: str = 'localhost:11800'
-protocol: str = 'grpc'
+service_name = 'Python Service Name'  # type: str
+service_instance = str(uuid.uuid1()).replace('-', '')  # type: str
+collector_address = 'localhost:11800'  # type: str
+protocol = 'grpc'  # type: str
 
 
 def init(

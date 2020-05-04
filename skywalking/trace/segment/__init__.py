@@ -26,10 +26,10 @@ from skywalking.utils.lang import tostring
 @tostring
 class Segment(object):
     def __init__(self):
-        self.trace_id: ID = ID()
-        self.segment_id: ID = ID()
-        self.spans: List[Span] = []
-        self.timestamp: int = int(time.time() * 1000)
+        self.trace_id = ID()  # type: ID
+        self.segment_id = ID()  # type: ID
+        self.spans = []  # type: List[Span]
+        self.timestamp = int(time.time() * 1000)  # type: int
 
     def archive(self, span: Span):
         self.spans.append(span)

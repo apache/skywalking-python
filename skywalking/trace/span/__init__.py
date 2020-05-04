@@ -44,21 +44,21 @@ class Span(ABC):
             component: Component = None,
             layer: Layer = None,
     ):
-        self.context: SpanContext = context
-        self.sid: int = sid
-        self.pid: int = pid
-        self.op: str = op
-        self.peer: str = peer
-        self.kind: Kind = kind
-        self.component: Component = component or Component.Unknown
-        self.layer: Layer = layer or Layer.Unknown
+        self.context = context  # type: SpanContext
+        self.sid = sid  # type: int
+        self.pid = pid  # type: int
+        self.op = op  # type: str
+        self.peer = peer  # type: str
+        self.kind = kind  # type: Kind
+        self.component = component or Component.Unknown  # type: Component
+        self.layer = layer or Layer.Unknown  # type: Layer
 
-        self.tags: List[Tag] = []
-        self.logs: List[Log] = []
-        self.refs: List['SegmentRef'] = []  # TODO
-        self.start_time: int = 0
-        self.end_time: int = 0
-        self.error_occurred: bool = False
+        self.tags = []  # type: List[Tag]
+        self.logs = []  # type: List[Log]
+        self.refs = []  # type: List[SegmentRef] # TODO
+        self.start_time = 0  # type: int
+        self.end_time = 0  # type: int
+        self.error_occurred = False  # type: bool
 
     def start(self):
         self.start_time = int(time.time() * 1000)
