@@ -37,7 +37,7 @@ def trace(
                 try:
                     result = func(*args, **kwargs)
                     return result
-                except:
+                except Exception:
                     span.raised()
                     raise
 

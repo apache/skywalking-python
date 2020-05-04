@@ -31,14 +31,12 @@ if __name__ == '__main__':
     def some_other_method():
         sleep(1)
 
-
     @trace()
     def some_method():
         some_other_method()
 
-
     for _ in range(1, 20):
-        context: SpanContext = get_context()
+        context = get_context()  # type: SpanContext
         with context.new_entry_span(op='https://github.com/1') as s1:
             s1.component = Component.Http
             some_method()

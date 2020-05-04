@@ -39,9 +39,11 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up dependencies
+        run: make setup
+      - name: Lint codes
+        run: make lint
       - name: Check license header
         run: make license
-      - name: Set up grpc tools
-        run: make setup
       - name: Run unit tests
         run: make test

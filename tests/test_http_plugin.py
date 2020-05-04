@@ -27,7 +27,6 @@ if __name__ == '__main__':
     import socketserver
     from http.server import BaseHTTPRequestHandler
 
-
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         def do_GET(self):
@@ -36,7 +35,6 @@ if __name__ == '__main__':
             req = request.Request('https://github.com/kezhenxu94')
             with request.urlopen(req) as res:
                 self.wfile.write(res.read(300))
-
 
     PORT = 9090
     Handler = SimpleHTTPRequestHandler
