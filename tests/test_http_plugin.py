@@ -15,32 +15,32 @@
 # limitations under the License.
 #
 
-from functools import wraps
+from urllib import request
 
-from skywalking import Layer, Component
-from skywalking.trace.context import get_context
+from skywalking import agent, config
+
+if __name__ == '__main__':
+    config.init(collector="127.0.0.1:11800", service='Python Service 1')
+    agent.init()
+    agent.start()
+
+    import socketserver
+    from http.server import BaseHTTPRequestHandler
 
 
-def trace(
-        op: str = None,
-        layer: Layer = Layer.Unknown,
-        component: Component = Component.Unknown,
-):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            _op = op or func.__name__
-            context = get_context()
-            with context.new_local_span(op=_op) as span:
-                span.layer = layer
-                span.component = component
-                try:
-                    result = func(*args, **kwargs)
-                    return result
-                except:
-                    span.raised()
-                    raise
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
-        return wrapper
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            req = request.Request('https://github.com/kezhenxu94')
+            with request.urlopen(req) as res:
+                self.wfile.write(res.read(300))
 
-    return decorator
+
+    PORT = 9090
+    Handler = SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("serving at port", PORT)
+        httpd.serve_forever()

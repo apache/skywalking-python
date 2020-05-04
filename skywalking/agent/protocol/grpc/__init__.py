@@ -75,7 +75,11 @@ class GrpcProtocol(Protocol):
                         logs=[Log(
                             time=int(log.timestamp * 1000),
                             data=[KeyStringValuePair(key=item.key, value=item.val) for item in log.items],
-                        ) for log in span.logs]
+                        ) for log in span.logs],
+                        tags=[KeyStringValuePair(
+                            key=str(tag.key),
+                            value=str(tag.val),
+                        ) for tag in span.tags],
                     ) for span in segment.spans],
                 )
 

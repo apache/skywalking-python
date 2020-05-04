@@ -15,13 +15,18 @@
 # limitations under the License.
 #
 
+from __future__ import annotations
+
 import logging
 from queue import Queue
 from threading import Thread, Event
+from typing import TYPE_CHECKING
 
-from skywalking import config
+from skywalking import config, plugins
 from skywalking.agent.protocol import Protocol
-from skywalking.trace.context import Segment
+
+if TYPE_CHECKING:
+    from skywalking.trace.context import Segment
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +63,8 @@ def init():
     elif config.protocol == 'http':
         raise NotImplementedError()  # TODO
 
+    plugins.install()
+
 
 def start():
     __heartbeat_thread.start()
@@ -74,7 +81,7 @@ def connected():
 
 def archive(segment: Segment):
     if __queue.full():
-        logger.warn('the queue is full, the segment will be abandoned')
+        logger.warning('the queue is full, the segment will be abandoned')
         return
 
     __queue.put(segment)

@@ -18,11 +18,14 @@
 from __future__ import annotations
 
 import time
+import traceback
 from abc import ABC
+from copy import deepcopy
 from typing import List
 from typing import TYPE_CHECKING
 
-from skywalking import Kind, Layer, Tag, Log, Component
+from skywalking import Kind, Layer, Log, Component, LogItem
+from skywalking.trace.tags import Tag
 from skywalking.utils.lang import tostring
 
 if TYPE_CHECKING:
@@ -70,6 +73,25 @@ class Span(ABC):
         self.end_time = int(time.time() * 1000)
         segment.archive(self)
         return True
+
+    def raised(self) -> Span:
+        self.error_occurred = True
+        self.logs = [Log(items=[
+            LogItem(key='Traceback', val=traceback.format_exc()),
+        ])]
+        return self
+
+    def tag(self, tag: Tag) -> Span:
+        if not tag.overridable:
+            self.tags.append(deepcopy(tag))
+            return self
+
+        for t in self.tags:
+            if t.key == tag.key:
+                t.val = tag.val
+                break
+
+        return self
 
     def __enter__(self):
         self.start()

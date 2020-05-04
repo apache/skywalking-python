@@ -14,33 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import inspect
+import logging
+import pkgutil
 
-from functools import wraps
+import skywalking
 
-from skywalking import Layer, Component
-from skywalking.trace.context import get_context
+logger = logging.getLogger(__name__)
 
 
-def trace(
-        op: str = None,
-        layer: Layer = Layer.Unknown,
-        component: Component = Component.Unknown,
-):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            _op = op or func.__name__
-            context = get_context()
-            with context.new_local_span(op=_op) as span:
-                span.layer = layer
-                span.component = component
-                try:
-                    result = func(*args, **kwargs)
-                    return result
-                except:
-                    span.raised()
-                    raise
-
-        return wrapper
-
-    return decorator
+def install():
+    for importer, modname, ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
+        logger.debug('installing plugin %s', modname)
+        plugin = importer.find_module(modname).load_module(modname)
+        if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
+            logger.warning('no `install` method in plugin %s, thus the plugin won\'t be installed')
+            continue
+        plugin.install()
