@@ -45,10 +45,6 @@ install: gen
 	python3 setup.py install --force
 
 clean:
-	rm -rf browser
-	rm -rf common
-	rm -rf language_agent
-	rm -rf management
-	rm -rf profile
-	rm -rf service_mesh_probe
+	rm -rf browser common language_agent management profile service_mesh_probe
+	rm -rf skywalking_python.egg-info dist build
 	find . -type d -name  "__pycache__" -exec rm -r {} +
