@@ -16,25 +16,14 @@
 #
 
 import logging
-from abc import ABC
 from queue import Queue
 from threading import Thread, Event
 
 from skywalking import config
+from skywalking.agent.protocol import Protocol
 from skywalking.trace.context import Segment
 
 logger = logging.getLogger(__name__)
-
-
-class Protocol(ABC):
-    def connected(self):
-        raise NotImplementedError()
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue):
-        raise NotImplementedError()
 
 
 def __heartbeat():
@@ -63,7 +52,7 @@ __protocol: Protocol
 
 def init():
     if config.protocol == 'grpc':
-        from skywalking.agent.grpc import GrpcProtocol
+        from skywalking.agent.protocol.grpc import GrpcProtocol
         global __protocol
         __protocol = GrpcProtocol()
     elif config.protocol == 'http':

@@ -59,8 +59,10 @@ class Kind(Enum):
         return self == Kind.Exit
 
 
+LogItem = namedtuple('LogItem', 'key val')
+
+
 class Log(object):
-    LogItem = namedtuple('LogItem', 'key val')
 
     def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None):
         self.timestamp = timestamp

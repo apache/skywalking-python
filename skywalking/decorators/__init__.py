@@ -15,9 +15,10 @@
 # limitations under the License.
 #
 
+import traceback
 from functools import wraps
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, Log, LogItem
 from skywalking.trace.context import get_context
 
 
@@ -34,7 +35,16 @@ def trace(
             with context.new_local_span(op=_op) as span:
                 span.layer = layer
                 span.component = component
-                return func(*args, **kwargs)
+                # noinspection PyBroadException
+                try:
+                    result = func(*args, **kwargs)
+                    return result
+                except:
+                    span.error_occurred = True
+                    span.logs = [Log(items=[
+                        LogItem(key='Traceback', val=traceback.format_exc()),
+                    ])]
+                    raise
 
         return wrapper
 

@@ -35,6 +35,5 @@ class Segment(object):
         self.spans.append(span)
 
 
-
 class SegmentRef(object):
     pass

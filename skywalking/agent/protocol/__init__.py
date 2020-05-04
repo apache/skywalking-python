@@ -15,11 +15,16 @@
 # limitations under the License.
 #
 
-import logging
+from abc import ABC
+from queue import Queue
 
 
-def init():
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s',
-    )
+class Protocol(ABC):
+    def connected(self):
+        raise NotImplementedError()
+
+    def heartbeat(self):
+        raise NotImplementedError()
+
+    def report(self, queue: Queue):
+        raise NotImplementedError()

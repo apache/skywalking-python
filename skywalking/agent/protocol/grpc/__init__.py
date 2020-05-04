@@ -14,12 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 import logging
 from queue import Queue
 
 import grpc
 
-from language_agent.Tracing_pb2 import SegmentObject, SpanObject
+from common.Common_pb2 import KeyStringValuePair
+from language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
@@ -69,6 +71,11 @@ class GrpcProtocol(Protocol):
                         spanType=span.kind.name,
                         spanLayer=span.layer.name,
                         componentId=span.component.value,
+                        isError=span.error_occurred,
+                        logs=[Log(
+                            time=int(log.timestamp * 1000),
+                            data=[KeyStringValuePair(key=item.key, value=item.val) for item in log.items],
+                        ) for log in span.logs]
                     ) for span in segment.spans],
                 )
 

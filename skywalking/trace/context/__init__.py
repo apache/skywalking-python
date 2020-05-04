@@ -122,12 +122,6 @@ _thread_local.context = None
 
 
 def get_context() -> SpanContext:
-    if _thread_local.context is not None:
-        return _thread_local.context
-
-    if not agent.connected():
-        _thread_local.context = NoopContext()
-    else:
-        _thread_local.context = SpanContext()
+    _thread_local.context = _thread_local.context or (SpanContext() if agent.connected() else NoopContext())
 
     return _thread_local.context

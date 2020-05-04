@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 from time import sleep
 
 from skywalking import agent, config, Component, Layer
@@ -24,16 +25,16 @@ if __name__ == '__main__':
     config.init(collector="127.0.0.1:11800", service='Python Service 1')
     agent.init()
     agent.start()
-
+    sleep(3)
 
     @trace()
     def test_decorator():
         sleep(1)
 
+
     @trace()
     def test_nested_decorator():
         test_decorator()
-        sleep(3)
 
 
     for _ in range(1, 20):
@@ -46,21 +47,21 @@ if __name__ == '__main__':
                 s2.component = Component.Http
                 s2.layer = Layer.Http
                 print(s2)
-                sleep(1)
+                sleep(0.5)
                 with context.new_exit_span(op='https://github.com/3', peer='127.0.0.1:80') as s3:
                     s3.component = Component.Http
                     s3.layer = Layer.Http
                     print(s3)
-                    sleep(1)
+                    sleep(0.5)
                     with context.new_entry_span(op='https://github.com/4') as s4:
                         s4.component = Component.Http
                         s4.layer = Layer.Http
                         print(s4)
-                        sleep(1)
+                        sleep(0.5)
                 with context.new_exit_span(op='https://github.com/5', peer='127.0.0.1:80') as s5:
                     s5.component = Component.Http
                     s5.layer = Layer.Http
                     print(s5)
-                    sleep(1)
-        sleep(1)
+                    sleep(0.5)
+        sleep(0.5)
         print()
