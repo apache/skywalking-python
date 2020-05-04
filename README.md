@@ -1,4 +1,4 @@
-# Apache SkyWalking Python Agent
+# SkyAPM Python Agent
 
 [![SkyWalking](https://skyapmtest.github.io/page-resources/SkyAPM/skyapm.png)](https://github.com/apache/skywalking)
 
@@ -62,8 +62,8 @@ def some_method():
 
 
 context: SpanContext = get_context()
-with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s1:
-    s1.component = Component.Http
+with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as span:
+    span.component = Component.Http
     some_method()
 ```
 
