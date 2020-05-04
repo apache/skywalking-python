@@ -24,6 +24,12 @@ setup:
 
 gen:
 	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
+	touch browser/__init__.py
+	touch common/__init__.py
+	touch language_agent/__init__.py
+	touch management/__init__.py
+	touch profile/__init__.py
+	touch service_mesh_probe/__init__.py
 
 lint: clean
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -34,6 +40,9 @@ license: clean
 
 test: gen
 	python3 -m unittest  -v
+
+install: gen
+	python3 setup.py install --force
 
 clean:
 	rm -rf browser

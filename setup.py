@@ -15,11 +15,25 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+import pathlib
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+from setuptools import setup, find_packages
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
+HERE = pathlib.Path(__file__).parent
+
+README = (HERE / "README.md").read_text()
+
+setup(
+    name="skywalking-python",
+    version="0.1.1",
+    description="Python Agent for Apache SkyWalking",
+    long_description=README,
+    long_description_content_type="text/markdown",
+    url="https://github.com/SkyAPM/SkyAPM-python/",
+    author="Apache",
+    author_email="dev@skywalking.apache.org",
+    license="Apache 2.0",
+    packages=find_packages(exclude=("tests",)),
+    include_package_data=True,
+    install_requires=[],
+)

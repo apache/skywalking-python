@@ -4,3 +4,6 @@
 *~
 **/*_pb2*
 __pycache__
+build/
+dist/
+skywalking_python.egg-info/

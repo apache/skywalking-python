@@ -28,6 +28,6 @@ def install():
         logger.debug('installing plugin %s', modname)
         plugin = importer.find_module(modname).load_module(modname)
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
-            logger.warning('no `install` method in plugin %s, thus the plugin won\'t be installed')
+            logger.warning('no `install` method in plugin %s, thus the plugin won\'t be installed', modname)
             continue
         plugin.install()

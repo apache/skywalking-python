@@ -42,7 +42,7 @@ class Layer(Enum):
 class Kind(Enum):
     Local = 0
     Entry = 1
-    Exit = 1
+    Exit = 2
 
     @property
     def is_local(self):

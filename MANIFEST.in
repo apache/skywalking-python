@@ -1,0 +1,6 @@
+include browser/*.py
+include common/*.py
+include language_agent/*.py
+include management/*.py
+include profile/*.py
+include service_mesh_probe/*.py
