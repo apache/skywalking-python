@@ -1,10 +1,17 @@
 # SkyWalking Python Agent
 
-[![SkyWalking](http://skywalking.apache.org/assets/logo.svg)](https://github.com/apache/skywalking)
+<img src="http://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
 
+**SkyWalking-Python**: The Python Agent for Apache SkyWalking, which provides the native tracing abilities for Python project.
+
+**SkyWalking**: an APM(application performance monitor) system, especially designed for
+microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
+
+[![GitHub stars](https://img.shields.io/github/stars/apache/skywalking-python.svg?style=for-the-badge&label=Stars&logo=github)](https://github.com/apache/skywalking-python)
 [![Twitter Follow](https://img.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
 
-[**SkyWalking**](https://github.com/apache/skywalking) Python Agent provides the native tracing abilities for Python project. 
+
+[![Build](https://github.com/apache/skywalking-python/workflows/Build/badge.svg?branch=master)](https://github.com/apache/skywalking-python/actions?query=branch%3Amaster+event%3Apush+workflow%3A%22Build%22)
 
 ## Set up Python Agent
 
@@ -30,16 +37,25 @@ Apart from [the libraries](#supported-libraries) that can be instrumented automa
 
 ### Create Spans
 
+The code snippet below shows how to create entry span, exit span and local span.
+
 ```python
 from skywalking import Component
 from skywalking.trace.context import SpanContext, get_context
+from skywalking.trace.tags import Tag
 
 context: SpanContext = get_context()  # get a tracing context
 # create an entry span, by using `with` statement,
 # the span automatically starts/stops when entering/exiting the context
-with context.new_entry_span(op=str('https://github.com/apache')) as span:
-    span.component = Component.Http
+with context.new_entry_span(op='https://github.com/apache') as span:
+    span.component = Component.Flask
 # the span automatically stops when exiting the `with` context
+
+with context.new_exit_span(op='https://github.com/apache', peer='localhost:8080') as span:
+    span.component = Component.Http
+
+with context.new_local_span(op='https://github.com/apache') as span:
+    span.tag(Tag(key='Singer', val='Nakajima'))
 ```
 
 ### Decorators

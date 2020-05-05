@@ -28,6 +28,7 @@ loggings.init()
 class Component(Enum):
     Unknown = 0
     Http = 49
+    Flask = 7001
 
 
 class Layer(Enum):
