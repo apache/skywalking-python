@@ -19,7 +19,9 @@ import logging
 import traceback
 
 from skywalking import Layer, Component
+from skywalking.trace import tags
 from skywalking.trace.context import get_context
+from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,7 @@ def install():
                             span.layer = Layer.Http
                             span.component = Component.Http
                             span.peer = '%s:%s' % this.client_address
+                            span.tag(Tag(key=tags.HttpMethod, val=method))
                             _do_method()
 
                     setattr(this, 'do_' + method, _sw_do_method)
