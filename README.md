@@ -1,6 +1,6 @@
-# SkyAPM Python Agent
+# SkyWalking Python Agent
 
-[![SkyWalking](https://skyapmtest.github.io/page-resources/SkyAPM/skyapm.png)](https://github.com/apache/skywalking)
+[![SkyWalking](http://skywalking.apache.org/assets/logo.svg)](https://github.com/apache/skywalking)
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
 

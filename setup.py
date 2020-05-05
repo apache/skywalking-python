@@ -29,7 +29,7 @@ setup(
     description="Python Agent for Apache SkyWalking",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/SkyAPM/SkyAPM-python/",
+    url="https://github.com/apache/skywalking-python/",
     author="Apache",
     author_email="dev@skywalking.apache.org",
     license="Apache 2.0",
