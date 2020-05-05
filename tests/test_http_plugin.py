@@ -17,11 +17,9 @@
 
 from urllib import request
 
-from skywalking import agent, config
+from skywalking import agent
 
 if __name__ == '__main__':
-    config.init(collector="127.0.0.1:11800", service='Python Service 1')
-    agent.init()
     agent.start()
 
     import socketserver

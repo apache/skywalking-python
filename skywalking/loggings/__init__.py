@@ -16,10 +16,13 @@
 #
 
 import logging
+import os
+
+__logging_lever = (os.getenv('SW_LOGGING_LEVEL') or 'INFO').upper()
 
 
 def init():
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.getLevelName(__logging_lever),
         format='%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s',
     )

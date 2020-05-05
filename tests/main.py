@@ -22,8 +22,6 @@ from skywalking.decorators import trace
 from skywalking.trace.context import SpanContext, get_context
 
 if __name__ == '__main__':
-    config.init(collector='127.0.0.1:11800', service='Python Service 1')
-    agent.init()
     agent.start()
     sleep(3)
 

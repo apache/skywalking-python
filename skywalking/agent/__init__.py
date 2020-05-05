@@ -51,9 +51,10 @@ __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
 __queue = Queue(maxsize=10000)
 __finished = Event()
 __protocol = Protocol()  # type: Protocol
+__started = False
 
 
-def init():
+def __init():
     if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
         global __protocol
@@ -65,6 +66,11 @@ def init():
 
 
 def start():
+    global __started
+    if __started:
+        raise RuntimeError('the agent can only be started once')
+    __started = True
+    __init()
     __heartbeat_thread.start()
     __report_thread.start()
 

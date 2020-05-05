@@ -19,9 +19,20 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 from skywalking import agent, config
 
 config.init(collector='127.0.0.1:11800', service='your awesome service')
-agent.init()
 agent.start()
 ```
+
+Alternatively, you can also pass the configurations via environment variables and you don't need to call `config.init`.
+
+The supported environment variables are as follows:
+
+Environment Variable | Description | Default
+| :--- | :--- | :--- |
+| `SW_AGENT_NAME` | The name of the Python service | `Python Service Name` 
+| `SW_AGENT_INSTANCE` | The name of the Python service instance | Randomly generated
+| `SW_AGENT_COLLECTOR_BACKEND_SERVICES` | The backend OAP server address | `127.0.0.1:11800`
+| `SW_AGENT_PROTOCOL` | The protocol to communicate with the backend OAP, currently only `grpc` is supported | `grpc`
+| `SW_LOGGING_LEVEL` | The logging level | `INFO` |
 
 ## Supported Libraries
 
