@@ -22,6 +22,7 @@ service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
 collector_address = os.getenv('SW_AGENT_COLLECTOR_BACKEND_SERVICES') or '127.0.0.1:11800'  # type: str
 protocol = os.getenv('SW_AGENT_PROTOCOL') or 'grpc'  # type: str
+authentication = os.getenv('SW_AGENT_AUTHENTICATION')
 
 
 def init(
@@ -29,6 +30,7 @@ def init(
         instance: str = None,
         collector: str = None,
         protocol_type: str = 'grpc',
+        token: str = None,
 ):
     global service_name
     service_name = service or service_name
@@ -41,3 +43,6 @@ def init(
 
     global protocol
     protocol = protocol_type or protocol
+
+    global authentication
+    authentication = token or authentication

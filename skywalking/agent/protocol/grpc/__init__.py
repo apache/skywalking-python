@@ -24,6 +24,8 @@ from common.Common_pb2 import KeyStringValuePair
 from language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log
 from skywalking import config
 from skywalking.agent import Protocol
+from skywalking.agent.protocol.grpc import interceptors
+from skywalking.agent.protocol.grpc.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
 from skywalking.trace.segment import Segment
 
@@ -34,6 +36,10 @@ class GrpcProtocol(Protocol):
     def __init__(self):
         self.state = None
         self.channel = grpc.insecure_channel(config.collector_address)
+        if config.authentication:
+            self.channel = grpc.intercept_channel(
+                self.channel, header_adder_interceptor('authentication', config.authentication)
+            )
 
         def cb(state):
             logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
