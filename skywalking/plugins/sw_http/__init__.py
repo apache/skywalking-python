@@ -36,20 +36,23 @@ def install():
         def _sw_handle(this: BaseHTTPRequestHandler):
             http_methods = ('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH')
             for method in http_methods:
-                if hasattr(this, 'do_' + method) and inspect.ismethod(getattr(this, 'do_' + method)):
-                    _do_method = getattr(this, 'do_' + method)
-
-                    def _sw_do_method():
-                        context = get_context()
-                        with context.new_entry_span(op=this.path) as span:
-                            span.layer = Layer.Http
-                            span.component = Component.Http
-                            span.peer = '%s:%s' % this.client_address
-                            span.tag(Tag(key=tags.HttpMethod, val=method))
-                            _do_method()
-
-                    setattr(this, 'do_' + method, _sw_do_method)
+                _wrap_do_method(this, method)
             _handle(this)
+
+        def _wrap_do_method(this, method):
+            if hasattr(this, 'do_' + method) and inspect.ismethod(getattr(this, 'do_' + method)):
+                _do_method = getattr(this, 'do_' + method)
+
+                def _sw_do_method():
+                    context = get_context()
+                    with context.new_entry_span(op=this.path) as span:
+                        span.layer = Layer.Http
+                        span.component = Component.General
+                        span.peer = '%s:%s' % this.client_address
+                        span.tag(Tag(key=tags.HttpMethod, val=method))
+                        _do_method()
+
+                setattr(this, 'do_' + method, _sw_do_method)
 
         BaseHTTPRequestHandler.handle = _sw_handle
     except Exception:
