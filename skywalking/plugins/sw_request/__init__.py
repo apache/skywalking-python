@@ -35,9 +35,9 @@ def install():
 
         def _sw_open(this: OpenerDirector, fullurl, data, timeout):
             context = get_context()
-            with context.new_exit_span(op=fullurl.selector, peer=fullurl.host) as span:
+            with context.new_exit_span(op=fullurl.selector or '/', peer=fullurl.host) as span:
                 span.layer = Layer.Http
-                span.component = Component.Http
+                span.component = Component.General
                 try:
                     res = _open(this, fullurl, data, timeout)
                     span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))

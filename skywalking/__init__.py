@@ -27,7 +27,7 @@ loggings.init()
 
 class Component(Enum):
     Unknown = 0
-    Http = 49
+    General = 7000  # built-in modules that may not have a logo to display
     Flask = 7001
 
 
