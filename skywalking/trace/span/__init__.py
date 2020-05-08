@@ -57,7 +57,7 @@ class Span(ABC):
 
         self.tags = []  # type: List[Tag]
         self.logs = []  # type: List[Log]
-        self.refs = []  # type: List[SegmentRef] # TODO
+        self.refs = []  # type: List[SegmentRef]
         self.start_time = 0  # type: int
         self.end_time = 0  # type: int
         self.error_occurred = False  # type: bool
