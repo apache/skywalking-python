@@ -17,9 +17,10 @@
 
 from urllib import request
 
-from skywalking import agent
+from skywalking import agent, config
 
 if __name__ == '__main__':
+    config.service_name = 'consumer'
     agent.start()
 
     import socketserver
@@ -30,7 +31,7 @@ if __name__ == '__main__':
         def do_GET(self):
             self.send_response(200)
             self.end_headers()
-            req = request.Request('https://github.com/kezhenxu94')
+            req = request.Request('http://localhost:9091/whatever')
             with request.urlopen(req) as res:
                 self.wfile.write(res.read(300))
 

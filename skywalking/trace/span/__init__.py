@@ -22,12 +22,14 @@ from copy import deepcopy
 from typing import List
 from typing import TYPE_CHECKING
 
-from skywalking import Kind, Layer, Log, Component, LogItem
+from skywalking import Kind, Layer, Log, Component, LogItem, config
+from skywalking.trace import ID
+from skywalking.trace.carrier import Carrier
+from skywalking.trace.segment import SegmentRef, Segment
 from skywalking.trace.tags import Tag
 from skywalking.utils.lang import tostring
 
 if TYPE_CHECKING:
-    from skywalking.trace.segment import SegmentRef, Segment
     from skywalking.trace.context import SpanContext
 
 
@@ -91,6 +93,20 @@ class Span(ABC):
 
         return self
 
+    def inject(self, carrier: 'Carrier') -> 'Span':
+        raise RuntimeWarning(
+            'can only inject context carrier into ExitSpan, this may be a potential bug in the agent, '
+            'please report this in https://github.com/apache/skywalking/issues if you encounter this. '
+        )
+
+    def extract(self, carrier: 'Carrier') -> 'Span':
+        if carrier is None:
+            return self
+
+        self.context.segment.relate(ID(carrier.trace_id))
+
+        return self
+
     def __enter__(self):
         self.start()
         return self
@@ -146,6 +162,19 @@ class EntrySpan(StackedSpan):
         self.logs = []
         self.tags = []
 
+    def extract(self, carrier: 'Carrier') -> 'Span':
+        Span.extract(self, carrier)
+
+        if carrier is None:
+            return self
+
+        ref = SegmentRef(carrier=carrier)
+
+        if ref not in self.refs:
+            self.refs.append(ref)
+
+        return self
+
 
 @tostring
 class ExitSpan(StackedSpan):
@@ -171,6 +200,16 @@ class ExitSpan(StackedSpan):
             layer,
         )
 
+    def inject(self, carrier: 'Carrier') -> 'Span':
+        carrier.trace_id = str(self.context.segment.related_traces[0])
+        carrier.segment_id = str(self.context.segment.segment_id)
+        carrier.span_id = self.sid
+        carrier.service = config.service_name
+        carrier.service_instance = config.service_instance
+        carrier.endpoint = self.context.spans[0].op
+        carrier.client_address = self.peer
+        return self
+
     def start(self):
         self._depth += 1
         StackedSpan.start(self)
@@ -180,3 +219,6 @@ class ExitSpan(StackedSpan):
 class NoopSpan(Span):
     def __init__(self, context: 'SpanContext' = None, kind: 'Kind' = None):
         Span.__init__(self, context=context, kind=kind)
+
+    def inject(self, carrier: 'Carrier') -> 'Span':
+        return self

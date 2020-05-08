@@ -21,7 +21,7 @@ from queue import Queue
 import grpc
 
 from common.Common_pb2 import KeyStringValuePair
-from language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log
+from language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
@@ -57,7 +57,7 @@ class GrpcProtocol(Protocol):
                 logger.debug('reporting segment %s', segment)
 
                 s = SegmentObject(
-                    traceId=str(segment.trace_id),
+                    traceId=str(segment.related_traces[0]),
                     traceSegmentId=str(segment.segment_id),
                     service=config.service_name,
                     serviceInstance=config.service_instance,
@@ -80,6 +80,16 @@ class GrpcProtocol(Protocol):
                             key=str(tag.key),
                             value=str(tag.val),
                         ) for tag in span.tags],
+                        refs=[SegmentReference(
+                            refType=0,
+                            traceId=ref.trace_id,
+                            parentTraceSegmentId=ref.segment_id,
+                            parentSpanId=ref.span_id,
+                            parentService=ref.service,
+                            parentServiceInstance=ref.service_instance,
+                            parentEndpoint=ref.endpoint,
+                            networkAddressUsedAtPeer=ref.client_address,
+                        ) for ref in span.refs if ref.trace_id],
                     ) for span in segment.spans],
                 )
 
