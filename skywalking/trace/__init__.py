@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-import threading
-import time
 import uuid
 
 from skywalking.utils.counter import AtomicCounter
@@ -25,10 +23,8 @@ _id = AtomicCounter()
 
 
 class ID(object):
-    def __init__(self):
-        self.part1 = str(uuid.uuid1())
-        self.part2 = threading.get_ident()  # FIXME: thread ids are reused
-        self.part3 = int(time.time() * 1000) * 10000 + _id.next()
+    def __init__(self, raw_id: str = None):
+        self.value = raw_id or str(uuid.uuid1()).replace('-', '')
 
     def __str__(self):
-        return '%s.%s.%s' % (self.part1, self.part2, self.part3)
+        return self.value

@@ -19,6 +19,7 @@ import traceback
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
+from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
@@ -35,9 +36,13 @@ def install():
 
         def _sw_open(this: OpenerDirector, fullurl, data, timeout):
             context = get_context()
-            with context.new_exit_span(op=fullurl.selector or '/', peer=fullurl.host) as span:
+            carrier = Carrier()
+            with context.new_exit_span(op=fullurl.selector or '/', peer=fullurl.host, carrier=carrier) as span:
                 span.layer = Layer.Http
                 span.component = Component.General
+
+                [fullurl.add_header(item.key, item.val) for item in carrier]
+
                 try:
                     res = _open(this, fullurl, data, timeout)
                     span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))

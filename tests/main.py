@@ -17,7 +17,7 @@
 
 from time import sleep
 
-from skywalking import agent, config, Component, Layer
+from skywalking import agent, Component, Layer
 from skywalking.decorators import trace
 from skywalking.trace.context import SpanContext, get_context
 

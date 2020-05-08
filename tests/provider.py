@@ -15,25 +15,29 @@
 # limitations under the License.
 #
 
-import base64
+from urllib import request
 
+from skywalking import agent, config
 
-def tostring(cls):
-    def __str__(self):
-        return '%s@%s[%s]' % (
-            type(self).__name__, id(self),
-            ', '.join(
-                '%s=%s' % (k, str(v)) for (k, v) in vars(self).items()
-            )
-        )
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    agent.start()
 
-    cls.__str__ = __str__
-    return cls
+    import socketserver
+    from http.server import BaseHTTPRequestHandler
 
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
-def b64encode(s: str = '') -> str:
-    return base64.b64encode(s.encode('utf8')).decode('utf8')
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            req = request.Request('https://github.com/kezhenxu94')
+            with request.urlopen(req) as res:
+                self.wfile.write(res.read(1024))
 
+    PORT = 9091
+    Handler = SimpleHTTPRequestHandler
 
-def b64decode(s: str = '') -> str:
-    return base64.b64decode(s).decode('utf8')
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("serving at port", PORT)
+        httpd.serve_forever()

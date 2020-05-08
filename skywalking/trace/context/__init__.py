@@ -20,6 +20,7 @@ import threading
 from typing import List
 
 from skywalking import agent
+from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
@@ -36,47 +37,44 @@ class SpanContext(object):
     def new_local_span(self, op: str) -> Span:
         parent = self.spans[-1] if self.spans else None  # type: Span
 
-        pid = parent.sid if parent else -1  # type: int
-
         return Span(
             context=self,
             sid=self._sid.next(),
-            pid=pid,
+            pid=parent.sid if parent else -1,
             op=op,
             kind=Kind.Local,
         )
 
-    def new_entry_span(self, op: str) -> Span:
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
         parent = self.spans[-1] if self.spans else None  # type: Span
 
-        if parent is not None and parent.kind.is_entry:
-            parent.op = op
-            return parent
-
-        pid = parent.sid if parent else -1  # type: int
-
-        return EntrySpan(
+        span = parent if parent is not None and parent.kind.is_entry else EntrySpan(
             context=self,
             sid=self._sid.next(),
-            pid=pid,
-            op=op,
+            pid=parent.sid if parent else -1,
         )
+        span.op = op
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
+        if carrier is not None:
+            span.extract(carrier=carrier)
+
+        return span
+
+    def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
         parent = self.spans[-1] if self.spans else None  # type: Span
 
-        if parent is not None and parent.kind.is_exit:
-            return parent
-
-        pid = parent.sid if parent else -1  # type: int
-
-        return ExitSpan(
+        span = parent if parent is not None and parent.kind.is_exit else ExitSpan(
             context=self,
             sid=self._sid.next(),
-            pid=pid,
+            pid=parent.sid if parent else -1,
             op=op,
             peer=peer,
         )
+
+        if carrier is not None:
+            span.inject(carrier=carrier)
+
+        return span
 
     def start(self, span: Span):
         if span not in self.spans:
@@ -104,11 +102,11 @@ class NoopContext(SpanContext):
         self._depth += 1
         return self._noop_span
 
-    def new_entry_span(self, op: str) -> Span:
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
         self._depth += 1
         return self._noop_span
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
+    def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
         self._depth += 1
         return self._noop_span
 
