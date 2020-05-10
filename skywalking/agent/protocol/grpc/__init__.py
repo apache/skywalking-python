@@ -44,6 +44,8 @@ class GrpcProtocol(Protocol):
         def cb(state):
             logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
             self.state = state
+            if self.connected():
+                self.service_management.send_instance_props()
 
         self.channel.subscribe(cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
