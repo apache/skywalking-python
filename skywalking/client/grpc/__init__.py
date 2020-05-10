@@ -18,23 +18,26 @@
 import logging
 
 import grpc
-
 from language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
-from management.Management_pb2 import InstancePingPkg
+from management.Management_pb2 import InstancePingPkg, InstanceProperties
 from management.Management_pb2_grpc import ManagementServiceStub
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService
+
 from skywalking import config
+from skywalking.client import ServiceManagementClient, TraceSegmentReportService
 
 logger = logging.getLogger(__name__)
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):
     def __init__(self, channel: grpc.Channel):
-        self.config = config
         self.service_stub = ManagementServiceStub(channel)
 
     def send_instance_props(self):
-        raise NotImplementedError()
+        self.service_stub.reportInstanceProperties(InstanceProperties(
+            service=config.service_name,
+            serviceInstance=config.service_instance,
+            properties=[],
+        ))
 
     def send_heart_beat(self):
         logger.debug(
