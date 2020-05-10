@@ -17,12 +17,15 @@
 
 import os
 import uuid
+from typing import List
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
 collector_address = os.getenv('SW_AGENT_COLLECTOR_BACKEND_SERVICES') or '127.0.0.1:11800'  # type: str
 protocol = os.getenv('SW_AGENT_PROTOCOL') or 'grpc'  # type: str
-authentication = os.getenv('SW_AGENT_AUTHENTICATION')
+authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
+logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
+disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
 
 
 def init(

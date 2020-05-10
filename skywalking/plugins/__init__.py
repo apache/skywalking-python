@@ -17,6 +17,9 @@
 import inspect
 import logging
 import pkgutil
+import re
+
+from skywalking import config
 
 import skywalking
 
@@ -25,6 +28,14 @@ logger = logging.getLogger(__name__)
 
 def install():
     for importer, modname, ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
+        disable_patterns = config.disable_plugins
+        if isinstance(disable_patterns, str):
+            disable_patterns = [re.compile(p.strip()) for p in disable_patterns.split(',') if p.strip()]
+        else:
+            disable_patterns = [re.compile(p.strip()) for p in disable_patterns if p.strip()]
+        if any(pattern.match(modname) for pattern in disable_patterns):
+            logger.info('plugin %s is disabled and thus won\'t be installed', modname)
+            continue
         logger.debug('installing plugin %s', modname)
         plugin = importer.find_module(modname).load_module(modname)
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):

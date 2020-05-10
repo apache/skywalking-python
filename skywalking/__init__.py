@@ -20,10 +20,6 @@ from collections import namedtuple
 from enum import Enum
 from typing import List
 
-from skywalking import loggings
-
-loggings.init()
-
 
 class Component(Enum):
     Unknown = 0
