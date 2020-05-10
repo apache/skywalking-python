@@ -14,8 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 import logging
 import traceback
+from urllib.request import Request
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
@@ -35,6 +37,9 @@ def install():
         _open = OpenerDirector.open
 
         def _sw_open(this: OpenerDirector, fullurl, data, timeout):
+            if isinstance(fullurl, str):
+                fullurl = Request(fullurl, data)
+
             context = get_context()
             carrier = Carrier()
             with context.new_exit_span(op=fullurl.selector or '/', peer=fullurl.host, carrier=carrier) as span:
