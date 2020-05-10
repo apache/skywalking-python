@@ -15,23 +15,27 @@
 # limitations under the License.
 #
 
+import os
 from urllib import request
 
 from skywalking import agent, config
 
 if __name__ == '__main__':
     config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
     agent.start()
 
     import socketserver
     from http.server import BaseHTTPRequestHandler
+
+    provider_url = os.getenv('PROVIDER_URL') or 'http://localhost:9091/'
 
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
         def do_GET(self):
             self.send_response(200)
             self.end_headers()
-            req = request.Request('http://localhost:9091/whatever')
+            req = request.Request(provider_url + '/whatever')
             with request.urlopen(req) as res:
                 self.wfile.write(res.read(300))
 

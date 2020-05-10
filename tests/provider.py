@@ -21,6 +21,7 @@ from skywalking import agent, config
 
 if __name__ == '__main__':
     config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
     agent.start()
 
     import socketserver

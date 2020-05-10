@@ -19,10 +19,9 @@
 setup:
 	python3 -m pip install --upgrade pip
 	python3 -m pip install grpcio --ignore-installed
-	python3 -m pip install grpcio-tools
-	python3 -m pip install flake8
 
 gen:
+	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
 	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
 	touch browser/__init__.py
 	touch common/__init__.py
@@ -32,6 +31,7 @@ gen:
 	touch service_mesh_probe/__init__.py
 
 lint: clean
+	flake8 --version || python3 -m pip install flake8
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
@@ -43,6 +43,9 @@ test: gen
 
 install: gen
 	python3 setup.py install --force
+
+package: clean gen
+	python3 setup.py sdist bdist_wheel
 
 clean:
 	rm -rf browser common language_agent management profile service_mesh_probe

@@ -16,13 +16,12 @@
 #
 
 import logging
-import os
 
-__logging_lever = (os.getenv('SW_LOGGING_LEVEL') or 'INFO').upper()
+from skywalking import config
 
 
 def init():
     logging.basicConfig(
-        level=logging.getLevelName(__logging_lever),
+        level=logging.getLevelName(config.logging_level),
         format='%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s',
     )

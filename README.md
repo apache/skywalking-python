@@ -30,19 +30,21 @@ The supported environment variables are as follows:
 
 Environment Variable | Description | Default
 | :--- | :--- | :--- |
-| `SW_AGENT_NAME` | The name of the Python service | `Python Service Name` 
-| `SW_AGENT_INSTANCE` | The name of the Python service instance | Randomly generated
-| `SW_AGENT_COLLECTOR_BACKEND_SERVICES` | The backend OAP server address | `127.0.0.1:11800`
-| `SW_AGENT_PROTOCOL` | The protocol to communicate with the backend OAP, currently only `grpc` is supported | `grpc`
-| `SW_LOGGING_LEVEL` | The logging level | `INFO` |
+| `SW_AGENT_NAME` | The name of the Python service | `Python Service Name` |
+| `SW_AGENT_INSTANCE` | The name of the Python service instance | Randomly generated |
+| `SW_AGENT_COLLECTOR_BACKEND_SERVICES` | The backend OAP server address | `127.0.0.1:11800` |
+| `SW_AGENT_PROTOCOL` | The protocol to communicate with the backend OAP, currently only `grpc` is supported | `grpc` |
+| `SW_AGENT_LOGGING_LEVEL` | The logging level, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` | `INFO` |
+| `SW_AGENT_DISABLE_PLUGINS` | The name patterns in CSV pattern, plugins whose name matches one of the pattern won't be installed | `''` |
 
 ## Supported Libraries
 
 There're some built-in plugins that support automatic instrumentation of Python libraries, the complete lists are as follow:
 
-- Http
-  - [http.server](https://docs.python.org/3/library/http.server.html)
-  - [urllib.request](https://docs.python.org/3/library/urllib.request.html)
+Library | Plugin Name
+| :--- | :--- |
+| [http.server](https://docs.python.org/3/library/http.server.html) | `sw_http_server` |
+| [urllib.request](https://docs.python.org/3/library/urllib.request.html) | `sw_urllib_request` |
 
 ## API
 
@@ -95,6 +97,10 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
     span.component = Component.Flask
     some_method()
 ```
+
+## FAQs
+
+Check [the FAQ page](docs/FAQ.md) or add the FAQs there.
 
 ## License
 Apache 2.0
