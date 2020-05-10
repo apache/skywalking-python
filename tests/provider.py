@@ -36,6 +36,9 @@ if __name__ == '__main__':
             with request.urlopen(req) as res:
                 self.wfile.write(res.read(1024))
 
+        def do_POST(self):
+            self.do_GET()
+
     PORT = 9091
     Handler = SimpleHTTPRequestHandler
 
