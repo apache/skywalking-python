@@ -18,6 +18,7 @@
 import logging
 
 import grpc
+from common.Common_pb2 import KeyStringValuePair
 from language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
 from management.Management_pb2 import InstancePingPkg, InstanceProperties
 from management.Management_pb2_grpc import ManagementServiceStub
@@ -36,7 +37,7 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         self.service_stub.reportInstanceProperties(InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=[],
+            properties=[KeyStringValuePair(key='language', value='Python')],
         ))
 
     def send_heart_beat(self):

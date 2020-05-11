@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Set up dependencies
-        run: make setup
+        run: make setup install
       - name: Lint codes
         run: make lint
       - name: Check license header
