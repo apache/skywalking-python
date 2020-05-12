@@ -55,12 +55,13 @@ __started = False
 
 
 def __init():
+    global __protocol
     if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
-        global __protocol
         __protocol = GrpcProtocol()
     elif config.protocol == 'http':
-        raise NotImplementedError()  # TODO
+        from skywalking.agent.protocol.http import HttpProtocol
+        __protocol = HttpProtocol()
 
     plugins.install()
 
