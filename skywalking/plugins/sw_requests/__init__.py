@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# -*- coding:utf-8 -*-
-# author：huawei
 import logging
 import traceback
 
@@ -27,6 +25,9 @@ from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
 
+
+# -*- coding:utf-8 -*-
+# author：huawei
 def install():
     # noinspection PyBroadException
     try:
@@ -57,7 +58,8 @@ def install():
                         headers[item.key] = item.val
 
                 try:
-                    res = _request(this, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects,
+                    res = _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
+                                   allow_redirects,
                                    proxies,
                                    hooks, stream, verify, cert, json)
 
