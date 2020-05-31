@@ -27,7 +27,7 @@ from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
 
-def requests_install():
+def install():
     # noinspection PyBroadException
     try:
         from requests import Session
