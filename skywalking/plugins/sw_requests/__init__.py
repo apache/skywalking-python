@@ -26,8 +26,6 @@ from skywalking.trace.tags import Tag
 logger = logging.getLogger(__name__)
 
 
-# -*- coding:utf-8 -*-
-# author：huawei
 def install():
     # noinspection PyBroadException
     try:
