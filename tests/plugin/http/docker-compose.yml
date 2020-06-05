@@ -15,33 +15,40 @@
 # limitations under the License.
 #
 
-import pathlib
+version: '2.1'
 
-from setuptools import setup, find_packages
+services:
+  collector:
+    build:
+      context: ../docker
+      dockerfile: Dockerfile.tool
+    ports:
+      - 19876:19876
+      - 12800:12800
+    networks:
+      - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/12800"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
 
-HERE = pathlib.Path(__file__).parent
+  provider:
+    build:
+      context: ../../../
+      dockerfile: tests/plugin/docker/Dockerfile.agent
+    networks:
+      - beyond
+    ports:
+      - 9091:9091
+    volumes:
+      - ./provider.py:/app/provider.py
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
+    command: ['python3', '/app/provider.py']
+    depends_on:
+      collector:
+        condition: service_healthy
 
-README = (HERE / "README.md").read_text()
-
-setup(
-    name="skywalking-python",
-    version="0.1.1",
-    description="Python Agent for Apache SkyWalking",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
-    install_requires=[
-        "grpcio",
-        "requests",
-    ],
-    extras_require={
-        "test": [
-            "testcontainers",
-        ],
-    },
-)
+networks:
+  beyond:
