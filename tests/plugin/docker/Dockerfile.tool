@@ -15,33 +15,30 @@
 # limitations under the License.
 #
 
-import pathlib
+FROM openjdk:8
 
-from setuptools import setup, find_packages
+WORKDIR /tests
 
-HERE = pathlib.Path(__file__).parent
+ARG COMMIT_HASH=3c9d7099f05dc4a4b937c8a47506e56c130b6221
 
-README = (HERE / "README.md").read_text()
+ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
 
-setup(
-    name="skywalking-python",
-    version="0.1.1",
-    description="Python Agent for Apache SkyWalking",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
-    install_requires=[
-        "grpcio",
-        "requests",
-    ],
-    extras_require={
-        "test": [
-            "testcontainers",
-        ],
-    },
-)
+RUN tar -xf ${COMMIT_HASH}.tar.gz --strip 1
+
+RUN rm ${COMMIT_HASH}.tar.gz
+
+RUN ./mvnw -B -DskipTests package
+
+FROM openjdk:8
+
+EXPOSE 19876 12800
+
+WORKDIR /tests
+
+COPY --from=0 /tests/dist/skywalking-mock-collector.tar.gz /tests
+
+RUN tar -xf skywalking-mock-collector.tar.gz --strip 1
+
+RUN chmod +x bin/collector-startup.sh
+
+ENTRYPOINT bin/collector-startup.sh

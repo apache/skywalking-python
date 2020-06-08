@@ -15,33 +15,29 @@
 # limitations under the License.
 #
 
-import pathlib
+import time
 
-from setuptools import setup, find_packages
+from skywalking import agent, config
 
-HERE = pathlib.Path(__file__).parent
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
 
-README = (HERE / "README.md").read_text()
+    import socketserver
+    from http.server import BaseHTTPRequestHandler
 
-setup(
-    name="skywalking-python",
-    version="0.1.1",
-    description="Python Agent for Apache SkyWalking",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
-    install_requires=[
-        "grpcio",
-        "requests",
-    ],
-    extras_require={
-        "test": [
-            "testcontainers",
-        ],
-    },
-)
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+
+        def do_POST(self):
+            time.sleep(0.5)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write('{"song": "Despacito", "artist": "Luis Fonsi"}'.encode('ascii'))
+
+    PORT = 9091
+    Handler = SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        httpd.serve_forever()

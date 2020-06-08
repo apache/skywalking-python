@@ -15,33 +15,23 @@
 # limitations under the License.
 #
 
-import pathlib
-
-from setuptools import setup, find_packages
-
-HERE = pathlib.Path(__file__).parent
-
-README = (HERE / "README.md").read_text()
-
-setup(
-    name="skywalking-python",
-    version="0.1.1",
-    description="Python Agent for Apache SkyWalking",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
-    install_requires=[
-        "grpcio",
-        "requests",
-    ],
-    extras_require={
-        "test": [
-            "testcontainers",
-        ],
-    },
-)
+segmentItems:
+  - serviceName: provider
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: /
+            operationId: 0
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7000
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - {key: http.method, value: POST}

@@ -15,33 +15,3 @@
 # limitations under the License.
 #
 
-import pathlib
-
-from setuptools import setup, find_packages
-
-HERE = pathlib.Path(__file__).parent
-
-README = (HERE / "README.md").read_text()
-
-setup(
-    name="skywalking-python",
-    version="0.1.1",
-    description="Python Agent for Apache SkyWalking",
-    long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
-    include_package_data=True,
-    install_requires=[
-        "grpcio",
-        "requests",
-    ],
-    extras_require={
-        "test": [
-            "testcontainers",
-        ],
-    },
-)
