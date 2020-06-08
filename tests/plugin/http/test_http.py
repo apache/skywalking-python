@@ -29,9 +29,7 @@ from tests.plugin import BasePluginTest
 class TestRequestPlugin(BasePluginTest):
     @classmethod
     def setUpClass(cls):
-        docker_dir = dirname(dirname(abspath(__file__)))
-
-        cls.compose = DockerCompose(filepath=os.path.join(docker_dir, 'http'))
+        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
         cls.compose.start()
 
         cls.compose.wait_for(cls.url(cls.collector_address()))
