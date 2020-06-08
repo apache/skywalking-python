@@ -17,7 +17,7 @@
 
 segmentItems:
   - serviceName: provider
-    segmentSize: 1
+    segmentSize: 2
     segments:
       - segmentId: not null
         spans:
