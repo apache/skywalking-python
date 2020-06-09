@@ -17,10 +17,26 @@
 
 segmentItems:
   - serviceName: provider
-    segmentSize: 2
+    segmentSize: 1
     segments:
       - segmentId: not null
         spans:
+          - operationName: /apache/skywalking
+            operationId: 0
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7000
+            isError: false
+            spanType: Exit
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - {key: http.method, value: GET}
+              - {key: url, value: https://github.com/apache/skywalking}
+              - {key: status.code, value: '200'}
           - operationName: /
             operationId: 0
             parentSpanId: -1
@@ -35,18 +51,3 @@ segmentItems:
             skipAnalysis: false
             tags:
               - {key: http.method, value: POST}
-          - operationName: /apache/skywalking
-              operationId: 0
-              parentSpanId: 0
-              spanId: 1
-              spanLayer: Http
-              startTime: gt 0
-              endTime: gt 0
-              componentId: 7000
-              isError: false
-              spanType: Exit
-              peer: not null
-              skipAnalysis: false
-              tags:
-                - {key: http.method, value: POST}
-                - {key: url, value: https://github.com/apache/skywalking}

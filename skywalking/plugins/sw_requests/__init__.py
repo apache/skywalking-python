@@ -61,7 +61,7 @@ def install():
                                    proxies,
                                    hooks, stream, verify, cert, json)
 
-                    span.tag(Tag(key=tags.HttpMethod, val=method))
+                    span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
                     span.tag(Tag(key=tags.HttpUrl, val=url))
                     span.tag(Tag(key=tags.HttpStatus, val=res.status_code))
                     if res.status_code >= 400:
