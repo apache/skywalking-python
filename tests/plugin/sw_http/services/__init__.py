@@ -14,24 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-segmentItems:
-  - serviceName: provider
-    segmentSize: 1
-    segments:
-      - segmentId: not null
-        spans:
-          - operationName: /
-            operationId: 0
-            parentSpanId: -1
-            spanId: 0
-            spanLayer: Http
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7000
-            isError: false
-            spanType: Entry
-            peer: not null
-            skipAnalysis: false
-            tags:
-              - {key: http.method, value: POST}
