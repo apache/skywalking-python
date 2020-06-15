@@ -30,7 +30,7 @@ segmentItems:
               - key: http.method
                 value: POST
             refs:
-              - parentEndpoint: /
+              - parentEndpoint: /users
                 networkAddress: provider:9091
                 refType: CrossProcess
                 parentSpanId: 1
