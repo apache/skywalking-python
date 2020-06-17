@@ -45,9 +45,9 @@ def install():
             # ignore trace skywalking self request
             if config.protocol == 'http' and config.collector_address.rstrip('/').endswith(url_param.netloc):
                 return _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
-                                   allow_redirects,
-                                   proxies,
-                                   hooks, stream, verify, cert, json)
+                                allow_redirects,
+                                proxies,
+                                hooks, stream, verify, cert, json)
 
             context = get_context()
             carrier = Carrier()
