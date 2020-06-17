@@ -48,6 +48,9 @@ install: gen
 package: clean gen
 	python3 setup.py sdist bdist_wheel
 
+upload-test: package
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
 clean:
 	rm -rf browser common language_agent management profile service_mesh_probe
 	rm -rf skywalking_python.egg-info dist build

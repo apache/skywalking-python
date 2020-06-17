@@ -120,6 +120,8 @@ _thread_local.context = None
 
 
 def get_context() -> SpanContext:
+    if not hasattr(_thread_local, 'context'):
+        _thread_local.context = None
     _thread_local.context = _thread_local.context or (SpanContext() if agent.connected() else NoopContext())
 
     return _thread_local.context
