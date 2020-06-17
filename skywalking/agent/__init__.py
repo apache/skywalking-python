@@ -83,7 +83,7 @@ def stop():
 
 
 def connected():
-    return __protocol.connected
+    return __protocol.connected()
 
 
 def archive(segment: 'Segment'):
