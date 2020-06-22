@@ -27,7 +27,6 @@ if __name__ == '__main__':
     import socketserver
     from http.server import BaseHTTPRequestHandler
 
-
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         def do_POST(self):
             self.send_response(200)

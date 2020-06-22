@@ -26,12 +26,10 @@ if __name__ == '__main__':
 
     from werkzeug import Request, Response
 
-
     @Request.application
     def application(request):
         time.sleep(0.5)
         return Response('{"song": "Despacito", "artist": "Luis Fonsi"}')
-
 
     from werkzeug.serving import run_simple
 

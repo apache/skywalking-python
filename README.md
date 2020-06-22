@@ -17,6 +17,8 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 
 SkyWalking Python SDK requires SkyWalking 8.0+.
 
+> If you want to try out the latest features that're not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
+
 ```python
 from skywalking import agent, config
 
