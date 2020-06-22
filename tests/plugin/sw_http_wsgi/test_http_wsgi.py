@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,13 +13,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-FROM python:3.7
+import os
+import time
+import unittest
+from os.path import abspath, dirname
 
-ARG ROOT=.
+import requests
+from testcontainers.compose import DockerCompose
 
-WORKDIR /agent
+from tests.plugin import BasePluginTest
 
-ADD $ROOT /agent
 
-RUN make setup-test install
+class TestRequestPlugin(BasePluginTest):
+    @classmethod
+    def setUpClass(cls):
+        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
+        cls.compose.start()
+
+        cls.compose.wait_for(cls.url(cls.collector_address()))
+
+    def test_request_plugin(self):
+        print('traffic: ', requests.post(url=self.url(('consumer', '9090'))))
+
+        time.sleep(3)
+
+        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
+
+
+if __name__ == '__main__':
+    unittest.main()
