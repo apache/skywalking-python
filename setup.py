@@ -42,6 +42,7 @@ setup(
     extras_require={
         "test": [
             "testcontainers",
+            "Werkzeug"
         ],
     },
     classifiers=[

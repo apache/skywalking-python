@@ -20,6 +20,9 @@ setup:
 	python3 -m pip install --upgrade pip
 	python3 -m pip install grpcio --ignore-installed
 
+setup-test: setup
+	pip3 install -e .[test]
+
 gen:
 	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
 	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
@@ -38,8 +41,7 @@ lint: clean
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
-test: gen
-	pip3 install -e .[test]
+test: gen setup-test
 	python3 -m unittest  -v
 
 install: gen
