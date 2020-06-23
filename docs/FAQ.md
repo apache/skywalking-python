@@ -20,5 +20,6 @@ that're not released yet, please clone the source codes and `make install` it:
 ```shell
 git clone https://github.com/apache/skywalking-python
 cd skywalking-python
+git submodule update --init
 make install
 ``` 
