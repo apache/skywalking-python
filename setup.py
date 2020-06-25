@@ -37,6 +37,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "grpcio",
+        "grpcio-tools",
         "requests",
     ],
     extras_require={
