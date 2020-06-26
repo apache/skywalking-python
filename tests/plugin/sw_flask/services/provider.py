@@ -31,7 +31,7 @@ if __name__ == '__main__':
     @app.route("/users", methods=["POST", "GET"])
     def application():
         time.sleep(0.5)
-        return jsonify('{"song": "Despacito", "artist": "Luis Fonsi"}')
+        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
 
     PORT = 9091
     app.run(port=PORT)

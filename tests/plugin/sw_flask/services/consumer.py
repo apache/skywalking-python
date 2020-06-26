@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from urllib import request
+import requests
 
 from skywalking import agent, config
 
@@ -33,12 +33,8 @@ if __name__ == '__main__':
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
 
-            data = '{"name": "whatever"}'.encode('utf8')
-            req = request.Request('http://provider:9091/users')
-            req.add_header('Content-Type', 'application/json; charset=utf-8')
-            req.add_header('Content-Length', str(len(data)))
-            with request.urlopen(req, data):
-                self.wfile.write(data)
+            res = requests.post("http://provider:9091/users")
+            self.wfile.write(str(res.json()).encode('utf8'))
 
     PORT = 9090
     Handler = SimpleHTTPRequestHandler

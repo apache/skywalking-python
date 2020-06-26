@@ -81,4 +81,3 @@ segmentItems:
             spanType: Entry
             peer: not null
             skipAnalysis: false
-
