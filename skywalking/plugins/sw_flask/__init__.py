@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 import logging
-import traceback
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
