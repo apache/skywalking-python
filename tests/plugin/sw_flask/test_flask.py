@@ -35,7 +35,7 @@ class TestRequestPlugin(BasePluginTest):
         cls.compose.wait_for(cls.url(cls.collector_address()))
 
     def test_request_plugin(self):
-        print('traffic: ', requests.post(url=self.url(('consumer', '9090'))))
+        print('traffic: ', requests.post(url=self.url(('consumer', '9090'), "users")))
 
         time.sleep(3)
 

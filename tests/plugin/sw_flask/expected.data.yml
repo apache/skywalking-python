@@ -67,7 +67,7 @@ segmentItems:
             spanType: Exit
             peer: provider:9091
             skipAnalysis: false
-          - operationName: /
+          - operationName: /users
             operationId: 0
             parentSpanId: -1
             spanId: 0

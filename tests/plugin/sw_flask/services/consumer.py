@@ -24,21 +24,16 @@ if __name__ == '__main__':
     config.logging_level = 'DEBUG'
     agent.start()
 
-    import socketserver
-    from http.server import BaseHTTPRequestHandler
+    from flask import Flask, jsonify
 
-    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-        def do_POST(self):
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8')
-            self.end_headers()
+    app = Flask(__name__)
 
-            res = requests.post("http://provider:9091/users")
-            self.wfile.write(str(res.json()).encode('utf8'))
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+
+        res = requests.post("http://provider:9091/users")
+        return jsonify(res.json())
 
     PORT = 9090
-    Handler = SimpleHTTPRequestHandler
+    app.run(port=PORT)
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("serving at port", PORT)
-        httpd.serve_forever()
