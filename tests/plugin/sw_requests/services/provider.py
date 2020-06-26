@@ -31,10 +31,6 @@ if __name__ == '__main__':
 
         def do_POST(self):
             time.sleep(0.5)
-<<<<<<< HEAD:tests/plugin/sw_requests/services/provider.py
-=======
-            requests.get("https://github.com/apache/skywalking")
->>>>>>> c31d0991426971eb8f04603eeb9560a25c006d06:tests/plugin/sw_requests/provider.py
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
