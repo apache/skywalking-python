@@ -22,6 +22,7 @@ from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
+from skywalking import config
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,13 @@ def install():
 
             from urllib.parse import urlparse
             url_param = urlparse(url)
+
+            # ignore trace skywalking self request
+            if config.protocol == 'http' and config.collector_address.rstrip('/').endswith(url_param.netloc):
+                return _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
+                                allow_redirects,
+                                proxies,
+                                hooks, stream, verify, cert, json)
 
             context = get_context()
             carrier = Carrier()
@@ -61,7 +69,7 @@ def install():
                                    proxies,
                                    hooks, stream, verify, cert, json)
 
-                    span.tag(Tag(key=tags.HttpMethod, val=method))
+                    span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
                     span.tag(Tag(key=tags.HttpUrl, val=url))
                     span.tag(Tag(key=tags.HttpStatus, val=res.status_code))
                     if res.status_code >= 400:

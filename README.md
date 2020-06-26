@@ -15,7 +15,9 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 
 ## Set up Python Agent
 
-SkyWalking Python SDK requires SkyWalking 8.0+.
+SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
+
+> If you want to try out the latest features that're not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
 
 ```python
 from skywalking import agent, config
@@ -34,6 +36,7 @@ Environment Variable | Description | Default
 | `SW_AGENT_INSTANCE` | The name of the Python service instance | Randomly generated |
 | `SW_AGENT_COLLECTOR_BACKEND_SERVICES` | The backend OAP server address | `127.0.0.1:11800` |
 | `SW_AGENT_PROTOCOL` | The protocol to communicate with the backend OAP, `http` or `grpc`, **we highly suggest using `grpc` in production as it's well optimized than `http`** | `grpc` |
+| `SW_AGENT_AUTHENTICATION` | The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap-server/server-bootstrap/src/main/resources/application.yml#L155-L158). | not set |
 | `SW_AGENT_LOGGING_LEVEL` | The logging level, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` | `INFO` |
 | `SW_AGENT_DISABLE_PLUGINS` | The name patterns in CSV pattern, plugins whose name matches one of the pattern won't be installed | `''` |
 
@@ -45,6 +48,7 @@ Library | Plugin Name
 | :--- | :--- |
 | [http.server](https://docs.python.org/3/library/http.server.html) | `sw_http_server` |
 | [urllib.request](https://docs.python.org/3/library/urllib.request.html) | `sw_urllib_request` |
+| [requests](https://requests.readthedocs.io/en/master/) | `requests` |
 
 ## API
 

@@ -15,3 +15,23 @@
 # limitations under the License.
 #
 
+import time
+
+from skywalking import agent, config
+
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
+
+    from werkzeug import Request, Response
+
+    @Request.application
+    def application(request):
+        time.sleep(0.5)
+        return Response('{"song": "Despacito", "artist": "Luis Fonsi"}')
+
+    from werkzeug.serving import run_simple
+
+    PORT = 9091
+    run_simple("", PORT, application)

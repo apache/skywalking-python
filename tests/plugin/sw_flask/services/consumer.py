@@ -15,14 +15,12 @@
 # limitations under the License.
 #
 
-import time
-
-import requests
+from urllib import request
 
 from skywalking import agent, config
 
 if __name__ == '__main__':
-    config.service_name = 'provider'
+    config.service_name = 'consumer'
     config.logging_level = 'DEBUG'
     agent.start()
 
@@ -30,19 +28,21 @@ if __name__ == '__main__':
     from http.server import BaseHTTPRequestHandler
 
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-
         def do_POST(self):
-            time.sleep(0.5)
-            requests.post("https://github.com/apache/skywalking")
             self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
-            self.wfile.write('{"song": "Despacito", "artist": "Luis Fonsi"}'.encode('ascii'))
 
+            data = '{"name": "whatever"}'.encode('utf8')
+            req = request.Request('http://provider:9091/users')
+            req.add_header('Content-Type', 'application/json; charset=utf-8')
+            req.add_header('Content-Length', str(len(data)))
+            with request.urlopen(req, data):
+                self.wfile.write(data)
 
-
-    PORT = 9091
+    PORT = 9090
     Handler = SimpleHTTPRequestHandler
 
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("serving at port", PORT)
         httpd.serve_forever()

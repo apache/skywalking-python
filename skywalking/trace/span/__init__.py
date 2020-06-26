@@ -206,7 +206,7 @@ class ExitSpan(StackedSpan):
         carrier.span_id = self.sid
         carrier.service = config.service_name
         carrier.service_instance = config.service_instance
-        carrier.endpoint = self.context.spans[0].op
+        carrier.endpoint = self.op
         carrier.client_address = self.peer
         return self
 

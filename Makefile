@@ -20,6 +20,9 @@ setup:
 	python3 -m pip install --upgrade pip
 	python3 -m pip install grpcio --ignore-installed
 
+setup-test: setup
+	pip3 install -e .[test]
+
 gen:
 	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
 	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
@@ -32,14 +35,13 @@ gen:
 
 lint: clean
 	flake8 --version || python3 -m pip install flake8
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	flake8 . --count --select=E9,F63,F7,F82 --show-source
+	flake8 . --count --max-complexity=12 --max-line-length=120
 
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
-test: gen
-	pip3 install -e .[test]
+test: gen setup-test
 	python3 -m unittest  -v
 
 install: gen
@@ -47,6 +49,9 @@ install: gen
 
 package: clean gen
 	python3 setup.py sdist bdist_wheel
+
+upload-test: package
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 clean:
 	rm -rf browser common language_agent management profile service_mesh_probe

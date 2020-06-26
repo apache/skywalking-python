@@ -91,6 +91,12 @@ class SpanContext(object):
 
         return len(self.spans) == 0
 
+    def active_span(self):
+        if self.spans:
+            return self.spans[len(self.spans) - 1]
+
+        return None
+
 
 class NoopContext(SpanContext):
     def __init__(self):
@@ -114,12 +120,17 @@ class NoopContext(SpanContext):
         self._depth -= 1
         return self._depth == 0
 
+    def active_span(self):
+        return self._noop_span
+
 
 _thread_local = threading.local()
 _thread_local.context = None
 
 
 def get_context() -> SpanContext:
+    if not hasattr(_thread_local, 'context'):
+        _thread_local.context = None
     _thread_local.context = _thread_local.context or (SpanContext() if agent.connected() else NoopContext())
 
     return _thread_local.context

@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,13 +13,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-FROM python:3.7
+import time
 
-ARG ROOT=.
+from skywalking import agent, config
 
-WORKDIR /agent
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
 
-ADD $ROOT /agent
+    from flask import Flask, jsonify
 
-RUN make setup-test install
+    app = Flask(__name__)
+
+    @app.route("/users", methods=["POST","GET"])
+    def application():
+        time.sleep(0.5)
+        return jsonify('{"song": "Despacito", "artist": "Luis Fonsi"}')
+
+    PORT = 9091
+    app.run(port=PORT)

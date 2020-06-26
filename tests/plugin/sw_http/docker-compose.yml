@@ -42,12 +42,36 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./provider.py:/app/provider.py
+      - ./services/provider.py:/app/provider.py
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
     command: ['python3', '/app/provider.py']
     depends_on:
       collector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+
+  consumer:
+    build:
+      context: ../../../
+      dockerfile: tests/plugin/docker/Dockerfile.agent
+    networks:
+      - beyond
+    ports:
+      - 9090:9090
+    volumes:
+      - ./services/consumer.py:/app/consumer.py
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
+    command: ['python3', '/app/consumer.py']
+    depends_on:
+      collector:
+        condition: service_healthy
+      provider:
         condition: service_healthy
 
 networks:

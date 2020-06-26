@@ -15,34 +15,30 @@
 # limitations under the License.
 #
 
-import os
-import time
-import unittest
-from os.path import abspath, dirname
-
 import requests
-from testcontainers.compose import DockerCompose
 
-from tests.plugin import BasePluginTest
-
-
-class TestRequestPlugin(BasePluginTest):
-    @classmethod
-    def setUpClass(cls):
-        docker_dir = dirname(dirname(abspath(__file__)))
-
-        cls.compose = DockerCompose(filepath=os.path.join(docker_dir, 'http'))
-        cls.compose.start()
-
-        cls.compose.wait_for(cls.url(cls.collector_address()))
-
-    def test_request_plugin(self):
-        print('traffic: ', requests.post(url=self.url(('provider', '9091'))))
-
-        time.sleep(3)
-
-        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
-
+from skywalking import agent, config
 
 if __name__ == '__main__':
-    unittest.main()
+    config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
+    agent.start()
+
+    import socketserver
+    from http.server import BaseHTTPRequestHandler
+
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.end_headers()
+
+            res = requests.post("http://provider:9091/users")
+            self.wfile.write(str(res.json()).encode('utf8'))
+
+    PORT = 9090
+    Handler = SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("serving at port", PORT)
+        httpd.serve_forever()
