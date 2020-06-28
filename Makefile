@@ -53,6 +53,9 @@ package: clean gen
 upload-test: package
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
+upload: package
+	twine upload dist/*
+
 clean:
 	rm -rf browser common language_agent management profile service_mesh_probe
 	rm -rf skywalking_python.egg-info dist build
