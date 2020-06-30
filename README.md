@@ -13,6 +13,25 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 
 [![Build](https://github.com/apache/skywalking-python/workflows/Build/badge.svg?branch=master)](https://github.com/apache/skywalking-python/actions?query=branch%3Amaster+event%3Apush+workflow%3A%22Build%22)
 
+## Install
+
+### From Pypi
+
+The Python agent module is published to [Pypi](https://pypi.org/project/apache-skywalking/), from where you can use `pip` to install:
+
+```shell
+# Install the latest version
+pip install apache-skywalking
+
+# Install a specific version x.y.z
+# pip install apache-skywalking==x.y.z
+pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no matter what the latest version is
+```
+
+### From Source Codes
+
+Refer to the [FAQ](docs/FAQ.md#q-how-to-build-from-sources).
+
 ## Set up Python Agent
 
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
