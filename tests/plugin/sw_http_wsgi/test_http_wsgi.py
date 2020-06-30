@@ -26,7 +26,7 @@ from testcontainers.compose import DockerCompose
 from tests.plugin import BasePluginTest
 
 
-class TestRequestPlugin(BasePluginTest):
+class TestPlugin(BasePluginTest):
     @classmethod
     def setUpClass(cls):
         cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
