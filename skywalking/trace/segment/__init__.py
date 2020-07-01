@@ -31,7 +31,7 @@ class SegmentRef(object):
         self.ref_type = 'CrossProcess'  # type: str
         self.trace_id = carrier.trace_id  # type: str
         self.segment_id = carrier.segment_id  # type: str
-        self.span_id = carrier.span_id  # type: int
+        self.span_id = int(carrier.span_id)  # type: int
         self.service = carrier.service  # type: str
         self.service_instance = carrier.service_instance  # type: str
         self.endpoint = carrier.endpoint  # type: str
