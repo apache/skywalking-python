@@ -165,7 +165,7 @@ class EntrySpan(StackedSpan):
     def extract(self, carrier: 'Carrier') -> 'Span':
         Span.extract(self, carrier)
 
-        if carrier is None:
+        if carrier is None or not carrier.is_valid:
             return self
 
         ref = SegmentRef(carrier=carrier)
@@ -203,7 +203,7 @@ class ExitSpan(StackedSpan):
     def inject(self, carrier: 'Carrier') -> 'Span':
         carrier.trace_id = str(self.context.segment.related_traces[0])
         carrier.segment_id = str(self.context.segment.segment_id)
-        carrier.span_id = self.sid
+        carrier.span_id = str(self.sid)
         carrier.service = config.service_name
         carrier.service_instance = config.service_instance
         carrier.endpoint = self.op
