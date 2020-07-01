@@ -15,28 +15,31 @@
 # limitations under the License.
 #
 
-import time
+version: '2.1'
 
-from skywalking import agent, config
+services:
+  collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.tool
+    ports:
+      - 19876:19876
+      - 12800:12800
+    networks:
+      - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/12800"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
 
-if __name__ == '__main__':
-    config.service_name = 'provider'
-    agent.start()
-
-    import socketserver
-    from http.server import BaseHTTPRequestHandler
-
-    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-
-        def do_POST(self):
-            time.sleep(0.5)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            self.wfile.write('{"song": "Despacito", "artist": "Luis Fonsi"}'.encode('ascii'))
-
-    PORT = 9091
-    Handler = SimpleHTTPRequestHandler
-
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        httpd.serve_forever()
+  agent:
+    build:
+      context: ../../../
+      dockerfile: tests/plugin/docker/Dockerfile.agent
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+    networks:
+      - beyond
+    command: ['python3', '/entrypoint.py']
