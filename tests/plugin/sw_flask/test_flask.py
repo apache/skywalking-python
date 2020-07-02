@@ -32,11 +32,9 @@ class TestRequestPlugin(BasePluginTest):
         cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
         cls.compose.start()
 
-        cls.compose.wait_for(cls.url(cls.collector_address()))
+        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
 
     def test_request_plugin(self):
-        print('traffic: ', requests.post(url=self.url(('consumer', '9090'), "users")))
-
         time.sleep(3)
 
         self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
