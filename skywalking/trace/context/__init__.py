@@ -55,7 +55,7 @@ class SpanContext(object):
         )
         span.op = op
 
-        if carrier is not None:
+        if carrier is not None and carrier.is_valid:
             span.extract(carrier=carrier)
 
         return span
