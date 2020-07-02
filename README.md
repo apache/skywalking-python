@@ -67,7 +67,8 @@ Library | Plugin Name
 | :--- | :--- |
 | [http.server](https://docs.python.org/3/library/http.server.html) | `sw_http_server` |
 | [urllib.request](https://docs.python.org/3/library/urllib.request.html) | `sw_urllib_request` |
-| [requests](https://requests.readthedocs.io/en/master/) | `requests` |
+| [requests](https://requests.readthedocs.io/en/master/) | `sw_requests` |
+| [Flask](https://flask.palletsprojects.com/en/1.1.x/) | `sw_flask` |
 
 ## API
 
