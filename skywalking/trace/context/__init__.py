@@ -91,6 +91,12 @@ class SpanContext(object):
 
         return len(self.spans) == 0
 
+    def active_span(self):
+        if self.spans:
+            return self.spans[len(self.spans) - 1]
+
+        return None
+
 
 class NoopContext(SpanContext):
     def __init__(self):
@@ -113,6 +119,9 @@ class NoopContext(SpanContext):
     def stop(self, span: Span) -> bool:
         self._depth -= 1
         return self._depth == 0
+
+    def active_span(self):
+        return self._noop_span
 
 
 _thread_local = threading.local()

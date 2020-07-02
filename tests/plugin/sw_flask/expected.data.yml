@@ -29,6 +29,10 @@ segmentItems:
             tags:
               - key: http.method
                 value: POST
+              - key: url
+                value: http://provider:9091/users
+              - key: status.code
+                value: '200'
             refs:
               - parentEndpoint: /users
                 networkAddress: provider:9091
@@ -40,7 +44,7 @@ segmentItems:
                 traceId: not null
             startTime: gt 0
             endTime: gt 0
-            componentId: 7000
+            componentId: 7001
             spanType: Entry
             peer: not null
             skipAnalysis: false
@@ -67,17 +71,21 @@ segmentItems:
             spanType: Exit
             peer: provider:9091
             skipAnalysis: false
-          - operationName: /
+          - operationName: /users
             operationId: 0
             parentSpanId: -1
             spanId: 0
             spanLayer: Http
             tags:
               - key: http.method
-                value: POST
+                value: GET
+              - key: url
+                value: http://0.0.0.0:9090/users
+              - key: status.code
+                value: '200'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7000
+            componentId: 7001
             spanType: Entry
             peer: not null
             skipAnalysis: false

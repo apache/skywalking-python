@@ -30,7 +30,8 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./services/provider.py:/entrypoint.py
+      - ./services/provider.py:/app/provider.py
+    command: ['bash', '-c', 'pip install flask && python3 /app/provider.py']
     depends_on:
       collector:
         condition: service_healthy
@@ -47,7 +48,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/consumer.py:/entrypoint.py
+      - ./services/consumer.py:/app/consumer.py
+    command: ['bash', '-c', 'pip install flask && python3 /app/consumer.py']
     depends_on:
       collector:
         condition: service_healthy
