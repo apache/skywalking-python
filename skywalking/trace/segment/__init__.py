@@ -31,11 +31,23 @@ class SegmentRef(object):
         self.ref_type = 'CrossProcess'  # type: str
         self.trace_id = carrier.trace_id  # type: str
         self.segment_id = carrier.segment_id  # type: str
-        self.span_id = carrier.span_id  # type: int
+        self.span_id = int(carrier.span_id)  # type: int
         self.service = carrier.service  # type: str
         self.service_instance = carrier.service_instance  # type: str
         self.endpoint = carrier.endpoint  # type: str
         self.client_address = carrier.client_address  # type: str
+
+    def __eq__(self, other):
+        if not isinstance(other, SegmentRef):
+            raise NotImplementedError
+        return self.ref_type == other.ref_type and \
+            self.trace_id == other.trace_id and \
+            self.segment_id == other.segment_id and \
+            self.span_id == other.span_id and \
+            self.service == other.service and \
+            self.service_instance == other.service_instance and \
+            self.endpoint == other.endpoint and \
+            self.client_address == other.client_address
 
 
 class _NewID(ID):
