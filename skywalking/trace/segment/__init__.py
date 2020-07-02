@@ -37,6 +37,18 @@ class SegmentRef(object):
         self.endpoint = carrier.endpoint  # type: str
         self.client_address = carrier.client_address  # type: str
 
+    def __eq__(self, other):
+        if not isinstance(other, SegmentRef):
+            raise NotImplementedError
+        return self.ref_type == other.ref_type and \
+            self.trace_id == other.trace_id and \
+            self.segment_id == other.segment_id and \
+            self.span_id == other.span_id and \
+            self.service == other.service and \
+            self.service_instance == other.service_instance and \
+            self.endpoint == other.endpoint and \
+            self.client_address == other.client_address
+
 
 class _NewID(ID):
     pass
