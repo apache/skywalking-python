@@ -25,7 +25,7 @@ services:
 
   provider:
     extends:
-      service: provider
+      service: agent
       file: ../docker/docker-compose.base.yml
     ports:
       - 9091:9091
@@ -43,7 +43,7 @@ services:
 
   consumer:
     extends:
-      service: consumer
+      service: agent
       file: ../docker/docker-compose.base.yml
     ports:
       - 9090:9090
