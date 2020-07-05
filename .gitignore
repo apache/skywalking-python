@@ -6,5 +6,5 @@
 __pycache__
 build/
 dist/
-skywalking_python.egg-info/
 *.pyc
+/apache_skywalking.egg-info/

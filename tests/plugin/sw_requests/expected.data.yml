@@ -63,7 +63,7 @@ segmentItems:
                 value: '200'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7000
+            componentId: 7002
             spanType: Exit
             peer: provider:9091
             skipAnalysis: false

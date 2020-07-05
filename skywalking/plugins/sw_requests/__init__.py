@@ -53,7 +53,7 @@ def install():
             carrier = Carrier()
             with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc, carrier=carrier) as span:
                 span.layer = Layer.Http
-                span.component = Component.General
+                span.component = Component.Requests
 
                 if headers is None:
                     headers = {}
