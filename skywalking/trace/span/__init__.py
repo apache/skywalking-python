@@ -81,6 +81,11 @@ class Span(ABC):
         ])]
         return self
 
+    def log(self, ex: Exception) -> 'Span':
+        self.error_occurred = True
+        self.logs.append(Log(items=LogItem(key='Traceback', val=str(ex))))
+        return self
+
     def tag(self, tag: Tag) -> 'Span':
         if not tag.overridable:
             self.tags.append(deepcopy(tag))
