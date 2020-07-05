@@ -25,6 +25,7 @@ class Component(Enum):
     Unknown = 0
     General = 7000  # built-in modules that may not have a logo to display
     Flask = 7001
+    Requests = 7002
 
 
 class Layer(Enum):
