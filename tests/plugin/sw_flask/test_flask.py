@@ -14,11 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-import os
+import inspect
 import time
 import unittest
-from os.path import abspath, dirname
+from os.path import dirname
 
 from testcontainers.compose import DockerCompose
 
@@ -28,15 +27,15 @@ from tests.plugin import BasePluginTest
 class TestPlugin(BasePluginTest):
     @classmethod
     def setUpClass(cls):
-        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
+        cls.compose = DockerCompose(filepath=dirname(inspect.getfile(cls)))
         cls.compose.start()
 
         cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
 
-    def test_request_plugin(self):
+    def test_plugin(self):
         time.sleep(3)
 
-        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
+        self.validate()
 
 
 if __name__ == '__main__':

@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import inspect
 import os
 import unittest
 from abc import ABC
 from collections import namedtuple
+from os.path import dirname
 
 import requests
 from requests import Response
@@ -30,6 +31,13 @@ ServicePort = namedtuple('ServicePort', 'service port')
 
 class BasePluginTest(unittest.TestCase, ABC):
     compose = None  # type: DockerCompose
+
+    @classmethod
+    def setUpClass(cls):
+        cls.compose = DockerCompose(filepath=dirname(inspect.getfile(cls)))
+        cls.compose.start()
+
+        cls.compose.wait_for(cls.url(cls.collector_address()))
 
     @classmethod
     def tearDownClass(cls):
@@ -57,8 +65,12 @@ class BasePluginTest(unittest.TestCase, ABC):
         # type: () -> ServicePort
         return ServicePort(service='collector', port='12800')
 
-    def validate(self, expected_file_name):
+    def validate(self, expected_file_name=None):
         # type: (str) -> Response
+
+        if expected_file_name is None:
+            expected_file_name = os.path.join(dirname(inspect.getfile(self.__class__)), 'expected.data.yml')
+
         with open(expected_file_name) as expected_data_file:
             response = requests.post(
                 url=self.__class__.url(self.__class__.collector_address(), path='/dataValidate'),

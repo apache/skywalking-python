@@ -15,31 +15,22 @@
 # limitations under the License.
 #
 
-import os
 import time
 import unittest
-from os.path import abspath, dirname
 
 import requests
-from testcontainers.compose import DockerCompose
 
 from tests.plugin import BasePluginTest
 
 
 class TestPlugin(BasePluginTest):
-    @classmethod
-    def setUpClass(cls):
-        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
-        cls.compose.start()
 
-        cls.compose.wait_for(cls.url(cls.collector_address()))
-
-    def test_request_plugin(self):
+    def test_plugin(self):
         print('traffic: ', requests.post(url=self.url(('consumer', '9090'))))
 
         time.sleep(3)
 
-        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
+        self.validate()
 
 
 if __name__ == '__main__':
