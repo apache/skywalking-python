@@ -26,8 +26,6 @@ services:
   mysql:
     image:  mysql:5.7
     hostname: mysql
-    #    expose:
-    #      - "3306"
     ports:
       - 3306:3306
       - 33060:33060
