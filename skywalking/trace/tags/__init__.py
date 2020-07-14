@@ -23,3 +23,6 @@ Tag.__new__.__defaults__ = (None, None, False)
 HttpUrl = 'url'
 HttpMethod = 'http.method'
 HttpStatus = 'status.code'
+DbType = 'db.type'
+DbInstance = 'db.instance'
+DbStatement = 'db.statement'
