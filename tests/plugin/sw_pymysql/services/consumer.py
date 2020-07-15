@@ -15,14 +15,23 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+import requests
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+from skywalking import agent, config
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
+if __name__ == '__main__':
+    config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
+    agent.start()
+
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        res = requests.post("http://provider:9091/users")
+        return jsonify(res.json())
+
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

@@ -15,14 +15,31 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+import time
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+from skywalking import agent, config
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
+
+    from flask import Flask, jsonify
+    import pymysql.cursors
+
+    app = Flask(__name__)
+
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        time.sleep(0.5)
+        connection = pymysql.connect(host='mysql', user='root', password='root', db='test', charset='utf8mb4')
+        with connection.cursor() as cursor:
+            sql = "select 1"
+            cursor.execute(sql)
+
+        connection.close()
+
+        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
+
+    PORT = 9091
+    app.run(host='0.0.0.0', port=PORT, debug=True)
