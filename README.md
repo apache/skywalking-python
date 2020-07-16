@@ -127,5 +127,22 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
 
 Check [the FAQ page](docs/FAQ.md) or add the FAQs there.
 
+## For Developers
+
+### Steps to get an operational virtual environment:
+
+1. `git clone https://github.com/apache/skywalking-python.git`
+2. `cd skywalking-python/scripts` (*make sure you actually go into the directory since the scripts use relative paths*)
+3. Run the script for your relevant OS to create a virtual environment folder in the project root (*skywalking-python/venv*) and install all the necessary requirements
+
+**Make sure that when the `python` command is executed on your workstation, the binary it references is python 3.5 or newer!**
+
+### Steps after contributing
+
+If your PR introduces the need for a new non-standard library which needs to be pulled via pip or if it removes the need for a previously-used library:
+1. navigate to `/path/to/skywalking/agent/scripts`
+2. Execute the `build_requirements` script relevant to your OS.
+3. Double check the `requirements.txt` file in the project root to ensure that the changes have been reflected. 
+
 ## License
 Apache 2.0
