@@ -43,7 +43,8 @@ setup(
     extras_require={
         "test": [
             "testcontainers",
-            "Werkzeug"
+            "Werkzeug",
+            "pymysql",
         ],
     },
     classifiers=[

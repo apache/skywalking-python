@@ -14,15 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from collections import namedtuple
-
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
-
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
