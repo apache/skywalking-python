@@ -26,7 +26,8 @@ class Component(Enum):
     General = 7000  # built-in modules that may not have a logo to display
     Flask = 7001
     Requests = 7002
-    Django = 7003
+    PyMysql = 7003
+    Django = 7004
 
 
 class Layer(Enum):
