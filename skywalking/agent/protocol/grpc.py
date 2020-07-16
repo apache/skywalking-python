@@ -24,7 +24,7 @@ from common.Common_pb2 import KeyStringValuePair
 from language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking import config
 from skywalking.agent import Protocol
-from skywalking.agent.protocol.grpc.interceptors import header_adder_interceptor
+from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
 from skywalking.trace.segment import Segment
 
