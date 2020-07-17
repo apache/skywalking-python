@@ -69,6 +69,7 @@ Library | Plugin Name
 | [urllib.request](https://docs.python.org/3/library/urllib.request.html) | `sw_urllib_request` |
 | [requests](https://requests.readthedocs.io/en/master/) | `sw_requests` |
 | [Flask](https://flask.palletsprojects.com/en/1.1.x/) | `sw_flask` |
+| [PyMySQL](https://pymysql.readthedocs.io/en/latest/) | `sw_pymysql` |
 
 ## API
 
