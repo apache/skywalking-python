@@ -15,10 +15,15 @@
 # limitations under the License.
 #
 
-#!/bin/sh
+Write-Output "Creating virtual environment"
 
-echo "Building requirements.txt"
+& python -m venv '..\..\venv'
 
-../venv/Scripts/python -m pip freeze > ../requirements.txt
+Write-Output "Virtual env created"
 
-echo "requirements.txt created"
+$PYEXE= Join-Path -Path $PSScriptRoot -ChildPath '..\..\venv\Scripts\python.exe'
+& $PYEXE -m pip install --upgrade pip
+
+Write-Output "Pip upgrade complete. Installing packages from requirements.txt"
+
+& $PYEXE -m pip install -r ..\..\requirements.txt

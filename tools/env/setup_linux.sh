@@ -15,17 +15,12 @@
 # limitations under the License.
 #
 
-Write-Output "Creating virtual environment"
+#!/bin/sh
 
-& python -m venv '..\venv'
+echo "Creating virtual environment"
+python3 -m venv '../../venv'
+echo "Virtual env created"
 
-Write-Output "Virtual env created"
-
-$PYEXE= Join-Path -Path $PSScriptRoot -ChildPath '..\venv\Scripts\python.exe'
-& $PYEXE -m pip install --upgrade pip
-
-Write-Output "Pip upgrade complete. Installing packages from requirements.txt"
-
-foreach($package in Get-Content ..\requirements.txt) {
-    & $PYEXE -m pip install $package
-}
+../../venv/bin/python -m pip install --upgrade pip
+echo "Pip upgrade complete. Installing packages from requirements.txt"
+../../venv/bin/python -m pip install ../../requirements.txt
