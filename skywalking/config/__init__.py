@@ -26,6 +26,8 @@ protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
 logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
+mysql_trace_sql_parameters = os.getenv('MYSQL_TRACE_SQL_PARAMETERS') or False  # type: Bool
+mysql_sql_parameters_max_length = os.getenv('MYSQL_SQL_PARAMETERS_MAX_LENGTH') or 512  # type: int
 
 
 def init(
