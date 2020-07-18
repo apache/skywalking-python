@@ -15,13 +15,11 @@
 # limitations under the License.
 #
 import logging
-import traceback
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
-from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
@@ -63,7 +61,7 @@ def install():
         def _sw_handle_uncaught_exception(request, resolver, exc_info):
             if exc_info is not None:
                 entry_span = get_context().active_span()
-                if entry_span is not None and type(entry_span) is not NoopSpan:
+                if entry_span is not None:
                     entry_span.raised()
 
             return _handle_uncaught_exception(request, resolver, exc_info)
@@ -72,4 +70,3 @@ def install():
         exception.handle_uncaught_exception = _sw_handle_uncaught_exception
     except Exception:
         logger.warning('failed to install plugin %s', __name__)
-        traceback.print_exc()
