@@ -47,10 +47,10 @@ def install():
                     span.tag(Tag(key=tags.DbStatement, val=query))
 
                     if config.mysql_trace_sql_parameters and args:
-                        parameter = "[" + ",".join([str(arg) for arg in args]) + "]"
+                        parameter = ",".join([str(arg) for arg in args])
                         max_len = config.mysql_sql_parameters_max_length
-                        parameter = parameter[0, max_len] + "..." if len(parameter) > max_len else parameter
-                        span.tag(Tag(key=tags.DbSqlParameters, val=parameter))
+                        parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
+                        span.tag(Tag(key=tags.DbSqlParameters, val='[' + parameter + ']'))
 
                 except BaseException as e:
                     span.raised()
