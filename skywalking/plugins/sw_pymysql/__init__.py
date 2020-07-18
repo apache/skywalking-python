@@ -15,8 +15,7 @@
 # limitations under the License.
 #
 import logging
-
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
@@ -46,6 +45,12 @@ def install():
                     span.tag(Tag(key=tags.DbType, val="mysql"))
                     span.tag(Tag(key=tags.DbInstance, val=this.connection.db.decode("utf-8")))
                     span.tag(Tag(key=tags.DbStatement, val=query))
+
+                    if config.mysql_trace_sql_parameters and args:
+                        parameter = ",".join([str(arg) for arg in args])
+                        max_len = config.mysql_sql_parameters_max_length
+                        parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
+                        span.tag(Tag(key=tags.DbSqlParameters, val='[' + parameter + ']'))
 
                 except BaseException as e:
                     span.raised()

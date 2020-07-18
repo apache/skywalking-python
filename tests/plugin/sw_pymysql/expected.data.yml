@@ -30,9 +30,11 @@ segmentItems:
               - key: db.type
                 value: mysql
               - key: db.instance
-                value: test
+                value: mysql
               - key: db.statement
-                value: select 1
+                value: 'select * from user where user = %s'
+              - key: db.sql.parameters
+                value: '[root]'
             startTime: gt 0
             endTime: gt 0
             componentId: 7003
