@@ -52,7 +52,7 @@ def walk_through_dir(d) -> bool:
             with open(file_path, 'r') as f:
                 header = ' '.join([line.strip(ignored_chars) for line in f.readlines() if line.startswith(('#', '::'))]).strip()
                 print('%s license header in file: %s' % ('✅' if license_header in header else '❌', file_path))
-                checked &= header == license_header
+                checked &= license_header in header
     return checked
 
 
