@@ -32,10 +32,10 @@ if __name__ == '__main__':
     @app.route("/users", methods=["POST", "GET"])
     def application():
         time.sleep(0.5)
-        connection = pymysql.connect(host='mysql', user='root', password='root', db='test', charset='utf8mb4')
+        connection = pymysql.connect(host='mysql', user='root', password='root', db='mysql', charset='utf8mb4')
         with connection.cursor() as cursor:
-            sql = "select 1"
-            cursor.execute(sql)
+            sql = "select * from user where user = %s"
+            cursor.execute(sql, ("root",))
 
         connection.close()
 
