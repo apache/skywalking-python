@@ -15,14 +15,29 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+import os
+import time
+import unittest
+from os.path import abspath, dirname
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+from testcontainers.compose import DockerCompose
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
+from tests.plugin import BasePluginTest
+
+
+class TestPlugin(BasePluginTest):
+    @classmethod
+    def setUpClass(cls):
+        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
+        cls.compose.start()
+
+        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
+
+    def test_request_plugin(self):
+        time.sleep(3)
+
+        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
+
+
+if __name__ == '__main__':
+    unittest.main()
