@@ -27,6 +27,7 @@ class Component(Enum):
     Flask = 7001
     Requests = 7002
     PyMysql = 7003
+    Django = 7004
 
 
 class Layer(Enum):
