@@ -8,3 +8,4 @@ build/
 dist/
 *.pyc
 /apache_skywalking.egg-info/
+**/venv/
