@@ -18,7 +18,7 @@
 import os
 import sys
 
-ignored_chars = '#\n \t'
+ignored_chars = '#\n \t:'
 
 license_header = ' '.join(
     [
@@ -43,17 +43,20 @@ license_header = ' '.join(
     ]
 ).strip(ignored_chars)
 
+comment_leading_chars = ('#', '::')
+
 
 def walk_through_dir(d) -> bool:
     checked = True
     for root, sub_dirs, files in os.walk(d):
         for filename in files:
             file_path = os.path.join(root, filename)
-
             with open(file_path, 'r') as f:
-                header = ' '.join([line.strip(ignored_chars) for line in f.readlines() if line.startswith('#')]).strip()
-                print('%s license header in file: %s' % ('✅' if header == license_header else '❌', file_path))
-                checked &= header == license_header
+                header = ' '.join([
+                    line.strip(ignored_chars) for line in f.readlines() if line.startswith(comment_leading_chars)
+                ]).strip()
+                print('%s license header in file: %s' % ('✅' if license_header in header else '❌', file_path))
+                checked &= license_header in header
     return checked
 
 

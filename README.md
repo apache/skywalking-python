@@ -58,6 +58,8 @@ Environment Variable | Description | Default
 | `SW_AGENT_AUTHENTICATION` | The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap-server/server-bootstrap/src/main/resources/application.yml#L155-L158). | not set |
 | `SW_AGENT_LOGGING_LEVEL` | The logging level, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` | `INFO` |
 | `SW_AGENT_DISABLE_PLUGINS` | The name patterns in CSV pattern, plugins whose name matches one of the pattern won't be installed | `''` |
+| `SW_MYSQL_TRACE_SQL_PARAMETERS` | Indicates whether to collect the sql parameters or not | `False` |
+| `SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH` | The maximum length of the collected parameter, parameters longer than the specified length will be truncated | `512` |
 
 ## Supported Libraries
 
@@ -126,6 +128,23 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
 ## FAQs
 
 Check [the FAQ page](docs/FAQ.md) or add the FAQs there.
+
+## For Developers
+
+### Steps to get an operational virtual environment:
+
+1. `git clone https://github.com/apache/skywalking-python.git`
+2. `cd skywalking-python/tools/env` (*make sure you actually go into the directory since the scripts use relative paths*)
+3. Run the script for your relevant OS to create a virtual environment folder in the project root (*skywalking-python/venv*) and install all the necessary requirements
+
+**Make sure that when the `python` command is executed on your workstation, the binary it references is python 3.5 or newer!**
+
+### Steps after contributing
+
+If your PR introduces the need for a new non-standard library which needs to be pulled via pip or if it removes the need for a previously-used library:
+1. navigate to `/path/to/skywalking/agent/tools/env`
+2. Execute the `build_requirements` script relevant to your OS.
+3. Double check the `requirements.txt` file in the project root to ensure that the changes have been reflected. 
 
 ## License
 Apache 2.0

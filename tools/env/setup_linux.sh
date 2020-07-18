@@ -15,15 +15,12 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+#!/bin/sh
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+echo "Creating virtual environment"
+python3 -m venv '../../venv'
+echo "Virtual env created"
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
-DbSqlParameters = 'db.sql.parameters'
+../../venv/bin/python -m pip install --upgrade pip
+echo "Pip upgrade complete. Installing packages from requirements.txt"
+../../venv/bin/python -m pip install ../../requirements.txt
