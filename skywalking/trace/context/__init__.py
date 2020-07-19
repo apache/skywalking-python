@@ -90,7 +90,7 @@ class SpanContext(object):
 
     def ignore_check(self, op: str, kind: Kind):
         suffix_idx = op.rfind(".")
-        if suffix_idx > -1 and config.ignore_suffix.find(op[op.rfind("."):]) > -1:
+        if suffix_idx > -1 and config.ignore_suffix.find(op[suffix_idx:]) > -1:
             return NoopSpan(
                 context=NoopContext(),
                 kind=kind,
