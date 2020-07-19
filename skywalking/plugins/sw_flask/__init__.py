@@ -16,7 +16,7 @@
 #
 import logging
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
@@ -34,6 +34,9 @@ def install():
 
         _handle_user_exception = Flask.handle_user_exception
 
+        def params_tostring(params):
+            return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+
         def _sw_full_dispatch_request(this: Flask):
             import flask
             req = flask.request
@@ -48,7 +51,10 @@ def install():
                 span.component = Component.Flask
                 span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])
                 span.tag(Tag(key=tags.HttpMethod, val=req.method))
-                span.tag(Tag(key=tags.HttpUrl, val=req.url))
+                span.tag(Tag(key=tags.HttpUrl, val=req.url.split("?")[0]))
+                if config.flask_collect_http_params and req.values:
+                    span.tag(Tag(key=tags.HttpParams,
+                                 val=params_tostring(req.values)[0:config.http_params_length_threshold]))
                 resp = _full_dispatch_request(this)
 
                 if resp.status_code >= 400:
