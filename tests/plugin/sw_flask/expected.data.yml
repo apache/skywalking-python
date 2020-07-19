@@ -81,6 +81,8 @@ segmentItems:
                 value: GET
               - key: url
                 value: http://0.0.0.0:9090/users
+              - key: http.params
+                value: "test=[test1,test2]\ntest2=[test2]"
               - key: status.code
                 value: '200'
             startTime: gt 0
