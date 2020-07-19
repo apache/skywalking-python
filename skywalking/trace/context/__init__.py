@@ -19,7 +19,7 @@ import logging
 import threading
 from typing import List
 
-from skywalking import agent
+from skywalking import agent, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
@@ -35,6 +35,10 @@ class SpanContext(object):
         self._sid = Counter()
 
     def new_local_span(self, op: str) -> Span:
+        span = self.ignore_check(op, Kind.Local)
+        if span is not None:
+            return span
+
         parent = self.spans[-1] if self.spans else None  # type: Span
 
         return Span(
@@ -46,6 +50,10 @@ class SpanContext(object):
         )
 
     def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
+        span = self.ignore_check(op, Kind.Entry)
+        if span is not None:
+            return span
+
         parent = self.spans[-1] if self.spans else None  # type: Span
 
         span = parent if parent is not None and parent.kind.is_entry else EntrySpan(
@@ -61,6 +69,10 @@ class SpanContext(object):
         return span
 
     def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
+        span = self.ignore_check(op, Kind.Exit)
+        if span is not None:
+            return span
+
         parent = self.spans[-1] if self.spans else None  # type: Span
 
         span = parent if parent is not None and parent.kind.is_exit else ExitSpan(
@@ -75,6 +87,15 @@ class SpanContext(object):
             span.inject(carrier=carrier)
 
         return span
+
+    def ignore_check(self, op: str, kind: Kind):
+        suffix_idx = op.rfind(".")
+        if suffix_idx > -1 and config.ignore_suffix.find(op[suffix_idx:]) > -1:
+            return NoopSpan(
+                context=NoopContext(),
+                kind=kind,
+            )
+        return None
 
     def start(self, span: Span):
         if span not in self.spans:
