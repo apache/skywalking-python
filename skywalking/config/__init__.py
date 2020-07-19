@@ -30,7 +30,8 @@ mysql_trace_sql_parameters = True if os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') 
                                      os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') == 'True' else False  # type: bool
 mysql_sql_parameters_max_length = int(os.getenv('SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH') or '512')  # type: int
 ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,' \
-                                                                   '.mp4,.html,.svg '  # type: str
+                                                 '.mp4,.html,.svg '  # type: str
+
 
 def init(
         service: str = None,
