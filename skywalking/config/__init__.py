@@ -36,6 +36,7 @@ flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') an
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
 
 
+
 def init(
         service: str = None,
         instance: str = None,
