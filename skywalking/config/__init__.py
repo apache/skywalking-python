@@ -32,7 +32,6 @@ mysql_sql_parameters_max_length = int(os.getenv('SW_MYSQL_SQL_PARAMETERS_MAX_LEN
 ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,' \
                                                                    '.mp4,.html,.svg '  # type: str
 
-
 def init(
         service: str = None,
         instance: str = None,

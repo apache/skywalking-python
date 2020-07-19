@@ -62,6 +62,7 @@ Environment Variable | Description | Default
 | `SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH` | The maximum length of the collected parameter, parameters longer than the specified length will be truncated | `512` |
 | `SW_IGNORE_SUFFIX` | If the operation name of the first span is included in this set, this segment should be ignored. | `.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg` |
 
+
 ## Supported Libraries
 
 There're some built-in plugins that support automatic instrumentation of Python libraries, the complete lists are as follow:
