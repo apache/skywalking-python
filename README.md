@@ -74,6 +74,7 @@ Library | Plugin Name
 | [requests](https://requests.readthedocs.io/en/master/) | `sw_requests` |
 | [Flask](https://flask.palletsprojects.com/en/1.1.x/) | `sw_flask` |
 | [PyMySQL](https://pymysql.readthedocs.io/en/latest/) | `sw_pymysql` |
+| [Django](https://www.djangoproject.com/) | `sw_django` |
 
 ## API
 
