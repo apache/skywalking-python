@@ -77,6 +77,7 @@ Library | Plugin Name
 | [Flask](https://flask.palletsprojects.com/en/1.1.x/) | `sw_flask` |
 | [PyMySQL](https://pymysql.readthedocs.io/en/latest/) | `sw_pymysql` |
 | [Django](https://www.djangoproject.com/) | `sw_django` |
+| [redis-py](https://github.com/andymccurdy/redis-py/) | `sw_redis` |
 
 ## API
 
