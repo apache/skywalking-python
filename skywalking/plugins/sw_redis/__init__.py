@@ -15,14 +15,11 @@
 # limitations under the License.
 #
 import logging
-import traceback
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
-from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
-from skywalking import config
 
 logger = logging.getLogger(__name__)
 
