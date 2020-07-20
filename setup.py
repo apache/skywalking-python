@@ -45,6 +45,7 @@ setup(
             "testcontainers",
             "Werkzeug",
             "pymysql",
+            "redis",
         ],
     },
     classifiers=[

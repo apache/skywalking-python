@@ -28,6 +28,7 @@ class Component(Enum):
     Requests = 7002
     PyMysql = 7003
     Django = 7004
+    Redis = 7005
 
 
 class Layer(Enum):
