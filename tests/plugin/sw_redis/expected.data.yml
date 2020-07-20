@@ -35,7 +35,7 @@ segmentItems:
                 value: 'SET'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7005
+            componentId: 7
             spanType: Exit
             peer: redis:6379
             skipAnalysis: false
@@ -53,7 +53,7 @@ segmentItems:
                 value: 'GET'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7005
+            componentId: 7
             spanType: Exit
             peer: redis:6379
             skipAnalysis: false
