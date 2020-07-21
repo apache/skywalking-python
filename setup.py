@@ -43,6 +43,7 @@ setup(
     extras_require={
         "test": [
             "testcontainers",
+            "pyyaml",
             "Werkzeug",
             "pymysql",
             "redis",

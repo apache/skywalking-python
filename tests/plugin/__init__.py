@@ -16,14 +16,22 @@
 #
 import inspect
 import os
+import sys
 import unittest
 from abc import ABC
 from collections import namedtuple
+from difflib import Differ
 from os.path import dirname
 
 import requests
+import yaml
 from requests import Response
 from testcontainers.compose import DockerCompose
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 HostPort = namedtuple('HostPort', 'host port')
 ServicePort = namedtuple('ServicePort', 'service port')
@@ -72,12 +80,28 @@ class BasePluginTest(unittest.TestCase, ABC):
             expected_file_name = os.path.join(dirname(inspect.getfile(self.__class__)), 'expected.data.yml')
 
         with open(expected_file_name) as expected_data_file:
+            expected_data = os.linesep.join(expected_data_file.readlines())
+
             response = requests.post(
                 url=self.__class__.url(self.__class__.collector_address(), path='/dataValidate'),
-                data=os.linesep.join(expected_data_file.readlines()),
+                data=expected_data,
             )
-            print('validate: ', response)
 
-        self.assertEqual(response.status_code, 200)
+            if response.status_code != 200:
+                res = requests.get(url=self.__class__.url(self.__class__.collector_address(), path='/receiveData'))
 
-        return response
+                actual_data = yaml.dump(yaml.load(res.content, Loader=Loader))
+
+                differ = Differ()
+                diff_list = list(differ.compare(
+                    actual_data.splitlines(keepends=True),
+                    yaml.dump(yaml.load(expected_data, Loader=Loader)).splitlines(keepends=True)
+                ))
+
+                print('diff list: ')
+
+                sys.stdout.writelines(diff_list)
+
+            self.assertEqual(response.status_code, 200)
+
+            return response
