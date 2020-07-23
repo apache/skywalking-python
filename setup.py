@@ -47,6 +47,7 @@ setup(
             "Werkzeug",
             "pymysql",
             "redis",
+            "tornado",
         ],
     },
     classifiers=[
