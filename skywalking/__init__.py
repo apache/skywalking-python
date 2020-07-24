@@ -30,6 +30,8 @@ class Component(Enum):
     Django = 7004
     Tornado = 7005
     Redis = 7
+    KafkaProducer = 40
+    KafkaConsumer = 41
 
 
 class Layer(Enum):
