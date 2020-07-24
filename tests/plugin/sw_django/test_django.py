@@ -30,7 +30,7 @@ class TestPlugin(BasePluginTest):
         cls.compose = DockerCompose(filepath=dirname(inspect.getfile(cls)))
         cls.compose.start()
 
-        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
+        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users?test=test1&test=test2&test2=test2'))
 
     def test_plugin(self):
         time.sleep(3)

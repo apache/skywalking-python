@@ -16,7 +16,7 @@
 #
 import logging
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
@@ -32,6 +32,9 @@ def install():
 
         _get_response = BaseHandler.get_response
         _handle_uncaught_exception = exception.handle_uncaught_exception
+
+        def params_tostring(params):
+            return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
 
         def _sw_get_response(this: BaseHandler, request):
             if request is None:
@@ -50,7 +53,13 @@ def install():
                 span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
 
                 span.tag(Tag(key=tags.HttpMethod, val=request.method))
-                span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri()))
+                span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
+
+                # you can get request parameters by `request.GET` even though client are using POST or other methods
+                if config.django_collect_http_params and request.GET:
+                    span.tag(Tag(key=tags.HttpParams,
+                                 val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
+
                 resp = _get_response(this, request)
                 span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
                 if resp.status_code >= 400:
