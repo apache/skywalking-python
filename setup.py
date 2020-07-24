@@ -43,10 +43,12 @@ setup(
     extras_require={
         "test": [
             "testcontainers",
+            "pyyaml",
             "Werkzeug",
             "pymysql",
             "redis",
             "kafka-python",
+            "tornado",
         ],
     },
     classifiers=[

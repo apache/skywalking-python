@@ -79,6 +79,7 @@ Library | Plugin Name
 | [Django](https://www.djangoproject.com/) | `sw_django` |
 | [redis-py](https://github.com/andymccurdy/redis-py/) | `sw_redis` |
 | [kafka-python](https://kafka-python.readthedocs.io/en/master/) | `sw_kafka` |
+| [tornado](https://www.tornadoweb.org/en/stable/) | `sw_tornado` |
 
 ## API
 
