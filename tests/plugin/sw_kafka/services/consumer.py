@@ -22,10 +22,6 @@ if __name__ == '__main__':
     config.logging_level = 'INFO'
     agent.start()
 
-    from flask import Flask, jsonify
-
-    app = Flask(__name__)
-
     topic = "skywalking"
     server_list = ["kafka-server:9092"]
     group_id = "skywalking"
