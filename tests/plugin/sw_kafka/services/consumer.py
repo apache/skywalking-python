@@ -36,6 +36,3 @@ if __name__ == '__main__':
     consumer.assign([partition])
     for msg in consumer:
         print(msg)
-
-
-
