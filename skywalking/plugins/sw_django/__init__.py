@@ -33,9 +33,6 @@ def install():
         _get_response = BaseHandler.get_response
         _handle_uncaught_exception = exception.handle_uncaught_exception
 
-        def params_tostring(params):
-            return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
-
         def _sw_get_response(this: BaseHandler, request):
             if request is None:
                 resp = _get_response(this, request)
@@ -79,3 +76,7 @@ def install():
         exception.handle_uncaught_exception = _sw_handle_uncaught_exception
     except Exception:
         logger.warning('failed to install plugin %s', __name__)
+
+
+def params_tostring(params):
+    return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
