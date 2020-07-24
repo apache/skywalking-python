@@ -15,19 +15,26 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+from skywalking import agent, config
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
-DbSqlParameters = 'db.sql.parameters'
-HttpParams = 'http.params'
-MqBroker = 'mq.broker'
-MqTopic = 'mq.topic'
-MqQueue = 'mq.queue'
+if __name__ == '__main__':
+    config.service_name = 'producer'
+    config.logging_level = 'INFO'
+    agent.start()
+
+    from flask import Flask, jsonify
+    from kafka import KafkaProducer
+
+    app = Flask(__name__)
+    producer = KafkaProducer(bootstrap_servers=['kafka-server:9092'], api_version=(1, 0, 1))
+
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        producer.send('skywalking', b'some_message_bytes')
+
+        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
+
+
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

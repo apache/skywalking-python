@@ -15,19 +15,31 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+from skywalking import config, agent
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+if __name__ == '__main__':
+    config.service_name = 'consumer'
+    config.logging_level = 'INFO'
+    agent.start()
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
-DbSqlParameters = 'db.sql.parameters'
-HttpParams = 'http.params'
-MqBroker = 'mq.broker'
-MqTopic = 'mq.topic'
-MqQueue = 'mq.queue'
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    topic = "skywalking"
+    server_list = ["kafka-server:9092"]
+    group_id = "skywalking"
+    client_id = "0"
+
+    from kafka import KafkaConsumer
+    from kafka import TopicPartition
+    consumer = KafkaConsumer(group_id=group_id,
+                             client_id=client_id,
+                             bootstrap_servers=server_list)
+    partition = TopicPartition(topic, int(client_id))
+    consumer.assign([partition])
+    for msg in consumer:
+        print(msg)
+
+
+

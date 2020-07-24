@@ -46,6 +46,7 @@ setup(
             "Werkzeug",
             "pymysql",
             "redis",
+            "kafka-python",
         ],
     },
     classifiers=[

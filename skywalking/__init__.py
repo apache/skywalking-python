@@ -29,6 +29,8 @@ class Component(Enum):
     PyMysql = 7003
     Django = 7004
     Redis = 7
+    KafkaProducer = 40
+    KafkaConsumer = 41
 
 
 class Layer(Enum):
