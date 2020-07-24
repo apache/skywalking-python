@@ -30,6 +30,12 @@ services:
       - 2181:2181
     networks:
       - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/2181"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+
   kafka-server:
     image: bitnami/kafka:2.1.1
     hostname: kafka-server
@@ -40,13 +46,16 @@ services:
       - KAFKA_BROKER_ID=1
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+    networks:
+      - beyond
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9092"]
       interval: 5s
       timeout: 60s
       retries: 120
-    networks:
-      - beyond
+    depends_on:
+      zookeeper-server:
+        condition: service_healthy
 
   producer:
     extends:
@@ -57,17 +66,18 @@ services:
     volumes:
       - ./services/producer.py:/app/producer.py
     command: ['bash', '-c', 'pip install flask && pip install kafka-python && python3 /app/producer.py']
-    depends_on:
-      collector:
-        condition: service_healthy
-      kafka-server:
-        condition: service_healthy
-
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090"]
       interval: 5s
       timeout: 60s
       retries: 120
+    depends_on:
+      collector:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+      consumer:
+        condition: service_healthy
 
   consumer:
     extends:
@@ -78,10 +88,13 @@ services:
     volumes:
       - ./services/consumer.py:/app/consumer.py
     command: ['bash', '-c', 'pip install flask && pip install kafka-python && python3 /app/consumer.py']
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ps -ef | grep /app/consumer | grep -v grep"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
     depends_on:
       collector:
-        condition: service_healthy
-      producer:
         condition: service_healthy
       kafka-server:
         condition: service_healthy
