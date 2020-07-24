@@ -33,60 +33,67 @@ def install():
 
         _send = KafkaProducer.send
         __poll_once = KafkaConsumer._poll_once
-
-        def _sw_send(this: KafkaProducer, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
-            peer = ";".join(this.config["bootstrap_servers"])
-            context = get_context()
-            carrier = Carrier()
-            with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer, carrier=carrier) as span:
-                span.layer = Layer.MQ
-                span.component = Component.KafkaProducer
-
-                if headers is None:
-                    headers = []
-                    for item in carrier:
-                        headers.append((item.key, item.val.encode("utf-8")))
-                else:
-                    for item in carrier:
-                        headers.append((item.key, item.val.encode("utf-8")))
-
-                try:
-                    res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
-                                timestamp_ms=timestamp_ms)
-                    span.tag(Tag(key=tags.MqBroker, val=peer))
-                    span.tag(Tag(key=tags.MqTopic, val=topic))
-                except BaseException as e:
-                    span.raised()
-                    raise e
-                return res
-
-        def _sw__poll_once(this: KafkaConsumer, timeout_ms, max_records, update_offsets=True):
-            res = __poll_once(this, timeout_ms, max_records, update_offsets=update_offsets)
-            if res:
-                brokers = ";".join(this.config["bootstrap_servers"])
-                context = get_context()
-                topics = ";".join(this._subscription.subscription or
-                                  [t.topic for t in this._subscription._user_assignment])
-                with context.new_entry_span(
-                        op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:
-                    for consumerRecords in res.values():
-                        for record in consumerRecords:
-                            carrier = Carrier()
-                            for item in carrier:
-                                for header in record.headers:
-                                    if item.key == header[0]:
-                                        item.val = str(header[1])
-
-                            span.extract(carrier)
-                        span.tag(Tag(key=tags.MqBroker, val=brokers))
-                        span.tag(Tag(key=tags.MqTopic, val=topics))
-                        span.layer = Layer.MQ
-                        span.component = Component.KafkaConsumer
-
-            return res
-
-        KafkaProducer.send = _sw_send
-        KafkaConsumer._poll_once = _sw__poll_once
+        KafkaProducer.send = _sw_send_func(_send)
+        KafkaConsumer._poll_once = _sw__poll_once_func(__poll_once)
 
     except Exception:
         logger.warning('failed to install plugin %s', __name__)
+
+
+def _sw__poll_once_func(__poll_once):
+    def _sw__poll_once(this, timeout_ms, max_records, update_offsets=True):
+        res = __poll_once(this, timeout_ms, max_records, update_offsets=update_offsets)
+        if res:
+            brokers = ";".join(this.config["bootstrap_servers"])
+            context = get_context()
+            topics = ";".join(this._subscription.subscription or
+                              [t.topic for t in this._subscription._user_assignment])
+            with context.new_entry_span(
+                    op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:
+                for consumerRecords in res.values():
+                    for record in consumerRecords:
+                        carrier = Carrier()
+                        for item in carrier:
+                            for header in record.headers:
+                                if item.key == header[0]:
+                                    item.val = str(header[1])
+
+                        span.extract(carrier)
+                    span.tag(Tag(key=tags.MqBroker, val=brokers))
+                    span.tag(Tag(key=tags.MqTopic, val=topics))
+                    span.layer = Layer.MQ
+                    span.component = Component.KafkaConsumer
+
+        return res
+
+    return _sw__poll_once
+
+
+def _sw_send_func(_send):
+    def _sw_send(this, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
+        peer = ";".join(this.config["bootstrap_servers"])
+        context = get_context()
+        carrier = Carrier()
+        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer, carrier=carrier) as span:
+            span.layer = Layer.MQ
+            span.component = Component.KafkaProducer
+
+            if headers is None:
+                headers = []
+                for item in carrier:
+                    headers.append((item.key, item.val.encode("utf-8")))
+            else:
+                for item in carrier:
+                    headers.append((item.key, item.val.encode("utf-8")))
+
+            try:
+                res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
+                            timestamp_ms=timestamp_ms)
+                span.tag(Tag(key=tags.MqBroker, val=peer))
+                span.tag(Tag(key=tags.MqTopic, val=topic))
+            except BaseException as e:
+                span.raised()
+                raise e
+            return res
+
+    return _sw_send
