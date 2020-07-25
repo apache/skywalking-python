@@ -23,4 +23,4 @@ echo "Virtual env created"
 
 ../../venv/bin/python -m pip install --upgrade pip
 echo "Pip upgrade complete. Installing packages from requirements.txt"
-../../venv/bin/python -m pip install ../../requirements.txt
+../../venv/bin/python -m pip install -r ../../requirements.txt
