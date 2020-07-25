@@ -27,6 +27,7 @@ from django.http import JsonResponse
 
 config.service_name = "consumer"
 config.logging_level = "DEBUG"
+config.django_collect_http_params = True
 agent.start()
 
 

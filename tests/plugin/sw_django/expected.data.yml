@@ -26,6 +26,12 @@ segmentItems:
             parentSpanId: -1
             spanId: 0
             spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7004
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
             tags:
               - key: http.method
                 value: POST
@@ -42,12 +48,6 @@ segmentItems:
                 parentServiceInstance: not null
                 parentService: consumer
                 traceId: not null
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7004
-            spanType: Entry
-            peer: not null
-            skipAnalysis: false
   - serviceName: consumer
     segmentSize: 1
     segments:
@@ -58,6 +58,12 @@ segmentItems:
             parentSpanId: 0
             spanId: 1
             spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7002
+            spanType: Exit
+            peer: provider:9091
+            skipAnalysis: false
             tags:
               - key: http.method
                 value: POST
@@ -65,27 +71,23 @@ segmentItems:
                 value: http://provider:9091/users
               - key: status.code
                 value: '200'
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7002
-            spanType: Exit
-            peer: provider:9091
-            skipAnalysis: false
           - operationName: /users
             operationId: 0
             parentSpanId: -1
             spanId: 0
             spanLayer: Http
-            tags:
-              - key: http.method
-                value: GET
-              - key: url
-                value: http://0.0.0.0:9090/users
-              - key: status.code
-                value: '200'
             startTime: gt 0
             endTime: gt 0
             componentId: 7004
             spanType: Entry
             peer: not null
             skipAnalysis: false
+            tags:
+              - key: http.method
+                value: GET
+              - key: url
+                value: http://0.0.0.0:9090/users
+              - key: http.params
+                value: "test=[test1,test2]\ntest2=[test2]"
+              - key: status.code
+                value: '200'

@@ -16,7 +16,7 @@
 #
 import logging
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
@@ -50,7 +50,13 @@ def install():
                 span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
 
                 span.tag(Tag(key=tags.HttpMethod, val=request.method))
-                span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri()))
+                span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
+
+                # you can get request parameters by `request.GET` even though client are using POST or other methods
+                if config.django_collect_http_params and request.GET:
+                    span.tag(Tag(key=tags.HttpParams,
+                                 val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
+
                 resp = _get_response(this, request)
                 span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
                 if resp.status_code >= 400:
@@ -70,3 +76,7 @@ def install():
         exception.handle_uncaught_exception = _sw_handle_uncaught_exception
     except Exception:
         logger.warning('failed to install plugin %s', __name__)
+
+
+def params_tostring(params):
+    return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])

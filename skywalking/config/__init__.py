@@ -34,6 +34,8 @@ ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,
 flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') and \
                                     os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
+django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') and \
+                                    os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
 
 
 def init(
