@@ -51,6 +51,7 @@ setup(
             "redis",
             "kafka-python",
             "tornado",
+            "pika",
         ],
     },
     classifiers=[

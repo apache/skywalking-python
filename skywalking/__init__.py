@@ -32,6 +32,8 @@ class Component(Enum):
     Redis = 7
     KafkaProducer = 40
     KafkaConsumer = 41
+    RabbitmqProducer = 52
+    RabbitmqConsumer = 53
 
 
 class Layer(Enum):
