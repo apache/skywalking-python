@@ -1,0 +1,91 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+segmentItems:
+  - serviceName: producer
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: RabbitMQ/Topic/test/Queue/test/Producer
+            operationId: 0
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: MQ
+            tags:
+              - key: mq.broker
+                value: 'rabbitmq-server:5672'
+              - key: mq.topic
+                value: test
+              - key: mq.queue
+                value: test
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 52
+            spanType: Exit
+            peer: rabbitmq-server:5672
+            skipAnalysis: false
+          - operationName: /users
+            operationId: 0
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            tags:
+              - key: http.method
+                value: GET
+              - key: url
+                value: http://0.0.0.0:9090/users
+              - key: status.code
+                value: '200'
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7001
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+  - serviceName: consumer
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: RabbitMQ/Topic/test/Queue/test/Consumer
+            operationId: 0
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: MQ
+            tags:
+              - key: mq.broker
+                value: 'rabbitmq-server:5672'
+              - key: mq.topic
+                value: test
+              - key: mq.queue
+                value: test
+            refs:
+              - parentEndpoint: RabbitMQ/Topic/test/Queue/test/Producer
+                networkAddress: 'rabbitmq-server:5672'
+                refType: CrossProcess
+                parentSpanId: 1
+                parentTraceSegmentId: not null
+                parentServiceInstance: not null
+                parentService: producer
+                traceId: not null
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 53
+            spanType: Entry
+            peer: ''
+            skipAnalysis: false
