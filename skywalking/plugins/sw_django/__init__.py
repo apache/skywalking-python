@@ -33,7 +33,7 @@ def install():
         _get_response = BaseHandler.get_response
         _handle_uncaught_exception = exception.handle_uncaught_exception
 
-        def _sw_get_response(this: BaseHandler, request):
+        def _sw_get_response(this, request):
             if request is None:
                 resp = _get_response(this, request)
                 return resp
@@ -41,8 +41,12 @@ def install():
             context = get_context()
             carrier = Carrier()
             for item in carrier:
-                if item.key.capitalize() in request.headers:
-                    item.val = request.headers[item.key.capitalize()]
+                # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
+                # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
+                # https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest.META
+                sw_http_header_key = 'HTTP_%s' % item.key.upper().replace('-', '_')
+                if sw_http_header_key in request.META:
+                    item.val = request.META[sw_http_header_key]
 
             with context.new_entry_span(op=request.path, carrier=carrier) as span:
                 span.layer = Layer.Http
@@ -61,7 +65,6 @@ def install():
                 span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
                 if resp.status_code >= 400:
                     span.error_occurred = True
-
                 return resp
 
         def _sw_handle_uncaught_exception(request, resolver, exc_info):
