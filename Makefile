@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+VERSION ?= latest
+
 .PHONY: license
 
 setup:
@@ -59,4 +61,11 @@ upload: package
 clean:
 	rm -rf browser common language_agent management profile service_mesh_probe
 	rm -rf skywalking_python.egg-info dist build
-	find . -type d -name  "__pycache__" -exec rm -r {} +
+	rm -rf skywalking-python*.tgz*
+	find . -name "__pycache__" -exec rm -r {} +
+	find . -name "*.pyc" -exec rm -r {} +
+
+release: clean lint license
+	-tar -zcvf skywalking-python-src-$(VERSION).tgz *
+	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
+	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.tgz.sha512
