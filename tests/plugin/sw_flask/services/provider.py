@@ -24,12 +24,16 @@ if __name__ == '__main__':
     config.logging_level = 'DEBUG'
     agent.start()
 
-    from flask import Flask, jsonify
+    from flask import Flask, jsonify, request
 
     app = Flask(__name__)
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
+        print(request.headers)
+        from skywalking.trace.context import get_context
+        print(get_context().get_correlation("test"))
+        print(get_context().get_correlation("test2"))
         time.sleep(0.5)
         return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
 

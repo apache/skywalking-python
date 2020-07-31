@@ -31,8 +31,12 @@ if __name__ == '__main__':
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
+        from skywalking.trace.context import get_context
+        get_context().put_correlation("test", "test1")
+        get_context().put_correlation("test2", "test2")
         res = requests.post("http://provider:9091/users")
         return jsonify(res.json())
+
 
     PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)

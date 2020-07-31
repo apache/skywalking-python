@@ -33,6 +33,7 @@ class SpanContext(object):
         self.spans = []  # type: List[Span]
         self.segment = Segment()  # type: Segment
         self._sid = Counter()
+        self._correlation = {}  # type: dict
 
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
@@ -118,12 +119,28 @@ class SpanContext(object):
 
         return None
 
+    def get_correlation(self, key):
+        if key in self._correlation:
+            return self._correlation[key]
+        return None
+
+    def put_correlation(self, key, value):
+        if key is None or value is None:
+            return
+        if len(value) > config.correlation_value_max_length:
+            return
+        if len(self._correlation) > config.correlation_element_max_number:
+            return
+
+        self._correlation[key] = value
+
 
 class NoopContext(SpanContext):
     def __init__(self):
         super().__init__()
         self._depth = 0
         self._noop_span = NoopSpan(self, kind=Kind.Local)
+        self.correlation = {}  # type: dict
 
     def new_local_span(self, op: str) -> Span:
         self._depth += 1
@@ -131,10 +148,15 @@ class NoopContext(SpanContext):
 
     def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
         self._depth += 1
+        if carrier is not None:
+            self._noop_span.extract(carrier)
         return self._noop_span
 
     def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
         self._depth += 1
+        if carrier is not None:
+            self._noop_span.inject(carrier)
+
         return self._noop_span
 
     def stop(self, span: Span) -> bool:
