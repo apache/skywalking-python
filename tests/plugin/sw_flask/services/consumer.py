@@ -31,6 +31,8 @@ if __name__ == '__main__':
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
+        from skywalking.trace.context import get_context
+        get_context().put_correlation("correlation", "correlation")
         res = requests.post("http://provider:9091/users")
         return jsonify(res.json())
 

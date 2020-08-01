@@ -109,7 +109,7 @@ class Span(ABC):
             return self
 
         self.context.segment.relate(ID(carrier.trace_id))
-
+        self.context._correlation = carrier.correlation_carrier.correlation
         return self
 
     def __enter__(self):
@@ -213,6 +213,7 @@ class ExitSpan(StackedSpan):
         carrier.service_instance = config.service_instance
         carrier.endpoint = self.op
         carrier.client_address = self.peer
+        carrier.correlation_carrier.correlation = self.context._correlation
         return self
 
     def start(self):
@@ -225,5 +226,10 @@ class NoopSpan(Span):
     def __init__(self, context: 'SpanContext' = None, kind: 'Kind' = None):
         Span.__init__(self, context=context, kind=kind)
 
+    def extract(self, carrier: 'Carrier') -> 'Span':
+        if carrier is not None:
+            self.context._correlation = carrier.correlation_carrier.correlation
+
     def inject(self, carrier: 'Carrier') -> 'Span':
+        carrier.correlation_carrier.correlation = self.context._correlation
         return self

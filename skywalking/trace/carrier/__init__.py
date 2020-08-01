@@ -17,6 +17,7 @@
 
 from typing import List
 
+from skywalking import config
 from skywalking.utils.lang import b64encode, b64decode
 
 
@@ -52,7 +53,8 @@ class Carrier(CarrierItem):
         self.service_instance = ''  # type: str
         self.endpoint = ''  # type: str
         self.client_address = ''  # type: str
-        self.items = [self]  # type: List[CarrierItem]
+        self.correlation_carrier = SW8CorrelationCarrier()
+        self.items = [self.correlation_carrier, self]  # type: List[CarrierItem]
         self.__iter_index = 0  # type: int
 
     @property
@@ -105,3 +107,32 @@ class Carrier(CarrierItem):
         n = self.items[self.__iter_index]
         self.__iter_index += 1
         return n
+
+
+class SW8CorrelationCarrier(CarrierItem):
+    def __init__(self):
+        super(SW8CorrelationCarrier, self).__init__(key='sw8-correlation')
+        self.correlation = {}  # type: dict
+
+    @property
+    def val(self) -> str:
+        if self.correlation is None or len(self.correlation) == 0:
+            return ""
+
+        return ','.join([
+            b64encode(k) + ":" + b64encode(v)
+            for k, v in self.correlation.items()
+        ])
+
+    @val.setter
+    def val(self, val: str):
+        self.__val = val
+        if not val:
+            return
+        for per in val.split(","):
+            if len(self.correlation) > config.correlation_element_max_number:
+                break
+            parts = per.split(":")
+            if len(parts) != 2:
+                continue
+            self.correlation[b64decode(parts[0])] = b64decode(parts[1])
