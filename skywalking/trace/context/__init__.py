@@ -125,7 +125,10 @@ class SpanContext(object):
         return None
 
     def put_correlation(self, key, value):
-        if key is None or value is None:
+        if key is None:
+            return
+        if value is None:
+            self._correlation.pop(key, value)
             return
         if len(value) > config.correlation_value_max_length:
             return
