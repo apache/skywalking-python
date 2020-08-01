@@ -24,7 +24,7 @@ if __name__ == '__main__':
     config.logging_level = 'DEBUG'
     agent.start()
 
-    from flask import Flask, jsonify, request
+    from flask import Flask, jsonify
 
     app = Flask(__name__)
 
