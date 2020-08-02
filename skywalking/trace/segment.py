@@ -26,6 +26,7 @@ from skywalking.utils.lang import tostring
 if TYPE_CHECKING:
     from skywalking.trace.carrier import Carrier
     from skywalking.trace.span import Span
+    from skywalking.trace.snapshot import Snapshot
 
 
 class SegmentRef(object):
