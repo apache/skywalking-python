@@ -20,8 +20,10 @@ import threading
 from typing import List
 
 from skywalking import agent, config
+from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.segment import Segment
+from skywalking.trace.segment import Segment, SegmentRef
+from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
 
@@ -117,7 +119,7 @@ class SpanContext(object):
         if self.spans:
             return self.spans[len(self.spans) - 1]
 
-        return None
+        raise Exception("No active span.")
 
     def get_correlation(self, key):
         if key in self._correlation:
@@ -136,6 +138,28 @@ class SpanContext(object):
             return
 
         self._correlation[key] = value
+
+    def capture(self):
+        if len(self.spans) == 0:
+            raise Exception("Spans can't be empty. ")
+
+        return Snapshot(
+            segment_id=str(self.segment.segment_id),
+            span_id=self.active_span().sid,
+            trace_id=self.segment.related_traces[0],
+            endpoint=self.spans[0].op,
+            correlation=self._correlation,
+        )
+
+    def continued(self, snapshot: 'Snapshot'):
+        if snapshot is None:
+            raise Exception("Snapshot can't be none.")
+        if not snapshot.is_from_current(self) and snapshot.is_valid():
+            ref = SegmentRef.build_ref(snapshot)
+            span = self.active_span()
+            span.refs.append(ref)
+            self.segment.relate(ID(ref.trace_id))
+            self._correlation.update(snapshot.correlation)
 
 
 class NoopContext(SpanContext):
@@ -168,6 +192,18 @@ class NoopContext(SpanContext):
 
     def active_span(self):
         return self._noop_span
+
+    def capture(self):
+        return Snapshot(
+            segment_id=None,
+            span_id=-1,
+            trace_id=None,
+            endpoint=None,
+            correlation=self._correlation,
+        )
+
+    def continued(self, snapshot: 'Snapshot'):
+        self._correlation.update(snapshot.correlation)
 
 
 _thread_local = threading.local()

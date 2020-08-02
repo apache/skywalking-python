@@ -18,6 +18,8 @@
 import time
 from typing import List, TYPE_CHECKING
 
+from skywalking import config
+
 from skywalking.trace import ID
 from skywalking.utils.lang import tostring
 
@@ -27,8 +29,8 @@ if TYPE_CHECKING:
 
 
 class SegmentRef(object):
-    def __init__(self, carrier: 'Carrier'):
-        self.ref_type = 'CrossProcess'  # type: str
+    def __init__(self, carrier: 'Carrier', ref_type: str = 'CrossProcess'):
+        self.ref_type = ref_type  # type: str
         self.trace_id = carrier.trace_id  # type: str
         self.segment_id = carrier.segment_id  # type: str
         self.span_id = int(carrier.span_id)  # type: int
@@ -48,6 +50,18 @@ class SegmentRef(object):
             self.service_instance == other.service_instance and \
             self.endpoint == other.endpoint and \
             self.client_address == other.client_address
+
+    @classmethod
+    def build_ref(cls, snapshot: 'Snapshot'):
+        from skywalking.trace.carrier import Carrier
+        carrier = Carrier()
+        carrier.trace_id = str(snapshot.trace_id)
+        carrier.segment_id = str(snapshot.segment_id)
+        carrier.endpoint = snapshot.endpoint
+        carrier.span_id = snapshot.span_id
+        carrier.service = config.service_name
+        carrier.service_instance = config.service_instance
+        return SegmentRef(carrier, ref_type="CrossThread")
 
 
 class _NewID(ID):

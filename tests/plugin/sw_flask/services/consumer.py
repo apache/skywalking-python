@@ -29,12 +29,26 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
+
     @app.route("/users", methods=["POST", "GET"])
     def application():
         from skywalking.trace.context import get_context
         get_context().put_correlation("correlation", "correlation")
+
+        def post(snap):
+            with get_context().new_local_span("/test") as span:
+                get_context().continued(snap)
+                requests.post("http://provider:9091/users")
+
+        snapshot = get_context().capture()
+
+        from threading import Thread
+        t = Thread(target=post, args=(snapshot,))
+        t.start()
+
         res = requests.post("http://provider:9091/users")
         return jsonify(res.json())
+
 
     PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)
