@@ -33,7 +33,23 @@ if __name__ == '__main__':
     def application():
         from skywalking.trace.context import get_context
         get_context().put_correlation("correlation", "correlation")
+
+        def post(snap):
+            with get_context().new_local_span("/test"):
+                get_context().continued(snap)
+                requests.post("http://provider:9091/users")
+
+        snapshot = get_context().capture()
+
+        from threading import Thread
+        t = Thread(target=post, args=(snapshot,))
+        t.start()
+        t.join()
+
         res = requests.post("http://provider:9091/users")
+
+        t.join()
+
         return jsonify(res.json())
 
     PORT = 9090

@@ -88,7 +88,7 @@ class GrpcProtocol(Protocol):
                             value=str(tag.val),
                         ) for tag in span.tags],
                         refs=[SegmentReference(
-                            refType=0,
+                            refType=0 if ref.ref_type == "CrossProcess" else 1,
                             traceId=ref.trace_id,
                             parentTraceSegmentId=ref.segment_id,
                             parentSpanId=ref.span_id,
