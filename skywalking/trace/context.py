@@ -119,7 +119,7 @@ class SpanContext(object):
         if self.spans:
             return self.spans[len(self.spans) - 1]
 
-        raise Exception("No active span.")
+        return None
 
     def get_correlation(self, key):
         if key in self._correlation:
@@ -141,7 +141,7 @@ class SpanContext(object):
 
     def capture(self):
         if len(self.spans) == 0:
-            raise Exception("Spans can't be empty. ")
+            return None
 
         return Snapshot(
             segment_id=str(self.segment.segment_id),
@@ -153,7 +153,7 @@ class SpanContext(object):
 
     def continued(self, snapshot: 'Snapshot'):
         if snapshot is None:
-            raise Exception("Snapshot can't be none.")
+            return None
         if not snapshot.is_from_current(self) and snapshot.is_valid():
             ref = SegmentRef.build_ref(snapshot)
             span = self.active_span()
