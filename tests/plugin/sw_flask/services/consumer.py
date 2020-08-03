@@ -44,6 +44,7 @@ if __name__ == '__main__':
         from threading import Thread
         t = Thread(target=post, args=(snapshot,))
         t.start()
+        t.join()
 
         res = requests.post("http://provider:9091/users")
         return jsonify(res.json())
