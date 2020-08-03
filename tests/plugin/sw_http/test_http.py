@@ -28,7 +28,7 @@ class TestPlugin(BasePluginTest):
     def test_plugin(self):
         print('traffic: ', requests.post(url=self.url(('consumer', '9090'))))
 
-        time.sleep(3)
+        time.sleep(10)
 
         self.validate()
 
