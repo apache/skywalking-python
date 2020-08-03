@@ -46,6 +46,9 @@ if __name__ == '__main__':
         t.start()
 
         res = requests.post("http://provider:9091/users")
+
+        t.join()
+
         return jsonify(res.json())
 
     PORT = 9090

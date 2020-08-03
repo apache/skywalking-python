@@ -33,7 +33,7 @@ class TestPlugin(BasePluginTest):
         cls.compose.wait_for(cls.url(('consumer', '9090'), 'users?test=test1&test=test2&test2=test2'))
 
     def test_plugin(self):
-        time.sleep(5)
+        time.sleep(3)
 
         self.validate()
         response = requests.get(TestPlugin.url(('consumer', '9090'), 'users'))
