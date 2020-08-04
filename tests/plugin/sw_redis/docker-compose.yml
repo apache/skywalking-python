@@ -70,5 +70,6 @@ services:
       provider:
         condition: service_healthy
 
+
 networks:
   beyond:

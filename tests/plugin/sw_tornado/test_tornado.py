@@ -33,7 +33,7 @@ class TestPlugin(BasePluginTest):
         cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
 
     def test_plugin(self):
-        time.sleep(3)
+        time.sleep(10)
 
         self.validate()
 
