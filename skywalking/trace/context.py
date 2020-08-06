@@ -25,6 +25,7 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
+from skywalking.utils.ant_matcher import fast_path_match
 from skywalking.utils.counter import Counter
 
 logger = logging.getLogger(__name__)
@@ -98,6 +99,14 @@ class SpanContext(object):
                 context=NoopContext(),
                 kind=kind,
             )
+        if config.trace_ignore:
+            for pattern in config.trace_ignore_path:
+                if fast_path_match(pattern, op):
+                    return NoopSpan(
+                        context=NoopContext(),
+                        kind=kind,
+                    )
+
         return None
 
     def start(self, span: Span):
