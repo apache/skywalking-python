@@ -41,6 +41,9 @@ django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') 
                                     os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
 correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')  # type: int
+trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
+                       os.getenv('SW_TRACE_IGNORE') == 'True' else False   # type: bool
+trace_ignore_path = (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')  # type: List[str]
 
 
 def init(
