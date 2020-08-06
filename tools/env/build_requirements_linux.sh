@@ -17,8 +17,10 @@
 
 #!/bin/sh
 
+root_dir=$(dirname "$0")/../../
+
 echo "Building requirements.txt"
 
-../../venv/bin /python -m pip freeze > ../../requirements.txt
+${root_dir}/venv/bin/python -m pip freeze > ${root_dir}/requirements.txt
 
 echo "requirements.txt created"

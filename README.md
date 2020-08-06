@@ -36,7 +36,7 @@ Refer to the [FAQ](docs/FAQ.md#q-how-to-build-from-sources).
 
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
-> If you want to try out the latest features that're not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
 
 ```python
 from skywalking import agent, config
@@ -45,47 +45,13 @@ config.init(collector='127.0.0.1:11800', service='your awesome service')
 agent.start()
 ```
 
-Alternatively, you can also pass the configurations via environment variables and you don't need to call `config.init`.
+Alternatively, you can also pass the configurations via environment variables (such as `SW_AGENT_NAME`, `SW_AGENT_COLLECTOR_BACKEND_SERVICES`, etc.) so that you don't need to call `config.init`.
 
-The supported environment variables are as follows:
-
-Environment Variable | Description | Default
-| :--- | :--- | :--- |
-| `SW_AGENT_NAME` | The name of the Python service | `Python Service Name` |
-| `SW_AGENT_INSTANCE` | The name of the Python service instance | Randomly generated |
-| `SW_AGENT_COLLECTOR_BACKEND_SERVICES` | The backend OAP server address | `127.0.0.1:11800` |
-| `SW_AGENT_PROTOCOL` | The protocol to communicate with the backend OAP, `http` or `grpc`, **we highly suggest using `grpc` in production as it's well optimized than `http`** | `grpc` |
-| `SW_AGENT_AUTHENTICATION` | The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap-server/server-bootstrap/src/main/resources/application.yml#L155-L158). | not set |
-| `SW_AGENT_LOGGING_LEVEL` | The logging level, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` | `INFO` |
-| `SW_AGENT_DISABLE_PLUGINS` | The name patterns in CSV pattern, plugins whose name matches one of the pattern won't be installed | `''` |
-| `SW_MYSQL_TRACE_SQL_PARAMETERS` | Indicates whether to collect the sql parameters or not | `False` |
-| `SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH` | The maximum length of the collected parameter, parameters longer than the specified length will be truncated | `512` |
-| `SW_IGNORE_SUFFIX` | If the operation name of the first span is included in this set, this segment should be ignored. | `.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg` |
-| `SW_FLASK_COLLECT_HTTP_PARAMS`| This config item controls that whether the Flask plugin should collect the parameters of the request.| `false` |
-| `SW_DJANGO_COLLECT_HTTP_PARAMS`| This config item controls that whether the Django plugin should collect the parameters of the request.| `false` |
-| `SW_HTTP_PARAMS_LENGTH_THRESHOLD`| When `COLLECT_HTTP_PARAMS` is enabled, how many characters to keep and send to the OAP backend, use negative values to keep and send the complete parameters, NB. this config item is added for the sake of performance.  | `1024` |
-| `SW_CORRELATION_ELEMENT_MAX_NUMBER`|Max element count of the correlation context.| `3` |
-| `SW_CORRELATION_VALUE_MAX_LENGTH`| Max value length of correlation context element.| `128` |
-| `SW_TRACE_IGNORE`| This config item controls that whether the trace should be ignore | `false` |
-| `SW_TRACE_IGNORE_PATH`| You can setup multiple URL path patterns, The endpoints match these patterns wouldn't be traced. the current matching rules follow Ant Path match style , like /path/*, /path/**, /path/?.| `''` |
-
+All supported environment variables can be found [here](docs/EnvVars.md)
 
 ## Supported Libraries
 
-There're some built-in plugins that support automatic instrumentation of Python libraries, the complete lists are as follow:
-
-Library | Plugin Name
-| :--- | :--- |
-| [http.server](https://docs.python.org/3/library/http.server.html) | `sw_http_server` |
-| [urllib.request](https://docs.python.org/3/library/urllib.request.html) | `sw_urllib_request` |
-| [requests](https://requests.readthedocs.io/en/master/) | `sw_requests` |
-| [Flask](https://flask.palletsprojects.com/en/1.1.x/) | `sw_flask` |
-| [PyMySQL](https://pymysql.readthedocs.io/en/latest/) | `sw_pymysql` |
-| [Django](https://www.djangoproject.com/) | `sw_django` |
-| [redis-py](https://github.com/andymccurdy/redis-py/) | `sw_redis` |
-| [kafka-python](https://kafka-python.readthedocs.io/en/master/) | `sw_kafka` |
-| [tornado](https://www.tornadoweb.org/en/stable/) | `sw_tornado` |
-| [pika](https://pika.readthedocs.io/en/stable/) | `sw_rabbitmq` |
+There are some built-in plugins (such as `http.server`, `Flask`, `Django` etc.) that support automatic instrumentation of Python libraries, the complete lists can be found [here](docs/Plugins.md)
 
 ## API
 
@@ -139,26 +105,13 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
     some_method()
 ```
 
+## Contributing
+
+Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/Developer.md).
+
 ## FAQs
 
 Check [the FAQ page](docs/FAQ.md) or add the FAQs there.
-
-## For Developers
-
-### Steps to get an operational virtual environment:
-
-1. `git clone https://github.com/apache/skywalking-python.git`
-2. `cd skywalking-python/tools/env` (*make sure you actually go into the directory since the scripts use relative paths*)
-3. Run the script for your relevant OS to create a virtual environment folder in the project root (*skywalking-python/venv*) and install all the necessary requirements
-
-**Make sure that when the `python` command is executed on your workstation, the binary it references is python 3.5 or newer!**
-
-### Steps after contributing
-
-If your PR introduces the need for a new non-standard library which needs to be pulled via pip or if it removes the need for a previously-used library:
-1. navigate to `/path/to/skywalking/agent/tools/env`
-2. Execute the `build_requirements` script relevant to your OS.
-3. Double check the `requirements.txt` file in the project root to ensure that the changes have been reflected. 
 
 ## License
 Apache 2.0

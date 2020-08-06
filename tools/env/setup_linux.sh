@@ -17,10 +17,18 @@
 
 #!/bin/sh
 
+root_dir=$(dirname "$0")/../../
+
 echo "Creating virtual environment"
-python3 -m venv '../../venv'
+
+python3 -m venv "${root_dir}/venv"
+
 echo "Virtual env created"
 
-../../venv/bin/python -m pip install --upgrade pip
+source ${root_dir}/venv/bin/activate
+
+${root_dir}/venv/bin/python -m pip install --upgrade pip
+
 echo "Pip upgrade complete. Installing packages from requirements.txt"
-../../venv/bin/python -m pip install -r ../../requirements.txt
+
+${root_dir}/venv/bin/python -m pip install -r ${root_dir}/requirements.txt
