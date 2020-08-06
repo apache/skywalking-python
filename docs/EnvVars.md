@@ -17,3 +17,5 @@ Environment Variable | Description | Default
 | `SW_HTTP_PARAMS_LENGTH_THRESHOLD`| When `COLLECT_HTTP_PARAMS` is enabled, how many characters to keep and send to the OAP backend, use negative values to keep and send the complete parameters, NB. this config item is added for the sake of performance.  | `1024` |
 | `SW_CORRELATION_ELEMENT_MAX_NUMBER`|Max element count of the correlation context.| `3` |
 | `SW_CORRELATION_VALUE_MAX_LENGTH`| Max value length of correlation context element.| `128` |
+| `SW_TRACE_IGNORE`| This config item controls that whether the trace should be ignore | `false` |
+| `SW_TRACE_IGNORE_PATH`| You can setup multiple URL path patterns, The endpoints match these patterns wouldn't be traced. the current matching rules follow Ant Path match style , like /path/*, /path/**, /path/?.| `''` |
