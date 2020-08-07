@@ -19,6 +19,7 @@ MarkupSafe==1.1.1
 packaging==20.4
 pika==1.1.0
 protobuf==3.12.4
+pymongo==3.11.0
 PyMySQL==0.10.0
 pyparsing==2.4.7
 pytz==2020.1
