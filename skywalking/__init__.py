@@ -30,6 +30,7 @@ class Component(Enum):
     Django = 7004
     Tornado = 7005
     Redis = 7
+    MongoDB = 9
     KafkaProducer = 40
     KafkaConsumer = 41
     RabbitmqProducer = 52

@@ -12,3 +12,4 @@ Library | Plugin Name
 | [kafka-python](https://kafka-python.readthedocs.io/en/master/) | `sw_kafka` |
 | [tornado](https://www.tornadoweb.org/en/stable/) | `sw_tornado` |
 | [pika](https://pika.readthedocs.io/en/stable/) | `sw_rabbitmq` |
+| [pymongo](https://pymongo.readthedocs.io/en/stable/) | `sw_pymongo` |
