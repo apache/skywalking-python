@@ -52,6 +52,7 @@ setup(
             "kafka-python",
             "tornado",
             "pika",
+            "pymongo",
         ],
     },
     classifiers=[
