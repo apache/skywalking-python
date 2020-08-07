@@ -62,6 +62,7 @@ def inject_socket_info(SocketInfo):
     _command = SocketInfo.command
 
     def _sw_command(this: SocketInfo, dbname, spec, *args, **kwargs):
+        # pymongo sends `ismaster` command continuously. ignore it.
         if spec.get("ismaster") is None:
             address = this.sock.getpeername()
             peer = "%s:%s" % address
@@ -71,7 +72,6 @@ def inject_socket_info(SocketInfo):
             operation = list(spec.keys())[0]
             sw_op = operation.capitalize() + "Operation"
             with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, carrier=carrier) as span:
-                # execute normal func
                 try:
                     result = _command(this, dbname, spec, *args, **kwargs)
 
