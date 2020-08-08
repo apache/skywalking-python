@@ -86,7 +86,7 @@ with context.new_local_span(op='https://github.com/apache') as span:
 from time import sleep
 
 from skywalking import Component
-from skywalking.decorators import trace
+from skywalking.decorators import trace, runnable
 from skywalking.trace.context import SpanContext, get_context
 
 @trace()  # the operation name is the method name('some_other_method') by default
@@ -97,6 +97,15 @@ def some_other_method():
 @trace(op='awesome')  # customize the operation name to 'awesome'
 def some_method():
     some_other_method()
+
+
+@runnable() # cross thread propagation
+def some_method(): 
+    some_other_method()
+
+from threading import Thread
+t = Thread(target=some_method)
+t.start()
 
 
 context: SpanContext = get_context()
