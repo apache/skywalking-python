@@ -44,3 +44,30 @@ def trace(
         return wrapper
 
     return decorator
+
+
+def runnable(
+        op: str = None,
+        layer: Layer = Layer.Unknown,
+        component: Component = Component.Unknown,
+):
+    def decorator(func):
+        snapshot = get_context().capture()
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            _op = op or "Thread/"+func.__name__
+            context = get_context()
+            with context.new_local_span(op=_op) as span:
+                context.continued(snapshot)
+                span.layer = layer
+                span.component = component
+                try:
+                    func(*args, **kwargs)
+                except Exception:
+                    span.raised()
+                    raise
+
+        return wrapper
+
+    return decorator
