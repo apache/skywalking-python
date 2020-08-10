@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+from multiprocessing import Process
+
+from skywalking import config, agent
+
+
 class SwProcess(Process):
 
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, *,
@@ -23,8 +28,12 @@ class SwProcess(Process):
         self._sw_config = config.serialize()
 
     def run(self):
+        print(config.trace_ignore)
+        print(config.service_name)
+        print(config.collector_address)
         if agent.started() is False:
+            print("startttt-----------------")
             config.deserialize(self._sw_config)
             agent.start()
-
+        print(self._sw_config)
         super(SwProcess, self).run()

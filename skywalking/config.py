@@ -35,14 +35,14 @@ pymongo_parameters_max_length = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH'
 ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,' \
                                                  '.mp4,.html,.svg '  # type: str
 flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
+                                    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
 django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
+                                     os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
 correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')  # type: int
 trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
-                       os.getenv('SW_TRACE_IGNORE') == 'True' else False   # type: bool
+                       os.getenv('SW_TRACE_IGNORE') == 'True' else False  # type: bool
 trace_ignore_path = (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')  # type: List[str]
 
 
@@ -67,3 +67,65 @@ def init(
 
     global authentication
     authentication = token or authentication
+
+
+def serialize():
+    return {
+        "service_name": service_name,
+        "collector_address": collector_address,
+        "protocol": protocol,
+        "authentication": authentication,
+        "logging_level": logging_level,
+        "disable_plugins": disable_plugins,
+        "mysql_trace_sql_parameters": mysql_trace_sql_parameters,
+        "mysql_sql_parameters_max_length": mysql_sql_parameters_max_length,
+        "pymongo_trace_parameters": pymongo_trace_parameters,
+        "pymongo_parameters_max_length": pymongo_parameters_max_length,
+        "ignore_suffix": ignore_suffix,
+        "flask_collect_http_params": flask_collect_http_params,
+        "http_params_length_threshold": http_params_length_threshold,
+        "django_collect_http_params": django_collect_http_params,
+        "correlation_element_max_number": correlation_element_max_number,
+        "correlation_value_max_length": correlation_value_max_length,
+        "trace_ignore": trace_ignore,
+        "trace_ignore_path": trace_ignore_path
+    }
+
+
+def deserialize(data):
+    global service_name
+    service_name = data["service_name"]
+    global collector_address
+    collector_address = data["collector_address"]
+    global protocol
+    protocol = data["protocol"]
+    global authentication
+    authentication = data["authentication"]
+    global logging_level
+    logging_level = data["logging_level"]
+    global disable_plugins
+    disable_plugins = data["disable_plugins"]
+    global mysql_trace_sql_parameters
+    mysql_trace_sql_parameters = data["mysql_trace_sql_parameters"]
+    global mysql_sql_parameters_max_length
+    mysql_sql_parameters_max_length = data["mysql_sql_parameters_max_length"]
+    global pymongo_trace_parameters
+    pymongo_trace_parameters = data["pymongo_trace_parameters"]
+    global pymongo_parameters_max_length
+    pymongo_parameters_max_length = data["pymongo_parameters_max_length"]
+    global ignore_suffix
+    ignore_suffix = data["ignore_suffix"]
+    global flask_collect_http_params
+    flask_collect_http_params = data["flask_collect_http_params"]
+    global http_params_length_threshold
+    http_params_length_threshold = data["http_params_length_threshold"]
+    global django_collect_http_params
+    django_collect_http_params = data["django_collect_http_params"]
+    global correlation_element_max_number
+    correlation_element_max_number = data["correlation_element_max_number"]
+    global correlation_value_max_length
+    correlation_value_max_length = data["correlation_value_max_length"]
+    global trace_ignore
+    trace_ignore = data["trace_ignore"]
+    global trace_ignore_path
+    trace_ignore_path = data["trace_ignore_path"]

@@ -49,8 +49,8 @@ class BasePluginTest(unittest.TestCase, ABC):
 
     @classmethod
     def tearDownClass(cls):
-        cls.compose.stop()
-
+        # cls.compose.stop()
+        pass
     @classmethod
     def host(cls, service_port):
         # type: (ServicePort) -> str

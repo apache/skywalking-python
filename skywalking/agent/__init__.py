@@ -32,8 +32,10 @@ logger = logging.getLogger(__name__)
 def __heartbeat():
     while not __finished.is_set():
         if connected():
-            __protocol.heartbeat()
-
+            try:
+                __protocol.heartbeat()
+            except:
+                pass
         __finished.wait(30 if connected() else 3)
 
 
@@ -78,8 +80,32 @@ def start():
     __report_thread.start()
 
 
+# def restart():
+#     global __heartbeat_thread
+#     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
+#     global __report_thread
+#     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
+#     global __queue
+#     __queue = Queue(maxsize=10000)
+#     global __finished
+#     __finished = Event()
+#     global __protocol
+#     __protocol = Protocol()  # type: Protocol
+#     global __started
+#     from skywalking import loggings
+#     loggings.init()
+#     __started = True
+#     __init()
+#     __heartbeat_thread.start()
+#     __report_thread.start()
+
+
 def stop():
     __finished.set()
+
+
+def started():
+    return __started
 
 
 def connected():
