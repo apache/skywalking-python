@@ -16,8 +16,6 @@
 #
 
 import logging
-import pkg_resources
-from packaging import version
 
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
