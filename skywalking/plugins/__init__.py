@@ -42,8 +42,9 @@ def install():
         logger.debug('installing plugin %s', modname)
         plugin = importer.find_module(modname).load_module(modname)
 
-        ok = pkg_version_check(plugin, modname)
-        if not ok:
+        logger.debug('checking version for plugin %s', modname)
+        supported = pkg_version_check(plugin, modname)
+        if not supported:
             continue
 
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
@@ -63,42 +64,42 @@ _operators = {
 
 
 def pkg_version_check(plugin, modname):
-    ok = True
+    supported = True
 
-    if hasattr(plugin, "version_rule"):
-        pkg_name = plugin.version_rule.get("name")
-        rules = plugin.version_rule.get("rules")
+    # no version rules was set, no checks
+    if not hasattr(plugin, "version_rule"):
+        return supported
 
-        try:
-            current_pkg_version = pkg_resources.get_distribution(pkg_name).version
-        except pkg_resources.DistributionNotFound:
-            ok = False
-            logger.warning("plugin %s didn\'t find the corresponding package %s, thus won't be installed",
-                           modname, pkg_name)
-            return ok
+    pkg_name = plugin.version_rule.get("name")
+    rules = plugin.version_rule.get("rules")
 
-        # check all rules
-        for rule in rules:
-            idx = 2 if rule[1] == '=' else 1
-            symbol = rule[0:idx]
-            expect_pkg_version = rule[idx:]
+    try:
+        current_pkg_version = pkg_resources.get_distribution(pkg_name).version
+    except pkg_resources.DistributionNotFound:
+        supported = False
+        logger.warning("plugin %s didn\'t find the corresponding package %s, thus won't be installed",
+                       modname, pkg_name)
+        return supported
 
-            current_version = version.parse(current_pkg_version)
-            expect_version = version.parse(expect_pkg_version)
-            f = _operators.get(symbol) or None
+    # check all rules
+    for rule in rules:
+        idx = 2 if rule[1] == '=' else 1
+        symbol = rule[0:idx]
+        expect_pkg_version = rule[idx:]
 
-            # version rule parse error, take it as no more version rules and return True.
-            if not f:
-                logger.warning("plugin %s version rule %s error. only allow >,>=,=,<=,<,!= symbols", modname, rule)
-                return ok
+        current_version = version.parse(current_pkg_version)
+        expect_version = version.parse(expect_pkg_version)
+        f = _operators.get(symbol) or None
 
-            if not f(current_version, expect_version):
-                ok = False
-                logger.warning("plugin %s need package %s version follow rules %s ,current version " +
-                               "is %s, thus won\'t be installed", modname, pkg_name, str(rules), current_pkg_version)
-                break
+        # version rule parse error, take it as no more version rules and return True.
+        if not f:
+            logger.warning("plugin %s version rule %s error. only allow >,>=,=,<=,<,!= symbols", modname, rule)
+            return supported
 
-        return ok
-    else:
-        # no version rules was set, no checks
-        return ok
+        if not f(current_version, expect_version):
+            supported = False
+            logger.warning("plugin %s need package %s version follow rules %s ,current version " +
+                           "is %s, thus won\'t be installed", modname, pkg_name, str(rules), current_pkg_version)
+            break
+
+    return supported
