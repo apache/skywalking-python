@@ -27,18 +27,17 @@ from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
 
+version_rule = {
+    "name": "pymongo",
+    "rules": [">=3.7.0"]
+}
+
 
 def install():
     try:
         from pymongo.bulk import _Bulk
         from pymongo.cursor import Cursor
         from pymongo.pool import SocketInfo
-
-        # check pymongo version
-        pymongo_version = pkg_resources.get_distribution("pymongo").version
-        if version.parse(pymongo_version) < version.parse("3.7.0"):
-            logger.warning("support pymongo version 3.7.0 or above, current version:" + pymongo_version)
-            raise Exception
 
         bulk_op_map = {
                 0: "insert",
