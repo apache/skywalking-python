@@ -18,10 +18,7 @@ import inspect
 import time
 import unittest
 from os.path import dirname
-
-import requests
 from testcontainers.compose import DockerCompose
-
 from tests.plugin import BasePluginTest
 
 

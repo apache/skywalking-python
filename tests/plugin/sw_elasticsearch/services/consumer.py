@@ -15,11 +15,8 @@
 # limitations under the License.
 #
 
-import requests
 from elasticsearch import Elasticsearch
-
 from skywalking import agent, config
-from skywalking.decorators import runnable
 
 if __name__ == '__main__':
     config.service_name = 'consumer'
@@ -33,7 +30,6 @@ if __name__ == '__main__':
     client = Elasticsearch('http://elasticsearch:9200/')
     index_name = "test"
 
-
     def create_index():
         client.indices.create(index=index_name, ignore=400)
 
@@ -43,7 +39,6 @@ if __name__ == '__main__':
 
     def search():
         client.get(index=index_name, id=1)
-
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
