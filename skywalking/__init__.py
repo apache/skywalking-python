@@ -35,6 +35,7 @@ class Component(Enum):
     KafkaConsumer = 41
     RabbitmqProducer = 52
     RabbitmqConsumer = 53
+    Elasticsearch = 47
 
 
 class Layer(Enum):

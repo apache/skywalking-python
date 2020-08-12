@@ -21,3 +21,4 @@ Environment Variable | Description | Default
 | `SW_CORRELATION_VALUE_MAX_LENGTH`| Max value length of correlation context element.| `128` |
 | `SW_TRACE_IGNORE`| This config item controls that whether the trace should be ignore | `false` |
 | `SW_TRACE_IGNORE_PATH`| You can setup multiple URL path patterns, The endpoints match these patterns wouldn't be traced. the current matching rules follow Ant Path match style , like /path/*, /path/**, /path/?.| `''` |
+| `SW_ELASTICSEARCH_TRACE_DSL`| If true, trace all the DSL(Domain Specific Language) in ElasticSearch access, default is false | `false` |

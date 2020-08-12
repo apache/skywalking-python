@@ -53,6 +53,7 @@ setup(
             "tornado",
             "pika",
             "pymongo",
+            "elasticsearch",
         ],
     },
     classifiers=[
