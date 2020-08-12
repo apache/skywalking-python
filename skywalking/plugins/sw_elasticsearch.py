@@ -32,7 +32,7 @@ def install():
 
         def _sw_perform_request(this: Transport, method, url, headers=None, params=None, body=None):
             context = get_context()
-            peer = ",".join([host["host"]+":"+str(host["port"]) for host in this.hosts])
+            peer = ",".join([host["host"] + ":" + str(host["port"]) for host in this.hosts])
             with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer) as span:
                 span.layer = Layer.Database
                 span.component = Component.Elasticsearch
@@ -49,7 +49,6 @@ def install():
                 return res
 
         Transport.perform_request = _sw_perform_request
-
 
     except Exception:
         logger.warning('failed to install plugin %s', __name__)
