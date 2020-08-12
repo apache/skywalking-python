@@ -13,3 +13,4 @@ Library | Plugin Name
 | [tornado](https://www.tornadoweb.org/en/stable/) | `sw_tornado` |
 | [pika](https://pika.readthedocs.io/en/stable/) | `sw_rabbitmq` |
 | [pymongo](https://pymongo.readthedocs.io/en/stable/) | `sw_pymongo` |
+| [elasticsearch](https://github.com/elastic/elasticsearch-py) | `sw_elasticsearch` |
