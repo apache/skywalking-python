@@ -19,10 +19,10 @@ import unittest
 
 from packaging import version
 
-from skywalking.plugins import _operators
+from skywalking.plugins import _operators, check
 
 
-class TestOperators(unittest.TestCase):
+class TestVersionCheck(unittest.TestCase):
     def test_operators(self):
         # <
         f = _operators.get("<")
@@ -45,7 +45,7 @@ class TestOperators(unittest.TestCase):
         self.assertFalse(f(v2, v1))
 
         # =
-        f = _operators.get("=")
+        f = _operators.get("==")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.0")
         self.assertTrue(f(v1, v2))
@@ -81,3 +81,20 @@ class TestOperators(unittest.TestCase):
 
         v2 = version.parse("1.0.0")
         self.assertFalse(f(v1, v2))
+
+    def test_version_check(self):
+        current_version = version.parse("1.8.0")
+
+        self.assertTrue(check(">1.1.0", current_version))
+        self.assertTrue(check(">=1.0.0", current_version))
+        self.assertTrue(check("<2.0.0", current_version))
+        self.assertTrue(check("<=1.8.0", current_version))
+        self.assertTrue(check("==1.8.0", current_version))
+        self.assertTrue(check("!=1.6.0", current_version))
+
+        self.assertFalse(check(">1.9.0", current_version))
+        self.assertFalse(check(">=1.8.1", current_version))
+        self.assertFalse(check("<1.8.0", current_version))
+        self.assertFalse(check("<=1.7.0", current_version))
+        self.assertFalse(check("==1.0.0", current_version))
+        self.assertFalse(check("!=1.8.0", current_version))

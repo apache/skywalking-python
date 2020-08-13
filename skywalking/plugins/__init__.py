@@ -42,9 +42,10 @@ def install():
         logger.debug('installing plugin %s', modname)
         plugin = importer.find_module(modname).load_module(modname)
 
-        logger.debug('checking version for plugin %s', modname)
-        supported = pkg_version_check(plugin, modname)
+        supported = pkg_version_check(plugin)
         if not supported:
+            logger.debug('check version for plugin %s\'s corresponding package failed, thus '
+                         'won\'t be installed', modname)
             continue
 
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
@@ -56,14 +57,19 @@ def install():
 _operators = {
     '<': lambda cv, ev: cv < ev,
     '<=': lambda cv, ev: cv < ev or cv == ev,
-    '=': lambda cv, ev: cv == ev,
+    '==': lambda cv, ev: cv == ev,
     '>=': lambda cv, ev: cv > ev or cv == ev,
     '>': lambda cv, ev: cv > ev,
     '!=': lambda cv, ev: cv != ev
 }
 
 
-def pkg_version_check(plugin, modname):
+class VersionRuleException(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
+def pkg_version_check(plugin):
     supported = True
 
     # no version rules was set, no checks
@@ -76,30 +82,37 @@ def pkg_version_check(plugin, modname):
     try:
         current_pkg_version = pkg_resources.get_distribution(pkg_name).version
     except pkg_resources.DistributionNotFound:
-        supported = False
-        logger.warning("plugin %s didn\'t find the corresponding package %s, thus won't be installed",
-                       modname, pkg_name)
+        # when failed to get the version, we consider it as supported.
         return supported
 
-    # check all rules
+    current_version = version.parse(current_pkg_version)
+    # pass one rule in rules (OR)
     for rule in rules:
-        idx = 2 if rule[1] == '=' else 1
-        symbol = rule[0:idx]
-        expect_pkg_version = rule[idx:]
+        if rule.find(" ") == -1:
+            if check(rule, current_version):
+                return supported
+        else:
+            # have to pass all rule_uint in this rule (AND)
+            rule_units = rule.split(" ")
+            results = [check(unit, current_version) for unit in rule_units]
+            if False in results:
+                # check failed, try to check next rule
+                continue
+            else:
+                return supported
 
-        current_version = version.parse(current_pkg_version)
-        expect_version = version.parse(expect_pkg_version)
-        f = _operators.get(symbol) or None
-
-        # version rule parse error, take it as no more version rules and return True.
-        if not f:
-            logger.warning("plugin %s version rule %s error. only allow >,>=,=,<=,<,!= symbols", modname, rule)
-            return supported
-
-        if not f(current_version, expect_version):
-            supported = False
-            logger.warning("plugin %s need package %s version follow rules %s ,current version " +
-                           "is %s, thus won\'t be installed", modname, pkg_name, str(rules), current_pkg_version)
-            break
-
+    supported = False
     return supported
+
+
+def check(rule_unit, current_version):
+    idx = 2 if rule_unit[1] == '=' else 1
+    symbol = rule_unit[0:idx]
+    expect_pkg_version = rule_unit[idx:]
+
+    expect_version = version.parse(expect_pkg_version)
+    f = _operators.get(symbol) or None
+    if not f:
+        raise VersionRuleException("version rule {} error. only allow >,>=,==,<=,<,!= symbols".format(rule_unit))
+
+    return f(current_version, expect_version)
