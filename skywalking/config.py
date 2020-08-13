@@ -44,6 +44,8 @@ correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') 
 trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
                        os.getenv('SW_TRACE_IGNORE') == 'True' else False   # type: bool
 trace_ignore_path = (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')  # type: List[str]
+elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
+                                   os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False   # type: bool
 
 
 def init(
