@@ -24,6 +24,11 @@ from skywalking.trace.tags import Tag
 
 logger = logging.getLogger(__name__)
 
+version_rule = {
+    "name": "django",
+    "rules": [">=2.0"]
+}
+
 
 def install():
     try:
