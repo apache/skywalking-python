@@ -22,7 +22,7 @@ import multiprocessing
 
 
 def post():
-    requests.post("http://provider:9091/users")
+    requests.post("http://127.0.0.1:9091/users")
 
 
 if __name__ == '__main__':
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         p1.start()
         p1.join()
 
-        res = requests.post("http://provider:9091/users")
+        res = requests.post("http://127.0.0.1:9091/users")
 
         return jsonify(res.json())
 
