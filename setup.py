@@ -54,6 +54,7 @@ setup(
             "pika",
             "pymongo",
             "elasticsearch",
+            "kubernetes"
         ],
     },
     classifiers=[

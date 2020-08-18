@@ -14,3 +14,4 @@ Library | Plugin Name
 | [pika](https://pika.readthedocs.io/en/stable/) | `sw_rabbitmq` |
 | [pymongo](https://pymongo.readthedocs.io/en/stable/) | `sw_pymongo` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | `sw_elasticsearch` |
+| [kubernetes](https://github.com/kubernetes-client/python) | `sw_kubernetes` |
