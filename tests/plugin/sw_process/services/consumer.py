@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import time
+
 import requests
 
 from skywalking import agent, config
@@ -22,7 +24,8 @@ import multiprocessing
 
 
 def post():
-    requests.post("http://127.0.0.1:9091/users")
+    requests.post("http://provider:9091/users")
+    time.sleep(3)
 
 
 if __name__ == '__main__':
@@ -36,7 +39,6 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-
     @app.route("/users", methods=["POST", "GET"])
     def application():
         from skywalking.trace.context import get_context
@@ -46,7 +48,7 @@ if __name__ == '__main__':
         p1.start()
         p1.join()
 
-        res = requests.post("http://127.0.0.1:9091/users")
+        res = requests.post("http://provider:9091/users")
 
         return jsonify(res.json())
 
