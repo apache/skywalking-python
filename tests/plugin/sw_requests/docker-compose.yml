@@ -30,10 +30,11 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./services/provider.py:/entrypoint.py
+      - .:/app
     depends_on:
       collector:
         condition: service_healthy
+    command: ['bash', '-c', 'pip install -r /app/requirements.txt && python3 /app/services/provider.py']
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
       interval: 5s
@@ -47,13 +48,13 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/consumer.py:/entrypoint.py
+      - .:/app
+    command: ['bash', '-c', 'pip install -r /app/requirements.txt && python3 /app/services/consumer.py']
     depends_on:
       collector:
         condition: service_healthy
       provider:
         condition: service_healthy
-
 
 networks:
   beyond:
