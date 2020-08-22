@@ -9,3 +9,4 @@ dist/
 *.pyc
 /apache_skywalking.egg-info/
 **/venv/
+tests/**/requirements.txt

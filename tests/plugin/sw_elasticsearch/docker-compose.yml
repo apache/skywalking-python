@@ -49,8 +49,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/consumer.py:/app/consumer.py
-    command: ['bash', '-c', 'pip install flask &&  pip install elasticsearch && python3 /app/consumer.py']
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && python3 /app/services/consumer.py']
     depends_on:
       collector:
         condition: service_healthy

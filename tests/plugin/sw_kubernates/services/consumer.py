@@ -17,6 +17,7 @@
 
 
 from skywalking import agent, config
+import kubernetes.config as kube_config
 
 if __name__ == '__main__':
     config.service_name = 'consumer'
@@ -28,17 +29,10 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-    k8s_server = ""
-    k8s_token = ""
-
-    configuration = client.Configuration()
-    configuration.host = k8s_server
-    configuration.verify_ssl = False
-    configuration.api_key = {"authorization": "Bearer " + k8s_token}
-    connection = client.api_client.ApiClient(configuration=configuration)
-    core_conn = client.CoreV1Api(connection)
-    apps_conn = client.AppsV1Api(connection)
-    net_conn = client.NetworkingV1beta1Api(connection)
+    kube_config.load_kube_config()
+    core_conn = client.CoreV1Api()
+    apps_conn = client.AppsV1Api()
+    net_conn = client.NetworkingV1beta1Api()
 
 
     @app.route("/users", methods=["POST", "GET"])

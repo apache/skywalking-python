@@ -14,30 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
-import os
-import time
-import unittest
-from os.path import abspath, dirname
+import pytest
+import requests
 
-from testcontainers.compose import DockerCompose
-
-from tests.plugin import BasePluginTest
+from tests.plugin.base import TestPluginBase
 
 
-class TestPlugin(BasePluginTest):
-    @classmethod
-    def setUpClass(cls):
-        cls.compose = DockerCompose(filepath=dirname(abspath(__file__)))
-        cls.compose.start()
-
-        cls.compose.wait_for(cls.url(('producer', '9090'), 'users'))
-
-    def test_request_plugin(self):
-        time.sleep(10)
-
-        self.validate(expected_file_name=os.path.join(dirname(abspath(__file__)), 'expected.data.yml'))
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
 
 
-if __name__ == '__main__':
-    unittest.main()
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'kafka-python==2.0.1',
+    ])
+    def test_plugin(self, docker_compose, version):
+        self.validate()

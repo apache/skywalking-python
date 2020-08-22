@@ -55,6 +55,7 @@ setup(
             "pymongo",
             "elasticsearch",
             "kubernetes"
+            "pytest",
         ],
     },
     classifiers=[
