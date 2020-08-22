@@ -32,10 +32,8 @@ logger = logging.getLogger(__name__)
 def __heartbeat():
     while not __finished.is_set():
         if connected():
-            try:
-                __protocol.heartbeat()
-            except BaseException:
-                pass
+            __protocol.heartbeat()
+
         __finished.wait(30 if connected() else 3)
 
 
