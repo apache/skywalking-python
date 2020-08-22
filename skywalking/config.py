@@ -45,7 +45,7 @@ trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
                        os.getenv('SW_TRACE_IGNORE') == 'True' else False  # type: bool
 trace_ignore_path = (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')  # type: List[str]
 elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
-                                   os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False   # type: bool
+                                  os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False  # type: bool
 
 
 def init(
@@ -72,62 +72,15 @@ def init(
 
 
 def serialize():
-    return {
-        "service_name": service_name,
-        "collector_address": collector_address,
-        "protocol": protocol,
-        "authentication": authentication,
-        "logging_level": logging_level,
-        "disable_plugins": disable_plugins,
-        "mysql_trace_sql_parameters": mysql_trace_sql_parameters,
-        "mysql_sql_parameters_max_length": mysql_sql_parameters_max_length,
-        "pymongo_trace_parameters": pymongo_trace_parameters,
-        "pymongo_parameters_max_length": pymongo_parameters_max_length,
-        "ignore_suffix": ignore_suffix,
-        "flask_collect_http_params": flask_collect_http_params,
-        "http_params_length_threshold": http_params_length_threshold,
-        "django_collect_http_params": django_collect_http_params,
-        "correlation_element_max_number": correlation_element_max_number,
-        "correlation_value_max_length": correlation_value_max_length,
-        "trace_ignore": trace_ignore,
-        "trace_ignore_path": trace_ignore_path
-    }
+    from skywalking import config
+    return {key: value for key, value in config.__dict__.items() if
+            not (key.startswith('__') or key.startswith('_') or key in ['os', 'uuid', 'List', 'init',
+                                                                        'serialize',
+                                                                        'deserialize'])}
 
 
 def deserialize(data):
-    global service_name
-    service_name = data["service_name"]
-    global collector_address
-    collector_address = data["collector_address"]
-    global protocol
-    protocol = data["protocol"]
-    global authentication
-    authentication = data["authentication"]
-    global logging_level
-    logging_level = data["logging_level"]
-    global disable_plugins
-    disable_plugins = data["disable_plugins"]
-    global mysql_trace_sql_parameters
-    mysql_trace_sql_parameters = data["mysql_trace_sql_parameters"]
-    global mysql_sql_parameters_max_length
-    mysql_sql_parameters_max_length = data["mysql_sql_parameters_max_length"]
-    global pymongo_trace_parameters
-    pymongo_trace_parameters = data["pymongo_trace_parameters"]
-    global pymongo_parameters_max_length
-    pymongo_parameters_max_length = data["pymongo_parameters_max_length"]
-    global ignore_suffix
-    ignore_suffix = data["ignore_suffix"]
-    global flask_collect_http_params
-    flask_collect_http_params = data["flask_collect_http_params"]
-    global http_params_length_threshold
-    http_params_length_threshold = data["http_params_length_threshold"]
-    global django_collect_http_params
-    django_collect_http_params = data["django_collect_http_params"]
-    global correlation_element_max_number
-    correlation_element_max_number = data["correlation_element_max_number"]
-    global correlation_value_max_length
-    correlation_value_max_length = data["correlation_value_max_length"]
-    global trace_ignore
-    trace_ignore = data["trace_ignore"]
-    global trace_ignore_path
-    trace_ignore_path = data["trace_ignore_path"]
+    from skywalking import config
+    for key, value in data.items():
+        if key in config.__dict__:
+            config.__dict__[key] = value
