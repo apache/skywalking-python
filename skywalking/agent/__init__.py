@@ -34,7 +34,7 @@ def __heartbeat():
         if connected():
             try:
                 __protocol.heartbeat()
-            except:
+            except BaseException:
                 pass
         __finished.wait(30 if connected() else 3)
 
