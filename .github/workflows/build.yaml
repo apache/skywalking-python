@@ -46,4 +46,4 @@ jobs:
       - name: Check license header
         run: make license
       - name: Run unit tests
-        run: make test || make test || make test
+        run: make test

@@ -14,29 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import inspect
-import time
-import unittest
-from os.path import dirname
+from typing import Callable
 
-from testcontainers.compose import DockerCompose
+import pytest
+import requests
 
-from tests.plugin import BasePluginTest
+from tests.plugin.base import TestPluginBase
 
 
-class TestPlugin(BasePluginTest):
-    @classmethod
-    def setUpClass(cls):
-        cls.compose = DockerCompose(filepath=dirname(inspect.getfile(cls)))
-        cls.compose.start()
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
 
-        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users'))
 
-    def test_plugin(self):
-        time.sleep(10)
-
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'pymongo==3.11.0',
+    ])
+    def test_plugin(self, docker_compose, version):
         self.validate()
-
-
-if __name__ == '__main__':
-    unittest.main()
