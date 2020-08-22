@@ -14,10 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import inspect
 import os
 import uuid
-from typing import List
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
@@ -73,10 +76,15 @@ def init(
 
 def serialize():
     from skywalking import config
-    return {key: value for key, value in config.__dict__.items() if
-            not (key.startswith('__') or key.startswith('_') or key in ['os', 'uuid', 'List', 'init',
-                                                                        'serialize',
-                                                                        'deserialize'])}
+    return {
+        key: value for key, value in config.__dict__.items() if not (
+                key.startswith('_') or key == 'TYPE_CHECKING'
+                or inspect.isfunction(value)
+                or inspect.ismodule(value)
+                or inspect.isbuiltin(value)
+                or inspect.isclass(value)
+        )
+    }
 
 
 def deserialize(data):
