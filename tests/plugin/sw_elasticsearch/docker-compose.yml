@@ -23,23 +23,24 @@ services:
       service: collector
       file: ../docker/docker-compose.base.yml
 
-  provider:
-    extends:
-      service: agent
-      file: ../docker/docker-compose.base.yml
-    ports:
-      - 9091:9091
-    volumes:
-      - .:/app
-    command: ['bash', '-c', 'pip3 install -r /app/requirements.txt && python3 /app/services/provider.py']
-    depends_on:
-      collector:
-        condition: service_healthy
+  elasticsearch:
+    image: elasticsearch:6.8.11
+    hostname: elasticsearch
+    expose:
+      - 9200
+    environment:
+      - cluster.name=docker-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - discovery.type=single-node
     healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
       interval: 5s
       timeout: 60s
       retries: 120
+    networks:
+      - beyond
 
   consumer:
     extends:
@@ -49,11 +50,11 @@ services:
       - 9090:9090
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip3 install -r /app/requirements.txt && python3 /app/services/consumer.py']
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && python3 /app/services/consumer.py']
     depends_on:
       collector:
         condition: service_healthy
-      provider:
+      elasticsearch:
         condition: service_healthy
 
 networks:

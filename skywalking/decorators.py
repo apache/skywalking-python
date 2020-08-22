@@ -16,15 +16,18 @@
 #
 
 from functools import wraps
+from typing import List
 
 from skywalking import Layer, Component
 from skywalking.trace.context import get_context
+from skywalking.trace.tags import Tag
 
 
 def trace(
         op: str = None,
         layer: Layer = Layer.Unknown,
         component: Component = Component.Unknown,
+        tags: List[Tag] = None,
 ):
     def decorator(func):
         @wraps(func)
@@ -34,6 +37,7 @@ def trace(
             with context.new_local_span(op=_op) as span:
                 span.layer = layer
                 span.component = component
+                [span.tag(tag) for tag in tags or []]
                 try:
                     result = func(*args, **kwargs)
                     return result
@@ -50,6 +54,7 @@ def runnable(
         op: str = None,
         layer: Layer = Layer.Unknown,
         component: Component = Component.Unknown,
+        tags: List[Tag] = None,
 ):
     def decorator(func):
         snapshot = get_context().capture()
@@ -62,6 +67,7 @@ def runnable(
                 context.continued(snapshot)
                 span.layer = layer
                 span.component = component
+                [span.tag(tag) for tag in tags or []]
                 try:
                     func(*args, **kwargs)
                 except Exception:

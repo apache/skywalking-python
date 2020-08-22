@@ -14,24 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
-import time
-import unittest
-
+import pytest
 import requests
 
-from tests.plugin import BasePluginTest
+from tests.plugin.base import TestPluginBase
 
 
-class TestPlugin(BasePluginTest):
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.post('http://0.0.0.0:9090')
 
-    def test_plugin(self):
-        print('traffic: ', requests.post(url=self.url(('consumer', '9090'))))
 
-        time.sleep(10)
-
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'requests==2.24.0',
+        'requests==2.20.0',
+        'requests==2.19.0',
+        'requests==2.18.0',
+        'requests==2.17.0',
+        'requests==2.13.0',
+        'requests==2.11.0',
+        'requests==2.9.0',
+    ])
+    def test_plugin(self, docker_compose, version):
         self.validate()
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -25,12 +25,12 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.post('http://0.0.0.0:9090')
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
 
 
 class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
-        'werkzeug==1.0.1',
+        'elasticsearch==7.9.0',
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()

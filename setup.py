@@ -44,15 +44,7 @@ setup(
         "test": [
             "testcontainers",
             "pyyaml",
-            "django",
-            "flask",
-            "Werkzeug",
-            "pymysql",
-            "redis",
-            "kafka-python",
-            "tornado",
-            "pika",
-            "pymongo",
+            "pytest",
         ],
     },
     classifiers=[

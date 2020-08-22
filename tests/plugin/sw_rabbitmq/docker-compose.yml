@@ -48,8 +48,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/producer.py:/app/producer.py
-    command: ['bash', '-c', 'pip install flask && pip install pika && python3 /app/producer.py']
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && python3 /app/services/producer.py']
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090"]
       interval: 5s
@@ -70,10 +70,10 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./services/consumer.py:/app/consumer.py
-    command: ['bash', '-c', 'pip install flask && pip install pika && python3 /app/consumer.py']
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && python3 /app/services/consumer.py']
     healthcheck:
-      test: ["CMD", "bash", "-c", "ps -ef | grep /app/consumer | grep -v grep"]
+      test: ["CMD", "bash", "-c", "ps -ef | grep /app/services/consumer | grep -v grep"]
       interval: 5s
       timeout: 60s
       retries: 120

@@ -14,32 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import inspect
-import time
-import unittest
-from os.path import dirname
+from typing import Callable
 
+import pytest
 import requests
-from testcontainers.compose import DockerCompose
 
-from tests.plugin import BasePluginTest
+from tests.plugin.base import TestPluginBase
 
 
-class TestPlugin(BasePluginTest):
-    @classmethod
-    def setUpClass(cls):
-        cls.compose = DockerCompose(filepath=dirname(inspect.getfile(cls)))
-        cls.compose.start()
-        cls.compose.wait_for(cls.url(('consumer', '9090'), 'users?test=test1&test=test2&test2=test2'))
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users?test=test1&test=test2&test2=test2')
 
-    def test_plugin(self):
-        time.sleep(10)
 
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'flask==1.1.2',
+        'flask==1.0.4',
+    ])
+    def test_plugin(self, docker_compose, version):
         self.validate()
-        response = requests.get(TestPlugin.url(('consumer', '9090'), 'users'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["correlation"], "correlation")
 
-
-if __name__ == '__main__':
-    unittest.main()
+        response = requests.get('http://0.0.0.0:9090/users')
+        assert response.status_code == 200
+        assert response.json()['correlation'] == 'correlation'
