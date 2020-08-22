@@ -19,7 +19,7 @@ FROM openjdk:8
 
 WORKDIR /tests
 
-ARG COMMIT_HASH=3c9d7099f05dc4a4b937c8a47506e56c130b6221
+ARG COMMIT_HASH=8a48c49b4420df5c9576d2aea178b2ebcb7ecd09
 
 ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
 

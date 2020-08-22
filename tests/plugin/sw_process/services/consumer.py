@@ -14,10 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 import time
-
 import requests
-
 from skywalking import agent, config
 from skywalking.trace.ipc.process import SwProcess
 import multiprocessing
@@ -41,9 +40,6 @@ if __name__ == '__main__':
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
-        from skywalking.trace.context import get_context
-        get_context().put_correlation("correlation", "correlation")
-
         p1 = SwProcess(target=post)
         p1.start()
         p1.join()
