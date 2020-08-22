@@ -28,8 +28,5 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', [
-        'flask==1.1.2',
-    ])
     def test_plugin(self, docker_compose, version):
         self.validate()
