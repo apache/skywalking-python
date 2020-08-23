@@ -15,36 +15,23 @@
 # limitations under the License.
 #
 
+import time
 
 from skywalking import agent, config
 
-
 if __name__ == '__main__':
-    config.service_name = 'consumer'
+    config.service_name = 'provider'
     config.logging_level = 'DEBUG'
     agent.start()
 
     from flask import Flask, jsonify
 
-
     app = Flask(__name__)
-
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
-        from kubernetes import client
-        import kubernetes.config as kube_config
-        kube_config.load_kube_config()
-        core_conn = client.CoreV1Api()
-        apps_conn = client.AppsV1Api()
-        net_conn = client.NetworkingV1beta1Api()
-
-        core_conn.list_namespace()
-        core_conn.list_pod_for_all_namespaces()
-        apps_conn.list_deployment_for_all_namespaces()
-        net_conn.list_ingress_for_all_namespaces()
+        time.sleep(0.5)
         return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
 
-
-    PORT = 9090
+    PORT = 9091
     app.run(host='0.0.0.0', port=PORT, debug=True)

@@ -14,27 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
 
-version: '2.1'
+from skywalking import agent, config
 
-services:
-  collector:
-    extends:
-      service: collector
-      file: ../docker/docker-compose.base.yml
+if __name__ == '__main__':
+    config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
+    agent.start()
 
-  consumer:
-    extends:
-      service: agent
-      file: ../docker/docker-compose.base.yml
-    ports:
-      - 9090:9090
-    volumes:
-      - ./services/consumer.py:/app/consumer.py
-    command: ['bash', '-c', 'pip install flask && pip install kubernetes && python3 /app/consumer.py']
-    depends_on:
-      collector:
-        condition: service_healthy
+    from flask import Flask, jsonify
 
-networks:
-  beyond:
+    app = Flask(__name__)
+    import urllib3
+
+
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        http = urllib3.PoolManager()
+        res = http.request("POST", "http://provider:9091/users")
+
+        return jsonify(json.loads(res.data.decode('utf-8')))
+
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

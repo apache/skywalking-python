@@ -30,7 +30,8 @@ def prepare():
 
 class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
-        'kubernetes==11.0.0',
+        'urllib3==1.25.10',
+        'urllib3==1.25.9'
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()
