@@ -82,6 +82,10 @@ def stop():
     __finished.set()
 
 
+def started():
+    return __started
+
+
 def connected():
     return __protocol.connected()
 

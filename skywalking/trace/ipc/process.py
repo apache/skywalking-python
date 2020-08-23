@@ -15,30 +15,20 @@
 # limitations under the License.
 #
 
-FROM openjdk:8
+from multiprocessing import Process
 
-WORKDIR /tests
+from skywalking import config, agent
 
-ARG COMMIT_HASH=8a48c49b4420df5c9576d2aea178b2ebcb7ecd09
 
-ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
+class SwProcess(Process):
 
-RUN tar -xf ${COMMIT_HASH}.tar.gz --strip 1
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, *,
+                 daemon=None):
+        super(SwProcess, self).__init__(group=group, target=target, name=name, args=args, kwargs=kwargs, daemon=daemon)
+        self._sw_config = config.serialize()
 
-RUN rm ${COMMIT_HASH}.tar.gz
-
-RUN ./mvnw -B -DskipTests package
-
-FROM openjdk:8
-
-EXPOSE 19876 12800
-
-WORKDIR /tests
-
-COPY --from=0 /tests/dist/skywalking-mock-collector.tar.gz /tests
-
-RUN tar -xf skywalking-mock-collector.tar.gz --strip 1
-
-RUN chmod +x bin/collector-startup.sh
-
-ENTRYPOINT bin/collector-startup.sh
+    def run(self):
+        if agent.started() is False:
+            config.deserialize(self._sw_config)
+            agent.start()
+        super(SwProcess, self).run()

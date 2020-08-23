@@ -14,10 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import inspect
 import os
 import uuid
-from typing import List
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import List
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
@@ -35,17 +38,17 @@ pymongo_parameters_max_length = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH'
 ignore_suffix = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,' \
                                                  '.mp4,.html,.svg '  # type: str
 flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
+                                    os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
 django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') and \
-                                    os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False   # type: bool
+                                     os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
 correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')  # type: int
 trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
-                       os.getenv('SW_TRACE_IGNORE') == 'True' else False   # type: bool
+                       os.getenv('SW_TRACE_IGNORE') == 'True' else False  # type: bool
 trace_ignore_path = (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')  # type: List[str]
 elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
-                                   os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False   # type: bool
+                                  os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False  # type: bool
 
 
 def init(
@@ -69,3 +72,23 @@ def init(
 
     global authentication
     authentication = token or authentication
+
+
+def serialize():
+    from skywalking import config
+    return {
+        key: value for key, value in config.__dict__.items() if not (
+                key.startswith('_') or key == 'TYPE_CHECKING'
+                or inspect.isfunction(value)
+                or inspect.ismodule(value)
+                or inspect.isbuiltin(value)
+                or inspect.isclass(value)
+        )
+    }
+
+
+def deserialize(data):
+    from skywalking import config
+    for key, value in data.items():
+        if key in config.__dict__:
+            config.__dict__[key] = value

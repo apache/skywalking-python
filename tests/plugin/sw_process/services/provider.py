@@ -15,30 +15,23 @@
 # limitations under the License.
 #
 
-FROM openjdk:8
+import time
 
-WORKDIR /tests
+from skywalking import agent, config
 
-ARG COMMIT_HASH=8a48c49b4420df5c9576d2aea178b2ebcb7ecd09
+if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
 
-ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
+    from flask import Flask, jsonify
 
-RUN tar -xf ${COMMIT_HASH}.tar.gz --strip 1
+    app = Flask(__name__)
 
-RUN rm ${COMMIT_HASH}.tar.gz
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        time.sleep(0.5)
+        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
 
-RUN ./mvnw -B -DskipTests package
-
-FROM openjdk:8
-
-EXPOSE 19876 12800
-
-WORKDIR /tests
-
-COPY --from=0 /tests/dist/skywalking-mock-collector.tar.gz /tests
-
-RUN tar -xf skywalking-mock-collector.tar.gz --strip 1
-
-RUN chmod +x bin/collector-startup.sh
-
-ENTRYPOINT bin/collector-startup.sh
+    PORT = 9091
+    app.run(host='0.0.0.0', port=PORT, debug=False)
