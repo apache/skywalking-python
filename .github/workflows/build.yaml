@@ -39,6 +39,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Setup k3s
+          run: curl -sfL https://get.k3s.io | sh -
+      - name: set kubeconfig
+          env:
+            KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        run: sudo mkdir ~/.kube && sudo cp ${KUBECONFIG} ~/.kube/config
       - name: Set up dependencies
         run: make setup install
       - name: Lint codes
