@@ -15,30 +15,38 @@
 # limitations under the License.
 #
 
-FROM openjdk:8
+import time
+import requests
+from skywalking import agent, config
+from skywalking.trace.ipc.process import SwProcess
+import multiprocessing
 
-WORKDIR /tests
 
-ARG COMMIT_HASH=8a48c49b4420df5c9576d2aea178b2ebcb7ecd09
+def post():
+    requests.post("http://provider:9091/users")
+    time.sleep(3)
 
-ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
 
-RUN tar -xf ${COMMIT_HASH}.tar.gz --strip 1
+if __name__ == '__main__':
+    multiprocessing.set_start_method('spawn')
+    config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
+    config.flask_collect_http_params = True
+    agent.start()
 
-RUN rm ${COMMIT_HASH}.tar.gz
+    from flask import Flask, jsonify
 
-RUN ./mvnw -B -DskipTests package
+    app = Flask(__name__)
 
-FROM openjdk:8
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        p1 = SwProcess(target=post)
+        p1.start()
+        p1.join()
 
-EXPOSE 19876 12800
+        res = requests.post("http://provider:9091/users")
 
-WORKDIR /tests
+        return jsonify(res.json())
 
-COPY --from=0 /tests/dist/skywalking-mock-collector.tar.gz /tests
-
-RUN tar -xf skywalking-mock-collector.tar.gz --strip 1
-
-RUN chmod +x bin/collector-startup.sh
-
-ENTRYPOINT bin/collector-startup.sh
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=False)
