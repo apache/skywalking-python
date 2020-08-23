@@ -36,6 +36,7 @@ class Component(Enum):
     RabbitmqProducer = 52
     RabbitmqConsumer = 53
     Elasticsearch = 47
+    Urllib3 = 7006
 
 
 class Layer(Enum):
