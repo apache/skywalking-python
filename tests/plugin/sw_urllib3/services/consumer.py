@@ -28,7 +28,6 @@ if __name__ == '__main__':
     app = Flask(__name__)
     import urllib3
 
-
     @app.route("/users", methods=["POST", "GET"])
     def application():
         http = urllib3.PoolManager()
