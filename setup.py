@@ -44,6 +44,7 @@ setup(
         "test": [
             "testcontainers",
             "pyyaml",
+            "pytest",
         ],
     },
     classifiers=[
