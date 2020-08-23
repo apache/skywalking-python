@@ -31,6 +31,7 @@ Library | Versions | Plugin Name
 | [pika](https://pika.readthedocs.io/en/stable/) | 1.1.0 | `sw_rabbitmq` |
 | [pymongo](https://pymongo.readthedocs.io/en/stable/) | 3.11.0 | `sw_pymongo` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | 7.9.0 | `sw_elasticsearch` |
+| [kubernetes](https://github.com/kubernetes-client/python) | 11.0.0 | `sw_kubernetes` |
 
 The column `Versions` only indicates that the versions are tested, if you found the newer versions are also supported, welcome to add the newer version into the table.
 >>>>>>> master

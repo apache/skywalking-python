@@ -54,7 +54,7 @@ setup(
             "pika",
             "pymongo",
             "elasticsearch",
-            "kubernetes"
+            "kubernetes",
             "pytest",
         ],
     },

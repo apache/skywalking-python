@@ -17,7 +17,7 @@
 
 
 from skywalking import agent, config
-import kubernetes.config as kube_config
+
 
 if __name__ == '__main__':
     config.service_name = 'consumer'
@@ -25,18 +25,20 @@ if __name__ == '__main__':
     agent.start()
 
     from flask import Flask, jsonify
-    from kubernetes import client
+
 
     app = Flask(__name__)
-
-    kube_config.load_kube_config()
-    core_conn = client.CoreV1Api()
-    apps_conn = client.AppsV1Api()
-    net_conn = client.NetworkingV1beta1Api()
 
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
+        from kubernetes import client
+        import kubernetes.config as kube_config
+        kube_config.load_kube_config()
+        core_conn = client.CoreV1Api()
+        apps_conn = client.AppsV1Api()
+        net_conn = client.NetworkingV1beta1Api()
+
         core_conn.list_namespace()
         core_conn.list_pod_for_all_namespaces()
         apps_conn.list_deployment_for_all_namespaces()
