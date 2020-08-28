@@ -27,13 +27,7 @@ setup-test: setup
 
 gen:
 	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
-	python3 -m grpc_tools.protoc -I protocol --python_out=. --grpc_python_out=. protocol/**/*.proto
-	touch browser/__init__.py
-	touch common/__init__.py
-	touch language_agent/__init__.py
-	touch management/__init__.py
-	touch profile/__init__.py
-	touch service_mesh_probe/__init__.py
+	python3 tools/codegen.py
 
 lint: clean
 	flake8 --version || python3 -m pip install flake8
@@ -59,10 +53,11 @@ upload: package
 	twine upload dist/*
 
 clean:
-	rm -rf browser common language_agent management profile service_mesh_probe
-	rm -rf skywalking_python.egg-info dist build
+	rm -rf skywalking/protocol
+	rm -rf apache_skywalking.egg-info dist build
 	rm -rf skywalking-python*.tgz*
 	find . -name "__pycache__" -exec rm -r {} +
+	find . -name ".pytest_cache" -exec rm -r {} +
 	find . -name "*.pyc" -exec rm -r {} +
 
 release: clean lint license
