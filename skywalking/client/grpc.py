@@ -18,13 +18,13 @@
 import logging
 
 import grpc
-from common.Common_pb2 import KeyStringValuePair
-from language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
-from management.Management_pb2 import InstancePingPkg, InstanceProperties
-from management.Management_pb2_grpc import ManagementServiceStub
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
+from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
+from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
 
 logger = logging.getLogger(__name__)
 

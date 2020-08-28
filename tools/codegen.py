@@ -1,0 +1,53 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+import glob
+import os
+import re
+
+from grpc_tools import protoc
+
+dest_dir = 'skywalking/protocol'
+src_dir = 'protocol'
+
+
+def touch(filename):
+    open(filename, 'a').close()
+
+
+def codegen():
+    if not os.path.exists(dest_dir):
+        os.mkdir(dest_dir)
+
+    touch(os.path.join(dest_dir, '__init__.py'))
+
+    protoc.main(['grpc_tools.protoc',
+                 '--proto_path=' + src_dir,
+                 '--python_out=' + dest_dir,
+                 '--grpc_python_out=' + dest_dir
+                 ] + [proto for proto in glob.iglob(src_dir + '/**/*.proto')])
+
+    for py_file in glob.iglob(os.path.join(dest_dir, '**/*.py')):
+        touch(os.path.join(os.path.dirname(py_file), '__init__.py'))
+        with open(py_file, 'r+') as file:
+            code = file.read()
+            file.seek(0)
+            file.write(re.sub(r'from (.+) (import .+_pb2.*)', 'from ..\\1 \\2', code))
+            file.truncate()
+
+
+if __name__ == '__main__':
+    codegen()
