@@ -32,18 +32,26 @@ logger = logging.getLogger(__name__)
 def __heartbeat():
     while not __finished.is_set():
         if connected():
-            __protocol.heartbeat()
-
-        __finished.wait(30 if connected() else 3)
+            try:
+                __protocol.heartbeat()
+                __finished.wait(3)
+            except Exception as e:
+                pass
+        else:
+            connect()
+            __finished.wait(30)
 
 
 def __report():
     while not __finished.is_set():
         if connected():
-            __protocol.report(__queue)
-            break
+            try:
+                __protocol.report(__queue)
+            except Exception as e:
+                pass
         else:
-            __finished.wait(1)
+            connect()
+            __finished.wait(30)
 
 
 __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
@@ -55,6 +63,11 @@ __started = False
 
 
 def __init():
+    connect()
+    plugins.install()
+
+
+def connect():
     global __protocol
     if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
@@ -62,8 +75,6 @@ def __init():
     elif config.protocol == 'http':
         from skywalking.agent.protocol.http import HttpProtocol
         __protocol = HttpProtocol()
-
-    plugins.install()
 
 
 def start():
