@@ -15,8 +15,9 @@
 # limitations under the License.
 #
 
-import logging
 import os
+import ast
+import logging
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService
@@ -42,7 +43,7 @@ def __init_kafka_configs():
             if val.isnumeric():
                 val = int(val)
             elif val in ["True", "False"]:
-                val = eval(val)
+                val = ast.literal_eval(val)
         else:
             continue
 
