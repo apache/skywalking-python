@@ -1,3 +1,20 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import logging
 import os
 
@@ -6,7 +23,7 @@ from skywalking.client import ServiceManagementClient, TraceSegmentReportService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
-from kafka import KafkaProducer, KafkaAdminClient
+from kafka import KafkaProducer
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +43,8 @@ def __init_kafka_configs():
         if val is not None:
             if val.isnumeric():
                 val = int(val)
+        else:
+            continue
 
         # check if the key was already set
         if kafka_configs.get(key) is None:
@@ -34,25 +53,11 @@ def __init_kafka_configs():
             raise KafkaConfigDuplicated(key)
 
 
-
 __init_kafka_configs()
 
 
 class KafkaServiceManagementClient(ServiceManagementClient):
     def __init__(self):
-        """
-        # check if topics needed exists
-        kafka_admin_configs = {}
-
-        admin_client = KafkaAdminClient(**kafka_configs)
-
-        server_topics = admin_client.list_topics()
-        if config.kafka_topic_management not in server_topics:
-            raise KafkaTopicNotExistsException(config.kafka_topic_management)
-        if config.kafka_topic_segment not in server_topics:
-            raise KafkaTopicNotExistsException(config.kafka_topic_segment)
-        """
-
         self.producer = KafkaProducer(**kafka_configs)
         self.topic_key_register = "register-"
         self.topic = config.kafka_topic_management
@@ -66,8 +71,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
             properties=[KeyStringValuePair(key='language', value='Python')],
         )
 
-        key = bytes(self.topic_key_register + instance.serviceInstance,
-                    encoding='utf-8')
+        key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
         value = bytes(instance.SerializeToString())
         self.producer.send(topic=self.topic, key=key, value=value)
 
@@ -83,11 +87,9 @@ class KafkaServiceManagementClient(ServiceManagementClient):
             serviceInstance=config.service_instance,
         )
 
-        key = bytes(instance_ping_pkg.serviceInstance,
-                    encoding="utf-8")
+        key = bytes(instance_ping_pkg.serviceInstance, encoding="utf-8")
         value = bytes(instance_ping_pkg.SerializeToString())
         future = self.producer.send(topic=self.topic, key=key, value=value)
-
         res = future.get(timeout=10)
         logger.debug('heartbeat response: %s', res)
 
@@ -102,11 +104,6 @@ class KafkaTraceSegmentReportService(TraceSegmentReportService):
             key = bytes(segment.traceSegmentId, encoding="utf-8")
             value = bytes(segment.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
-
-
-class KafkaTopicNotExistsException(Exception):
-    def __init__(self, topic):
-        self.topic = topic
 
 
 class KafkaConfigDuplicated(Exception):
