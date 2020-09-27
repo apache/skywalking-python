@@ -32,9 +32,7 @@ kafka_configs = {}
 
 def __init_kafka_configs():
     kafka_configs["bootstrap_servers"] = config.kafka_bootstrap_servers.split(",")
-
     # process all kafka configs in env
-    # logger.debug(os.environ.keys())
     kafka_keys = [key for key in os.environ.keys() if key.startswith("SW_KAFKA_REPORTER_CONFIG_")]
     for kafka_key in kafka_keys:
         key = kafka_key[25:]
@@ -43,6 +41,8 @@ def __init_kafka_configs():
         if val is not None:
             if val.isnumeric():
                 val = int(val)
+            elif val in ["True", "False"]:
+                val = eval(val)
         else:
             continue
 
@@ -58,6 +58,7 @@ __init_kafka_configs()
 
 class KafkaServiceManagementClient(ServiceManagementClient):
     def __init__(self):
+        logger.debug("kafka reporter configs: %s", kafka_configs)
         self.producer = KafkaProducer(**kafka_configs)
         self.topic_key_register = "register-"
         self.topic = config.kafka_topic_management
