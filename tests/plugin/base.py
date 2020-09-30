@@ -30,7 +30,7 @@ from requests import Response
 try:
     from yaml import CSafeLoader as Loader
 except ImportError:
-    from yaml import SafeLoader
+    from yaml import SafeLoader as Loader
 
 
 class TestPluginBase(ABC):
