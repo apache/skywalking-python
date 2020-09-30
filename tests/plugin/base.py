@@ -28,9 +28,9 @@ import yaml
 from requests import Response
 
 try:
-    from yaml import CLoader as Loader
+    from yaml import CSafeLoader as Loader
 except ImportError:
-    from yaml import Loader
+    from yaml import SafeLoader
 
 
 class TestPluginBase(ABC):
