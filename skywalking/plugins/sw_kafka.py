@@ -16,6 +16,7 @@
 #
 import logging
 
+from skywalking import config
 from skywalking import Layer, Component
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
@@ -48,6 +49,7 @@ def _sw__poll_once_func(__poll_once):
             context = get_context()
             topics = ";".join(this._subscription.subscription or
                               [t.topic for t in this._subscription._user_assignment])
+
             with context.new_entry_span(
                     op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:
                 for consumerRecords in res.values():
@@ -71,6 +73,11 @@ def _sw__poll_once_func(__poll_once):
 
 def _sw_send_func(_send):
     def _sw_send(this, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
+        # ignore trace skywalking self request
+        if config.protocol == 'kafka' and config.kafka_topic_segment == topic or config.kafka_topic_management == topic:
+            return _send(this, topic, value=value, key=key, headers=headers, partition=partition,
+                         timestamp_ms=timestamp_ms)
+
         peer = ";".join(this.config["bootstrap_servers"])
         context = get_context()
         carrier = Carrier()
