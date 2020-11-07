@@ -75,6 +75,9 @@ def connect():
     elif config.protocol == 'http':
         from skywalking.agent.protocol.http import HttpProtocol
         __protocol = HttpProtocol()
+    elif config.protocol == "kafka":
+        from skywalking.agent.protocol.kafka import KafkaProtocol
+        __protocol = KafkaProtocol()
 
 
 def start():
