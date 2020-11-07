@@ -40,10 +40,9 @@ def __heartbeat():
 def __report():
     while not __finished.is_set():
         if connected():
-            __protocol.report(__queue)
-            break
-        else:
-            __finished.wait(1)
+            __protocol.report(__queue)  # is blocking actually
+
+        __finished.wait(1)
 
 
 __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
