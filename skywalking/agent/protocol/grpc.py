@@ -16,6 +16,7 @@
 #
 
 import logging
+import traceback
 from queue import Queue
 
 import grpc
@@ -40,21 +41,32 @@ class GrpcProtocol(Protocol):
                 self.channel, header_adder_interceptor('authentication', config.authentication)
             )
 
-        def cb(state):
-            logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
-            self.state = state
-            if self.connected():
-                self.service_management.send_instance_props()
-
-        self.channel.subscribe(cb, try_to_connect=True)
+        self.channel.subscribe(self._cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
 
+    def _cb(self, state):
+        logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
+        self.state = state
+        if self.connected():
+            try:
+                self.service_management.send_instance_props()
+            except grpc.RpcError:
+                self.on_error()
+
     def heartbeat(self):
-        self.service_management.send_heart_beat()
+        try:
+            self.service_management.send_heart_beat()
+        except grpc.RpcError:
+            self.on_error()
 
     def connected(self):
         return self.state == grpc.ChannelConnectivity.READY
+
+    def on_error(self):
+        traceback.print_exc()
+        self.channel.unsubscribe(self._cb)
+        self.channel.subscribe(self._cb, try_to_connect=True)
 
     def report(self, queue: Queue):
         def generator():
@@ -104,4 +116,7 @@ class GrpcProtocol(Protocol):
 
                 queue.task_done()
 
-        self.traces_reporter.report(generator())
+        try:
+            self.traces_reporter.report(generator())
+        except grpc.RpcError:
+            self.on_error()
