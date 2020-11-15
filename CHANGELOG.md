@@ -1,5 +1,12 @@
 ## Change Logs
 
+### 0.4.0
+
+- Feature: Support Kafka reporter protocol (#74)
+- BugFix: Move generated packages into `skywalking` namespace to avoid conflicts (#72)
+- BugFix: Agent cannot reconnect after server is down (#79)
+- Test: Mitigate unsafe yaml loading (#76)
+
 ### 0.3.0
 
 - New plugins

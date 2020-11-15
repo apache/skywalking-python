@@ -27,18 +27,13 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from kafka import KafkaProducer
-        from kafka import KafkaConsumer
+    from kafka import KafkaProducer
+    from kafka import KafkaConsumer
 
-        _send = KafkaProducer.send
-        __poll_once = KafkaConsumer._poll_once
-        KafkaProducer.send = _sw_send_func(_send)
-        KafkaConsumer._poll_once = _sw__poll_once_func(__poll_once)
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    _send = KafkaProducer.send
+    __poll_once = KafkaConsumer._poll_once
+    KafkaProducer.send = _sw_send_func(_send)
+    KafkaConsumer._poll_once = _sw__poll_once_func(__poll_once)
 
 
 def _sw__poll_once_func(__poll_once):

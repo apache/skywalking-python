@@ -25,30 +25,26 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from redis.connection import Connection
+    from redis.connection import Connection
 
-        _send_command = Connection.send_command
+    _send_command = Connection.send_command
 
-        def _sw_send_command(this: Connection, *args, **kwargs):
-            peer = "%s:%s" % (this.host, this.port)
-            op = args[0]
-            context = get_context()
-            with context.new_exit_span(op="Redis/"+op or "/", peer=peer) as span:
-                span.layer = Layer.Cache
-                span.component = Component.Redis
+    def _sw_send_command(this: Connection, *args, **kwargs):
+        peer = "%s:%s" % (this.host, this.port)
+        op = args[0]
+        context = get_context()
+        with context.new_exit_span(op="Redis/"+op or "/", peer=peer) as span:
+            span.layer = Layer.Cache
+            span.component = Component.Redis
 
-                try:
-                    res = _send_command(this, *args, **kwargs)
-                    span.tag(Tag(key=tags.DbType, val="Redis"))
-                    span.tag(Tag(key=tags.DbInstance, val=this.db))
-                    span.tag(Tag(key=tags.DbStatement, val=op))
-                except BaseException as e:
-                    span.raised()
-                    raise e
-                return res
+            try:
+                res = _send_command(this, *args, **kwargs)
+                span.tag(Tag(key=tags.DbType, val="Redis"))
+                span.tag(Tag(key=tags.DbInstance, val=this.db))
+                span.tag(Tag(key=tags.DbStatement, val=op))
+            except BaseException as e:
+                span.raised()
+                raise e
+            return res
 
-        Connection.send_command = _sw_send_command
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    Connection.send_command = _sw_send_command

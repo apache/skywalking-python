@@ -32,27 +32,23 @@ version_rule = {
 
 
 def install():
-    try:
-        from pymongo.bulk import _Bulk
-        from pymongo.cursor import Cursor
-        from pymongo.pool import SocketInfo
+    from pymongo.bulk import _Bulk
+    from pymongo.cursor import Cursor
+    from pymongo.pool import SocketInfo
 
-        bulk_op_map = {
-                0: "insert",
-                1: "update",
-                2: "delete"
-            }
-        # handle insert_many and bulk write
-        inject_bulk_write(_Bulk, bulk_op_map)
+    bulk_op_map = {
+            0: "insert",
+            1: "update",
+            2: "delete"
+        }
+    # handle insert_many and bulk write
+    inject_bulk_write(_Bulk, bulk_op_map)
 
-        # handle find() & find_one()
-        inject_cursor(Cursor)
+    # handle find() & find_one()
+    inject_cursor(Cursor)
 
-        # handle other commands
-        inject_socket_info(SocketInfo)
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    # handle other commands
+    inject_socket_info(SocketInfo)
 
 
 def inject_socket_info(SocketInfo):

@@ -18,6 +18,8 @@ import inspect
 import logging
 import pkgutil
 import re
+import traceback
+
 import pkg_resources
 
 from packaging import version
@@ -51,7 +53,13 @@ def install():
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
             logger.warning('no `install` method in plugin %s, thus the plugin won\'t be installed', modname)
             continue
-        plugin.install()
+
+        # noinspection PyBroadException
+        try:
+            plugin.install()
+        except Exception:
+            logger.warning('failed to install plugin %s', modname)
+            traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
 
 
 _operators = {

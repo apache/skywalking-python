@@ -27,52 +27,47 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from flask import Flask
-        _full_dispatch_request = Flask.full_dispatch_request
+    from flask import Flask
+    _full_dispatch_request = Flask.full_dispatch_request
 
-        _handle_user_exception = Flask.handle_user_exception
+    _handle_user_exception = Flask.handle_user_exception
 
-        def params_tostring(params):
-            return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+    def params_tostring(params):
+        return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
 
-        def _sw_full_dispatch_request(this: Flask):
-            import flask
-            req = flask.request
-            context = get_context()
-            carrier = Carrier()
+    def _sw_full_dispatch_request(this: Flask):
+        import flask
+        req = flask.request
+        context = get_context()
+        carrier = Carrier()
 
-            for item in carrier:
-                if item.key.capitalize() in req.headers:
-                    item.val = req.headers[item.key.capitalize()]
-            with context.new_entry_span(op=req.path, carrier=carrier) as span:
-                span.layer = Layer.Http
-                span.component = Component.Flask
-                span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])
-                span.tag(Tag(key=tags.HttpMethod, val=req.method))
-                span.tag(Tag(key=tags.HttpUrl, val=req.url.split("?")[0]))
-                if config.flask_collect_http_params and req.values:
-                    span.tag(Tag(key=tags.HttpParams,
+        for item in carrier:
+            if item.key.capitalize() in req.headers:
+                item.val = req.headers[item.key.capitalize()]
+        with context.new_entry_span(op=req.path, carrier=carrier) as span:
+            span.layer = Layer.Http
+            span.component = Component.Flask
+            span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])
+            span.tag(Tag(key=tags.HttpMethod, val=req.method))
+            span.tag(Tag(key=tags.HttpUrl, val=req.url.split("?")[0]))
+            if config.flask_collect_http_params and req.values:
+                span.tag(Tag(key=tags.HttpParams,
                              val=params_tostring(req.values)[0:config.http_params_length_threshold]))
-                resp = _full_dispatch_request(this)
+            resp = _full_dispatch_request(this)
 
-                if resp.status_code >= 400:
-                    span.error_occurred = True
+            if resp.status_code >= 400:
+                span.error_occurred = True
 
-                span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
-                return resp
+            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
+            return resp
 
-        def _sw_handle_user_exception(this: Flask, e):
-            if e is not None:
-                entry_span = get_context().active_span()
-                if entry_span is not None and type(entry_span) is not NoopSpan:
-                    entry_span.raised()
+    def _sw_handle_user_exception(this: Flask, e):
+        if e is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None and type(entry_span) is not NoopSpan:
+                entry_span.raised()
 
-            return _handle_user_exception(this, e)
+        return _handle_user_exception(this, e)
 
-        Flask.full_dispatch_request = _sw_full_dispatch_request
-        Flask.handle_user_exception = _sw_handle_user_exception
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    Flask.full_dispatch_request = _sw_full_dispatch_request
+    Flask.handle_user_exception = _sw_handle_user_exception

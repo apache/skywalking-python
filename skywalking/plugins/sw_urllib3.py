@@ -27,43 +27,39 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from urllib3.request import RequestMethods
+    from urllib3.request import RequestMethods
 
-        _request = RequestMethods.request
+    _request = RequestMethods.request
 
-        def _sw_request(this: RequestMethods, method, url, fields=None, headers=None, **urlopen_kw):
+    def _sw_request(this: RequestMethods, method, url, fields=None, headers=None, **urlopen_kw):
 
-            from urllib.parse import urlparse
-            url_param = urlparse(url)
-            carrier = Carrier()
-            context = get_context()
-            with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc, carrier=carrier) as span:
-                span.layer = Layer.Http
-                span.component = Component.Urllib3
+        from urllib.parse import urlparse
+        url_param = urlparse(url)
+        carrier = Carrier()
+        context = get_context()
+        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc, carrier=carrier) as span:
+            span.layer = Layer.Http
+            span.component = Component.Urllib3
 
-                if headers is None:
-                    headers = {}
-                    for item in carrier:
-                        headers[item.key] = item.val
-                else:
-                    for item in carrier:
-                        headers[item.key] = item.val
+            if headers is None:
+                headers = {}
+                for item in carrier:
+                    headers[item.key] = item.val
+            else:
+                for item in carrier:
+                    headers[item.key] = item.val
 
-                try:
-                    res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
+            try:
+                res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
 
-                    span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
-                    span.tag(Tag(key=tags.HttpUrl, val=url))
-                    span.tag(Tag(key=tags.HttpStatus, val=res.status))
-                    if res.status >= 400:
-                        span.error_occurred = True
-                except BaseException as e:
-                    span.raised()
-                    raise e
-                return res
+                span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
+                span.tag(Tag(key=tags.HttpUrl, val=url))
+                span.tag(Tag(key=tags.HttpStatus, val=res.status))
+                if res.status >= 400:
+                    span.error_occurred = True
+            except BaseException as e:
+                span.raised()
+                raise e
+            return res
 
-        RequestMethods.request = _sw_request
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    RequestMethods.request = _sw_request

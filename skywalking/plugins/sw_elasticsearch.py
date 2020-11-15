@@ -25,30 +25,25 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from elasticsearch import Transport
-        _perform_request = Transport.perform_request
+    from elasticsearch import Transport
+    _perform_request = Transport.perform_request
 
-        def _sw_perform_request(this: Transport, method, url, headers=None, params=None, body=None):
-            context = get_context()
-            peer = ",".join([host["host"] + ":" + str(host["port"]) for host in this.hosts])
-            with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer) as span:
-                span.layer = Layer.Database
-                span.component = Component.Elasticsearch
-                try:
-                    res = _perform_request(this, method, url, headers=headers, params=params, body=body)
+    def _sw_perform_request(this: Transport, method, url, headers=None, params=None, body=None):
+        context = get_context()
+        peer = ",".join([host["host"] + ":" + str(host["port"]) for host in this.hosts])
+        with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer) as span:
+            span.layer = Layer.Database
+            span.component = Component.Elasticsearch
+            try:
+                res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 
-                    span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
-                    if config.elasticsearch_trace_dsl:
-                        span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
+                span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
+                if config.elasticsearch_trace_dsl:
+                    span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
 
-                except BaseException as e:
-                    span.raised()
-                    raise e
-                return res
+            except BaseException as e:
+                span.raised()
+                raise e
+            return res
 
-        Transport.perform_request = _sw_perform_request
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    Transport.perform_request = _sw_perform_request
