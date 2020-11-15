@@ -31,59 +31,56 @@ version_rule = {
 
 
 def install():
-    try:
-        from django.core.handlers.base import BaseHandler
-        from django.core.handlers import exception
+    from django.core.handlers.base import BaseHandler
+    from django.core.handlers import exception
 
-        _get_response = BaseHandler.get_response
-        _handle_uncaught_exception = exception.handle_uncaught_exception
+    _get_response = BaseHandler.get_response
+    _handle_uncaught_exception = exception.handle_uncaught_exception
 
-        def _sw_get_response(this, request):
-            if request is None:
-                resp = _get_response(this, request)
-                return resp
+    def _sw_get_response(this, request):
+        if request is None:
+            resp = _get_response(this, request)
+            return resp
 
-            context = get_context()
-            carrier = Carrier()
-            for item in carrier:
-                # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
-                # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
-                # https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest.META
-                sw_http_header_key = 'HTTP_%s' % item.key.upper().replace('-', '_')
-                if sw_http_header_key in request.META:
-                    item.val = request.META[sw_http_header_key]
+        context = get_context()
+        carrier = Carrier()
+        for item in carrier:
+            # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
+            # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
+            # https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest.META
+            sw_http_header_key = 'HTTP_%s' % item.key.upper().replace('-', '_')
+            if sw_http_header_key in request.META:
+                item.val = request.META[sw_http_header_key]
 
-            with context.new_entry_span(op=request.path, carrier=carrier) as span:
-                span.layer = Layer.Http
-                span.component = Component.Django
-                span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
+        with context.new_entry_span(op=request.path, carrier=carrier) as span:
+            span.layer = Layer.Http
+            span.component = Component.Django
+            span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
 
-                span.tag(Tag(key=tags.HttpMethod, val=request.method))
-                span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
+            span.tag(Tag(key=tags.HttpMethod, val=request.method))
+            span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
 
-                # you can get request parameters by `request.GET` even though client are using POST or other methods
-                if config.django_collect_http_params and request.GET:
-                    span.tag(Tag(key=tags.HttpParams,
-                                 val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
+            # you can get request parameters by `request.GET` even though client are using POST or other methods
+            if config.django_collect_http_params and request.GET:
+                span.tag(Tag(key=tags.HttpParams,
+                             val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
 
-                resp = _get_response(this, request)
-                span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
-                if resp.status_code >= 400:
-                    span.error_occurred = True
-                return resp
+            resp = _get_response(this, request)
+            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
+            if resp.status_code >= 400:
+                span.error_occurred = True
+            return resp
 
-        def _sw_handle_uncaught_exception(request, resolver, exc_info):
-            if exc_info is not None:
-                entry_span = get_context().active_span()
-                if entry_span is not None:
-                    entry_span.raised()
+    def _sw_handle_uncaught_exception(request, resolver, exc_info):
+        if exc_info is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None:
+                entry_span.raised()
 
-            return _handle_uncaught_exception(request, resolver, exc_info)
+        return _handle_uncaught_exception(request, resolver, exc_info)
 
-        BaseHandler.get_response = _sw_get_response
-        exception.handle_uncaught_exception = _sw_handle_uncaught_exception
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    BaseHandler.get_response = _sw_get_response
+    exception.handle_uncaught_exception = _sw_handle_uncaught_exception
 
 
 def params_tostring(params):

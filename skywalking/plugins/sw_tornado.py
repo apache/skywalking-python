@@ -27,23 +27,20 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    try:
-        from tornado.web import RequestHandler
-        old_execute = RequestHandler._execute
-        old_log_exception = RequestHandler.log_exception
-        RequestHandler._execute = _gen_sw_get_response_func(old_execute)
+    from tornado.web import RequestHandler
+    old_execute = RequestHandler._execute
+    old_log_exception = RequestHandler.log_exception
+    RequestHandler._execute = _gen_sw_get_response_func(old_execute)
 
-        def _sw_handler_uncaught_exception(self: RequestHandler, ty, value, tb, *args, **kwargs):
-            if value is not None:
-                entry_span = get_context().active_span()
-                if entry_span is not None:
-                    entry_span.raised()
+    def _sw_handler_uncaught_exception(self: RequestHandler, ty, value, tb, *args, **kwargs):
+        if value is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None:
+                entry_span.raised()
 
-            return old_log_exception(self, ty, value, tb, *args, **kwargs)
+        return old_log_exception(self, ty, value, tb, *args, **kwargs)
 
-        RequestHandler.log_exception = _sw_handler_uncaught_exception
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    RequestHandler.log_exception = _sw_handler_uncaught_exception
 
 
 def _gen_sw_get_response_func(old_execute):

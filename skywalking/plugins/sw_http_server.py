@@ -16,7 +16,6 @@
 #
 import inspect
 import logging
-import traceback
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
@@ -28,25 +27,19 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from http.server import BaseHTTPRequestHandler
+    from http.server import BaseHTTPRequestHandler
 
-        _handle = BaseHTTPRequestHandler.handle
+    _handle = BaseHTTPRequestHandler.handle
 
-        def _sw_handle(handler: BaseHTTPRequestHandler):
-            clazz = handler.__class__
-            if 'werkzeug.serving.WSGIRequestHandler' == ".".join([clazz.__module__, clazz.__name__]):
-                wrap_werkzeug_request_handler(handler)
-            else:
-                wrap_default_request_handler(handler)
-            _handle(handler)
+    def _sw_handle(handler: BaseHTTPRequestHandler):
+        clazz = handler.__class__
+        if 'werkzeug.serving.WSGIRequestHandler' == ".".join([clazz.__module__, clazz.__name__]):
+            wrap_werkzeug_request_handler(handler)
+        else:
+            wrap_default_request_handler(handler)
+        _handle(handler)
 
-        BaseHTTPRequestHandler.handle = _sw_handle
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
-        traceback.print_exc()
+    BaseHTTPRequestHandler.handle = _sw_handle
 
 
 def wrap_werkzeug_request_handler(handler):

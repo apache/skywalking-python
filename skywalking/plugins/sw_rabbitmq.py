@@ -26,17 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 def install():
-    # noinspection PyBroadException
-    try:
-        from pika.channel import Channel
+    from pika.channel import Channel
 
-        _basic_publish = Channel.basic_publish
-        __on_deliver = Channel._on_deliver
-        Channel.basic_publish = _sw_basic_publish_func(_basic_publish)
-        Channel._on_deliver = _sw__on_deliver_func(__on_deliver)
-
-    except Exception:
-        logger.warning('failed to install plugin %s', __name__)
+    _basic_publish = Channel.basic_publish
+    __on_deliver = Channel._on_deliver
+    Channel.basic_publish = _sw_basic_publish_func(_basic_publish)
+    Channel._on_deliver = _sw__on_deliver_func(__on_deliver)
 
 
 def _sw_basic_publish_func(_basic_publish):
