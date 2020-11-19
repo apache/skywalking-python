@@ -34,16 +34,12 @@ def install():
         with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer) as span:
             span.layer = Layer.Database
             span.component = Component.Elasticsearch
-            try:
-                res = _perform_request(this, method, url, headers=headers, params=params, body=body)
+            res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 
-                span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
-                if config.elasticsearch_trace_dsl:
-                    span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
+            span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
+            if config.elasticsearch_trace_dsl:
+                span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
 
-            except BaseException as e:
-                span.raised()
-                raise e
             return res
 
     Transport.perform_request = _sw_perform_request

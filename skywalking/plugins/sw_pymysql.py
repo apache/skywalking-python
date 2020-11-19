@@ -37,22 +37,18 @@ def install():
         with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, carrier=carrier) as span:
             span.layer = Layer.Database
             span.component = Component.PyMysql
-            try:
-                res = _execute(this, query, args)
+            res = _execute(this, query, args)
 
-                span.tag(Tag(key=tags.DbType, val="mysql"))
-                span.tag(Tag(key=tags.DbInstance, val=this.connection.db.decode("utf-8")))
-                span.tag(Tag(key=tags.DbStatement, val=query))
+            span.tag(Tag(key=tags.DbType, val="mysql"))
+            span.tag(Tag(key=tags.DbInstance, val=this.connection.db.decode("utf-8")))
+            span.tag(Tag(key=tags.DbStatement, val=query))
 
-                if config.mysql_trace_sql_parameters and args:
-                    parameter = ",".join([str(arg) for arg in args])
-                    max_len = config.mysql_sql_parameters_max_length
-                    parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
-                    span.tag(Tag(key=tags.DbSqlParameters, val='[' + parameter + ']'))
+            if config.mysql_trace_sql_parameters and args:
+                parameter = ",".join([str(arg) for arg in args])
+                max_len = config.mysql_sql_parameters_max_length
+                parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
+                span.tag(Tag(key=tags.DbSqlParameters, val='[' + parameter + ']'))
 
-            except BaseException as e:
-                span.raised()
-                raise e
             return res
 
     Cursor.execute = _sw_execute

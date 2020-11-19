@@ -37,14 +37,11 @@ def install():
             span.layer = Layer.Cache
             span.component = Component.Redis
 
-            try:
-                res = _send_command(this, *args, **kwargs)
-                span.tag(Tag(key=tags.DbType, val="Redis"))
-                span.tag(Tag(key=tags.DbInstance, val=this.db))
-                span.tag(Tag(key=tags.DbStatement, val=op))
-            except BaseException as e:
-                span.raised()
-                raise e
+            res = _send_command(this, *args, **kwargs)
+            span.tag(Tag(key=tags.DbType, val="Redis"))
+            span.tag(Tag(key=tags.DbInstance, val=this.db))
+            span.tag(Tag(key=tags.DbStatement, val=op))
+
             return res
 
     Connection.send_command = _sw_send_command

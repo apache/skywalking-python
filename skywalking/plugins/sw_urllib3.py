@@ -49,17 +49,14 @@ def install():
                 for item in carrier:
                     headers[item.key] = item.val
 
-            try:
-                res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
+            res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
 
-                span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
-                span.tag(Tag(key=tags.HttpUrl, val=url))
-                span.tag(Tag(key=tags.HttpStatus, val=res.status))
-                if res.status >= 400:
-                    span.error_occurred = True
-            except BaseException as e:
-                span.raised()
-                raise e
+            span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
+            span.tag(Tag(key=tags.HttpUrl, val=url))
+            span.tag(Tag(key=tags.HttpStatus, val=res.status))
+            if res.status >= 400:
+                span.error_occurred = True
+
             return res
 
     RequestMethods.request = _sw_request

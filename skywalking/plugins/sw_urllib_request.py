@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 def install():
     from urllib.request import OpenerDirector
-    from urllib.error import HTTPError
 
     _open = OpenerDirector.open
 
@@ -45,16 +44,13 @@ def install():
 
             [fullurl.add_header(item.key, item.val) for item in carrier]
 
-            try:
-                res = _open(this, fullurl, data, timeout)
-                span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
-                span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
-                span.tag(Tag(key=tags.HttpStatus, val=res.code))
-                if res.code >= 400:
-                    span.error_occurred = True
-            except HTTPError as e:
-                span.raised()
-                raise e
+            res = _open(this, fullurl, data, timeout)
+            span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
+            span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
+            span.tag(Tag(key=tags.HttpStatus, val=res.code))
+            if res.code >= 400:
+                span.error_occurred = True
+
             return res
 
     OpenerDirector.open = _sw_open
