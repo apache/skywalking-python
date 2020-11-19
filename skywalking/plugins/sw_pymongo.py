@@ -65,23 +65,19 @@ def inject_socket_info(SocketInfo):
             operation = list(spec.keys())[0]
             sw_op = operation.capitalize() + "Operation"
             with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, carrier=carrier) as span:
-                try:
-                    result = _command(this, dbname, spec, *args, **kwargs)
+                result = _command(this, dbname, spec, *args, **kwargs)
 
-                    span.layer = Layer.Database
-                    span.component = Component.MongoDB
-                    span.tag(Tag(key=tags.DbType, val="MongoDB"))
-                    span.tag(Tag(key=tags.DbInstance, val=dbname))
+                span.layer = Layer.Database
+                span.component = Component.MongoDB
+                span.tag(Tag(key=tags.DbType, val="MongoDB"))
+                span.tag(Tag(key=tags.DbInstance, val=dbname))
 
-                    if config.pymongo_trace_parameters:
-                        # get filters
-                        filters = _get_filter(operation, spec)
-                        max_len = config.pymongo_parameters_max_length
-                        filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
-                        span.tag(Tag(key=tags.DbStatement, val=filters))
-                except BaseException as e:
-                    span.raised()
-                    raise e
+                if config.pymongo_trace_parameters:
+                    # get filters
+                    filters = _get_filter(operation, spec)
+                    max_len = config.pymongo_parameters_max_length
+                    filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                    span.tag(Tag(key=tags.DbStatement, val=filters))
 
         else:
             result = _command(this, dbname, spec, *args, **kwargs)
@@ -123,26 +119,21 @@ def inject_bulk_write(_Bulk, bulk_op_map):
             span.layer = Layer.Database
             span.component = Component.MongoDB
 
-            try:
-                bulk_result = _execute(this, *args, **kwargs)
+            bulk_result = _execute(this, *args, **kwargs)
 
-                span.tag(Tag(key=tags.DbType, val="MongoDB"))
-                span.tag(Tag(key=tags.DbInstance, val=this.collection.database.name))
-                if config.pymongo_trace_parameters:
-                    filters = ""
-                    bulk_ops = this.ops
-                    for bulk_op in bulk_ops:
-                        opname = bulk_op_map.get(bulk_op[0])
-                        _filter = opname + " " + str(bulk_op[1])
-                        filters = filters + _filter + " "
+            span.tag(Tag(key=tags.DbType, val="MongoDB"))
+            span.tag(Tag(key=tags.DbInstance, val=this.collection.database.name))
+            if config.pymongo_trace_parameters:
+                filters = ""
+                bulk_ops = this.ops
+                for bulk_op in bulk_ops:
+                    opname = bulk_op_map.get(bulk_op[0])
+                    _filter = opname + " " + str(bulk_op[1])
+                    filters = filters + _filter + " "
 
-                    max_len = config.pymongo_parameters_max_length
-                    filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
-                    span.tag(Tag(key=tags.DbStatement, val=filters))
-
-            except BaseException as e:
-                span.raised()
-                raise e
+                max_len = config.pymongo_parameters_max_length
+                filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                span.tag(Tag(key=tags.DbStatement, val=filters))
 
             return bulk_result
 
@@ -164,22 +155,17 @@ def inject_cursor(Cursor):
             span.layer = Layer.Database
             span.component = Component.MongoDB
 
-            try:
-                # __send_message return nothing
-                __send_message(this, operation)
+            # __send_message return nothing
+            __send_message(this, operation)
 
-                span.tag(Tag(key=tags.DbType, val="MongoDB"))
-                span.tag(Tag(key=tags.DbInstance, val=this.collection.database.name))
+            span.tag(Tag(key=tags.DbType, val="MongoDB"))
+            span.tag(Tag(key=tags.DbInstance, val=this.collection.database.name))
 
-                if config.pymongo_trace_parameters:
-                    filters = "find " + str(operation.spec)
-                    max_len = config.pymongo_parameters_max_length
-                    filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
-                    span.tag(Tag(key=tags.DbStatement, val=filters))
-
-            except BaseException as e:
-                span.raised()
-                raise e
+            if config.pymongo_trace_parameters:
+                filters = "find " + str(operation.spec)
+                max_len = config.pymongo_parameters_max_length
+                filters = filters[0:max_len] + "..." if len(filters) > max_len else filters
+                span.tag(Tag(key=tags.DbStatement, val=filters))
 
             return
 

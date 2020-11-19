@@ -88,14 +88,11 @@ def _sw_send_func(_send):
                 for item in carrier:
                     headers.append((item.key, item.val.encode("utf-8")))
 
-            try:
-                res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
-                            timestamp_ms=timestamp_ms)
-                span.tag(Tag(key=tags.MqBroker, val=peer))
-                span.tag(Tag(key=tags.MqTopic, val=topic))
-            except BaseException as e:
-                span.raised()
-                raise e
+            res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
+                        timestamp_ms=timestamp_ms)
+            span.tag(Tag(key=tags.MqBroker, val=peer))
+            span.tag(Tag(key=tags.MqTopic, val=topic))
+
             return res
 
     return _sw_send

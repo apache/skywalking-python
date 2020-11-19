@@ -59,18 +59,15 @@ def _sw_basic_publish_func(_basic_publish):
                 for item in carrier:
                     properties.headers[item.key] = item.val
 
-            try:
-                res = _basic_publish(this, exchange,
-                                     routing_key,
-                                     body,
-                                     properties=properties,
-                                     mandatory=mandatory)
-                span.tag(Tag(key=tags.MqBroker, val=peer))
-                span.tag(Tag(key=tags.MqTopic, val=exchange))
-                span.tag(Tag(key=tags.MqQueue, val=routing_key))
-            except BaseException as e:
-                span.raised()
-                raise e
+            res = _basic_publish(this, exchange,
+                                 routing_key,
+                                 body,
+                                 properties=properties,
+                                 mandatory=mandatory)
+            span.tag(Tag(key=tags.MqBroker, val=peer))
+            span.tag(Tag(key=tags.MqTopic, val=exchange))
+            span.tag(Tag(key=tags.MqQueue, val=routing_key))
+
             return res
 
     return _sw_basic_publish
@@ -91,13 +88,9 @@ def _sw__on_deliver_func(__on_deliver):
                                        + "/Consumer" or "", carrier=carrier) as span:
             span.layer = Layer.MQ
             span.component = Component.RabbitmqConsumer
-            try:
-                __on_deliver(this, method_frame, header_frame, body)
-                span.tag(Tag(key=tags.MqBroker, val=peer))
-                span.tag(Tag(key=tags.MqTopic, val=exchange))
-                span.tag(Tag(key=tags.MqQueue, val=routing_key))
-            except BaseException as e:
-                span.raised()
-                raise e
+            __on_deliver(this, method_frame, header_frame, body)
+            span.tag(Tag(key=tags.MqBroker, val=peer))
+            span.tag(Tag(key=tags.MqTopic, val=exchange))
+            span.tag(Tag(key=tags.MqQueue, val=routing_key))
 
     return _sw__on_deliver
