@@ -190,7 +190,7 @@ Vote result should follow these:
 
 1. Update [Github release page](https://github.com/apache/skywalking-python/releases), follow the previous convention.
 
-1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. You can get the permlink of vote thread at [here](https://lists.apache.org/list.html?dev@skywalking.apache.org).
+1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. 
 
     ```
     Subject: [ANNOUNCEMENT] Apache SkyWalking Python $VERSION Released
@@ -205,8 +205,6 @@ Vote result should follow these:
 
     SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
-    Vote Thread: $VOTE_THREAD_PERMALINK
-
     Download Links: http://skywalking.apache.org/downloads/
 
     Release Notes : https://github.com/apache/skywalking-python/blob/v$VERSION/CHANGELOG.md
@@ -214,11 +212,11 @@ Vote result should follow these:
     Website: http://skywalking.apache.org/
 
     SkyWalking Python Resources:
-    - Issue: https://github.com/apache/skywalking/issues
+- Issue: https://github.com/apache/skywalking/issues
     - Mailing list: dev@skywalking.apache.org
     - Documents: https://github.com/apache/skywalking-python/blob/v$VERSION/README.md
-
+    
     The Apache SkyWalking Team
-    ```
+```
     
     
