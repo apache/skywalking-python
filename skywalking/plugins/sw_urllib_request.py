@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 def install():
     from urllib.request import OpenerDirector
+    from urllib.error import HTTPError
 
     _open = OpenerDirector.open
 
@@ -38,15 +39,22 @@ def install():
 
         context = get_context()
         carrier = Carrier()
-        with context.new_exit_span(op=fullurl.selector or '/', peer=fullurl.host, carrier=carrier) as span:
+        url = fullurl.selector.split("?")[0] if fullurl.selector else '/'
+        with context.new_exit_span(op=url, peer=fullurl.host, carrier=carrier) as span:
             span.layer = Layer.Http
             span.component = Component.General
 
             [fullurl.add_header(item.key, item.val) for item in carrier]
 
-            res = _open(this, fullurl, data, timeout)
             span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
             span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
+
+            try:
+                res = _open(this, fullurl, data, timeout)
+            except HTTPError as e:
+                span.tag(Tag(key=tags.HttpStatus, val=e.code))
+                raise
+
             span.tag(Tag(key=tags.HttpStatus, val=res.code))
             if res.code >= 400:
                 span.error_occurred = True
