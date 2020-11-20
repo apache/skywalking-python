@@ -46,14 +46,14 @@ def install():
 
             [fullurl.add_header(item.key, item.val) for item in carrier]
 
-            span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
-            span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
-
             try:
                 res = _open(this, fullurl, data, timeout)
             except HTTPError as e:
                 span.tag(Tag(key=tags.HttpStatus, val=e.code))
                 raise
+            finally:  # we do this here because it may change in _open()
+                span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
+                span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
 
             span.tag(Tag(key=tags.HttpStatus, val=res.code))
             if res.code >= 400:
