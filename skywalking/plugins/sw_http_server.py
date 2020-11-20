@@ -41,6 +41,14 @@ def install():
 
     BaseHTTPRequestHandler.handle = _sw_handle
 
+    def _sw_send_response_only(self, code, *args, **kwargs):
+        self._status_code = code
+
+        return _send_response_only(self, code, *args, **kwargs)
+
+    _send_response_only = BaseHTTPRequestHandler.send_response_only
+    BaseHTTPRequestHandler.send_response_only = _sw_send_response_only
+
 
 def wrap_werkzeug_request_handler(handler):
     """
@@ -53,14 +61,37 @@ def wrap_werkzeug_request_handler(handler):
         carrier = Carrier()
         for item in carrier:
             item.val = handler.headers[item.key.capitalize()]
-        with context.new_entry_span(op=handler.path, carrier=carrier) as span:
+        path = handler.path or '/'
+        with context.new_entry_span(op=path.split("?")[0], carrier=carrier) as span:
+            url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
             span.layer = Layer.Http
             span.component = Component.General
             span.peer = '%s:%s' % handler.client_address
             span.tag(Tag(key=tags.HttpMethod, val=handler.command))
-            return _run_wsgi()
+            span.tag(Tag(key=tags.HttpUrl, val=url))
+
+            try:
+                return _run_wsgi()
+            finally:
+                status_code = int(getattr(handler, '_status_code', -1))
+                if status_code > -1:
+                    span.tag(Tag(key=tags.HttpStatus, val=status_code))
+                    if status_code >= 400:
+                        span.error_occurred = True
 
     handler.run_wsgi = _wrap_run_wsgi
+
+    def _sw_send_response(self, code, *args, **kwargs):
+        self._status_code = code
+
+        return _send_response(self, code, *args, **kwargs)
+
+    WSGIRequestHandler = handler.__class__
+
+    if not getattr(WSGIRequestHandler, '_sw_wrapped', False):
+        _send_response = WSGIRequestHandler.send_response
+        WSGIRequestHandler.send_response = _sw_send_response
+        WSGIRequestHandler._sw_wrapped = True
 
 
 def wrap_default_request_handler(handler):
@@ -78,12 +109,22 @@ def _wrap_do_method(handler, method):
             carrier = Carrier()
             for item in carrier:
                 item.val = handler.headers[item.key.capitalize()]
-            with context.new_entry_span(op=handler.path, carrier=carrier) as span:
+            path = handler.path or '/'
+            with context.new_entry_span(op=path.split("?")[0], carrier=carrier) as span:
+                url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
                 span.layer = Layer.Http
                 span.component = Component.General
                 span.peer = '%s:%s' % handler.client_address
                 span.tag(Tag(key=tags.HttpMethod, val=method))
+                span.tag(Tag(key=tags.HttpUrl, val=url))
 
-                _do_method()
+                try:
+                    _do_method()
+                finally:
+                    status_code = int(getattr(handler, '_status_code', -1))
+                    if status_code > -1:
+                        span.tag(Tag(key=tags.HttpStatus, val=status_code))
+                        if status_code >= 400:
+                            span.error_occurred = True
 
         setattr(handler, 'do_' + method, _sw_do_method)
