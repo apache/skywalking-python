@@ -87,14 +87,13 @@ class Span(ABC):
         return self
 
     def tag(self, tag: Tag) -> 'Span':
-        if not tag.overridable:
-            self.tags.append(deepcopy(tag))
-            return self
+        if tag.overridable:
+            for i, t in enumerate(self.tags):
+                if t.key == tag.key:
+                    self.tags[i] = deepcopy(tag)
+                    return self
 
-        for t in self.tags:
-            if t.key == tag.key:
-                t.val = tag.val
-                break
+        self.tags.append(deepcopy(tag))
 
         return self
 
