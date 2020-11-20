@@ -116,7 +116,7 @@ class Span(ABC):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if isinstance(exc_type, BaseException):
+        if isinstance(exc_val, BaseException):
             self.raised()
         self.stop()
         if exc_tb is not None:
