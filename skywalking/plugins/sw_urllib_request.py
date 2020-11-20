@@ -49,13 +49,13 @@ def install():
             try:
                 res = _open(this, fullurl, data, timeout)
             except HTTPError as e:
-                span.tag(Tag(key=tags.HttpStatus, val=e.code))
+                span.tag(Tag(key=tags.HttpStatus, val=e.code, overridable=True))
                 raise
             finally:  # we do this here because it may change in _open()
                 span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
                 span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.code))
+            span.tag(Tag(key=tags.HttpStatus, val=res.code, overridable=True))
             if res.code >= 400:
                 span.error_occurred = True
 

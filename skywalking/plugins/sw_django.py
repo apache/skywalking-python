@@ -66,7 +66,7 @@ def install():
                              val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
 
             resp = _get_response(this, request)
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
+            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code, overridable=True))
             if resp.status_code >= 400:
                 span.error_occurred = True
             return resp

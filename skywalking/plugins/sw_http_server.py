@@ -75,7 +75,7 @@ def wrap_werkzeug_request_handler(handler):
             finally:
                 status_code = int(getattr(handler, '_status_code', -1))
                 if status_code > -1:
-                    span.tag(Tag(key=tags.HttpStatus, val=status_code))
+                    span.tag(Tag(key=tags.HttpStatus, val=status_code, overridable=True))
                     if status_code >= 400:
                         span.error_occurred = True
 
@@ -123,7 +123,7 @@ def _wrap_do_method(handler, method):
                 finally:
                     status_code = int(getattr(handler, '_status_code', -1))
                     if status_code > -1:
-                        span.tag(Tag(key=tags.HttpStatus, val=status_code))
+                        span.tag(Tag(key=tags.HttpStatus, val=status_code, overridable=True))
                         if status_code >= 400:
                             span.error_occurred = True
 
