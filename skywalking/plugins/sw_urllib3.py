@@ -54,7 +54,7 @@ def install():
 
             res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status))
+            span.tag(Tag(key=tags.HttpStatus, val=res.status, overridable=True))
             if res.status >= 400:
                 span.error_occurred = True
 

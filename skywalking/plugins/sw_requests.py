@@ -68,7 +68,7 @@ def install():
                            proxies,
                            hooks, stream, verify, cert, json)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status_code))
+            span.tag(Tag(key=tags.HttpStatus, val=res.status_code, overridable=True))
             if res.status_code >= 400:
                 span.error_occurred = True
 

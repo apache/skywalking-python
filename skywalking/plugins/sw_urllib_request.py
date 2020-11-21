@@ -28,12 +28,13 @@ logger = logging.getLogger(__name__)
 
 
 def install():
+    import socket
     from urllib.request import OpenerDirector
     from urllib.error import HTTPError
 
     _open = OpenerDirector.open
 
-    def _sw_open(this: OpenerDirector, fullurl, data, timeout):
+    def _sw_open(this: OpenerDirector, fullurl, data=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
         if isinstance(fullurl, str):
             fullurl = Request(fullurl, data)
 
@@ -43,21 +44,25 @@ def install():
         with context.new_exit_span(op=url, peer=fullurl.host, carrier=carrier) as span:
             span.layer = Layer.Http
             span.component = Component.General
+            code = None
 
             [fullurl.add_header(item.key, item.val) for item in carrier]
 
             try:
                 res = _open(this, fullurl, data, timeout)
+                code = res.code
             except HTTPError as e:
-                span.tag(Tag(key=tags.HttpStatus, val=e.code))
+                code = e.code
                 raise
             finally:  # we do this here because it may change in _open()
                 span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
                 span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.code))
-            if res.code >= 400:
-                span.error_occurred = True
+                if code is not None:
+                    span.tag(Tag(key=tags.HttpStatus, val=code, overridable=True))
+
+                    if code >= 400:
+                        span.error_occurred = True
 
             return res
 

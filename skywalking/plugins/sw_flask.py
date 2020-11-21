@@ -58,7 +58,7 @@ def install():
             if resp.status_code >= 400:
                 span.error_occurred = True
 
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code))
+            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code, overridable=True))
             return resp
 
     def _sw_handle_user_exception(this: Flask, e):
