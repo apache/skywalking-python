@@ -15,15 +15,11 @@
 # limitations under the License.
 #
 
-import logging
-
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
-
-logger = logging.getLogger(__name__)
 
 version_rule = {
     "name": "pymongo",

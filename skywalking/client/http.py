@@ -15,14 +15,12 @@
 # limitations under the License.
 #
 
-import logging
+from skywalking.loggings import logger
 
 import requests
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService
-
-logger = logging.getLogger(__name__)
 
 
 class HttpServiceManagementClient(ServiceManagementClient):

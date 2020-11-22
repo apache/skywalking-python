@@ -16,6 +16,7 @@
 #
 
 import logging
+from skywalking.loggings import logger, getLogger
 from queue import Queue
 
 from skywalking import config
@@ -25,11 +26,9 @@ from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.trace.segment import Segment
 
-logger = logging.getLogger(__name__)
-
 # avoid too many kafka logs
-logger_kafka = logging.getLogger('kafka')
-logger_kafka.setLevel(logging.WARN)
+logger_kafka = getLogger('kafka')
+logger_kafka.setLevel(max(logging.WARN, logger.level))
 
 
 class KafkaProtocol(Protocol):
