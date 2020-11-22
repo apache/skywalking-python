@@ -16,75 +16,24 @@
 #
 
 
+import re
+
+reesc = re.compile(r'([.*+?^=!:${}()|\[\]\\])')
+recache = {}
+
+
 def fast_path_match(pattern: str, path: str):
-    return normal_match(pattern, 0, path, 0)
+    repat = recache.get(pattern)
 
+    if repat is None:
+        repat = recache[pattern] = \
+            re.compile('^(?:' +                       # this could handle multiple patterns in one by joining with '|'
+                       '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
+                           '[^/]*'.join(              # replaces "*"
+                               '[^/]'.join(           # replaces "?"
+                                   reesc.sub(r'\\\1', s) for s in p2.split('?')
+                               ) for p2 in p1.split('*')
+                           ) for p1 in pattern.split('**')
+                       ) + ')$')
 
-def normal_match(pat: str, p: int, var: str, s: int) -> bool:
-    while p < len(pat):
-        pc = pat[p]
-        sc = safe_char_at(var, s)
-
-        if pc == '*':
-            p += 1
-
-            if safe_char_at(pat, p) == '*':
-                p += 1
-
-                return multi_wildcard_match(pat, p, var, s)
-            else:
-                return wildcard_match(pat, p, var, s)
-
-        if (pc == '?' and sc != '0' and sc != '/') or pc == sc:
-            s += 1
-            p += 1
-            continue
-
-        return False
-
-    return s == len(var)
-
-
-def wildcard_match(pat: str, p: int, var: str, s: int) -> bool:
-    pc = safe_char_at(pat, p)
-
-    while True:
-        sc = safe_char_at(var, s)
-
-        if sc == '/':
-
-            if pc == sc:
-                return normal_match(pat, p + 1, var, s + 1)
-
-            return False
-
-        if normal_match(pat, p, var, s) is False:
-            if s >= len(var):
-                return False
-
-            s += 1
-            continue
-
-        return True
-
-
-def multi_wildcard_match(pat: str, p: int, var: str, s: int) -> bool:
-    if p >= len(pat) and s < len(var):
-        return var[len(var) - 1] != '/'
-
-    while True:
-        if not normal_match(pat, p, var, s):
-            if s >= len(var):
-                return False
-
-            s += 1
-            continue
-
-        return True
-
-
-def safe_char_at(value: str, index: int) -> str:
-    if index >= len(value):
-        return '0'
-
-    return value[index]
+    return bool(repat.match(path))
