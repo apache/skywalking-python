@@ -34,5 +34,5 @@ logger = getLogger('skywalking')
 
 
 def init():
-    logging.addLevelName(logging.getLevelName('CRITICAL') + 10, 'OFF')
+    logging.addLevelName(logging.CRITICAL + 10, 'OFF')
     logger.setLevel(logging.getLevelName(config.logging_level))
