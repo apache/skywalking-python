@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-import threading
 from typing import List
 
 from skywalking import agent, config
@@ -111,12 +110,13 @@ class SpanContext(object):
             self.spans.append(span)
 
     def stop(self, span: Span) -> bool:
-        assert span is self.spans[-1]
+        idx = self.spans.index(span)  # span SHOULD always be at end but in async-world it MAY not be, so don't crash
 
-        span.finish(self.segment) and self.spans.pop()
+        if span.finish(self.segment):
+            del self.spans[idx]
 
         if len(self.spans) == 0:
-            _thread_local.context = None
+            _local().context = None
             agent.archive(self.segment)
 
         return len(self.spans) == 0
@@ -212,13 +212,38 @@ class NoopContext(SpanContext):
         self._correlation.update(snapshot.correlation)
 
 
-_thread_local = threading.local()
-_thread_local.context = None
+try:  # attempt to use async-local instead of thread-local context
+    import contextvars
+
+    __local = contextvars.ContextVar('local')
+
+    class AsyncLocal:
+        pass
+
+    def _local():
+        try:
+            return __local.get()
+
+        except LookupError:
+            local = AsyncLocal()
+            __local.set(local)
+
+            return local
+
+except ImportError:
+    import threading
+
+    __local = threading.local()
+
+    def _local():
+        return __local
 
 
 def get_context() -> SpanContext:
-    if not hasattr(_thread_local, 'context'):
-        _thread_local.context = None
-    _thread_local.context = _thread_local.context or (SpanContext() if agent.connected() else NoopContext())
+    local = _local()
+    context = getattr(local, 'context', False)
 
-    return _thread_local.context
+    if not context:
+        context = local.context = (SpanContext() if agent.connected() else NoopContext())
+
+    return context
