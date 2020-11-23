@@ -15,14 +15,12 @@
 # limitations under the License.
 #
 
-import logging
+from skywalking.loggings import logger
 from queue import Queue
 
 from skywalking.agent import Protocol
 from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService
 from skywalking.trace.segment import Segment
-
-logger = logging.getLogger(__name__)
 
 
 class HttpProtocol(Protocol):

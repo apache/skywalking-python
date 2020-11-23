@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import logging
+from skywalking.loggings import logger
 import traceback
 from queue import Queue
 
@@ -28,8 +28,6 @@ from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegment
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.trace.segment import Segment
-
-logger = logging.getLogger(__name__)
 
 
 class GrpcProtocol(Protocol):

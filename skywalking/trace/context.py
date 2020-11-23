@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-import logging
 import threading
 from typing import List
 
@@ -27,8 +26,6 @@ from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.ant_matcher import fast_path_match
 from skywalking.utils.counter import Counter
-
-logger = logging.getLogger(__name__)
 
 
 class SpanContext(object):

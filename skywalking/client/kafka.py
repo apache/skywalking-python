@@ -17,7 +17,7 @@
 
 import os
 import ast
-import logging
+from skywalking.loggings import logger
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService
@@ -25,8 +25,6 @@ from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
 from kafka import KafkaProducer
-
-logger = logging.getLogger(__name__)
 
 kafka_configs = {}
 

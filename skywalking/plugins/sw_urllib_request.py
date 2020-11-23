@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-import logging
 from urllib.request import Request
 
 from skywalking import Layer, Component
@@ -23,8 +22,6 @@ from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
-
-logger = logging.getLogger(__name__)
 
 
 def install():

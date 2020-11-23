@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import logging
+from skywalking.loggings import logger
 
 import grpc
 
@@ -25,8 +25,6 @@ from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
-
-logger = logging.getLogger(__name__)
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):

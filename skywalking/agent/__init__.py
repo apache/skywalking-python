@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import logging
+from skywalking.loggings import logger
 from queue import Queue
 from threading import Thread, Event
 from typing import TYPE_CHECKING
@@ -25,8 +25,6 @@ from skywalking.agent.protocol import Protocol
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
-
-logger = logging.getLogger(__name__)
 
 
 def __heartbeat():

@@ -16,6 +16,7 @@
 #
 import inspect
 import logging
+from skywalking.loggings import logger
 import pkgutil
 import re
 import traceback
@@ -27,8 +28,6 @@ from packaging import version
 from skywalking import config
 
 import skywalking
-
-logger = logging.getLogger(__name__)
 
 
 def install():

@@ -20,8 +20,19 @@ import logging
 from skywalking import config
 
 
+def getLogger(name=None):
+    logger = logging.getLogger(name)
+    ch = logging.StreamHandler()
+    formatter = logging.Formatter('%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    return logger
+
+
+logger = getLogger('skywalking')
+
+
 def init():
-    logging.basicConfig(
-        level=logging.getLevelName(config.logging_level),
-        format='%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s',
-    )
+    logging.addLevelName(logging.CRITICAL + 10, 'OFF')
+    logger.setLevel(logging.getLevelName(config.logging_level))
