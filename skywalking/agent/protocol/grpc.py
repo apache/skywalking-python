@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import logging
 from skywalking.loggings import logger
 import traceback
 from queue import Queue
@@ -62,7 +63,7 @@ class GrpcProtocol(Protocol):
         return self.state == grpc.ChannelConnectivity.READY
 
     def on_error(self):
-        traceback.print_exc()
+        traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
         self.channel.unsubscribe(self._cb)
         self.channel.subscribe(self._cb, try_to_connect=True)
 
