@@ -24,7 +24,7 @@ if __name__ == '__main__':
     config.logging_level = 'DEBUG'
     agent.start()
 
-    from sanic import Sanic, response, request
+    from sanic import Sanic, response
 
     app = Sanic(__name__)
 
