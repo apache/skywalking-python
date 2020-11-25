@@ -30,12 +30,7 @@ def prepare():
 
 class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
-        'sanic==20.3.0',
         'sanic==20.9.1',
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()
-
-        response = requests.get('http://0.0.0.0:9090/users')
-        assert response.status_code == 200
-        assert response.json()['song'] == 'Despacito'
