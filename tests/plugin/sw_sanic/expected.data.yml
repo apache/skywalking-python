@@ -17,7 +17,7 @@
 
 segmentItems:
   - serviceName: provider
-    segmentSize: 2
+    segmentSize: 1
     segments:
       - segmentId: not null
         spans:
@@ -78,7 +78,7 @@ segmentItems:
             peer: not null
             skipAnalysis: false
   - serviceName: consumer
-    segmentSize: 2
+    segmentSize: 1
     segments:
       - segmentId: not null
         spans:
