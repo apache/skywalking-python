@@ -23,9 +23,10 @@ from skywalking import config
 def getLogger(name=None):
     logger = logging.getLogger(name)
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(name)-32s [%(threadName)-15s] [%(levelname)-8s] %(message)s')
+    formatter = logging.Formatter('%(name)s [%(threadName)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+    logger.propagate = False
 
     return logger
 
