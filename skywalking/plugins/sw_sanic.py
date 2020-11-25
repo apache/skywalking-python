@@ -32,6 +32,7 @@ version_rule = {
 
 _status_code = 0
 
+
 def install():
     from inspect import isawaitable
     from sanic import Sanic, handlers, response
@@ -39,7 +40,6 @@ def install():
     _format_http1_response = response.format_http1_response
     _handle_request = Sanic.handle_request
     _handlers_ErrorHandler_reponse = handlers.ErrorHandler.response
-
 
     def _sw_format_http1_reponse(status: int, headers, body=b""):
         global _status_code
