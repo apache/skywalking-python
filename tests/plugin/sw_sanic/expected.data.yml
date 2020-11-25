@@ -73,7 +73,7 @@ segmentItems:
                 traceId: not null
             startTime: gt 0
             endTime: gt 0
-            componentId: 7001
+            componentId: 7007
             spanType: Entry
             peer: not null
             skipAnalysis: false
@@ -158,7 +158,7 @@ segmentItems:
                 value: '200'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7001
+            componentId: 7007
             spanType: Entry
             peer: not null
             skipAnalysis: false

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     app = Sanic(__name__)
 
     @app.route("/users", methods=["POST", "GET"])
-    async def application(request):
+    async def application(req):
         time.sleep(0.5)
         return response.json({"song": "Despacito", "artist": "Luis Fonsi"})
 

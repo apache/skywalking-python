@@ -31,6 +31,7 @@ def prepare():
 class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
         'sanic==20.3.0',
+        'sanic==20.9.1',
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()
