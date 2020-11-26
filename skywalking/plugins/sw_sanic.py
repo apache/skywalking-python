@@ -32,7 +32,6 @@ version_rule = {
 
 
 def install():
-    from inspect import isawaitable
     from sanic import Sanic, handlers, response
 
     _format_http1_response = response.format_http1_response
@@ -43,10 +42,27 @@ def install():
         if status is not None:
             entry_span = get_context().active_span()
             if entry_span is not None and type(entry_span) is not NoopSpan:
-                entry_span.error_occurred = True if status >= 400 else False
+                if status >= 400:
+                    entry_span.error_occurred = True
                 entry_span.tag(Tag(key=tags.HttpStatus, val=status))
 
         return _format_http1_response(status, headers, body)
+
+    def _sw_handlers_ErrorHandler_reponse(self: handlers.ErrorHandler, req, e):
+        if e is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None and type(entry_span) is not NoopSpan:
+                entry_span.raised()
+
+        return _handlers_ErrorHandler_reponse(self, req, e)
+
+    response.format_http1_response = _sw_format_http1_reponse
+    Sanic.handle_request = _gen_sw_handle_request(_handle_request)
+    handlers.ErrorHandler.response = _sw_handlers_ErrorHandler_reponse
+
+
+def _gen_sw_handle_request(_handle_request):
+    from inspect import isawaitable
 
     def params_tostring(params):
         return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
@@ -73,15 +89,4 @@ def install():
                 result = await resp
 
         return result
-
-    def _sw_handlers_ErrorHandler_reponse(self: handlers.ErrorHandler, req, e):
-        if e is not None:
-            entry_span = get_context().active_span()
-            if entry_span is not None and type(entry_span) is not NoopSpan:
-                entry_span.raised()
-
-        return _handlers_ErrorHandler_reponse(self, req, e)
-
-    response.format_http1_response = _sw_format_http1_reponse
-    Sanic.handle_request = _sw_handle_request
-    handlers.ErrorHandler.response = _sw_handlers_ErrorHandler_reponse
+    return _sw_handle_request
