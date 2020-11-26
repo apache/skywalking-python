@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     app = Sanic(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route("/users", methods=["GET"])
     async def application(req):
         res = requests.post("http://provider:9091/users")
         return response.json(res.json())
