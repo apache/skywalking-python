@@ -43,8 +43,7 @@ def install():
         if status is not None:
             entry_span = get_context().active_span()
             if entry_span is not None and type(entry_span) is not NoopSpan:
-                if status >= 400:
-                    entry_span.error_occurred = True
+                entry_span.error_occurred = True if status >= 400 else False
                 entry_span.tag(Tag(key=tags.HttpStatus, val=status))
 
         return _format_http1_response(status, headers, body)
