@@ -30,8 +30,6 @@ version_rule = {
     "rules": [">=20.3.0"]
 }
 
-_status_code = 0
-
 
 def install():
     from inspect import isawaitable
@@ -42,15 +40,19 @@ def install():
     _handlers_ErrorHandler_reponse = handlers.ErrorHandler.response
 
     def _sw_format_http1_reponse(status: int, headers, body=b""):
-        global _status_code
-        _status_code = status
+        if status is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None and type(entry_span) is not NoopSpan:
+                if status >= 400:
+                    entry_span.error_occurred = True
+                entry_span.tag(Tag(key=tags.HttpStatus, val=status))
+
         return _format_http1_response(status, headers, body)
 
     def params_tostring(params):
         return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
 
     async def _sw_handle_request(self, request, write_callback, stream_callback):
-        global _status_code
         req = request
         context = get_context()
         carrier = Carrier()
@@ -70,10 +72,7 @@ def install():
             resp = _handle_request(self, request, write_callback, stream_callback)
             if isawaitable(resp):
                 result = await resp
-            if _status_code >= 400:
-                span.error_occurred = True
 
-            span.tag(Tag(key=tags.HttpStatus, val=_status_code))
         return result
 
     def _sw_handlers_ErrorHandler_reponse(self: handlers.ErrorHandler, req, e):
