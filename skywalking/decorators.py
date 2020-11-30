@@ -17,10 +17,12 @@
 
 from functools import wraps
 from typing import List
+import inspect
 
 from skywalking import Layer, Component
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
+
 
 
 def trace(
@@ -31,7 +33,7 @@ def trace(
 ):
     def decorator(func):
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             _op = op or func.__name__
             context = get_context()
             with context.new_local_span(op=_op) as span:
@@ -40,6 +42,8 @@ def trace(
                 [span.tag(tag) for tag in tags or []]
                 try:
                     result = func(*args, **kwargs)
+                    if inspect.isawaitable(result):
+                        return async await result
                     return result
                 except Exception:
                     span.raised()
