@@ -24,7 +24,6 @@ from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
 
-
 def trace(
         op: str = None,
         layer: Layer = Layer.Unknown,
