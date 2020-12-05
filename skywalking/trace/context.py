@@ -74,6 +74,7 @@ class SpanContext(object):
         self.segment = Segment()  # type: Segment
         self._sid = Counter()
         self._correlation = {}  # type: dict
+        self._nspans = 0
 
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
@@ -150,22 +151,23 @@ class SpanContext(object):
         return None
 
     def start(self, span: Span):
+        self._nspans += 1
         spans = _spans()
         if span not in spans:
             spans.append(span)
 
     def stop(self, span: Span) -> bool:
         spans = _spans()
-        idx = spans.index(span)  # span SHOULD now always be at end even in async-world, but just in case
+        span.finish(self.segment)
+        del spans[spans.index(span)]
 
-        if span.finish(self.segment):
-            del spans[idx]
-
-        if len(spans) == 0:
+        self._nspans -= 1
+        if self._nspans == 0:
             _local().context = None
             agent.archive(self.segment)
+            return True
 
-        return len(spans) == 0
+        return False
 
     def active_span(self):
         spans = _spans()

@@ -126,11 +126,19 @@ class Span(ABC):
 
 @tostring
 class StackedSpan(Span):
-    _depth = 0
+    def __init__(self, *args, **kwargs):
+        Span.__init__(self, *args, **kwargs)
+        self._depth = 0
 
-    def finish(self, segment: 'Segment') -> bool:
+    def start(self):
+        self._depth += 1
+        if self._depth == 1:
+            Span.start(self)
+
+    def stop(self):
         self._depth -= 1
-        return self._depth == 0 and Span.finish(self, segment)
+        if self._depth == 0:
+            Span.stop(self)
 
 
 @tostring
@@ -159,10 +167,8 @@ class EntrySpan(StackedSpan):
         self._max_depth = 0
 
     def start(self):
-        self._depth += 1
+        StackedSpan.start(self)
         self._max_depth = self._depth
-        if self._max_depth == 1:
-            StackedSpan.start(self)
         self.component = 0
         self.layer = Layer.Unknown
         self.logs = []
@@ -216,10 +222,6 @@ class ExitSpan(StackedSpan):
         carrier.client_address = self.peer
         carrier.correlation_carrier.correlation = self.context._correlation
         return self
-
-    def start(self):
-        self._depth += 1
-        StackedSpan.start(self)
 
 
 @tostring
