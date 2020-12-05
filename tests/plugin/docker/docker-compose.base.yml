@@ -37,6 +37,8 @@ services:
     build:
       context: ../../../
       dockerfile: tests/plugin/docker/Dockerfile.agent
+      args:
+        - SW_PYTHON_VERSION=${SW_PYTHON_VERSION:-latest}
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
       SW_AGENT_LOGGING_LEVEL: DEBUG
