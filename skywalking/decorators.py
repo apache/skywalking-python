@@ -24,6 +24,7 @@ from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
 
+
 def trace(
         op: str = None,
         layer: Layer = Layer.Unknown,
@@ -31,11 +32,11 @@ def trace(
         tags: List[Tag] = None,
 ):
     def decorator(func):
+        _op = op or func.__name__
+        context = get_context()
         if inspect.iscoroutinefunction(func):
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                _op = op or func.__name__
-                context = get_context()
                 with context.new_local_span(op=_op) as span:
                     span.layer = layer
                     span.component = component
@@ -46,14 +47,11 @@ def trace(
                     except Exception:
                         span.raised()
                         raise
-
             return wrapper
 
         else:
             @wraps(func)
             def wrapper(*args, **kwargs):
-                _op = op or func.__name__
-                context = get_context()
                 with context.new_local_span(op=_op) as span:
                     span.layer = layer
                     span.component = component
