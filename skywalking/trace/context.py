@@ -112,7 +112,7 @@ class SpanContext(object):
 
         return span
 
-    def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
+    def new_exit_span(self, op: str, peer: str) -> Span:
         span = self.ignore_check(op, Kind.Exit)
         if span is not None:
             return span
@@ -127,9 +127,6 @@ class SpanContext(object):
             op=op,
             peer=peer,
         )
-
-        if carrier is not None:
-            span.inject(carrier=carrier)
 
         return span
 
@@ -233,10 +230,7 @@ class NoopContext(SpanContext):
             self._noop_span.extract(carrier)
         return self._noop_span
 
-    def new_exit_span(self, op: str, peer: str, carrier: 'Carrier' = None) -> Span:
-        if carrier is not None:
-            self._noop_span.inject(carrier)
-
+    def new_exit_span(self, op: str, peer: str) -> Span:
         return self._noop_span
 
     def start(self, span: Span):

@@ -97,7 +97,7 @@ class Span(ABC):
 
         return self
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
+    def inject(self) -> 'Carrier':
         raise RuntimeWarning(
             'can only inject context carrier into ExitSpan, this may be a potential bug in the agent, '
             'please report this in https://github.com/apache/skywalking/issues if you encounter this. '
@@ -212,16 +212,17 @@ class ExitSpan(StackedSpan):
             layer,
         )
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
-        carrier.trace_id = str(self.context.segment.related_traces[0])
-        carrier.segment_id = str(self.context.segment.segment_id)
-        carrier.span_id = str(self.sid)
-        carrier.service = config.service_name
-        carrier.service_instance = config.service_instance
-        carrier.endpoint = self.op
-        carrier.client_address = self.peer
-        carrier.correlation_carrier.correlation = self.context._correlation
-        return self
+    def inject(self) -> 'Carrier':
+        return Carrier(
+            trace_id=str(self.context.segment.related_traces[0]),
+            segment_id=str(self.context.segment.segment_id),
+            span_id=str(self.sid),
+            service=config.service_name,
+            service_instance=config.service_instance,
+            endpoint=self.op,
+            client_address=self.peer,
+            correlation=self.context._correlation,
+        )
 
 
 @tostring
@@ -233,6 +234,5 @@ class NoopSpan(Span):
         if carrier is not None:
             self.context._correlation = carrier.correlation_carrier.correlation
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
-        carrier.correlation_carrier.correlation = self.context._correlation
-        return self
+    def inject(self) -> 'Carrier':
+        return Carrier(correlation=self.context._correlation)
