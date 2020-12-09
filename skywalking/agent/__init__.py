@@ -72,6 +72,7 @@ def start():
         raise RuntimeError('the agent can only be started once')
     from skywalking import loggings
     loggings.init()
+    config.finalize()
     __started = True
     __init()
     __heartbeat_thread.start()

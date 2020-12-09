@@ -16,11 +16,14 @@
 #
 import inspect
 import os
+import re
 import uuid
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import List
+
+RE_IGNORE_PATH = re.compile('^$')  # type: 're.Pattern'
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
@@ -46,9 +49,7 @@ django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') 
                                      os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
 correlation_value_max_length = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')  # type: int
-trace_ignore = True if os.getenv('SW_TRACE_IGNORE') and \
-                       os.getenv('SW_TRACE_IGNORE') == 'True' else False  # type: bool
-trace_ignore_path = [s.strip() for s in (os.getenv('SW_TRACE_IGNORE_PATH') or '').split(',')]  # type: List[str]
+trace_ignore_path = os.getenv('SW_TRACE_IGNORE_PATH') or ''  # type: str
 elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
                                   os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False  # type: bool
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
@@ -79,11 +80,29 @@ def init(
     authentication = token or authentication
 
 
+def finalize():
+    reesc = re.compile(r'([.*+?^=!:${}()|\[\]\\])')
+    suffix = r'^.+(?:' + '|'.join(reesc.sub(r'\\\1', s.strip()) for s in ignore_suffix.split(',')) + ')$'
+    path = '^(?:' + \
+           '|'.join(                          # replaces ","
+               '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
+                   '[^/]*'.join(              # replaces "*"
+                       '[^/]'.join(           # replaces "?"
+                           reesc.sub(r'\\\1', s) for s in p2.split('?')
+                       ) for p2 in p1.split('*')
+                   ) for p1 in p0.strip().split('**')
+               ) for p0 in trace_ignore_path.split(',')
+           ) + ')$'
+
+    global RE_IGNORE_PATH
+    RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
+
+
 def serialize():
     from skywalking import config
     return {
         key: value for key, value in config.__dict__.items() if not (
-                key.startswith('_') or key == 'TYPE_CHECKING'
+                key.startswith('_') or key == 'TYPE_CHECKING' or key == 'RE_IGNORE_PATH'
                 or inspect.isfunction(value)
                 or inspect.ismodule(value)
                 or inspect.isbuiltin(value)
@@ -97,3 +116,4 @@ def deserialize(data):
     for key, value in data.items():
         if key in config.__dict__:
             config.__dict__[key] = value
+    finalize()
