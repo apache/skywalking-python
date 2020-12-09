@@ -44,18 +44,22 @@ class CarrierItem(object):
 
 
 class Carrier(CarrierItem):
-    def __init__(self):
+    def __init__(self, trace_id: str = '', segment_id: str = '', span_id: str = '', service: str = '',
+                 service_instance: str = '', endpoint: str = '', client_address: str = '',
+                 correlation: dict = None):  # pyre-ignore
         super(Carrier, self).__init__(key='sw8')
-        self.trace_id = ''  # type: str
-        self.segment_id = ''  # type: str
-        self.span_id = ''  # type: str
-        self.service = ''  # type: str
-        self.service_instance = ''  # type: str
-        self.endpoint = ''  # type: str
-        self.client_address = ''  # type: str
+        self.trace_id = trace_id  # type: str
+        self.segment_id = segment_id  # type: str
+        self.span_id = span_id  # type: str
+        self.service = service  # type: str
+        self.service_instance = service_instance  # type: str
+        self.endpoint = endpoint  # type: str
+        self.client_address = client_address  # type: str
         self.correlation_carrier = SW8CorrelationCarrier()
         self.items = [self.correlation_carrier, self]  # type: List[CarrierItem]
         self.__iter_index = 0  # type: int
+        if correlation is not None:
+            self.correlation_carrier.correlation = correlation
 
     @property
     def val(self) -> str:

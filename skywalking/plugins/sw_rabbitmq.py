@@ -39,22 +39,18 @@ def _sw_basic_publish_func(_basic_publish):
                           mandatory=False):
         peer = '%s:%s' % (this.connection.params.host, this.connection.params.port)
         context = get_context()
-        carrier = Carrier()
         import pika
         with context.new_exit_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key + "/Producer" or "/",
-                                   peer=peer, carrier=carrier) as span:
+                                   peer=peer) as span:
+            carrier = span.inject()
             span.layer = Layer.MQ
             span.component = Component.RabbitmqProducer
             properties = pika.BasicProperties() if properties is None else properties
 
             if properties.headers is None:
-                headers = {}
-                for item in carrier:
-                    headers[item.key] = item.val
-                properties.headers = headers
-            else:
-                for item in carrier:
-                    properties.headers[item.key] = item.val
+                properties.headers = {}
+            for item in carrier:
+                properties.headers[item.key] = item.val
 
             res = _basic_publish(this, exchange,
                                  routing_key,

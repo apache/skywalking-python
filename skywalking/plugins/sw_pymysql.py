@@ -17,7 +17,6 @@
 
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
-from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
@@ -31,8 +30,7 @@ def install():
         peer = "%s:%s" % (this.connection.host, this.connection.port)
 
         context = get_context()
-        carrier = Carrier()
-        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, carrier=carrier) as span:
+        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer) as span:
             span.layer = Layer.Database
             span.component = Component.PyMysql
             res = _execute(this, query, args)

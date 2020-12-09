@@ -17,7 +17,6 @@
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
-from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 from skywalking import config
@@ -44,18 +43,15 @@ def install():
                             hooks, stream, verify, cert, json)
 
         context = get_context()
-        carrier = Carrier()
-        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc, carrier=carrier) as span:
+        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc) as span:
+            carrier = span.inject()
             span.layer = Layer.Http
             span.component = Component.Requests
 
             if headers is None:
                 headers = {}
-                for item in carrier:
-                    headers[item.key] = item.val
-            else:
-                for item in carrier:
-                    headers[item.key] = item.val
+            for item in carrier:
+                headers[item.key] = item.val
 
             span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
             span.tag(Tag(key=tags.HttpUrl, val=url))

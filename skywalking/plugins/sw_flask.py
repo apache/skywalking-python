@@ -26,8 +26,8 @@ from skywalking.trace.tags import Tag
 def install():
     from flask import Flask
     _full_dispatch_request = Flask.full_dispatch_request
-
     _handle_user_exception = Flask.handle_user_exception
+    _handle_exception = Flask.handle_exception
 
     def params_tostring(params):
         return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
@@ -66,5 +66,14 @@ def install():
 
         return _handle_user_exception(this, e)
 
+    def _sw_handle_exception(this: Flask, e):
+        if e is not None:
+            entry_span = get_context().active_span()
+            if entry_span is not None and type(entry_span) is not NoopSpan:
+                entry_span.raised()
+
+        return _handle_exception(this, e)
+
     Flask.full_dispatch_request = _sw_full_dispatch_request
     Flask.handle_user_exception = _sw_handle_user_exception
+    Flask.handle_exception = _sw_handle_exception
