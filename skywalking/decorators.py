@@ -17,6 +17,7 @@
 
 from functools import wraps
 from typing import List
+import inspect
 
 from skywalking import Layer, Component
 from skywalking.trace.context import get_context
@@ -30,22 +31,37 @@ def trace(
         tags: List[Tag] = None,
 ):
     def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            _op = op or func.__name__
-            context = get_context()
-            with context.new_local_span(op=_op) as span:
-                span.layer = layer
-                span.component = component
-                [span.tag(tag) for tag in tags or []]
-                try:
-                    result = func(*args, **kwargs)
-                    return result
-                except Exception:
-                    span.raised()
-                    raise
+        _op = op or func.__name__
+        context = get_context()
+        if inspect.iscoroutinefunction(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                with context.new_local_span(op=_op) as span:
+                    span.layer = layer
+                    span.component = component
+                    [span.tag(tag) for tag in tags or []]
+                    try:
+                        result = func(*args, **kwargs)
+                        return await result
+                    except Exception:
+                        span.raised()
+                        raise
+            return wrapper
 
-        return wrapper
+        else:
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                with context.new_local_span(op=_op) as span:
+                    span.layer = layer
+                    span.component = component
+                    [span.tag(tag) for tag in tags or []]
+                    try:
+                        result = func(*args, **kwargs)
+                        return result
+                    except Exception:
+                        span.raised()
+                        raise
+            return wrapper
 
     return decorator
 
