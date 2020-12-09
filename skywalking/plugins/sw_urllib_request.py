@@ -19,7 +19,6 @@ from urllib.request import Request
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
-from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
@@ -36,9 +35,9 @@ def install():
             fullurl = Request(fullurl, data)
 
         context = get_context()
-        carrier = Carrier()
         url = fullurl.selector.split("?")[0] if fullurl.selector else '/'
-        with context.new_exit_span(op=url, peer=fullurl.host, carrier=carrier) as span:
+        with context.new_exit_span(op=url, peer=fullurl.host) as span:
+            carrier = span.inject()
             span.layer = Layer.Http
             span.component = Component.General
             code = None

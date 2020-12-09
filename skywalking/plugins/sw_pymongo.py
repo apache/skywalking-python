@@ -17,7 +17,6 @@
 
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
-from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
@@ -56,11 +55,10 @@ def inject_socket_info(SocketInfo):
             address = this.sock.getpeername()
             peer = "%s:%s" % address
             context = get_context()
-            carrier = Carrier()
 
             operation = list(spec.keys())[0]
             sw_op = operation.capitalize() + "Operation"
-            with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, carrier=carrier) as span:
+            with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer) as span:
                 result = _command(this, dbname, spec, *args, **kwargs)
 
                 span.layer = Layer.Database
@@ -108,10 +106,9 @@ def inject_bulk_write(_Bulk, bulk_op_map):
         address = this.collection.database.client.address
         peer = "%s:%s" % address
         context = get_context()
-        carrier = Carrier()
 
         sw_op = "MixedBulkWriteOperation"
-        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer, carrier=carrier) as span:
+        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer) as span:
             span.layer = Layer.Database
             span.component = Component.MongoDB
 
@@ -144,10 +141,9 @@ def inject_cursor(Cursor):
         peer = "%s:%s" % address
 
         context = get_context()
-        carrier = Carrier()
         op = "FindOperation"
 
-        with context.new_exit_span(op="MongoDB/"+op, peer=peer, carrier=carrier) as span:
+        with context.new_exit_span(op="MongoDB/"+op, peer=peer) as span:
             span.layer = Layer.Database
             span.component = Component.MongoDB
 

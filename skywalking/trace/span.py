@@ -97,7 +97,7 @@ class Span(ABC):
 
         return self
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
+    def inject(self) -> 'Carrier':
         raise RuntimeWarning(
             'can only inject context carrier into ExitSpan, this may be a potential bug in the agent, '
             'please report this in https://github.com/apache/skywalking/issues if you encounter this. '
@@ -126,11 +126,19 @@ class Span(ABC):
 
 @tostring
 class StackedSpan(Span):
-    _depth = 0
+    def __init__(self, *args, **kwargs):
+        Span.__init__(self, *args, **kwargs)
+        self._depth = 0
 
-    def finish(self, segment: 'Segment') -> bool:
+    def start(self):
+        self._depth += 1
+        if self._depth == 1:
+            Span.start(self)
+
+    def stop(self):
         self._depth -= 1
-        return self._depth == 0 and Span.finish(self, segment)
+        if self._depth == 0:
+            Span.stop(self)
 
 
 @tostring
@@ -159,10 +167,8 @@ class EntrySpan(StackedSpan):
         self._max_depth = 0
 
     def start(self):
-        self._depth += 1
+        StackedSpan.start(self)
         self._max_depth = self._depth
-        if self._max_depth == 1:
-            StackedSpan.start(self)
         self.component = 0
         self.layer = Layer.Unknown
         self.logs = []
@@ -206,20 +212,17 @@ class ExitSpan(StackedSpan):
             layer,
         )
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
-        carrier.trace_id = str(self.context.segment.related_traces[0])
-        carrier.segment_id = str(self.context.segment.segment_id)
-        carrier.span_id = str(self.sid)
-        carrier.service = config.service_name
-        carrier.service_instance = config.service_instance
-        carrier.endpoint = self.op
-        carrier.client_address = self.peer
-        carrier.correlation_carrier.correlation = self.context._correlation
-        return self
-
-    def start(self):
-        self._depth += 1
-        StackedSpan.start(self)
+    def inject(self) -> 'Carrier':
+        return Carrier(
+            trace_id=str(self.context.segment.related_traces[0]),
+            segment_id=str(self.context.segment.segment_id),
+            span_id=str(self.sid),
+            service=config.service_name,
+            service_instance=config.service_instance,
+            endpoint=self.op,
+            client_address=self.peer,
+            correlation=self.context._correlation,
+        )
 
 
 @tostring
@@ -231,6 +234,5 @@ class NoopSpan(Span):
         if carrier is not None:
             self.context._correlation = carrier.correlation_carrier.correlation
 
-    def inject(self, carrier: 'Carrier') -> 'Span':
-        carrier.correlation_carrier.correlation = self.context._correlation
-        return self
+    def inject(self) -> 'Carrier':
+        return Carrier(correlation=self.context._correlation)
