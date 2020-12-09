@@ -21,7 +21,6 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
-from skywalking.utils.ant_matcher import fast_path_match
 from skywalking.utils.counter import Counter
 
 
@@ -131,19 +130,11 @@ class SpanContext(object):
         return span
 
     def ignore_check(self, op: str, kind: Kind):
-        suffix_idx = op.rfind(".")
-        if suffix_idx > -1 and config.ignore_suffix.find(op[suffix_idx:]) > -1:
+        if config.RE_IGNORE_PATH.match(op):
             return NoopSpan(
                 context=NoopContext(),
                 kind=kind,
             )
-        if config.trace_ignore:
-            for pattern in config.trace_ignore_path:
-                if fast_path_match(pattern, op):
-                    return NoopSpan(
-                        context=NoopContext(),
-                        kind=kind,
-                    )
 
         return None
 

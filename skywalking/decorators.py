@@ -40,12 +40,7 @@ def trace(
                     span.layer = layer
                     span.component = component
                     [span.tag(tag) for tag in tags or []]
-                    try:
-                        result = func(*args, **kwargs)
-                        return await result
-                    except Exception:
-                        span.raised()
-                        raise
+                    return await func(*args, **kwargs)
             return wrapper
 
         else:
@@ -55,12 +50,7 @@ def trace(
                     span.layer = layer
                     span.component = component
                     [span.tag(tag) for tag in tags or []]
-                    try:
-                        result = func(*args, **kwargs)
-                        return result
-                    except Exception:
-                        span.raised()
-                        raise
+                    return func(*args, **kwargs)
             return wrapper
 
     return decorator
@@ -84,11 +74,7 @@ def runnable(
                 span.layer = layer
                 span.component = component
                 [span.tag(tag) for tag in tags or []]
-                try:
-                    func(*args, **kwargs)
-                except Exception:
-                    span.raised()
-                    raise
+                func(*args, **kwargs)
 
         return wrapper
 
