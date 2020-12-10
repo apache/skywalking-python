@@ -68,6 +68,11 @@ def __init():
     plugins.install()
 
 
+def __fini():
+    __protocol.report(__queue, False)
+    __queue.join()
+
+
 def start():
     global __started
     if __started:
@@ -78,12 +83,12 @@ def start():
     __init()
     __heartbeat_thread.start()
     __report_thread.start()
-    atexit.register(__protocol.report, (__queue, False))
+    atexit.register(__fini)
 
 
 def stop():
-    atexit.unregister(__protocol.report)
-    __protocol.report(__queue, False)
+    atexit.unregister(__fini)
+    __fini()
     __finished.set()
 
 

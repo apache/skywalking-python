@@ -16,7 +16,7 @@
 #
 
 from skywalking.loggings import logger
-from queue import Queue, Empty
+from queue import Queue
 
 from skywalking.agent import Protocol
 from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService
@@ -41,10 +41,7 @@ class HttpProtocol(Protocol):
     def report(self, queue: Queue, block: bool = True):
         def generator():
             while True:
-                try:
-                    segment = queue.get(block=block, timeout=0.5)  # type: Segment
-                except Empty:
-                    break
+                segment = queue.get(block=block)  # type: Segment
 
                 logger.debug('reporting segment %s', segment)
 
