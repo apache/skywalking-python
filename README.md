@@ -100,6 +100,16 @@ def some_method():
     some_other_method()
 
 
+@trace(op='async_functions_are_also_supported')
+async def async_func():
+    return 'asynchronous'
+
+
+@trace()
+async def async_func2():
+    return await async_func()
+
+
 @runnable() # cross thread propagation
 def some_method(): 
     some_other_method()

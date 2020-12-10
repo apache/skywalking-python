@@ -83,7 +83,7 @@ class Span(ABC):
 
     def log(self, ex: Exception) -> 'Span':
         self.error_occurred = True
-        self.logs.append(Log(items=LogItem(key='Traceback', val=str(ex))))
+        self.logs.append(Log(items=[LogItem(key='Traceback', val=str(ex))]))
         return self
 
     def tag(self, tag: Tag) -> 'Span':
@@ -230,7 +230,7 @@ class NoopSpan(Span):
     def __init__(self, context: 'SpanContext' = None, kind: 'Kind' = None):
         Span.__init__(self, context=context, kind=kind)
 
-    def extract(self, carrier: 'Carrier') -> 'Span':
+    def extract(self, carrier: 'Carrier'):
         if carrier is not None:
             self.context._correlation = carrier.correlation_carrier.correlation
 
