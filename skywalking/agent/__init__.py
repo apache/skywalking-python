@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-from skywalking.loggings import logger
+import atexit
 from queue import Queue
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking import config, plugins
+from skywalking import config, plugins, loggings
+from skywalking.loggings import logger
 from skywalking.agent.protocol import Protocol
 
 if TYPE_CHECKING:
@@ -38,7 +39,8 @@ def __heartbeat():
 def __report():
     while not __finished.is_set():
         if connected():
-            __protocol.report(__queue)  # is blocking actually
+            while __protocol.report(__queue):  # blocking but has timeout
+                pass
 
         __finished.wait(1)
 
@@ -70,16 +72,18 @@ def start():
     global __started
     if __started:
         raise RuntimeError('the agent can only be started once')
-    from skywalking import loggings
     loggings.init()
     config.finalize()
     __started = True
     __init()
     __heartbeat_thread.start()
     __report_thread.start()
+    atexit.register(__protocol.report, (__queue, False))
 
 
 def stop():
+    atexit.unregister(__protocol.report)
+    __protocol.report(__queue, False)
     __finished.set()
 
 
