@@ -39,8 +39,7 @@ def __heartbeat():
 def __report():
     while not __finished.is_set():
         if connected():
-            while __protocol.report(__queue):  # blocking but has timeout
-                pass
+            __protocol.report(__queue)  # is blocking actually
 
         __finished.wait(1)
 
