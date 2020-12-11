@@ -67,10 +67,10 @@ class GrpcProtocol(Protocol):
         self.channel.unsubscribe(self._cb)
         self.channel.subscribe(self._cb, try_to_connect=True)
 
-    def report(self, queue: Queue):
+    def report(self, queue: Queue, block: bool = True):
         def generator():
             while True:
-                segment = queue.get()  # type: Segment
+                segment = queue.get(block=block)  # type: Segment
 
                 logger.debug('reporting segment %s', segment)
 

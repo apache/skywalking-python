@@ -38,10 +38,10 @@ class HttpProtocol(Protocol):
     def connected(self):
         return True
 
-    def report(self, queue: Queue):
+    def report(self, queue: Queue, block: bool = True):
         def generator():
             while True:
-                segment = queue.get()  # type: Segment
+                segment = queue.get(block=block)  # type: Segment
 
                 logger.debug('reporting segment %s', segment)
 

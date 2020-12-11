@@ -26,5 +26,5 @@ class Protocol(ABC):
     def heartbeat(self):
         raise NotImplementedError()
 
-    def report(self, queue: Queue):
+    def report(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
