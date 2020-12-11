@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
 
-RE_IGNORE_PATH = re.compile('^$')  # type: 're.Pattern'
+RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
