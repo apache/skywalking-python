@@ -50,5 +50,3 @@ class HttpProtocol(Protocol):
                 queue.task_done()
 
         self.traces_reporter.report(generator=generator())
-
-        return True
