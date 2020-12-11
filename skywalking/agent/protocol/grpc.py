@@ -117,8 +117,5 @@ class GrpcProtocol(Protocol):
 
         try:
             self.traces_reporter.report(generator())
-
-            return True
-
         except grpc.RpcError:
             self.on_error()
