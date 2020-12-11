@@ -91,5 +91,3 @@ class KafkaProtocol(Protocol):
                 queue.task_done()
 
         self.traces_reporter.report(generator())
-
-        return True
