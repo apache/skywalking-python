@@ -17,7 +17,7 @@
 
 import logging
 from skywalking.loggings import logger, getLogger
-from queue import Queue
+from queue import Queue, Empty
 
 from skywalking import config
 from skywalking.agent import Protocol
@@ -45,7 +45,10 @@ class KafkaProtocol(Protocol):
     def report(self, queue: Queue, block: bool = True):
         def generator():
             while True:
-                segment = queue.get(block=block)  # type: Segment
+                try:
+                    segment = queue.get(block=block)  # type: Segment
+                except Empty:
+                    return
 
                 logger.debug('reporting segment %s', segment)
 

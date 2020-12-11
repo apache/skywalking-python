@@ -18,7 +18,7 @@
 import logging
 from skywalking.loggings import logger
 import traceback
-from queue import Queue
+from queue import Queue, Empty
 
 import grpc
 
@@ -70,7 +70,10 @@ class GrpcProtocol(Protocol):
     def report(self, queue: Queue, block: bool = True):
         def generator():
             while True:
-                segment = queue.get(block=block)  # type: Segment
+                try:
+                    segment = queue.get(block=block)  # type: Segment
+                except Empty:
+                    return
 
                 logger.debug('reporting segment %s', segment)
 
