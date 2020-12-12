@@ -17,12 +17,14 @@
 
 from skywalking import Layer, Component
 from skywalking.trace import tags
+from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import Tag
 
 
 def install():
     from aiohttp import ClientSession
+    from aiohttp.web_protocol import RequestHandler
     from multidict import CIMultiDict, MultiDict, MultiDictProxy
     from yarl import URL
 
@@ -30,7 +32,7 @@ def install():
         url = URL(str_or_url)
         peer = \
             (url.scheme + '://' if url.scheme else '') + \
-            ((url.user or '') + ':' + (url.password or '') + '@' if url.user or url.password else '') + \
+            (url.user + '@' if url.user else '') + \
             (url.host or '') + \
             (':' + str(url.explicit_port) if url.explicit_port is not None else '')
         context = get_context()
@@ -45,7 +47,7 @@ def install():
             headers = kwargs.get('headers')
 
             if headers is None:
-                headers = CIMultiDict()
+                headers = kwargs['headers'] = CIMultiDict()
             elif not isinstance(headers, (MultiDictProxy, MultiDict)):
                 headers = CIMultiDict(headers)
 
@@ -63,3 +65,33 @@ def install():
 
     _request = ClientSession._request
     ClientSession._request = _sw_request
+
+    async def _sw_handle_request(self, request, start_time: float):
+        context = get_context()
+        carrier = Carrier()
+
+        for item in carrier:
+            val = request.headers.get(item.key)
+
+            if val is not None:
+                item.val = val
+
+        with context.new_entry_span(op=request.path, carrier=carrier) as span:
+            span.layer = Layer.Http
+            span.component = Component.Unknown  # TODO: Component.aiohttp
+            span.peer = request.remote
+
+            span.tag(Tag(key=tags.HttpMethod, val=request.method))  # pyre-ignore
+            span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))  # pyre-ignore
+
+            resp, reset = await _handle_request(self, request, start_time)
+
+            span.tag(Tag(key=tags.HttpStatus, val=resp.status, overridable=True))
+
+            if resp.status >= 400:
+                span.error_occurred = True
+
+        return resp, reset
+
+    _handle_request = RequestHandler._handle_request
+    RequestHandler._handle_request = _sw_handle_request
