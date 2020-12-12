@@ -29,12 +29,8 @@ def install():
     from yarl import URL
 
     async def _sw_request(self: ClientSession, method: str, str_or_url, **kwargs):
-        url = URL(str_or_url)
-        peer = \
-            (url.scheme + '://' if url.scheme else '') + \
-            (url.user + '@' if url.user else '') + \
-            (url.host or '') + \
-            (':' + str(url.explicit_port) if url.explicit_port is not None else '')
+        url = URL(str_or_url).with_user(None).with_password(None)
+        peer = '%s:%d' % (url.host or '', url.port)
         context = get_context()
 
         with context.new_exit_span(op=url.path or "/", peer=peer) as span:
@@ -79,7 +75,8 @@ def install():
         with context.new_entry_span(op=request.path, carrier=carrier) as span:
             span.layer = Layer.Http
             span.component = Component.Unknown  # TODO: Component.aiohttp
-            span.peer = request.remote
+            span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple))\
+                else request._transport_peername
 
             span.tag(Tag(key=tags.HttpMethod, val=request.method))  # pyre-ignore
             span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))  # pyre-ignore
