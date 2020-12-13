@@ -35,7 +35,7 @@ def install():
 
         with context.new_exit_span(op=url.path or "/", peer=peer) as span:
             span.layer = Layer.Http
-            span.component = Component.Unknown  # TODO: add Component.aiohttp
+            span.component = Component.AioHttp
             span.tag(Tag(key=tags.HttpMethod, val=method.upper()))  # pyre-ignore
             span.tag(Tag(key=tags.HttpUrl, val=url))  # pyre-ignore
 
@@ -74,7 +74,7 @@ def install():
 
         with context.new_entry_span(op=request.path, carrier=carrier) as span:
             span.layer = Layer.Http
-            span.component = Component.Unknown  # TODO: Component.aiohttp
+            span.component = Component.AioHttp
             span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple))\
                 else request._transport_peername
 
