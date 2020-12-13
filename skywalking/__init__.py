@@ -38,6 +38,7 @@ class Component(Enum):
     Elasticsearch = 47
     Urllib3 = 7006
     Sanic = 7007
+    AioHttp = 7008
 
 
 class Layer(Enum):
