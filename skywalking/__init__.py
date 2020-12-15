@@ -39,6 +39,7 @@ class Component(Enum):
     Urllib3 = 7006
     Sanic = 7007
     AioHttp = 7008
+    Pyramid = 7009
 
 
 class Layer(Enum):
