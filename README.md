@@ -20,8 +20,14 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 The Python agent module is published to [Pypi](https://pypi.org/project/apache-skywalking/), from where you can use `pip` to install:
 
 ```shell
-# Install the latest version
-pip install apache-skywalking
+# Install the latest version, using the default gRPC protocol to report data to OAP
+pip install "apache-skywalking"
+
+# Install the latest version, using the http protocol to report data to OAP
+pip install "apache-skywalking[http]"
+
+# Install the latest version, using the kafka protocol to report data to OAP
+pip install "apache-skywalking[kafka]"
 
 # Install a specific version x.y.z
 # pip install apache-skywalking==x.y.z

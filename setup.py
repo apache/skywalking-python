@@ -25,7 +25,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="apache-skywalking",
-    version="0.4.0",
+    version="0.5.0",
     description="Python Agent for Apache SkyWalking",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -38,7 +38,6 @@ setup(
     install_requires=[
         "grpcio",
         "grpcio-tools",
-        "requests",
         "packaging",
     ],
     extras_require={
@@ -46,6 +45,12 @@ setup(
             "testcontainers",
             "pyyaml",
             "pytest",
+        ],
+        "http": [
+            "requests",
+        ],
+        "kafka": [
+            "kafka",
         ],
     },
     classifiers=[
