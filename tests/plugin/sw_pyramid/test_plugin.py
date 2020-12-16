@@ -32,8 +32,6 @@ class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
         'pyramid==1.10',
         'pyramid==1.9',
-        'pyramid==1.8',
-        'pyramid==1.7',
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()

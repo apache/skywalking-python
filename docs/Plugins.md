@@ -17,6 +17,6 @@ Library | Versions | Plugin Name
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | >= 1.25.9 <= 1.25.10 | `sw_urllib3` |
 | [sanic](https://sanic.readthedocs.io/en/latest/) | >= 20.3.0 <= 20.9.1 | `sw_sanic` |
 | [aiohttp](https://sanic.readthedocs.io/en/latest/) | >= 3.7.3 | `sw_aiohttp` |
-| [pyramid](https://trypyramid.com) | >= 1.7 | `sw_pyramid` |
+| [pyramid](https://trypyramid.com) | >= 1.9 | `sw_pyramid` |
 
 The column `Versions` only indicates that the versions are tested, if you found the newer versions are also supported, welcome to add the newer version into the table.
