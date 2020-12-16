@@ -32,9 +32,6 @@ class TestPlugin(TestPluginBase):
     @pytest.mark.parametrize('version', [
         'sanic==20.3.0',
         'sanic==20.6.0',
-        'sanic==20.6.1',
-        'sanic==20.6.2',
-        'sanic==20.6.3',
         'sanic==20.9.0',
         'sanic==20.9.1',
     ])
