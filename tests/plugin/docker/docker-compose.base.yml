@@ -22,6 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tool
+    image: skywalking-collector:ci
     ports:
       - 19876:19876
       - 12800:12800
@@ -36,9 +37,9 @@ services:
   agent:
     build:
       context: ../../../
-      dockerfile: tests/plugin/docker/Dockerfile.agent
       args:
         - SW_PYTHON_VERSION=${SW_PYTHON_VERSION:-latest}
+    image: skywalking-agent:ci
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
       SW_AGENT_LOGGING_LEVEL: DEBUG

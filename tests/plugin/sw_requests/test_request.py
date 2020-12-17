@@ -33,10 +33,7 @@ class TestPlugin(TestPluginBase):
         'requests==2.24.0',
         'requests==2.20.0',
         'requests==2.19.0',
-        'requests==2.18.0',
-        'requests==2.17.0',
         'requests==2.13.0',
-        'requests==2.11.0',
         'requests==2.9.0',
     ])
     def test_plugin(self, docker_compose, version):
