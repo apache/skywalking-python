@@ -39,9 +39,19 @@ def __heartbeat():
 def __report():
     while not __finished.is_set():
         if connected():
-            __protocol.report(__queue)  # is blocking actually
-
-        __finished.wait(1)
+            try:
+                __protocol.report(__queue)
+            except Exception as e:
+                logger.error("report loss connect ...")
+                logger.error(e)
+                try:
+                    __init()
+                except Exception as e:
+                    __finished.wait(30)
+                    logger.error("report reconnect fail...")
+                    logger.error(e)
+        else:
+            __finished.wait(1)
 
 
 __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
