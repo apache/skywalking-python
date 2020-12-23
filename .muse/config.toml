@@ -1,0 +1,1 @@
+ignore = [ "Unused ignore", "Invalid decoration", "blacklist", "Missing argument" ]
