@@ -63,4 +63,4 @@ clean:
 release: clean lint license
 	-tar -zcvf skywalking-python-src-$(VERSION).tgz *
 	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
-	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.tgz.sha512
+	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512
