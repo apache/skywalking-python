@@ -20,6 +20,10 @@ Most of the contributions that we receive are code contributions, but you can al
 * If you're unable to find an issue addressing the problem, [open a new one](https://github.com/apache/skywalking/issues/new).
 Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not happening.
 
+## Compiling and building
+
+Check [here](docs/FAQ.md#q-how-to-build-from-sources).
+
 ## Add a new feature or enhance an existing one
 
 _Before making any significant changes, please [open an issue](https://github.com/apache/skywalking/issues)._
