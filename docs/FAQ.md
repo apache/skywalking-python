@@ -23,4 +23,4 @@ git submodule update --init
 make install
 ``` 
 
-**NOTE** that because we use Git submodule, the aforementioned commands don't apply if you download the source codes (`.tgz`) from our official website.
+**NOTE** that if you download the source codes (`.tgz`) from our official website, simply run `make install` without `git submodule update --init` because the submodules are packaged in the tar.
