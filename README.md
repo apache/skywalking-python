@@ -137,6 +137,12 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
     some_method()
 ```
 
+## Contact Us
+* Submit [an issue](https://github.com/apache/skywalking/issues/new) by using [Python] as title prefix.
+* Mail list: **dev@skywalking.apache.org**. Mail to `dev-subscribe@skywalking.apache.org`, follow the reply to subscribe the mail list.
+* Join `skywalking` channel at [Apache Slack](http://s.apache.org/slack-invite). If the link is not working, find the latest one at [Apache INFRA WIKI](https://cwiki.apache.org/confluence/display/INFRA/Slack+Guest+Invites).
+* Twitter, [ASFSkyWalking](https://twitter.com/ASFSkyWalking)
+
 ## Contributing
 
 Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/Developer.md).
