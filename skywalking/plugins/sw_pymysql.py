@@ -36,7 +36,7 @@ def install():
             res = _execute(this, query, args)
 
             span.tag(Tag(key=tags.DbType, val="mysql"))
-            span.tag(Tag(key=tags.DbInstance, val=this.connection.db.decode("utf-8")))
+            span.tag(Tag(key=tags.DbInstance, val=(this.connection.db or b'').decode("utf-8")))
             span.tag(Tag(key=tags.DbStatement, val=query))
 
             if config.mysql_trace_sql_parameters and args:
