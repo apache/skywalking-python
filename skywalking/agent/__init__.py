@@ -78,7 +78,7 @@ def start():
         from gevent import monkey
         flag = monkey.is_module_patched("socket")
     except ModuleNotFoundError:
-        logger.debug("it was found that no gevent was used,if you don't use,please ignore.")
+        logger.debug("it was found that no gevent was used, if you don't use, please ignore.")
     if flag:
         import grpc.experimental.gevent as grpc_gevent
         grpc_gevent.init_gevent()
