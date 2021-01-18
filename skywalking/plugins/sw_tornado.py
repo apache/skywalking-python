@@ -64,9 +64,9 @@ def _gen_sw_get_response_func(old_execute):
                 span.tag(
                     Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
                 result = old_execute(self, *args, **kwargs)
-                span.tag(Tag(key=tags.HttpStatus, val=self._status_code, overridable=True))
                 if isawaitable(result):
                     result = await result
+                span.tag(Tag(key=tags.HttpStatus, val=self._status_code, overridable=True))
                 if self._status_code >= 400:
                     span.error_occurred = True
             return result
