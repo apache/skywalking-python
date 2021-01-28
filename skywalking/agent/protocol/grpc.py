@@ -18,7 +18,8 @@
 import logging
 from skywalking.loggings import logger
 import traceback
-from queue import Queue, Empty
+from queue import Queue, Empty, Full
+from time import time
 
 import grpc
 
@@ -68,10 +69,16 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
 
     def report(self, queue: Queue, block: bool = True):
+        start = time()
+        segment = None
+
         def generator():
+            nonlocal segment
+
             while True:
                 try:
-                    segment = queue.get(block=block)  # type: Segment
+                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
 
@@ -120,5 +127,12 @@ class GrpcProtocol(Protocol):
 
         try:
             self.traces_reporter.report(generator())
+
         except grpc.RpcError:
             self.on_error()
+
+            if segment:
+                try:
+                    queue.put(segment, block=False)
+                except Full:
+                    pass

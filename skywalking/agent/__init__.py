@@ -16,7 +16,7 @@
 #
 
 import atexit
-from queue import Queue
+from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
@@ -109,8 +109,7 @@ def connected():
 
 
 def archive(segment: 'Segment'):
-    if __queue.full():
+    try:  # unlike checking __queue.full() then inserting, this is atomic
+        __queue.put(segment, block=False)
+    except Full:
         logger.warning('the queue is full, the segment will be abandoned')
-        return
-
-    __queue.put(segment)
