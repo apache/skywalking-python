@@ -23,6 +23,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
 
+# In order to prevent timeouts and possible segment loss make sure QUEUE_TIMEOUT is always at least few seconds lower
+# than GRPC_TIMEOUT.
+GRPC_TIMEOUT = 300  # type: int
+QUEUE_TIMEOUT = 240  # type: int
+
 RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str

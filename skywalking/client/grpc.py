@@ -55,4 +55,4 @@ class GrpcTraceSegmentReportService(TraceSegmentReportService):
         self.report_stub = TraceSegmentReportServiceStub(channel)
 
     def report(self, generator):
-        self.report_stub.collect(generator)
+        self.report_stub.collect(generator, timeout=config.GRPC_TIMEOUT)
