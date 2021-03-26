@@ -1,5 +1,12 @@
 ## Change Logs
 
+### 0.6.0
+
+- Fixes:
+    - Segment data loss when gRPC timing out. (#116)
+    - `sw_tornado` plugin async handler status set correctly. (#115)
+    - `sw_pymysql` error when connection haven't db. (#113)
+
 ### 0.5.0
 
 - New plugins
