@@ -28,6 +28,7 @@ version_rule = {
     "rules": [">=6.0"]
 }
 
+
 def install():
     from tornado.web import RequestHandler
     old_execute = RequestHandler._execute
