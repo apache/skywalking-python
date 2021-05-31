@@ -10,7 +10,7 @@ Library | Versions | Plugin Name
 | [Django](https://www.djangoproject.com/) | >=2.0 <= 3.1 | `sw_django` |
 | [redis-py](https://github.com/andymccurdy/redis-py/) | 3.5.3 | `sw_redis` |
 | [kafka-python](https://kafka-python.readthedocs.io/en/master/) | 2.0.1 | `sw_kafka` |
-| [tornado](https://www.tornadoweb.org/en/stable/) | 6.0.4 | `sw_tornado` |
+| [tornado](https://www.tornadoweb.org/en/stable/) | >=5.0 | `sw_tornado` |
 | [pika](https://pika.readthedocs.io/en/stable/) | 1.1.0 | `sw_rabbitmq` |
 | [pymongo](https://pymongo.readthedocs.io/en/stable/) | 3.11.0 | `sw_pymongo` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | 7.9.0 | `sw_elasticsearch` |
