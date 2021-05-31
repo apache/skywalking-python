@@ -25,7 +25,7 @@ from skywalking.trace.tags import Tag
 
 version_rule = {
     "name": "tornado",
-    "rules": [">=6.0"]
+    "rules": ["<6.0", ">=5.0"]
 }
 
 
@@ -51,7 +51,7 @@ def _gen_sw_get_response_func(old_execute):
 
     awaitable = iscoroutinefunction(old_execute)
     if awaitable:
-        # Starting Tornado 6 RequestHandler._execute method is a standard Python coroutine (async/await)
+        # Starting Tornado 5 RequestHandler._execute method is a standard Python coroutine (async/await)
         # In that case our method should be a coroutine function too
         async def _sw_get_response(self, *args, **kwargs):
             request = self.request
@@ -63,8 +63,7 @@ def _gen_sw_get_response_func(old_execute):
             with context.new_entry_span(op=request.path, carrier=carrier) as span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
-                peer = request.connection.stream.socket.getpeername()
-                span.peer = '{0}:{1}'.format(*peer)
+                span.peer = request.host
                 span.tag(Tag(key=tags.HttpMethod, val=request.method))
                 span.tag(
                     Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
@@ -87,8 +86,7 @@ def _gen_sw_get_response_func(old_execute):
             with context.new_entry_span(op=request.path, carrier=carrier) as span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
-                peer = request.connection.stream.socket.getpeername()
-                span.peer = '{0}:{1}'.format(*peer)
+                span.peer = request.host
                 span.tag(Tag(key=tags.HttpMethod, val=request.method))
                 span.tag(
                     Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
