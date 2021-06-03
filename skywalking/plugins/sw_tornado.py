@@ -25,7 +25,7 @@ from skywalking.trace.tags import Tag
 
 version_rule = {
     "name": "tornado",
-    "rules": [">=6.0"]
+    "rules": [">=5.0"]
 }
 
 
