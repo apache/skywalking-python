@@ -37,9 +37,7 @@ protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
 logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
-mysql_trace_sql_parameters = True if os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') and \
-                                     os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') == 'True' else False  # type: bool
-mysql_sql_parameters_max_length = int(os.getenv('SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH') or '512')  # type: int
+sql_parameters_length = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')  # type: int
 pymongo_trace_parameters = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') and \
                                    os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False  # type: bool
 pymongo_parameters_max_length = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')  # type: int

@@ -46,12 +46,11 @@ def install():
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
                 span.tag(Tag(key=tags.DbStatement, val=query))
 
-                if config.mysql_trace_sql_parameters and vars is not None:
-                    max_len = config.mysql_sql_parameters_max_length
+                if config.sql_parameters_length and vars is not None:
                     text = ','.join(str(v) for v in vars)
 
-                    if len(text) > max_len:
-                        text = text[:max_len] + '...'
+                    if len(text) > config.sql_parameters_length:
+                        text = text[:config.sql_parameters_length] + '...'
 
                     span.tag(Tag(key=tags.DbSqlParameters, val='[' + text + ']'))
 
@@ -69,8 +68,8 @@ def install():
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
                 span.tag(Tag(key=tags.DbStatement, val=query))
 
-                if config.mysql_trace_sql_parameters:
-                    max_len = config.mysql_sql_parameters_max_length
+                if config.sql_parameters_length:
+                    max_len = config.sql_parameters_length
                     total_len = 0
                     text_list = []
 
