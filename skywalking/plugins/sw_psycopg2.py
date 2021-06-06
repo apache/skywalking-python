@@ -40,7 +40,7 @@ def install():
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
+                span.component = Component.PostgreSQL
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
@@ -62,7 +62,7 @@ def install():
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
+                span.component = Component.PostgreSQL
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
@@ -94,7 +94,7 @@ def install():
 
             with get_context().new_exit_span(op="PostgreSLQ/Psycopg/callproc", peer=peer) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
+                span.component = Component.PostgreSQL
                 args = '(' + ('' if not parameters else ','.join(parameters)) + ')'
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
