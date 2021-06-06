@@ -40,6 +40,7 @@ class Component(Enum):
     Sanic = 7007
     AioHttp = 7008
     Pyramid = 7009
+    Psycopg = 7010
 
 
 class Layer(Enum):
