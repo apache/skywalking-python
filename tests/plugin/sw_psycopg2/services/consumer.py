@@ -15,32 +15,23 @@
 # limitations under the License.
 #
 
-import time
+import requests
 
 from skywalking import agent, config
 
 if __name__ == '__main__':
-    config.service_name = 'provider'
+    config.service_name = 'consumer'
     config.logging_level = 'DEBUG'
-    config.sql_parameters_length = 512
     agent.start()
 
     from flask import Flask, jsonify
-    import pymysql.cursors
 
     app = Flask(__name__)
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
-        time.sleep(0.5)
-        connection = pymysql.connect(host='mysql', user='root', password='root', db='mysql', charset='utf8mb4')
-        with connection.cursor() as cursor:
-            sql = "select * from user where user = %s"
-            cursor.execute(sql, ("root",))
+        res = requests.post("http://provider:9091/users")
+        return jsonify(res.json())
 
-        connection.close()
-
-        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
-
-    PORT = 9091
+    PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)

@@ -31,6 +31,7 @@ class Component(Enum):
     Tornado = 7005
     Redis = 7
     MongoDB = 9
+    PostgreSQL = 22
     KafkaProducer = 40
     KafkaConsumer = 41
     RabbitmqProducer = 52

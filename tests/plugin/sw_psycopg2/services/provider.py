@@ -26,14 +26,14 @@ if __name__ == '__main__':
     agent.start()
 
     from flask import Flask, jsonify
-    import pymysql.cursors
+    import psycopg2
 
     app = Flask(__name__)
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
         time.sleep(0.5)
-        connection = pymysql.connect(host='mysql', user='root', password='root', db='mysql', charset='utf8mb4')
+        connection = psycopg2.connect(host='postgres', user='root', password='root', dbname='admin')
         with connection.cursor() as cursor:
             sql = "select * from user where user = %s"
             cursor.execute(sql, ("root",))
