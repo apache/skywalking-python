@@ -38,7 +38,7 @@ segmentItems:
             startTime: gt 0
             endTime: gt 0
             isError: false
-            componentId: 22
+            componentId: 7010
             spanType: Exit
             peer: postgres:5432
             skipAnalysis: false
