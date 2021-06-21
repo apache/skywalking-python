@@ -42,6 +42,7 @@ class Component(Enum):
     AioHttp = 7008
     Pyramid = 7009
     Psycopg = 7010
+    Celery = 7011
 
 
 class Layer(Enum):
