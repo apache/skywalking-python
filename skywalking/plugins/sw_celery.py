@@ -27,6 +27,9 @@ def install():
     from celery import Celery
 
     def send_task(self, name, args=None, kwargs=None, **options):
+        # NOTE: Lines commented out below left for documentation purposes if sometime in the future exchange / queue
+        # names are wanted. Currently these do not match between producer and consumer so would need some work.
+
         broker_url = self.conf['broker_url']
         # exchange = options['exchange']
         # queue = options['routing_key']
@@ -47,8 +50,9 @@ def install():
             # span.tag(Tag(key=tags.MqTopic, val=exchange))
             # span.tag(Tag(key=tags.MqQueue, val=queue))
 
-            if config.celery_parameters:
-                span.tag(Tag(key=tags.CeleryParameters, val='*{}, **{}'.format(args, kwargs)))
+            if config.celery_parameters_length:
+                params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
+                span.tag(Tag(key=tags.CeleryParameters, val=params))
 
             options = {**options}
             headers = options.get('headers')
@@ -83,20 +87,21 @@ def install():
 
             if req.get('sw8'):
                 span = context.new_entry_span(op=op, carrier=carrier)
+                span.peer = (req.get('hostname') or '???').split('@', 1)[-1]
             else:
                 span = context.new_local_span(op=op)
 
             with span:
                 span.layer = Layer.MQ
                 span.component = Component.Celery
-                span.peer = req.get('hostname') or 'localhost'
 
                 span.tag(Tag(key=tags.MqBroker, val=task.app.conf['broker_url']))
                 # span.tag(Tag(key=tags.MqTopic, val=exchange))
                 # span.tag(Tag(key=tags.MqQueue, val=queue))
 
-                if config.celery_parameters:
-                    span.tag(Tag(key=tags.CeleryParameters, val='*{}, **{}'.format(args, kwargs)))
+                if config.celery_parameters_length:
+                    params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
+                    span.tag(Tag(key=tags.CeleryParameters, val=params))
 
                 return _fun(*args, **kwargs)
 

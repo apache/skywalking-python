@@ -58,7 +58,7 @@ elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
 kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or "skywalking-managements"  # type: str
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or "skywalking-segments"  # type: str
-celery_parameters = os.getenv('SW_CELERY_PARAMETERS', '').lower() == 'true'
+celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
 
 
 def init(

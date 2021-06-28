@@ -32,7 +32,8 @@ class HttpProtocol(Protocol):
         self.traces_reporter = HttpTraceSegmentReportService()
 
     def fork_after_in_child(self):
-        self.__init__()
+        self.service_management.fork_after_in_child()
+        self.traces_reporter.fork_after_in_child()
 
     def connected(self):
         return True
