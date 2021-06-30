@@ -39,6 +39,7 @@ setup(
         "grpcio",
         "grpcio-tools",
         "packaging",
+        "requests",
         "wrapt",
     ],
     extras_require={
