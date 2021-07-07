@@ -21,4 +21,6 @@ Library | Versions | Plugin Name
 | [psycopg2](https://www.psycopg.org/) | >= 2.8.6 | `sw_psycopg2` |
 | [celery](https://docs.celeryproject.org/) | >= 4.2.1 | `sw_celery` |
 
+* Note: The celery server running with "celery -A ..." should be run with the http protocol as it uses multiprocessing by default which is not compatible with the grpc protocol implementation in skywalking currently. Celery clients can use whatever protocol they want.
+
 The column `Versions` only indicates that the versions are tested, if you found the newer versions are also supported, welcome to add the newer version into the table.
