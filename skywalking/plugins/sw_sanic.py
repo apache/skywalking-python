@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 version_rule = {
     "name": "sanic",
-    "rules": [">=20.3.0"]
+    "rules": [">=20.3.0", "<21.0.0"]
 }
 
 

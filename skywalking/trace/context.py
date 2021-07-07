@@ -119,7 +119,7 @@ class SpanContext(object):
         spans = _spans_dup()
         parent = spans[-1] if spans else None  # type: Span
 
-        span = parent if parent is not None and parent.kind.is_exit else ExitSpan(
+        span = ExitSpan(
             context=self,
             sid=self._sid.next(),
             pid=parent.sid if parent else -1,

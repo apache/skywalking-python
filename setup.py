@@ -33,12 +33,13 @@ setup(
     author="Apache",
     author_email="dev@skywalking.apache.org",
     license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=("tests", "tests.*")),
     include_package_data=True,
     install_requires=[
         "grpcio",
         "grpcio-tools",
         "packaging",
+        "requests",
         "wrapt",
     ],
     extras_require={
