@@ -20,8 +20,17 @@ from queue import Queue
 
 
 class Protocol(ABC):
+    def fork_before(self):
+        pass
+
+    def fork_after_in_parent(self):
+        pass
+
+    def fork_after_in_child(self):
+        pass
+
     def connected(self):
-        raise NotImplementedError()
+        return False
 
     def heartbeat(self):
         raise NotImplementedError()

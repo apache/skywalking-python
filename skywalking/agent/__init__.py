@@ -16,6 +16,7 @@
 #
 
 import atexit
+import os
 from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
@@ -30,6 +31,11 @@ if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
 
+__started = False
+__protocol = Protocol()  # type: Protocol
+__heartbeat_thread = __report_thread = __query_thread = __command_dispatch_thread = __queue = __finished = None
+
+
 def __heartbeat():
     while not __finished.is_set():
         if connected():
@@ -41,12 +47,12 @@ def __heartbeat():
 def __report():
     while not __finished.is_set():
         if connected():
-            __protocol.report(__queue)  # is blocking actually
+            __protocol.report(__queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
 
         __finished.wait(1)
 
 
-def __query():
+def __query_command():
     while not __finished.is_set():
         if connected():
             __protocol.query_commands()
@@ -59,18 +65,25 @@ def __command_dispatch():
     command_service.dispatch()
 
 
-__heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
-__report_thread = Thread(name='ReportThread', target=__report, daemon=True)
-__query_thread = Thread(name='QueryCommandThread', target=__query, daemon=True)
-__command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
-__queue = Queue(maxsize=10000)
-__finished = Event()
-__protocol = Protocol()  # type: Protocol
-__started = False
+def __init_threading():
+    global __heartbeat_thread, __report_thread,  __query_thread, __command_dispatch_thread, __queue, __finished
+
+    __queue = Queue(maxsize=10000)
+    __finished = Event()
+    __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
+    __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
+    __query_thread = Thread(name='QueryCommandThread', target=__query_command, daemon=True)
+    __command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
+
+    __heartbeat_thread.start()
+    __report_thread.start()
+    __query_thread.start()
+    __command_dispatch_thread.start()
 
 
 def __init():
     global __protocol
+
     if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
         __protocol = GrpcProtocol()
@@ -82,14 +95,40 @@ def __init():
         __protocol = KafkaProtocol()
 
     plugins.install()
+    __init_threading()
 
 
 def __fini():
     __protocol.report(__queue, False)
     __queue.join()
+    __finished.set()
+
+
+def __fork_before():
+    if config.protocol != 'http':
+        logger.warning('fork() not currently supported with %s protocol' % config.protocol)
+
+    # TODO: handle __queue and __finished correctly (locks, mutexes, etc...), need to lock before fork and unlock after
+    # if possible, or ensure they are not locked in threads (end threads and restart after fork?)
+
+    __protocol.fork_before()
+
+
+def __fork_after_in_parent():
+    __protocol.fork_after_in_parent()
+
+
+def __fork_after_in_child():
+    __protocol.fork_after_in_child()
+    __init_threading()
 
 
 def start():
+    global __started
+    if __started:
+        return
+    __started = True
+
     flag = False
     try:
         from gevent import monkey
@@ -99,24 +138,22 @@ def start():
     if flag:
         import grpc.experimental.gevent as grpc_gevent
         grpc_gevent.init_gevent()
-    global __started
-    if __started:
-        raise RuntimeError('the agent can only be started once')
+
     loggings.init()
     config.finalize()
-    __started = True
+
     __init()
-    __heartbeat_thread.start()
-    __report_thread.start()
-    __query_thread.start()
-    __command_dispatch_thread.start()
+
     atexit.register(__fini)
+
+    if (hasattr(os, 'register_at_fork')):
+        os.register_at_fork(before=__fork_before, after_in_parent=__fork_after_in_parent,
+                            after_in_child=__fork_after_in_child)
 
 
 def stop():
     atexit.unregister(__fini)
     __fini()
-    __finished.set()
 
 
 def started():

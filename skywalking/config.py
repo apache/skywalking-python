@@ -32,6 +32,7 @@ RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
+agent_namespace = os.getenv('SW_AGENT_NAMESPACE')  # type: str
 collector_address = os.getenv('SW_AGENT_COLLECTOR_BACKEND_SERVICES') or '127.0.0.1:11800'  # type: str
 protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
@@ -58,13 +59,14 @@ elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
 kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or "skywalking-managements"  # type: str
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or "skywalking-segments"  # type: str
+celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
 
 
 def init(
         service: str = None,
         instance: str = None,
         collector: str = None,
-        protocol_type: str = 'grpc',
+        protocol_type: str = None,
         token: str = None,
 ):
     global service_name

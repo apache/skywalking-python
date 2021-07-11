@@ -17,7 +17,9 @@
 
 from skywalking.loggings import logger
 from queue import Queue, Empty
+from time import time
 
+from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService
 from skywalking.trace.segment import Segment
@@ -29,20 +31,27 @@ class HttpProtocol(Protocol):
         self.service_management = HttpServiceManagementClient()
         self.traces_reporter = HttpTraceSegmentReportService()
 
+    def fork_after_in_child(self):
+        self.service_management.fork_after_in_child()
+        self.traces_reporter.fork_after_in_child()
+
+    def connected(self):
+        return True
+
     def heartbeat(self):
         if not self.properties_sent:
             self.service_management.send_instance_props()
             self.properties_sent = True
         self.service_management.send_heart_beat()
 
-    def connected(self):
-        return True
-
     def report(self, queue: Queue, block: bool = True):
+        start = time()
+
         def generator():
             while True:
                 try:
-                    segment = queue.get(block=block)  # type: Segment
+                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
 
@@ -52,4 +61,7 @@ class HttpProtocol(Protocol):
 
                 queue.task_done()
 
-        self.traces_reporter.report(generator=generator())
+        try:
+            self.traces_reporter.report(generator=generator())
+        except Exception:
+            pass
