@@ -39,4 +39,4 @@ class Protocol(ABC):
         raise NotImplementedError()
 
     def query_profile_commands(self):
-        raise NotImplementedError()
+        pass
