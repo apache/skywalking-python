@@ -8,7 +8,7 @@ from skywalking.profile.profile_task import ProfileTask
 class ProfileTaskCommandExecutor(CommandExecutor):
 
     def execute(self, command: ProfileTaskCommand):
-        logger.debug("start execute ProfileTaskCommand [{%s}]", command.serial_number)
+        logger.debug("ProfileTaskCommandExecutor start execute ProfileTaskCommand [{%s}]", command.serial_number)
 
         profile_task = ProfileTask(task_id=command.task_id,
                                    first_span_op_name=command.endpoint_name,

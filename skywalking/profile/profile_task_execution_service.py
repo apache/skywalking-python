@@ -75,7 +75,6 @@ class ProfileTaskExecutionService:
             return self.CheckResult(True, "")
 
         except TypeError as e:
-            print(e)
             return self.CheckResult(False, "ProfileTask attributes has type error")
 
     def __cal_profile_task_finish_time(self, task: ProfileTask) -> int:

@@ -22,8 +22,6 @@ class CommandService:
     def dispatch(self):
         while True:
             command = self.__commands.get()  # type: BaseCommand
-            logger.debug("dispatch command: %s", command)
-
             if not self.__is_command_executed(command):
                 command_executor_service.execute(command)
                 self.__command_serial_number_cache.add(command.serial_number)
