@@ -18,7 +18,7 @@
 
 class BaseCommand:
     def __init__(self,
-                 command: str = None,
-                 serial_number: str = None):
+                 command: str = "",
+                 serial_number: str = ""):
         self.command = command  # type: str
         self.serial_number = serial_number  # type: str

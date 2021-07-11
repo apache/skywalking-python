@@ -22,7 +22,7 @@ from skywalking.profile.profile_task import ProfileTask
 
 
 class ProfileTaskExecutionService:
-    MINUTE_TO_MILLS = 60000
+    MINUTE_TO_MILLIS = 60000
 
     def __init__(self):
         # Queue is thread safe
@@ -98,4 +98,4 @@ class ProfileTaskExecutionService:
             return self.CheckResult(False, "ProfileTask attributes has type error")
 
     def __cal_profile_task_finish_time(self, task: ProfileTask) -> int:
-        return task.start_time + task.duration * self.MINUTE_TO_MILLS
+        return task.start_time + task.duration * self.MINUTE_TO_MILLIS

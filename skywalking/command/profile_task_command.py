@@ -26,15 +26,15 @@ class ProfileTaskCommand(BaseCommand):
     NAME = "ProfileTaskQuery"
 
     def __init__(self,
-                 serial_number: str = None,
-                 task_id: str = None,
-                 endpoint_name: str = None,
-                 duration: int = None,
-                 min_duration_threshold: int = None,
-                 dump_period: int = None,
-                 max_sampling_count: int = None,
-                 start_time: int = None,
-                 create_time: int = None):
+                 serial_number: str = "",
+                 task_id: str = "",
+                 endpoint_name: str = "",
+                 duration: int = -1,
+                 min_duration_threshold: int = -1,
+                 dump_period: int = -1,
+                 max_sampling_count: int = -1,
+                 start_time: int = -1,
+                 create_time: int = -1):
 
         BaseCommand.__init__(self, self.NAME, serial_number)
 

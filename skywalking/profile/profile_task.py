@@ -22,14 +22,14 @@ from skywalking.utils.lang import tostring
 class ProfileTask:
 
     def __init__(self,
-                 task_id: str = None,
-                 first_span_op_name: str = None,
-                 duration: int = None,
-                 min_duration_threshold: int = None,
-                 thread_dump_period: int = None,
-                 max_sampling_count: int = None,
-                 start_time: int = None,
-                 create_time: int = None):
+                 task_id: str = "",
+                 first_span_op_name: str = "",
+                 duration: int = -1,
+                 min_duration_threshold: int = -1,
+                 thread_dump_period: int = -1,
+                 max_sampling_count: int = -1,
+                 start_time: int = -1,
+                 create_time: int = -1):
         self.task_id = str(task_id)  # type: str
         self.first_span_op_name = str(first_span_op_name)  # type: str
         self.duration = int(duration)  # type: int

@@ -15,9 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking.command.base_command import BaseCommand
-
 
 class CommandExecutor:
-    def execute(self, command: BaseCommand):
+    def execute(self, command):
         raise NotImplementedError()
