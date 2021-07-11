@@ -15,8 +15,7 @@
 # limitations under the License.
 #
 
-from collections import deque
-
+from queue import Queue
 from skywalking.loggings import logger
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_task import ProfileTask
@@ -26,7 +25,8 @@ class ProfileTaskExecutionService:
     MINUTE_TO_MILLS = 60000
 
     def __init__(self):
-        self.__profile_task_list = deque()  # type: deque
+        # Queue is thread safe
+        self.__profile_task_list = Queue()  # type: Queue
         self.__last_command_create_time = -1  # type: int
 
     def get_last_command_create_time(self) -> int:
@@ -44,7 +44,7 @@ class ProfileTaskExecutionService:
             return
 
         # add task to list
-        self.__profile_task_list.append(task)
+        self.__profile_task_list.put(task)
 
     class CheckResult:
         def __init__(self, success: bool, error_reason: str):
@@ -83,12 +83,14 @@ class ProfileTaskExecutionService:
             # check task queue
             task_finish_time = self.__cal_profile_task_finish_time(task)
 
-            for profile_task in self.__profile_task_list:  # type: ProfileTask
-                # if the end time of the task to be added is during the execution of any data, means is a error data
-                if task.start_time <= task_finish_time <= self.__cal_profile_task_finish_time(profile_task):
-                    return self.CheckResult(False, "there already have processing task in time range, "
-                                                   "could not add a new task again. processing task monitor "
-                                                   "endpoint name: {}".format(profile_task.first_span_op_name))
+            # lock the self.__profile_task_list.queue when check the item in it, avoid concurrency errors
+            with self.__profile_task_list.mutex:
+                for profile_task in self.__profile_task_list.queue:  # type: ProfileTask
+                    # if the end time of the task to be added is during the execution of any data, means is a error data
+                    if task.start_time <= task_finish_time <= self.__cal_profile_task_finish_time(profile_task):
+                        return self.CheckResult(False, "there already have processing task in time range, "
+                                                       "could not add a new task again. processing task monitor "
+                                                       "endpoint name: {}".format(profile_task.first_span_op_name))
 
             return self.CheckResult(True, "")
 
