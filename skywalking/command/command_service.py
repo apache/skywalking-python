@@ -68,11 +68,10 @@ class CommandSerialNumberCache:
 
     def __init__(self, maxlen=64):
         self.queue = deque(maxlen=maxlen)
-        self.max_capacity = maxlen
 
     def add(self, number: str):
-        if len(self.queue) >= self.max_capacity:
-            self.queue.pop()
+        # Once a bounded length deque is full, when new items are added,
+        # a corresponding number of items are discarded from the opposite end.
         self.queue.append(number)
 
     def contains(self, number: str) -> bool:
