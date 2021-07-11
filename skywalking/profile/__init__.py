@@ -1,3 +1,3 @@
-from .profile_task_execution_service import ProfileTaskExecutionService
+from skywalking.profile.profile_task_execution_service import ProfileTaskExecutionService
 
 profile_task_execution_service = ProfileTaskExecutionService()

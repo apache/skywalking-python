@@ -1,11 +1,9 @@
 from collections import deque
 import queue
-from typing import List
 
 from skywalking.loggings import logger
 from skywalking.command.base_command import BaseCommand
 from skywalking.command.profile_task_command import ProfileTaskCommand
-from skywalking.command.executors.command_executor import CommandExecutor
 from skywalking.command.executors.profile_task_command_executor import ProfileTaskCommandExecutor
 from skywalking.command.executors import noop_command_executor_instance
 
@@ -21,6 +19,7 @@ class CommandService:
 
     def dispatch(self):
         while True:
+            # block until a command is available
             command = self.__commands.get()  # type: BaseCommand
             if not self.__is_command_executed(command):
                 command_executor_service.execute(command)

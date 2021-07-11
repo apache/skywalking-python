@@ -55,7 +55,8 @@ class GrpcProtocol(Protocol):
             except grpc.RpcError:
                 self.on_error()
 
-    def query_commands(self):
+    def query_profile_commands(self):
+        logger.debug("query profile commands")
         self.profile_query.do_query()
 
     def heartbeat(self):
