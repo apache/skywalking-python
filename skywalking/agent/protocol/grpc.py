@@ -16,19 +16,20 @@
 #
 
 import logging
-from skywalking.loggings import logger
 import traceback
 from queue import Queue, Empty, Full
 from time import time
 
 import grpc
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
-from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, GrpcProfileTaskChannelService
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
+    GrpcProfileTaskChannelService
+from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
 
 

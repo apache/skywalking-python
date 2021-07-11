@@ -22,11 +22,10 @@ from threading import Thread, Event
 from typing import TYPE_CHECKING
 
 from skywalking import config, plugins, loggings
-from skywalking.loggings import logger
 from skywalking.agent.protocol import Protocol
-
 from skywalking.command import command_service
 from skywalking.config import profile_active, profile_task_query_interval
+from skywalking.loggings import logger
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
