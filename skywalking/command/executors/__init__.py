@@ -1,0 +1,3 @@
+from skywalking.command.executors.noop_command_executor import NoopCommandExecutor
+
+noop_command_executor_instance = NoopCommandExecutor()

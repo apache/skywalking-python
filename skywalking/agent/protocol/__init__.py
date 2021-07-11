@@ -28,3 +28,6 @@ class Protocol(ABC):
 
     def report(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
+
+    def query_commands(self):
+        raise NotImplementedError()

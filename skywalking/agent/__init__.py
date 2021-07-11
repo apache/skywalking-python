@@ -24,6 +24,8 @@ from skywalking import config, plugins, loggings
 from skywalking.loggings import logger
 from skywalking.agent.protocol import Protocol
 
+from skywalking.command import command_service
+
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
@@ -44,8 +46,23 @@ def __report():
         __finished.wait(1)
 
 
+def __query():
+    while not __finished.is_set():
+        if connected():
+            __protocol.query_commands()
+
+        __finished.wait(10)
+
+
+def __command_dispatch():
+    # command dispatch will stuck when there are no commands
+    command_service.dispatch()
+
+
 __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
 __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
+__query_thread = Thread(name='QueryCommandThread', target=__query, daemon=True)
+__command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
 __queue = Queue(maxsize=10000)
 __finished = Event()
 __protocol = Protocol()  # type: Protocol
@@ -91,6 +108,8 @@ def start():
     __init()
     __heartbeat_thread.start()
     __report_thread.start()
+    __query_thread.start()
+    __command_dispatch_thread.start()
     atexit.register(__fini)
 
 

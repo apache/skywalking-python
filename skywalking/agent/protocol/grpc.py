@@ -26,7 +26,7 @@ import grpc
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
-from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
+from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, GrpcProfileTaskChannelService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.trace.segment import Segment
@@ -44,6 +44,7 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
+        self.profile_query = GrpcProfileTaskChannelService(self.channel)
 
     def _cb(self, state):
         logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
@@ -53,6 +54,9 @@ class GrpcProtocol(Protocol):
                 self.service_management.send_instance_props()
             except grpc.RpcError:
                 self.on_error()
+
+    def query_commands(self):
+        self.profile_query.do_query()
 
     def heartbeat(self):
         try:
