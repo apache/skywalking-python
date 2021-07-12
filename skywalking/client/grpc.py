@@ -20,11 +20,16 @@ from skywalking.loggings import logger
 import grpc
 
 from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService
+from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
+from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
+from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
+
+from skywalking.command import command_service
+from skywalking.profile import profile_task_execution_service
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):
@@ -56,3 +61,19 @@ class GrpcTraceSegmentReportService(TraceSegmentReportService):
 
     def report(self, generator):
         self.report_stub.collect(generator, timeout=config.GRPC_TIMEOUT)
+
+
+class GrpcProfileTaskChannelService(ProfileTaskChannelService):
+    def __init__(self, channel: grpc.Channel):
+        self.task_stub = ProfileTaskStub(channel)
+
+    def do_query(self):
+
+        query = ProfileTaskCommandQuery(
+            service=config.service_name,
+            serviceInstance=config.service_instance,
+            lastCommandTime=profile_task_execution_service.get_last_command_create_time()
+        )
+
+        commands = self.task_stub.getProfileTaskCommands(query)
+        command_service.receive_command(commands)

@@ -22,8 +22,10 @@ from threading import Thread, Event
 from typing import TYPE_CHECKING
 
 from skywalking import config, plugins, loggings
-from skywalking.loggings import logger
 from skywalking.agent.protocol import Protocol
+from skywalking.command import command_service
+from skywalking.config import profile_active, profile_task_query_interval
+from skywalking.loggings import logger
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
@@ -31,7 +33,7 @@ if TYPE_CHECKING:
 
 __started = False
 __protocol = Protocol()  # type: Protocol
-__heartbeat_thread = __report_thread = __queue = __finished = None
+__heartbeat_thread = __report_thread = __query_profile_thread = __command_dispatch_thread = __queue = __finished = None
 
 
 def __heartbeat():
@@ -50,16 +52,35 @@ def __report():
         __finished.wait(1)
 
 
+def __query_profile_command():
+    while not __finished.is_set():
+        if connected():
+            __protocol.query_profile_commands()
+
+        __finished.wait(profile_task_query_interval)
+
+
+def __command_dispatch():
+    # command dispatch will stuck when there are no commands
+    command_service.dispatch()
+
+
 def __init_threading():
-    global __heartbeat_thread, __report_thread, __queue, __finished
+    global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __queue, __finished
 
     __queue = Queue(maxsize=10000)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
+    __query_profile_thread = Thread(name='QueryProfileCommandThread', target=__query_profile_command, daemon=True)
+    __command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
 
     __heartbeat_thread.start()
     __report_thread.start()
+    __command_dispatch_thread.start()
+
+    if profile_active:
+        __query_profile_thread.start()
 
 
 def __init():

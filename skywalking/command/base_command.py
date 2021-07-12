@@ -15,28 +15,10 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
 
-
-class Protocol(ABC):
-    def fork_before(self):
-        pass
-
-    def fork_after_in_parent(self):
-        pass
-
-    def fork_after_in_child(self):
-        pass
-
-    def connected(self):
-        return False
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
+class BaseCommand:
+    def __init__(self,
+                 command: str = "",
+                 serial_number: str = ""):
+        self.command = command  # type: str
+        self.serial_number = serial_number  # type: str

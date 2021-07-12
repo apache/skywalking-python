@@ -15,28 +15,13 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+from skywalking.command.base_command import BaseCommand
+from skywalking.command.executors.command_executor import CommandExecutor
 
 
-class Protocol(ABC):
-    def fork_before(self):
+class NoopCommandExecutor(CommandExecutor):
+    def __init__(self):
         pass
 
-    def fork_after_in_parent(self):
-        pass
-
-    def fork_after_in_child(self):
-        pass
-
-    def connected(self):
-        return False
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
+    def execute(self, command: BaseCommand):
         pass
