@@ -84,10 +84,11 @@ def install():
                     item.val = val
 
             context = get_context()
+            origin = req.get('origin')
 
-            if req.get('sw8'):
+            if origin:
                 span = context.new_entry_span(op=op, carrier=carrier)
-                span.peer = (req.get('hostname') or '???').split('@', 1)[-1]
+                span.peer = origin.split('@', 1)[-1]
             else:
                 span = context.new_local_span(op=op)
 
