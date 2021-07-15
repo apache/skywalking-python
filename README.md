@@ -94,7 +94,6 @@ from time import sleep
 from skywalking import Component
 from skywalking.decorators import trace, runnable
 from skywalking.trace.context import SpanContext, get_context
-from skywalking.trace.ipc.process import SwProcess
 
 @trace()  # the operation name is the method name('some_other_method') by default
 def some_other_method():
@@ -117,18 +116,12 @@ async def async_func2():
 
 
 @runnable() # cross thread propagation
-def some_method(): 
+def some_method():
     some_other_method()
 
-from threading import Thread 
+from threading import Thread
 t = Thread(target=some_method)
 t.start()
-
-# When another process is started, agents will also be started in other processes, 
-# supporting only the process mode of spawn.
-p1 = SwProcess(target=some_method) 
-p1.start()
-p1.join()
 
 
 context: SpanContext = get_context()
