@@ -36,7 +36,8 @@ from skywalking.trace.segment import Segment
 class GrpcProtocol(Protocol):
     def __init__(self):
         self.state = None
-        self.channel = grpc.insecure_channel(config.collector_address)
+        self.channel = grpc.insecure_channel(config.collector_address, options=(('grpc.max_connection_age_grace_ms',
+                                             1000 * config.GRPC_TIMEOUT),))
         if config.authentication:
             self.channel = grpc.intercept_channel(
                 self.channel, header_adder_interceptor('authentication', config.authentication)
