@@ -19,17 +19,22 @@ from skywalking.loggings import logger
 
 import grpc
 
+from typing import List
+from queue import Queue
+
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
 from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
-from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery
+from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, ProfileTaskFinishReport
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
 
 from skywalking.command import command_service
 from skywalking.profile import profile_task_execution_service
+from skywalking.profile.profile_task import ProfileTask
+from skywalking.profile.tracing_thread_snapshot import TracingThreadSnapshot
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):
@@ -65,7 +70,8 @@ class GrpcTraceSegmentReportService(TraceSegmentReportService):
 
 class GrpcProfileTaskChannelService(ProfileTaskChannelService):
     def __init__(self, channel: grpc.Channel):
-        self.task_stub = ProfileTaskStub(channel)
+        self.profile_stub = ProfileTaskStub(channel)
+        self.snapshot_queue = Queue(maxsize=500)
 
     def do_query(self):
 
@@ -75,5 +81,17 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
             lastCommandTime=profile_task_execution_service.get_last_command_create_time()
         )
 
-        commands = self.task_stub.getProfileTaskCommands(query)
+        commands = self.profile_stub.getProfileTaskCommands(query)
         command_service.receive_command(commands)
+
+    def send(self, generator):
+        self.profile_stub.collectSnapshot(generator, timeout=config.GRPC_TIMEOUT)
+
+    def finish(self, task: ProfileTask):
+        finish_report = ProfileTaskFinishReport(
+            service=config.service_name,
+            serviceInstance=config.service_instance,
+            taskId=task.task_id
+        )
+        self.profile_stub.reportTaskFinish(finish_report)
+

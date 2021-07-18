@@ -31,6 +31,7 @@ from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegment
     GrpcProfileTaskChannelService
 from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
+from skywalking.profile.tracing_thread_snapshot import TracingThreadSnapshot
 
 
 class GrpcProtocol(Protocol):
@@ -46,7 +47,7 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
-        self.profile_query = GrpcProfileTaskChannelService(self.channel)
+        self.profile_channel = GrpcProfileTaskChannelService(self.channel)
 
     def _cb(self, state):
         logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
@@ -59,7 +60,7 @@ class GrpcProtocol(Protocol):
 
     def query_profile_commands(self):
         logger.debug("query profile commands")
-        self.profile_query.do_query()
+        self.profile_channel.do_query()
 
     def heartbeat(self):
         try:
@@ -141,5 +142,38 @@ class GrpcProtocol(Protocol):
             if segment:
                 try:
                     queue.put(segment, block=False)
+                except Full:
+                    pass
+
+    def send_thread_snapshot(self, queue: Queue):
+        # TODO: 这个Queue可以换为从GrpcProfileTaskChannelService中直接拿
+        # 还是直接初始化吧...
+        snapshot = None
+
+        def generator():
+            nonlocal snapshot
+
+            while True:
+                # TODO: 思考queue与timeout，目前先不管
+                try:
+                    snapshot = queue.get()  # type: TracingThreadSnapshot
+                except Empty:
+                    return
+
+                logger.debug("reporting profile thread snapshot %s", snapshot)
+
+                transform_snapshot = snapshot.transform()
+                yield transform_snapshot
+
+                queue.task_done()
+
+        try:
+            self.profile_channel.send(generator())
+        except grpc.RpcError:
+            self.on_error()
+
+            if snapshot:
+                try:
+                    queue.put(snapshot, block=False)
                 except Full:
                     pass

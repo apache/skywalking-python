@@ -74,6 +74,8 @@ class SpanContext(object):
         self._sid = Counter()
         self._correlation = {}  # type: dict
         self._nspans = 0
+        # TODO: profile_status
+        self.profile_status = None
 
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)

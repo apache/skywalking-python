@@ -14,7 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from queue import Queue
 
 from skywalking.profile.profile_task_execution_service import ProfileTaskExecutionService
+from skywalking.profile.tracing_thread_snapshot import TracingThreadSnapshot
+
 
 profile_task_execution_service = ProfileTaskExecutionService()
+
+# TODO mini: 配置maxsize
+__snapshot_queue = Queue(maxsize=500)
+
+
+def add_profiling_snapshot(snapshot: TracingThreadSnapshot):
+    __snapshot_queue.put(snapshot)

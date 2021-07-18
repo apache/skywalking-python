@@ -19,6 +19,16 @@ from queue import Queue
 from skywalking.loggings import logger
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_task import ProfileTask
+from skywalking.profile.profile_task_execution_context import ProfileTaskExecutionContext
+
+from skywalking.profile.profile_status import ProfileStatusReference
+
+from skywalking.trace.context import SpanContext
+
+from skywalking.utils.atomic_ref import AtomicRef
+
+from concurrent.futures import ThreadPoolExecutor
+from threading import Timer, RLock
 
 
 class ProfileTaskExecutionService:
@@ -26,16 +36,22 @@ class ProfileTaskExecutionService:
 
     def __init__(self):
         # Queue is thread safe
-        self.__profile_task_list = Queue()  # type: Queue
-        self.__last_command_create_time = -1  # type: int
+        self._profile_task_list = Queue()  # type: Queue
+        self._last_command_create_time = -1  # type: int
+        # single thread executor
+        self._profile_executor = ThreadPoolExecutor(max_workers=1)
+        self.task_execution_context = AtomicRef(None)
+
+        # rlock for processProfileTask and stopCurrentProfileTask
+        self._rlock = RLock()
 
     def get_last_command_create_time(self) -> int:
-        return self.__last_command_create_time
+        return self._last_command_create_time
 
     def add_profile_task(self, task: ProfileTask):
         # update last command create time, which will be used in command query
-        if task.create_time > self.__last_command_create_time:
-            self.__last_command_create_time = task.create_time
+        if task.create_time > self._last_command_create_time:
+            self._last_command_create_time = task.create_time
 
         # check profile task object
         result = self.__check_profile_task(task)
@@ -44,7 +60,28 @@ class ProfileTaskExecutionService:
             return
 
         # add task to list
-        self.__profile_task_list.put(task)
+        self._profile_task_list.put(task)
+
+    def add_profiling(self, context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
+        execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
+        if execution_context is None:
+            return ProfileStatusReference.create_with_none()
+
+        return execution_context.attempt_profiling(context, segment_id, first_span_opname)
+
+    def profiling_recheck(self, trace_context: SpanContext, segment_id: str, first_span_opname: str):
+        # TODO
+        pass
+
+    # TODO: synchronized processProfileTask and stopCurrentProfileTask 需要使用可重入锁实现
+
+    def process_profile_task(self, task: ProfileTask):
+        with self._rlock:
+            pass
+
+    def stop_current_profile_task(self, need_stop: ProfileTaskExecutionContext):
+        with self._rlock:
+            pass
 
     class CheckResult:
         def __init__(self, success: bool, error_reason: str):
@@ -84,8 +121,8 @@ class ProfileTaskExecutionService:
             task_finish_time = self.__cal_profile_task_finish_time(task)
 
             # lock the self.__profile_task_list.queue when check the item in it, avoid concurrency errors
-            with self.__profile_task_list.mutex:
-                for profile_task in self.__profile_task_list.queue:  # type: ProfileTask
+            with self._profile_task_list.mutex:
+                for profile_task in self._profile_task_list.queue:  # type: ProfileTask
                     # if the end time of the task to be added is during the execution of any data, means is a error data
                     if task.start_time <= task_finish_time <= self.__cal_profile_task_finish_time(profile_task):
                         return self.CheckResult(False, "there already have processing task in time range, "
