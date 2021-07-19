@@ -30,9 +30,8 @@ def install():
         peer = "%s:%s" % (this.connection.host, this.connection.port)
 
         context = get_context()
-        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer) as span:
+        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, component=Component.PyMysql) as span:
             span.layer = Layer.Database
-            span.component = Component.PyMysql
             res = _execute(this, query, args)
 
             span.tag(Tag(key=tags.DbType, val="mysql"))

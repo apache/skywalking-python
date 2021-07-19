@@ -36,10 +36,9 @@ def install():
 
         context = get_context()
         url = fullurl.selector.split("?")[0] if fullurl.selector else '/'
-        with context.new_exit_span(op=url, peer=fullurl.host) as span:
+        with context.new_exit_span(op=url, peer=fullurl.host, component=Component.General) as span:
             carrier = span.inject()
             span.layer = Layer.Http
-            span.component = Component.General
             code = None
 
             [fullurl.add_header(item.key, item.val) for item in carrier]

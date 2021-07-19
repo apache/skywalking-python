@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking import agent, config
+from skywalking import Component, agent, config
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -91,7 +91,7 @@ class SpanContext(object):
             kind=Kind.Local,
         )
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
         span = self.ignore_check(op, Kind.Entry)
         if span is not None:
             return span
@@ -99,19 +99,23 @@ class SpanContext(object):
         spans = _spans_dup()
         parent = spans[-1] if spans else None  # type: Span
 
-        span = parent if parent is not None and parent.kind.is_entry else EntrySpan(
-            context=self,
-            sid=self._sid.next(),
-            pid=parent.sid if parent else -1,
-        )
-        span.op = op
+        if parent is not None and parent.kind.is_entry and inherit == parent.component:
+            span = parent
+            span.op = op
+        else:
+            span = EntrySpan(
+                context=self,
+                sid=self._sid.next(),
+                pid=parent.sid if parent else -1,
+                op=op,
+            )
 
-        if carrier is not None and carrier.is_valid:
-            span.extract(carrier=carrier)
+            if carrier is not None and carrier.is_valid:  # TODO: should this be done irrespective of inheritance?
+                span.extract(carrier=carrier)
 
         return span
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
+    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
         span = self.ignore_check(op, Kind.Exit)
         if span is not None:
             return span
@@ -119,13 +123,22 @@ class SpanContext(object):
         spans = _spans_dup()
         parent = spans[-1] if spans else None  # type: Span
 
-        span = ExitSpan(
-            context=self,
-            sid=self._sid.next(),
-            pid=parent.sid if parent else -1,
-            op=op,
-            peer=peer,
-        )
+        if parent is not None and parent.kind.is_exit and component == parent.inherit:
+            span = parent
+            span.op = op
+            span.component = component
+        else:
+            span = ExitSpan(
+                context=self,
+                sid=self._sid.next(),
+                pid=parent.sid if parent else -1,
+                op=op,
+                peer=peer,
+                component=component,
+            )
+
+        if inherit:
+            span.inherit = inherit
 
         return span
 

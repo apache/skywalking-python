@@ -58,11 +58,10 @@ def inject_socket_info(SocketInfo):
 
             operation = list(spec.keys())[0]
             sw_op = operation.capitalize() + "Operation"
-            with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer) as span:
+            with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, component=Component.MongoDB) as span:
                 result = _command(this, dbname, spec, *args, **kwargs)
 
                 span.layer = Layer.Database
-                span.component = Component.MongoDB
                 span.tag(Tag(key=tags.DbType, val="MongoDB"))
                 span.tag(Tag(key=tags.DbInstance, val=dbname))
 
@@ -108,9 +107,8 @@ def inject_bulk_write(_Bulk, bulk_op_map):
         context = get_context()
 
         sw_op = "MixedBulkWriteOperation"
-        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer) as span:
+        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
-            span.component = Component.MongoDB
 
             bulk_result = _execute(this, *args, **kwargs)
 
@@ -143,9 +141,8 @@ def inject_cursor(Cursor):
         context = get_context()
         op = "FindOperation"
 
-        with context.new_exit_span(op="MongoDB/"+op, peer=peer) as span:
+        with context.new_exit_span(op="MongoDB/"+op, peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
-            span.component = Component.MongoDB
 
             # __send_message return nothing
             __send_message(this, operation)

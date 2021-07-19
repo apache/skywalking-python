@@ -33,9 +33,8 @@ def install():
         peer = '%s:%d' % (url.host or '', url.port)
         context = get_context()
 
-        with context.new_exit_span(op=url.path or "/", peer=peer) as span:
+        with context.new_exit_span(op=url.path or "/", peer=peer, component=Component.AioHttp) as span:
             span.layer = Layer.Http
-            span.component = Component.AioHttp
             span.tag(Tag(key=tags.HttpMethod, val=method.upper()))  # pyre-ignore
             span.tag(Tag(key=tags.HttpUrl, val=url))  # pyre-ignore
 

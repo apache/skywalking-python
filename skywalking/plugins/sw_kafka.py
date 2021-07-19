@@ -72,10 +72,10 @@ def _sw_send_func(_send):
 
         peer = ";".join(this.config["bootstrap_servers"])
         context = get_context()
-        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer) as span:
+        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer,
+                                   component=Component.KafkaProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
-            span.component = Component.KafkaProducer
 
             if headers is None:
                 headers = []

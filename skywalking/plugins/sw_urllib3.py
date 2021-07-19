@@ -31,10 +31,10 @@ def install():
         from urllib.parse import urlparse
         url_param = urlparse(url)
         context = get_context()
-        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc) as span:
+        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
+                                   component=Component.Urllib3) as span:
             carrier = span.inject()
             span.layer = Layer.Http
-            span.component = Component.Urllib3
 
             if headers is None:
                 headers = {}

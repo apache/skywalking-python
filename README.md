@@ -79,8 +79,8 @@ with context.new_entry_span(op='https://github.com/apache') as span:
     span.component = Component.Flask
 # the span automatically stops when exiting the `with` context
 
-with context.new_exit_span(op='https://github.com/apache', peer='localhost:8080') as span:
-    span.component = Component.Flask
+with context.new_exit_span(op='https://github.com/apache', peer='localhost:8080', component=Component.Flask) as span:
+    span.tag(Tag(key='Singer', val='Nakajima'))
 
 with context.new_local_span(op='https://github.com/apache') as span:
     span.tag(Tag(key='Singer', val='Nakajima'))
