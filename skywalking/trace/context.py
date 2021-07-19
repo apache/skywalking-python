@@ -27,23 +27,20 @@ from skywalking.utils.counter import Counter
 try:  # attempt to use async-local instead of thread-local context and spans
     import contextvars
 
-    __local = contextvars.ContextVar('local')
-    __spans = contextvars.ContextVar('spans')  # this needs to be a per-task variable, can't be part of __local
+    __spans = contextvars.ContextVar('spans')
     _spans = __spans.get
     _spans_set = __spans.set  # pyre-ignore
 
-    class AsyncLocal:
-        pass
+    def _spans():  # need to do this because can't set mutable default = [] in contextvars.ContextVar()
+        spans = __spans.get(None)
 
-    def _local():
-        try:
-            return __local.get()
+        if spans is not None:
+            return spans
 
-        except LookupError:
-            local = AsyncLocal()
-            __local.set(local)
+        spans = []
+        __spans.set(spans)
 
-            return local
+        return spans
 
     def _spans_dup():
         spans = __spans.get()[:]
@@ -51,13 +48,16 @@ try:  # attempt to use async-local instead of thread-local context and spans
 
         return spans
 
+    __spans.set([])
+
 except ImportError:
     import threading
 
-    __local = threading.local()
+    class SwLocal(threading.local):
+        def __init__(self):
+            self.spans = []
 
-    def _local():
-        return __local
+    __local = SwLocal()
 
     def _spans():
         return __local.spans
@@ -147,11 +147,14 @@ class SpanContext(object):
     def stop(self, span: Span) -> bool:
         spans = _spans()
         span.finish(self.segment)
-        del spans[spans.index(span)]
+
+        try:
+            spans.remove(span)
+        except Exception:
+            pass
 
         self._nspans -= 1
         if self._nspans == 0:
-            _local().context = None
             agent.archive(self.segment)
             return True
 
@@ -248,11 +251,9 @@ class NoopContext(SpanContext):
 
 
 def get_context() -> SpanContext:
-    local = _local()
-    context = getattr(local, 'context', False)
+    spans = _spans()
 
-    if not context:
-        context = local.context = (SpanContext() if agent.connected() else NoopContext())
-        _spans_set([])  # XXX would be better in SpanContext.__init__() but for some reason doesn't work there
+    if spans:
+        return spans[len(spans) - 1].context
 
-    return context
+    return SpanContext() if agent.connected() else NoopContext()
