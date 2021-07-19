@@ -46,6 +46,7 @@ class Span(ABC):
             component: Component = None,
             layer: Layer = None,
     ):
+        self._depth = 0
         self.context = context  # type: SpanContext
         self.sid = sid  # type: int
         self.pid = pid  # type: int
@@ -63,10 +64,18 @@ class Span(ABC):
         self.error_occurred = False  # type: bool
 
     def start(self):
+        self._depth += 1
+        if self._depth != 1:
+            return
+
         self.start_time = int(time.time() * 1000)
         self.context.start(self)
 
     def stop(self):
+        self._depth -= 1
+        if self._depth:
+            return False
+
         return self.context.stop(self)
 
     def finish(self, segment: 'Segment') -> bool:
@@ -125,24 +134,7 @@ class Span(ABC):
 
 
 @tostring
-class StackedSpan(Span):
-    def __init__(self, *args, **kwargs):
-        Span.__init__(self, *args, **kwargs)
-        self._depth = 0
-
-    def start(self):
-        self._depth += 1
-        if self._depth == 1:
-            Span.start(self)
-
-    def stop(self):
-        self._depth -= 1
-        if self._depth == 0:
-            Span.stop(self)
-
-
-@tostring
-class EntrySpan(StackedSpan):
+class EntrySpan(Span):
     def __init__(
             self,
             context: 'SpanContext',
@@ -153,7 +145,7 @@ class EntrySpan(StackedSpan):
             component: 'Component' = None,
             layer: 'Layer' = None,
     ):
-        StackedSpan.__init__(
+        Span.__init__(
             self,
             context,
             sid,
@@ -167,7 +159,7 @@ class EntrySpan(StackedSpan):
         self._max_depth = 0
 
     def start(self):
-        StackedSpan.start(self)
+        Span.start(self)
         self._max_depth = self._depth
         self.component = 0
         self.layer = Layer.Unknown
@@ -189,7 +181,7 @@ class EntrySpan(StackedSpan):
 
 
 @tostring
-class ExitSpan(StackedSpan):
+class ExitSpan(Span):
     def __init__(
             self,
             context: 'SpanContext',
@@ -200,7 +192,7 @@ class ExitSpan(StackedSpan):
             component: 'Component' = None,
             layer: 'Layer' = None,
     ):
-        StackedSpan.__init__(
+        Span.__init__(
             self,
             context,
             sid,
