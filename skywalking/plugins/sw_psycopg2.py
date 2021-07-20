@@ -38,9 +38,9 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = dsn['host'] + ':' + dsn['port']
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer) as span:
+            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer,
+                                             component=Component.Psycopg) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
@@ -60,9 +60,9 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = dsn['host'] + ':' + dsn['port']
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer) as span:
+            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer,
+                                             component=Component.Psycopg) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
                 span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
@@ -92,9 +92,9 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = dsn['host'] + ':' + dsn['port']
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/callproc", peer=peer) as span:
+            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/callproc", peer=peer,
+                                             component=Component.Psycopg) as span:
                 span.layer = Layer.Database
-                span.component = Component.Psycopg
                 args = '(' + ('' if not parameters else ','.join(parameters)) + ')'
 
                 span.tag(Tag(key=tags.DbType, val="PostgreSQL"))

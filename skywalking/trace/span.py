@@ -55,6 +55,7 @@ class Span(ABC):
         self.kind = kind  # type: Kind
         self.component = component or Component.Unknown  # type: Component
         self.layer = layer or Layer.Unknown  # type: Layer
+        self.inherit = Component.Unknown  # type: Component
 
         self.tags = []  # type: List[Tag]
         self.logs = []  # type: List[Log]

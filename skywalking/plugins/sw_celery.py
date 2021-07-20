@@ -42,9 +42,8 @@ def install():
         else:
             peer = '???'
 
-        with get_context().new_exit_span(op=op, peer=peer) as span:
+        with get_context().new_exit_span(op=op, peer=peer, component=Component.Celery) as span:
             span.layer = Layer.MQ
-            span.component = Component.Celery
 
             span.tag(Tag(key=tags.MqBroker, val=broker_url))
             # span.tag(Tag(key=tags.MqTopic, val=exchange))
