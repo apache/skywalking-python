@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import inspect
 import os
 import re
 import uuid
@@ -29,6 +28,8 @@ GRPC_TIMEOUT = 300  # type: int
 QUEUE_TIMEOUT = 240  # type: int
 
 RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
+
+options = globals().copy()  # THIS MUST PRECEDE DIRECTLY BEFORE LIST OF CONFIG OPTIONS!
 
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
@@ -64,28 +65,17 @@ profile_active = True if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
                          os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'True' else False  # type: bool
 profile_task_query_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
 
+options = {opt for opt in globals() if opt not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 
-def init(
-        service: str = None,
-        instance: str = None,
-        collector: str = None,
-        protocol_type: str = None,
-        token: str = None,
-):
-    global service_name
-    service_name = service or service_name
 
-    global service_instance
-    service_instance = instance or service_instance
+def init(**kwargs):
+    glob = globals()
 
-    global collector_address
-    collector_address = collector or collector_address
+    for key, val in kwargs.items():
+        if key not in options:
+            raise KeyError('invalid config option %s' % key)
 
-    global protocol
-    protocol = protocol_type or protocol
-
-    global authentication
-    authentication = token or authentication
+        glob[key] = val
 
 
 def finalize():
@@ -107,21 +97,11 @@ def finalize():
 
 
 def serialize():
-    from skywalking import config
-    return {
-        key: value for key, value in config.__dict__.items() if not (
-                key.startswith('_') or key == 'TYPE_CHECKING' or key == 'RE_IGNORE_PATH'
-                or inspect.isfunction(value)
-                or inspect.ismodule(value)
-                or inspect.isbuiltin(value)
-                or inspect.isclass(value)
-        )
-    }
+    glob = globals()
+
+    return {key: glob[key] for key in options}
 
 
 def deserialize(data):
-    from skywalking import config
-    for key, value in data.items():
-        if key in config.__dict__:
-            config.__dict__[key] = value
+    init(**data)
     finalize()

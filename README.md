@@ -47,7 +47,7 @@ SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 ```python
 from skywalking import agent, config
 
-config.init(collector='127.0.0.1:11800', service='your awesome service')
+config.init(collector_address='127.0.0.1:11800', service_name='your awesome service')
 agent.start()
 ```
 
