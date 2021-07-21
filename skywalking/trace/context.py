@@ -232,12 +232,12 @@ class NoopContext(SpanContext):
     def new_local_span(self, op: str) -> Span:
         return self._noop_span
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
         if carrier is not None:
             self._noop_span.extract(carrier)
         return self._noop_span
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
+    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
         return self._noop_span
 
     def start(self, span: Span):
