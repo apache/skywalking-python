@@ -37,9 +37,6 @@ class KafkaProtocol(Protocol):
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
 
-    def connected(self):
-        return True
-
     def heartbeat(self):
         self.service_management.send_heart_beat()
 
@@ -52,7 +49,7 @@ class KafkaProtocol(Protocol):
                     timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
                     if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
                         return
-                    segment = queue.get(block=block)  # type: Segment
+                    segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
 
