@@ -22,10 +22,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
 
-# In order to prevent timeouts and possible segment loss make sure QUEUE_TIMEOUT is always at least few seconds lower
-# than GRPC_TIMEOUT.
-GRPC_TIMEOUT = 300  # type: int
-QUEUE_TIMEOUT = 240  # type: int
+QUEUE_TIMEOUT = 1  # type: int
 
 RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
 
@@ -41,6 +38,7 @@ protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
 logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
+max_buffer_size = int(os.getenv('SW_AGENT_MAX_BUFFER_SIZE', '1000'))  # type: int
 sql_parameters_length = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')  # type: int
 pymongo_trace_parameters = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') and \
                                    os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False  # type: bool
