@@ -269,4 +269,4 @@ def get_context() -> SpanContext:
     if spans:
         return spans[len(spans) - 1].context
 
-    return SpanContext() if agent.connected() else NoopContext()
+    return SpanContext()

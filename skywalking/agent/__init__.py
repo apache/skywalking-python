@@ -38,24 +38,30 @@ __heartbeat_thread = __report_thread = __query_profile_thread = __command_dispat
 
 def __heartbeat():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.heartbeat()
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(30 if connected() else 3)
+        __finished.wait(30)
 
 
 def __report():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.report(__queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(1)
+        __finished.wait(0)
 
 
 def __query_profile_command():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.query_profile_commands()
+        except Exception as exc:
+            logger.error(str(exc))
 
         __finished.wait(profile_task_query_interval)
 
@@ -68,7 +74,7 @@ def __command_dispatch():
 def __init_threading():
     global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __queue, __finished
 
-    __queue = Queue(maxsize=10000)
+    __queue = Queue(maxsize=config.max_buffer_size)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
@@ -160,10 +166,6 @@ def stop():
 
 def started():
     return __started
-
-
-def connected():
-    return __protocol.connected()
 
 
 def archive(segment: 'Segment'):

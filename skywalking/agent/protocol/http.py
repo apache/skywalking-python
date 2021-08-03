@@ -35,9 +35,6 @@ class HttpProtocol(Protocol):
         self.service_management.fork_after_in_child()
         self.traces_reporter.fork_after_in_child()
 
-    def connected(self):
-        return True
-
     def heartbeat(self):
         if not self.properties_sent:
             self.service_management.send_instance_props()
@@ -50,16 +47,18 @@ class HttpProtocol(Protocol):
         def generator():
             while True:
                 try:
-                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                        return
                     segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
 
+                queue.task_done()
+
                 logger.debug('reporting segment %s', segment)
 
                 yield segment
-
-                queue.task_done()
 
         try:
             self.traces_reporter.report(generator=generator())

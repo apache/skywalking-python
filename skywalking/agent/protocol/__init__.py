@@ -29,9 +29,6 @@ class Protocol(ABC):
     def fork_after_in_child(self):
         pass
 
-    def connected(self):
-        return False
-
     def heartbeat(self):
         raise NotImplementedError()
 
