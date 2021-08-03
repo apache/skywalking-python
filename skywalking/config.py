@@ -96,14 +96,3 @@ def finalize():
 
     global RE_IGNORE_PATH
     RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
-
-
-def serialize():
-    glob = globals()
-
-    return {key: glob[key] for key in options}
-
-
-def deserialize(data):
-    init(**data)
-    finalize()
