@@ -48,7 +48,7 @@ setup(
             "pytest",
         ],
         "http": [
-            "requests",
+            "requests>=2.26.0",
         ],
         "kafka": [
             "kafka",
