@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 QUEUE_TIMEOUT = 1  # type: int
 
 RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
+RE_HTTP_IGNORE_METHOD = RE_IGNORE_PATH  # type: re.Pattern
 
 options = None  # here to include 'options' in globals
 options = globals().copy()  # THIS MUST PRECEDE DIRECTLY BEFORE LIST OF CONFIG OPTIONS!
@@ -38,7 +39,7 @@ protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
 logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
-max_buffer_size = int(os.getenv('SW_AGENT_MAX_BUFFER_SIZE', '1000'))  # type: int
+max_buffer_size = int(os.getenv('SW_AGENT_MAX_BUFFER_SIZE', '10000'))  # type: int
 sql_parameters_length = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')  # type: int
 pymongo_trace_parameters = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') and \
                                    os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False  # type: bool
@@ -50,6 +51,7 @@ flask_collect_http_params = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') an
 sanic_collect_http_params = True if os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') and \
                                     os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 http_params_length_threshold = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')  # type: int
+http_ignore_method = os.getenv('SW_HTTP_IGNORE_METHOD', '').upper()  # type: str
 django_collect_http_params = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') and \
                                      os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 correlation_element_max_number = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')  # type: int
@@ -81,6 +83,7 @@ def init(**kwargs):
 def finalize():
     reesc = re.compile(r'([.*+?^=!:${}()|\[\]\\])')
     suffix = r'^.+(?:' + '|'.join(reesc.sub(r'\\\1', s.strip()) for s in ignore_suffix.split(',')) + ')$'
+    method = r'^' + '|'.join(s.strip() for s in http_ignore_method.split(',')) + '$'
     path = '^(?:' + \
            '|'.join(                          # replaces ","
                '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
@@ -92,5 +95,10 @@ def finalize():
                ) for p0 in trace_ignore_path.split(',')
            ) + ')$'
 
-    global RE_IGNORE_PATH
+    global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD
     RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
+    RE_HTTP_IGNORE_METHOD = re.compile(method, re.IGNORECASE)
+
+
+def ignore_http_method_check(method: str):
+    return RE_HTTP_IGNORE_METHOD.match(method)
