@@ -168,6 +168,10 @@ def started():
     return __started
 
 
+def isfull():
+    return __queue.full()
+
+
 def archive(segment: 'Segment'):
     try:  # unlike checking __queue.full() then inserting, this is atomic
         __queue.put(segment, block=False)

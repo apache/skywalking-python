@@ -220,12 +220,11 @@ class ExitSpan(Span):
 
 @tostring
 class NoopSpan(Span):
-    def __init__(self, context: 'SpanContext' = None, kind: 'Kind' = None):
-        Span.__init__(self, context=context, kind=kind)
+    def __init__(self, context: 'SpanContext' = None):
+        Span.__init__(self, context=context, op='', kind=Kind.Local)
 
     def extract(self, carrier: 'Carrier'):
-        if carrier is not None:
-            self.context._correlation = carrier.correlation_carrier.correlation
+        return
 
     def inject(self) -> 'Carrier':
-        return Carrier(correlation=self.context._correlation)
+        return Carrier()

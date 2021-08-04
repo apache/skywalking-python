@@ -16,6 +16,7 @@
 #
 
 from skywalking import Component, agent, config
+from skywalking.agent import isfull
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -75,12 +76,18 @@ class SpanContext(object):
         self._correlation = {}  # type: dict
         self._nspans = 0
 
+    def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
+        if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
+            return NoopSpan(context=NoopContext())
+
+        return None
+
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
         if span is not None:
             return span
 
-        spans = _spans_dup()
+        spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
         return Span(
@@ -92,11 +99,11 @@ class SpanContext(object):
         )
 
     def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
-        span = self.ignore_check(op, Kind.Entry)
+        span = self.ignore_check(op, Kind.Entry, carrier)
         if span is not None:
             return span
 
-        spans = _spans_dup()
+        spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
         if parent is not None and parent.kind.is_entry and inherit == parent.component:
@@ -120,12 +127,13 @@ class SpanContext(object):
         if span is not None:
             return span
 
-        spans = _spans_dup()
+        spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
         if parent is not None and parent.kind.is_exit and component == parent.inherit:
             span = parent
             span.op = op
+            span.peer = peer
             span.component = component
         else:
             span = ExitSpan(
@@ -142,23 +150,14 @@ class SpanContext(object):
 
         return span
 
-    def ignore_check(self, op: str, kind: Kind):
-        if config.RE_IGNORE_PATH.match(op):
-            return NoopSpan(
-                context=NoopContext(),
-                kind=kind,
-            )
-
-        return None
-
     def start(self, span: Span):
         self._nspans += 1
-        spans = _spans()
+        spans = _spans_dup()
         if span not in spans:
             spans.append(span)
 
     def stop(self, span: Span) -> bool:
-        spans = _spans()
+        spans = _spans_dup()
         span.finish(self.segment)
 
         try:
@@ -225,30 +224,27 @@ class SpanContext(object):
 class NoopContext(SpanContext):
     def __init__(self):
         super().__init__()
-        self._depth = 0
-        self._noop_span = NoopSpan(self, kind=Kind.Local)
-        self.correlation = {}  # type: dict
 
     def new_local_span(self, op: str) -> Span:
-        return self._noop_span
+        return NoopSpan(self)
 
     def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
-        if carrier is not None:
-            self._noop_span.extract(carrier)
-        return self._noop_span
+        return NoopSpan(self)
 
     def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
-        return self._noop_span
-
-    def start(self, span: Span):
-        self._depth += 1
+        return NoopSpan(self)
 
     def stop(self, span: Span) -> bool:
-        self._depth -= 1
-        return self._depth == 0
+        spans = _spans_dup()
 
-    def active_span(self):
-        return self._noop_span
+        try:
+            spans.remove(span)
+        except Exception:
+            pass
+
+        self._nspans -= 1
+
+        return self._nspans == 0
 
     def capture(self):
         return Snapshot(
