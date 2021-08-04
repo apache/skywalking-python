@@ -69,6 +69,11 @@ class GrpcProtocol(Protocol):
         self.profile_query.do_query()
 
     def heartbeat(self):
+        logger.debug(
+            'segment reporter service heart beats, [%s], [%s]',
+            config.service_name,
+            config.service_instance,
+        )
         try:
             self.service_management.send_heart_beat()
         except grpc.RpcError:

@@ -21,19 +21,22 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking import config, plugins, loggings
+from skywalking import config, plugins, log
+from skywalking import loggings
 from skywalking.agent.protocol import Protocol
+from skywalking.agent.protocol.grpc_log import GrpcLogProtocol
 from skywalking.command import command_service
 from skywalking.config import profile_active, profile_task_query_interval
 from skywalking.loggings import logger
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
-
 __started = False
-__protocol = Protocol()  # type: Protocol
-__heartbeat_thread = __report_thread = __query_profile_thread = __command_dispatch_thread = __queue = __finished = None
+__protocol = __log_protocol = Protocol()  # type: Protocol
+__heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
+    = __queue = __log_queue = __finished = None
 
 
 def __heartbeat():
@@ -52,6 +55,22 @@ def __report():
         __finished.wait(1)
 
 
+def __log_heartbeat():
+    while not __finished.is_set():
+        if log_connected():
+            __log_protocol.heartbeat()
+
+        __finished.wait(30 if log_connected() else 3)
+
+
+def __log_report():
+    while not __finished.is_set():
+        if log_connected():
+            __log_protocol.report(__log_queue)
+
+        __finished.wait(1)
+
+
 def __query_profile_command():
     while not __finished.is_set():
         if connected():
@@ -66,7 +85,8 @@ def __command_dispatch():
 
 
 def __init_threading():
-    global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __queue, __finished
+    global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, __command_dispatch_thread, \
+        __queue, __log_queue, __finished
 
     __queue = Queue(maxsize=10000)
     __finished = Event()
@@ -79,12 +99,19 @@ def __init_threading():
     __report_thread.start()
     __command_dispatch_thread.start()
 
+    if config.log_grpc_reporter_active:
+        __log_queue = Queue(maxsize=10000)
+        __log_heartbeat_thread = Thread(name='HeartbeatThread', target=__log_heartbeat, daemon=True)
+        __log_report_thread = Thread(name='LogReportThread', target=__log_report, daemon=True)
+        __log_report_thread.start()
+        __log_heartbeat_thread.start()
+
     if profile_active:
         __query_profile_thread.start()
 
 
 def __init():
-    global __protocol
+    global __protocol, __log_protocol
 
     if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
@@ -97,12 +124,18 @@ def __init():
         __protocol = KafkaProtocol()
 
     plugins.install()
+    if config.log_grpc_reporter_active:
+        __log_protocol = GrpcLogProtocol()
+        log.install()
     __init_threading()
 
 
 def __fini():
     __protocol.report(__queue, False)
     __queue.join()
+    if config.log_grpc_reporter_active:
+        __log_protocol.report(__log_queue, False)
+        __log_queue.join()
     __finished.set()
 
 
@@ -166,8 +199,19 @@ def connected():
     return __protocol.connected()
 
 
+def log_connected():
+    return __log_protocol.connected()
+
+
 def archive(segment: 'Segment'):
     try:  # unlike checking __queue.full() then inserting, this is atomic
         __queue.put(segment, block=False)
     except Full:
         logger.warning('the queue is full, the segment will be abandoned')
+
+
+def archive_log(log_data: 'LogData'):
+    try:
+        __log_queue.put(log_data, block=False)
+    except Full:
+        logger.warning('the queue is full, the log will be abandoned')

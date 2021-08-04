@@ -20,9 +20,11 @@ from skywalking.loggings import logger
 import grpc
 
 from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService
+from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService, \
+    LogDataReportService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
+from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
 from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
 from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
@@ -44,11 +46,6 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         ))
 
     def send_heart_beat(self):
-        logger.debug(
-            'service heart beats, [%s], [%s]',
-            config.service_name,
-            config.service_instance,
-        )
         self.service_stub.keepAlive(InstancePingPkg(
             service=config.service_name,
             serviceInstance=config.service_instance,
@@ -77,3 +74,11 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
 
         commands = self.task_stub.getProfileTaskCommands(query)
         command_service.receive_command(commands)
+
+
+class GrpcLogDataReportService(LogDataReportService):
+    def __init__(self, channel: grpc.Channel):
+        self.report_stub = LogReportServiceStub(channel)
+
+    def report(self, generator):
+        self.report_stub.collect(generator, timeout=config.log_grpc_reporter_upstream_timeout)
