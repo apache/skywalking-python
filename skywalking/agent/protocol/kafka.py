@@ -18,6 +18,7 @@
 import logging
 from skywalking.loggings import logger, getLogger
 from queue import Queue, Empty
+from time import time
 
 from skywalking import config
 from skywalking.agent import Protocol
@@ -36,19 +37,23 @@ class KafkaProtocol(Protocol):
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
 
-    def connected(self):
-        return True
-
     def heartbeat(self):
         self.service_management.send_heart_beat()
 
     def report(self, queue: Queue, block: bool = True):
+        start = time()
+
         def generator():
             while True:
                 try:
-                    segment = queue.get(block=block)  # type: Segment
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                        return
+                    segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
+
+                queue.task_done()
 
                 logger.debug('reporting segment %s', segment)
 
@@ -90,7 +95,5 @@ class KafkaProtocol(Protocol):
                 )
 
                 yield s
-
-                queue.task_done()
 
         self.traces_reporter.report(generator())

@@ -41,7 +41,8 @@ def install():
             span.layer = Layer.Http
             code = None
 
-            [fullurl.add_header(item.key, item.val) for item in carrier]
+            for item in carrier:
+                fullurl.add_header(item.key, item.val)
 
             try:
                 res = _open(this, fullurl, data, timeout)
