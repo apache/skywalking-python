@@ -52,6 +52,7 @@ sqlparse==0.3.1
 testcontainers==3.0.3
 toml==0.10.1
 tornado==6.0.4
+hug==2.4.1
 urllib3==1.25.10
 websockets==8.1
 websocket-client==0.57.0
