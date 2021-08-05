@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagDbSqlParameters
 
 
 def install():
@@ -42,9 +41,9 @@ def install():
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
-                span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
-                span.tag(Tag(key=tags.DbStatement, val=query))
+                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbInstance(dsn['dbname']))
+                span.tag(TagDbStatement(query))
 
                 if config.sql_parameters_length and vars is not None:
                     text = ','.join(str(v) for v in vars)
@@ -52,7 +51,7 @@ def install():
                     if len(text) > config.sql_parameters_length:
                         text = text[:config.sql_parameters_length] + '...'
 
-                    span.tag(Tag(key=tags.DbSqlParameters, val='[' + text + ']'))
+                    span.tag(TagDbSqlParameters('[' + text + ']'))
 
                 return self._self_cur.execute(query, vars)
 
@@ -64,9 +63,9 @@ def install():
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
-                span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
-                span.tag(Tag(key=tags.DbStatement, val=query))
+                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbInstance(dsn['dbname']))
+                span.tag(TagDbStatement(query))
 
                 if config.sql_parameters_length:
                     max_len = config.sql_parameters_length
@@ -84,7 +83,7 @@ def install():
 
                         text_list.append(text)
 
-                    span.tag(Tag(key=tags.DbSqlParameters, val='[' + ','.join(text_list) + ']'))
+                    span.tag(TagDbSqlParameters('[' + ','.join(text_list) + ']'))
 
                 return self._self_cur.executemany(query, vars_list)
 
@@ -97,9 +96,9 @@ def install():
                 span.layer = Layer.Database
                 args = '(' + ('' if not parameters else ','.join(parameters)) + ')'
 
-                span.tag(Tag(key=tags.DbType, val="PostgreSQL"))
-                span.tag(Tag(key=tags.DbInstance, val=dsn['dbname']))
-                span.tag(Tag(key=tags.DbStatement, val=procname + args))
+                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbInstance(dsn['dbname']))
+                span.tag(TagDbStatement(procname + args))
 
                 return self._self_cur.callproc(procname, parameters)
 

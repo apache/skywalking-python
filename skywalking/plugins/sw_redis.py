@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 
 
 def install():
@@ -34,9 +33,9 @@ def install():
             span.layer = Layer.Cache
 
             res = _send_command(this, *args, **kwargs)
-            span.tag(Tag(key=tags.DbType, val="Redis"))
-            span.tag(Tag(key=tags.DbInstance, val=this.db))
-            span.tag(Tag(key=tags.DbStatement, val=op))
+            span.tag(TagDbType("Redis"))
+            span.tag(TagDbInstance(this.db))
+            span.tag(TagDbStatement(op))
 
             return res
 

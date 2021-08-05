@@ -18,11 +18,10 @@
 import inspect
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -71,15 +70,15 @@ def wrap_werkzeug_request_handler(handler):
             span.layer = Layer.Http
             span.component = Component.General
             span.peer = '%s:%s' % handler.client_address
-            span.tag(Tag(key=tags.HttpMethod, val=method))
-            span.tag(Tag(key=tags.HttpUrl, val=url))
+            span.tag(TagHttpMethod(method))
+            span.tag(TagHttpURL(url))
 
             try:
                 return _run_wsgi()
             finally:
                 status_code = int(getattr(handler, '_status_code', -1))
                 if status_code > -1:
-                    span.tag(Tag(key=tags.HttpStatus, val=status_code, overridable=True))
+                    span.tag(TagHttpStatusCode(status_code))
                     if status_code >= 400:
                         span.error_occurred = True
 
@@ -122,15 +121,15 @@ def _wrap_do_method(handler, method):
                 span.layer = Layer.Http
                 span.component = Component.General
                 span.peer = '%s:%s' % handler.client_address
-                span.tag(Tag(key=tags.HttpMethod, val=method))
-                span.tag(Tag(key=tags.HttpUrl, val=url))
+                span.tag(TagHttpMethod(method))
+                span.tag(TagHttpURL(url))
 
                 try:
                     _do_method()
                 finally:
                     status_code = int(getattr(handler, '_status_code', -1))
                     if status_code > -1:
-                        span.tag(Tag(key=tags.HttpStatus, val=status_code, overridable=True))
+                        span.tag(TagHttpStatusCode(status_code))
                         if status_code >= 400:
                             span.error_occurred = True
 

@@ -16,10 +16,9 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -45,12 +44,12 @@ def install():
             for item in carrier:
                 headers[item.key] = item.val
 
-            span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
-            span.tag(Tag(key=tags.HttpUrl, val=url))
+            span.tag(TagHttpMethod(method.upper()))
+            span.tag(TagHttpURL(url))
 
             res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status, overridable=True))
+            span.tag(TagHttpStatusCode(res.status))
             if res.status >= 400:
                 span.error_occurred = True
 

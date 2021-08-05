@@ -16,11 +16,10 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -44,12 +43,12 @@ def install():
             span.component = Component.Pyramid
             span.peer = request.remote_host or request.remote_addr
 
-            span.tag(Tag(key=tags.HttpMethod, val=method))
-            span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))
+            span.tag(TagHttpMethod(method))
+            span.tag(TagHttpURL(str(request.url)))
 
             resp = _invoke_request(self, request, *args, **kwargs)
 
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code, overridable=True))
+            span.tag(TagHttpStatusCode(resp.status_code))
 
             if resp.status_code >= 400:
                 span.error_occurred = True

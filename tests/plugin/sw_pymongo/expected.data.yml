@@ -53,9 +53,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/insert_many
-              - key: status.code
+              - key: http.status.code
                 value: '200'
             refs:
               - parentEndpoint: /insert_many
@@ -100,9 +100,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/find_one
-              - key: status.code
+              - key: http.status.code
                 value: '200'
             refs:
               - parentEndpoint: /find_one
@@ -147,9 +147,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/delete_one
-              - key: status.code
+              - key: http.status.code
                 value: '200'
             refs:
               - parentEndpoint: /delete_one
@@ -179,9 +179,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/insert_many
-              - key: status.code
+              - key: http.status.code
                 value: '200'
           - operationName: /find_one
             operationId: 0
@@ -197,9 +197,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/find_one
-              - key: status.code
+              - key: http.status.code
                 value: '200'
           - operationName: /delete_one
             operationId: 0
@@ -215,9 +215,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://provider:9091/delete_one
-              - key: status.code
+              - key: http.status.code
                 value: '200'
           - operationName: /users
             operationId: 0
@@ -233,7 +233,7 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://0.0.0.0:9090/users
-              - key: status.code
+              - key: http.status.code
                 value: '200'

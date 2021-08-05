@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbStatement
 
 
 def install():
@@ -33,9 +32,9 @@ def install():
             span.layer = Layer.Database
             res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 
-            span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
+            span.tag(TagDbType("Elasticsearch"))
             if config.elasticsearch_trace_dsl:
-                span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
+                span.tag(TagDbStatement("" if body is None else body))
 
             return res
 
