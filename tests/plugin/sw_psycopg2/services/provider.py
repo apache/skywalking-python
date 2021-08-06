@@ -16,37 +16,31 @@
 #
 
 import time
-import requests
+
 from skywalking import agent, config
-from skywalking.trace.ipc.process import SwProcess
-import multiprocessing
-
-
-def post():
-    requests.post("http://provider:9091/users")
-    time.sleep(3)
-
 
 if __name__ == '__main__':
-    multiprocessing.set_start_method('spawn')
-    config.service_name = 'consumer'
+    config.service_name = 'provider'
     config.logging_level = 'DEBUG'
-    config.flask_collect_http_params = True
+    config.sql_parameters_length = 512
     agent.start()
 
     from flask import Flask, jsonify
+    import psycopg2
 
     app = Flask(__name__)
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
-        p1 = SwProcess(target=post)
-        p1.start()
-        p1.join()
+        time.sleep(0.5)
+        connection = psycopg2.connect(host='postgres', user='root', password='root', dbname='admin')
+        with connection.cursor() as cursor:
+            sql = "select * from user where user = %s"
+            cursor.execute(sql, ("root",))
 
-        res = requests.post("http://provider:9091/users")
+        connection.close()
 
-        return jsonify(res.json())
+        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
 
-    PORT = 9090
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+    PORT = 9091
+    app.run(host='0.0.0.0', port=PORT, debug=True)

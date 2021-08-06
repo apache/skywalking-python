@@ -25,11 +25,17 @@ from skywalking.client import ServiceManagementClient, TraceSegmentReportService
 
 class HttpServiceManagementClient(ServiceManagementClient):
     def __init__(self):
-        self.session = requests.session()
+        proto = 'https://' if config.force_tls else 'http://'
+        self.url_instance_props = proto + config.collector_address.rstrip('/') + '/v3/management/reportProperties'
+        self.url_heart_beat = proto + config.collector_address.rstrip('/') + '/v3/management/keepAlive'
+        self.session = requests.Session()
+
+    def fork_after_in_child(self):
+        self.session.close()
+        self.session = requests.Session()
 
     def send_instance_props(self):
-        url = config.collector_address.rstrip('/') + '/v3/management/reportProperties'
-        res = self.session.post(url, json={
+        res = self.session.post(self.url_instance_props, json={
             'service': config.service_name,
             'serviceInstance': config.service_instance,
             'properties': [{
@@ -44,8 +50,7 @@ class HttpServiceManagementClient(ServiceManagementClient):
             config.service_name,
             config.service_instance,
         )
-        url = config.collector_address.rstrip('/') + '/v3/management/keepAlive'
-        res = self.session.post(url, json={
+        res = self.session.post(self.url_heart_beat, json={
             'service': config.service_name,
             'serviceInstance': config.service_instance,
         })
@@ -54,12 +59,17 @@ class HttpServiceManagementClient(ServiceManagementClient):
 
 class HttpTraceSegmentReportService(TraceSegmentReportService):
     def __init__(self):
-        self.session = requests.session()
+        proto = 'https://' if config.force_tls else 'http://'
+        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/segment'
+        self.session = requests.Session()
+
+    def fork_after_in_child(self):
+        self.session.close()
+        self.session = requests.Session()
 
     def report(self, generator):
-        url = config.collector_address.rstrip('/') + '/v3/segment'
         for segment in generator:
-            res = self.session.post(url, json={
+            res = self.session.post(self.url_report, json={
                 'traceId': str(segment.related_traces[0]),
                 'traceSegmentId': str(segment.segment_id),
                 'service': config.service_name,
@@ -76,10 +86,10 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
                     'componentId': span.component.value,
                     'isError': span.error_occurred,
                     'logs': [{
-                        'time': log.timestamp * 1000,
+                        'time': int(log.timestamp * 1000),
                         'data': [{
                             'key': item.key,
-                            'value': item.val
+                            'value': item.val,
                         } for item in log.items],
                     } for log in span.logs],
                     'tags': [{

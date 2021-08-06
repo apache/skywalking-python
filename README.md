@@ -47,7 +47,7 @@ SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 ```python
 from skywalking import agent, config
 
-config.init(collector='127.0.0.1:11800', service='your awesome service')
+config.init(collector_address='127.0.0.1:11800', service_name='your awesome service')
 agent.start()
 ```
 
@@ -79,8 +79,8 @@ with context.new_entry_span(op='https://github.com/apache') as span:
     span.component = Component.Flask
 # the span automatically stops when exiting the `with` context
 
-with context.new_exit_span(op='https://github.com/apache', peer='localhost:8080') as span:
-    span.component = Component.Flask
+with context.new_exit_span(op='https://github.com/apache', peer='localhost:8080', component=Component.Flask) as span:
+    span.tag(Tag(key='Singer', val='Nakajima'))
 
 with context.new_local_span(op='https://github.com/apache') as span:
     span.tag(Tag(key='Singer', val='Nakajima'))
@@ -94,7 +94,6 @@ from time import sleep
 from skywalking import Component
 from skywalking.decorators import trace, runnable
 from skywalking.trace.context import SpanContext, get_context
-from skywalking.trace.ipc.process import SwProcess
 
 @trace()  # the operation name is the method name('some_other_method') by default
 def some_other_method():
@@ -117,18 +116,12 @@ async def async_func2():
 
 
 @runnable() # cross thread propagation
-def some_method(): 
+def some_method():
     some_other_method()
 
-from threading import Thread 
+from threading import Thread
 t = Thread(target=some_method)
 t.start()
-
-# When another process is started, agents will also be started in other processes, 
-# supporting only the process mode of spawn.
-p1 = SwProcess(target=some_method) 
-p1.start()
-p1.join()
 
 
 context: SpanContext = get_context()

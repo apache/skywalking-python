@@ -33,12 +33,13 @@ setup(
     author="Apache",
     author_email="dev@skywalking.apache.org",
     license="Apache 2.0",
-    packages=find_packages(exclude=("tests",)),
+    packages=find_packages(exclude=("tests", "tests.*")),
     include_package_data=True,
     install_requires=[
         "grpcio",
         "grpcio-tools",
         "packaging",
+        "wrapt",
     ],
     extras_require={
         "test": [
@@ -47,7 +48,7 @@ setup(
             "pytest",
         ],
         "http": [
-            "requests",
+            "requests>=2.26.0",
         ],
         "kafka": [
             "kafka",
@@ -66,6 +67,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
 
         "Topic :: Software Development",
     ]

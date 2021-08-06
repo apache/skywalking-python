@@ -41,7 +41,7 @@ def install():
         for item in carrier:
             if item.key.capitalize() in req.headers:
                 item.val = req.headers[item.key.capitalize()]
-        with context.new_entry_span(op=req.path, carrier=carrier) as span:
+        with context.new_entry_span(op=req.path, carrier=carrier, inherit=Component.General) as span:
             span.layer = Layer.Http
             span.component = Component.Flask
             span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])

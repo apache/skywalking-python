@@ -31,6 +31,7 @@ class Component(Enum):
     Tornado = 7005
     Redis = 7
     MongoDB = 9
+    PostgreSQL = 22
     KafkaProducer = 40
     KafkaConsumer = 41
     RabbitmqProducer = 52
@@ -40,7 +41,9 @@ class Component(Enum):
     Sanic = 7007
     AioHttp = 7008
     Pyramid = 7009
-    Falcon = 7010
+    Psycopg = 7010
+    Celery = 7011
+    Falcon = 7012
 
 
 class Layer(Enum):

@@ -23,7 +23,7 @@ from skywalking.utils.lang import b64encode, b64decode
 
 class CarrierItem(object):
     def __init__(self, key: str = '', val: str = ''):
-        self.key = key  # type: str
+        self.key = config.agent_namespace + "-" + key if config.agent_namespace else key   # type: str
         self.val = val  # type: str
 
     @property
@@ -48,6 +48,7 @@ class Carrier(CarrierItem):
                  service_instance: str = '', endpoint: str = '', client_address: str = '',
                  correlation: dict = None):  # pyre-ignore
         super(Carrier, self).__init__(key='sw8')
+        self.__val = None
         self.trace_id = trace_id  # type: str
         self.segment_id = segment_id  # type: str
         self.span_id = span_id  # type: str
@@ -100,6 +101,10 @@ class Carrier(CarrierItem):
                len(self.endpoint) > 0 and \
                len(self.client_address) > 0 and \
                self.span_id.isnumeric()
+
+    @property
+    def is_suppressed(self):  # if is invalid from previous set, ignored or suppressed status propagation downstream
+        return self.__val and not self.is_valid
 
     def __iter__(self):
         self.__iter_index = 0

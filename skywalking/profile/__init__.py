@@ -15,20 +15,6 @@
 # limitations under the License.
 #
 
+from skywalking.profile.profile_task_execution_service import ProfileTaskExecutionService
 
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
-
-
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
+profile_task_execution_service = ProfileTaskExecutionService()

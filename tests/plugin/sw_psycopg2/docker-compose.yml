@@ -23,6 +23,23 @@ services:
       service: collector
       file: ../docker/docker-compose.base.yml
 
+  postgres:
+    image: postgres:11
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=admin
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/5432"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    networks:
+      - beyond
+
   provider:
     extends:
       service: agent
@@ -30,10 +47,12 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./services/provider.py:/app/provider.py
-    command: ['bash', '-c', 'pip install flask && python3 /app/provider.py']
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && python3 /app/services/provider.py']
     depends_on:
       collector:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
@@ -48,8 +67,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/consumer.py:/app/consumer.py
-    command: ['bash', '-c', 'pip install flask && python3 /app/consumer.py']
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && python3 /app/services/consumer.py']
     depends_on:
       collector:
         condition: service_healthy

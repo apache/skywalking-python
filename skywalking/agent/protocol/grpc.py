@@ -16,26 +16,33 @@
 #
 
 import logging
-from skywalking.loggings import logger
 import traceback
-from queue import Queue, Empty, Full
+from queue import Queue, Empty
 from time import time
 
 import grpc
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
-from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
+    GrpcProfileTaskChannelService
+from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
 
 
 class GrpcProtocol(Protocol):
     def __init__(self):
+        self.properties_sent = False
         self.state = None
-        self.channel = grpc.insecure_channel(config.collector_address)
+
+        if config.force_tls:
+            self.channel = grpc.secure_channel(config.collector_address, grpc.ssl_channel_credentials())
+        else:
+            self.channel = grpc.insecure_channel(config.collector_address)
+
         if config.authentication:
             self.channel = grpc.intercept_channel(
                 self.channel, header_adder_interceptor('authentication', config.authentication)
@@ -44,24 +51,26 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
+        self.profile_query = GrpcProfileTaskChannelService(self.channel)
 
     def _cb(self, state):
         logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
         self.state = state
-        if self.connected():
-            try:
-                self.service_management.send_instance_props()
-            except grpc.RpcError:
-                self.on_error()
+
+    def query_profile_commands(self):
+        logger.debug("query profile commands")
+        self.profile_query.do_query()
 
     def heartbeat(self):
         try:
+            if not self.properties_sent:
+                self.service_management.send_instance_props()
+                self.properties_sent = True
+
             self.service_management.send_heart_beat()
+
         except grpc.RpcError:
             self.on_error()
-
-    def connected(self):
-        return self.state == grpc.ChannelConnectivity.READY
 
     def on_error(self):
         traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
@@ -70,17 +79,18 @@ class GrpcProtocol(Protocol):
 
     def report(self, queue: Queue, block: bool = True):
         start = time()
-        segment = None
 
         def generator():
-            nonlocal segment
-
             while True:
                 try:
-                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                        return
                     segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
+
+                queue.task_done()
 
                 logger.debug('reporting segment %s', segment)
 
@@ -123,16 +133,7 @@ class GrpcProtocol(Protocol):
 
                 yield s
 
-                queue.task_done()
-
         try:
             self.traces_reporter.report(generator())
-
         except grpc.RpcError:
             self.on_error()
-
-            if segment:
-                try:
-                    queue.put(segment, block=False)
-                except Full:
-                    pass
