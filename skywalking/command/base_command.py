@@ -16,19 +16,9 @@
 #
 
 
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
-
-
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
+class BaseCommand:
+    def __init__(self,
+                 command: str = "",
+                 serial_number: str = ""):
+        self.command = command  # type: str
+        self.serial_number = serial_number  # type: str

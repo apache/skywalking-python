@@ -15,20 +15,7 @@
 # limitations under the License.
 #
 
-from multiprocessing import Process
 
-from skywalking import config, agent
-
-
-class SwProcess(Process):
-
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, *,
-                 daemon=None):
-        super(SwProcess, self).__init__(group=group, target=target, name=name, args=args, kwargs=kwargs, daemon=daemon)
-        self._sw_config = config.serialize()
-
-    def run(self):
-        if agent.started() is False:
-            config.deserialize(self._sw_config)
-            agent.start()
-        super(SwProcess, self).run()
+class CommandExecutor:
+    def execute(self, command):
+        raise NotImplementedError()

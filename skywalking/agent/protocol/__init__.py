@@ -20,11 +20,20 @@ from queue import Queue
 
 
 class Protocol(ABC):
-    def connected(self):
-        raise NotImplementedError()
+    def fork_before(self):
+        pass
+
+    def fork_after_in_parent(self):
+        pass
+
+    def fork_after_in_child(self):
+        pass
 
     def heartbeat(self):
         raise NotImplementedError()
 
     def report(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
+
+    def query_profile_commands(self):
+        pass

@@ -19,10 +19,7 @@ version: '2.1'
 
 services:
   collector:
-    build:
-      context: .
-      dockerfile: Dockerfile.tool
-    image: skywalking-collector:ci
+    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:2ed17bb73eb993cc7d4effa7a5a36dd91a9ec8cd
     ports:
       - 19876:19876
       - 12800:12800

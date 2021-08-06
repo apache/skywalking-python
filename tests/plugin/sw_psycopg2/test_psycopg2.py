@@ -14,24 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
-import time
+import pytest
+import requests
 
-from skywalking import agent, config
+from tests.plugin.base import TestPluginBase
 
-if __name__ == '__main__':
-    config.service_name = 'provider'
-    config.logging_level = 'DEBUG'
-    agent.start()
 
-    from flask import Flask, jsonify
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
 
-    app = Flask(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
-    def application():
-        time.sleep(0.5)
-        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
-
-    PORT = 9091
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'psycopg2-binary==2.8.6',
+    ])
+    def test_plugin(self, docker_compose, version):
+        self.validate()

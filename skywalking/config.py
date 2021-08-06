@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import inspect
 import os
 import re
 import uuid
@@ -23,23 +22,24 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
 
-# In order to prevent timeouts and possible segment loss make sure QUEUE_TIMEOUT is always at least few seconds lower
-# than GRPC_TIMEOUT.
-GRPC_TIMEOUT = 300  # type: int
-QUEUE_TIMEOUT = 240  # type: int
+QUEUE_TIMEOUT = 1  # type: int
 
 RE_IGNORE_PATH = re.compile('^$')  # type: re.Pattern
 
+options = None  # here to include 'options' in globals
+options = globals().copy()  # THIS MUST PRECEDE DIRECTLY BEFORE LIST OF CONFIG OPTIONS!
+
 service_name = os.getenv('SW_AGENT_NAME') or 'Python Service Name'  # type: str
 service_instance = os.getenv('SW_AGENT_INSTANCE') or str(uuid.uuid1()).replace('-', '')  # type: str
+agent_namespace = os.getenv('SW_AGENT_NAMESPACE')  # type: str
 collector_address = os.getenv('SW_AGENT_COLLECTOR_BACKEND_SERVICES') or '127.0.0.1:11800'  # type: str
+force_tls = os.getenv('SW_AGENT_FORCE_TLS', '').lower() == 'true'  # type: bool
 protocol = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()  # type: str
 authentication = os.getenv('SW_AGENT_AUTHENTICATION')  # type: str
 logging_level = os.getenv('SW_AGENT_LOGGING_LEVEL') or 'INFO'  # type: str
 disable_plugins = (os.getenv('SW_AGENT_DISABLE_PLUGINS') or '').split(',')  # type: List[str]
-mysql_trace_sql_parameters = True if os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') and \
-                                     os.getenv('SW_MYSQL_TRACE_SQL_PARAMETERS') == 'True' else False  # type: bool
-mysql_sql_parameters_max_length = int(os.getenv('SW_MYSQL_SQL_PARAMETERS_MAX_LENGTH') or '512')  # type: int
+max_buffer_size = int(os.getenv('SW_AGENT_MAX_BUFFER_SIZE', '1000'))  # type: int
+sql_parameters_length = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')  # type: int
 pymongo_trace_parameters = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') and \
                                    os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False  # type: bool
 pymongo_parameters_max_length = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')  # type: int
@@ -60,29 +60,22 @@ elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
 kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or "skywalking-managements"  # type: str
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or "skywalking-segments"  # type: str
+celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
+profile_active = True if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
+                         os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'True' else False  # type: bool
+profile_task_query_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
+
+options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 
 
-def init(
-        service: str = None,
-        instance: str = None,
-        collector: str = None,
-        protocol_type: str = 'grpc',
-        token: str = None,
-):
-    global service_name
-    service_name = service or service_name
+def init(**kwargs):
+    glob = globals()
 
-    global service_instance
-    service_instance = instance or service_instance
+    for key, val in kwargs.items():
+        if key not in options:
+            raise KeyError('invalid config option %s' % key)
 
-    global collector_address
-    collector_address = collector or collector_address
-
-    global protocol
-    protocol = protocol_type or protocol
-
-    global authentication
-    authentication = token or authentication
+        glob[key] = val
 
 
 def finalize():
@@ -101,24 +94,3 @@ def finalize():
 
     global RE_IGNORE_PATH
     RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
-
-
-def serialize():
-    from skywalking import config
-    return {
-        key: value for key, value in config.__dict__.items() if not (
-                key.startswith('_') or key == 'TYPE_CHECKING' or key == 'RE_IGNORE_PATH'
-                or inspect.isfunction(value)
-                or inspect.ismodule(value)
-                or inspect.isbuiltin(value)
-                or inspect.isclass(value)
-        )
-    }
-
-
-def deserialize(data):
-    from skywalking import config
-    for key, value in data.items():
-        if key in config.__dict__:
-            config.__dict__[key] = value
-    finalize()

@@ -14,3 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+from skywalking.command.command_service import CommandService
+
+command_service = CommandService()

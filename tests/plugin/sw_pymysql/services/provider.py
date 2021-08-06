@@ -22,7 +22,7 @@ from skywalking import agent, config
 if __name__ == '__main__':
     config.service_name = 'provider'
     config.logging_level = 'DEBUG'
-    config.mysql_trace_sql_parameters = True
+    config.sql_parameters_length = 512
     agent.start()
 
     from flask import Flask, jsonify

@@ -43,10 +43,10 @@ def install():
                             hooks, stream, verify, cert, json)
 
         context = get_context()
-        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc) as span:
+        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
+                                   component=Component.Requests) as span:
             carrier = span.inject()
             span.layer = Layer.Http
-            span.component = Component.Requests
 
             if headers is None:
                 headers = {}

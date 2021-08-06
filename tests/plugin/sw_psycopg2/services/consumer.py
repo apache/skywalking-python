@@ -15,20 +15,23 @@
 # limitations under the License.
 #
 
+import requests
 
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
+from skywalking import agent, config
 
-    def send_heart_beat(self):
-        raise NotImplementedError()
+if __name__ == '__main__':
+    config.service_name = 'consumer'
+    config.logging_level = 'DEBUG'
+    agent.start()
 
+    from flask import Flask, jsonify
 
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
+    app = Flask(__name__)
 
+    @app.route("/users", methods=["POST", "GET"])
+    def application():
+        res = requests.post("http://provider:9091/users")
+        return jsonify(res.json())
 
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

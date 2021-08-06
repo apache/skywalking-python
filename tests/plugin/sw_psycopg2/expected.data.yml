@@ -17,39 +17,31 @@
 
 segmentItems:
   - serviceName: provider
-    segmentSize: 2
+    segmentSize: 1
     segments:
       - segmentId: not null
         spans:
-          - operationName: /users
+          - operationName: PostgreSLQ/Psycopg/execute
             operationId: 0
-            parentSpanId: -1
-            spanId: 0
-            spanLayer: Http
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: Database
             tags:
-              - key: http.method
-                value: POST
-              - key: url
-                value: http://provider:9091/users
-              - key: status.code
-                value: '200'
-            refs:
-              - parentEndpoint: /users
-                networkAddress: 'provider:9091'
-                refType: CrossProcess
-                parentSpanId: 0
-                parentTraceSegmentId: not null
-                parentServiceInstance: not null
-                parentService: consumer
-                traceId: not null
+              - key: db.type
+                value: PostgreSQL
+              - key: db.instance
+                value: admin
+              - key: db.statement
+                value: 'select * from user where user = %s'
+              - key: db.sql.parameters
+                value: '[root]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7001
-            spanType: Entry
-            peer: not null
+            isError: false
+            componentId: 7010
+            spanType: Exit
+            peer: postgres:5432
             skipAnalysis: false
-      - segmentId: not null
-        spans:
           - operationName: /users
             operationId: 0
             parentSpanId: -1
@@ -64,7 +56,7 @@ segmentItems:
                 value: '200'
             refs:
               - parentEndpoint: /users
-                networkAddress: 'provider:9091'
+                networkAddress: provider:9091
                 refType: CrossProcess
                 parentSpanId: 1
                 parentTraceSegmentId: not null
@@ -78,29 +70,8 @@ segmentItems:
             peer: not null
             skipAnalysis: false
   - serviceName: consumer
-    segmentSize: 2
+    segmentSize: 1
     segments:
-      - segmentId: not null
-        spans:
-          - operationName: /users
-            operationId: 0
-            parentSpanId: -1
-            spanId: 0
-            spanLayer: Http
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7002
-            isError: false
-            spanType: Exit
-            peer: not null
-            skipAnalysis: false
-            tags:
-              - key: http.method
-                value: POST
-              - key: url
-                value: 'http://provider:9091/users'
-              - key: status.code
-                value: '200'
       - segmentId: not null
         spans:
           - operationName: /users
@@ -108,6 +79,13 @@ segmentItems:
             parentSpanId: 0
             spanId: 1
             spanLayer: Http
+            tags:
+              - key: http.method
+                value: POST
+              - key: url
+                value: http://provider:9091/users
+              - key: status.code
+                value: '200'
             startTime: gt 0
             endTime: gt 0
             componentId: 7002
@@ -115,18 +93,18 @@ segmentItems:
             spanType: Exit
             peer: provider:9091
             skipAnalysis: false
-            tags:
-              - key: http.method
-                value: POST
-              - key: url
-                value: 'http://provider:9091/users'
-              - key: status.code
-                value: '200'
           - operationName: /users
             operationId: 0
             parentSpanId: -1
             spanId: 0
             spanLayer: Http
+            tags:
+              - key: http.method
+                value: GET
+              - key: url
+                value: http://0.0.0.0:9090/users
+              - key: status.code
+                value: '200'
             startTime: gt 0
             endTime: gt 0
             componentId: 7001
@@ -134,10 +112,3 @@ segmentItems:
             spanType: Entry
             peer: not null
             skipAnalysis: false
-            tags:
-              - key: http.method
-                value: GET
-              - key: url
-                value: 'http://0.0.0.0:9090/users'
-              - key: status.code
-                value: '200'

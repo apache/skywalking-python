@@ -15,20 +15,13 @@
 # limitations under the License.
 #
 
-
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
+from skywalking.command.base_command import BaseCommand
+from skywalking.command.executors.command_executor import CommandExecutor
 
 
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
+class NoopCommandExecutor(CommandExecutor):
+    def __init__(self):
+        pass
 
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
+    def execute(self, command: BaseCommand):
+        pass
