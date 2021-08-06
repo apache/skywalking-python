@@ -17,10 +17,11 @@
 
 from inspect import iscoroutinefunction, isawaitable
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
 version_rule = {
@@ -55,17 +56,22 @@ def _gen_sw_get_response_func(old_execute):
         # In that case our method should be a coroutine function too
         async def _sw_get_response(self, *args, **kwargs):
             request = self.request
-            context = get_context()
             carrier = Carrier()
+            method = request.method
+
             for item in carrier:
                 if item.key.capitalize() in request.headers:
                     item.val = request.headers[item.key.capitalize()]
-            with context.new_entry_span(op=request.path, carrier=carrier) as span:
+
+            span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+                else get_context().new_entry_span(op=request.path, carrier=carrier)
+
+            with span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
-                span.tag(Tag(key=tags.HttpMethod, val=request.method))
+                span.tag(Tag(key=tags.HttpMethod, val=method))
                 span.tag(
                     Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
                 result = old_execute(self, *args, **kwargs)
@@ -79,17 +85,22 @@ def _gen_sw_get_response_func(old_execute):
         @coroutine
         def _sw_get_response(self, *args, **kwargs):
             request = self.request
-            context = get_context()
             carrier = Carrier()
+            method = request.method
+
             for item in carrier:
                 if item.key.capitalize() in request.headers:
                     item.val = request.headers[item.key.capitalize()]
-            with context.new_entry_span(op=request.path, carrier=carrier) as span:
+
+            span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+                else get_context().new_entry_span(op=request.path, carrier=carrier)
+
+            with span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
-                span.tag(Tag(key=tags.HttpMethod, val=request.method))
+                span.tag(Tag(key=tags.HttpMethod, val=method))
                 span.tag(
                     Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
                 result = yield from old_execute(self, *args, **kwargs)
