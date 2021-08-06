@@ -19,7 +19,7 @@ segmentItems:
     segments:
       - segmentId: not null
         spans:
-          - componentId: 7010
+          - componentId: 7012
             endTime: gt 0
             isError: false
             operationId: 0
@@ -60,7 +60,7 @@ segmentItems:
                 value: http://provider:9091/users
               - key: status.code
                 value: '200'
-          - componentId: 7010
+          - componentId: 7012
             endTime: gt 0
             isError: false
             operationId: 0
