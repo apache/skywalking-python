@@ -22,6 +22,7 @@ import requests
 
 from tests.plugin.base import TestPluginBase
 
+
 @pytest.fixture
 def prepare():
     # type: () -> Callable

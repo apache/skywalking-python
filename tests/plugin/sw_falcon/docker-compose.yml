@@ -31,12 +31,12 @@ services:
       - 9091:9091
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip install hug && pip install -r /app/requirements.txt && hug -f /app/services/provider.py']
+    command: [ 'bash', '-c', 'pip install hug && pip install -r /app/requirements.txt && hug -f /app/services/provider.py' ]
     depends_on:
       collector:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
+      test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091" ]
       interval: 5s
       timeout: 60s
       retries: 120
@@ -49,7 +49,7 @@ services:
       - 9090:9090
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip install hug && pip install -r /app/requirements.txt && hug -f /app/services/consumer.py']
+    command: [ 'bash', '-c', 'pip install hug && pip install -r /app/requirements.txt && hug -f /app/services/consumer.py' ]
     depends_on:
       collector:
         condition: service_healthy

@@ -23,9 +23,11 @@ config.service_name = 'consumer'
 config.logging_level = 'DEBUG'
 agent.start()
 
+
 @hug.get('/users')
 def get():
     res = requests.get("http://provider:9091/users")
     return res.json()
+
 
 hug.API(__name__).http.serve(port=9090)
