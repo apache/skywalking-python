@@ -21,7 +21,7 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking import config, plugins, log
+from skywalking import config, plugins
 from skywalking import loggings
 from skywalking.agent.protocol import Protocol
 from skywalking.agent.protocol.grpc_log import GrpcLogProtocol
@@ -131,6 +131,7 @@ def __init():
 
     plugins.install()
     if config.log_grpc_reporter_active:
+        from skywalking import log
         __log_protocol = GrpcLogProtocol()
         log.install()
     __init_threading()
