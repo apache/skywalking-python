@@ -18,9 +18,8 @@
 import logging
 import traceback
 
-from skywalking import config
-from skywalking.loggings import logger
 from skywalking.log import sw_logging
+from skywalking.loggings import logger
 
 
 def install():
@@ -31,4 +30,3 @@ def install():
     except Exception:
         logger.warning('Failed to install sw_logging plugin')
         traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
-
