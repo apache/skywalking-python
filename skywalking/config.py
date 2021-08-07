@@ -75,7 +75,7 @@ log_grpc_reporter_max_message_size = os.getenv('SW_AGENT_LOG_REPORTER_MESSAGE_SI
 log_grpc_reporter_upstream_timeout = os.getenv('SW_AGENT_LOG_REPORTER_GRPC_TIMEOUT') or 300  # type: int
 log_grpc_reporter_level = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'  # type: str
 log_grpc_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
-                        '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type:str
+                        '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
 log_grpc_reporter_formatted = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') and \
                          os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
 

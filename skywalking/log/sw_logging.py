@@ -27,7 +27,7 @@ def install():
     from logging import Logger
 
     _handle = Logger.handle
-    log_reporter_level = logging.getLevelName(config.log_grpc_reporter_level)
+    log_reporter_level = logging.getLevelName(config.log_grpc_reporter_level)  # type: int
 
     def _sw_handle(self, record):
         if self.name == "skywalking":  # Ignore SkyWalking internal logger
@@ -36,7 +36,7 @@ def install():
         if record.levelno < log_reporter_level:
             return _handle(self, record)
 
-        def build_log_tags():
+        def build_log_tags() -> LogTags:
             core_tags = [
                 KeyStringValuePair(key='level', value=str(record.levelname)),
                 KeyStringValuePair(key='logger', value=str(record.name)),
@@ -48,8 +48,7 @@ def install():
             if config.log_grpc_reporter_formatted:
                 return l_tags
 
-            args = record.args
-            for i, arg in enumerate(args):
+            for i, arg in enumerate(record.args):
                 l_tags.data.append(KeyStringValuePair(key='argument.' + str(i), value=str(arg)))
 
             if record.exc_info:
@@ -83,9 +82,9 @@ def install():
 
     Logger.handle = _sw_handle
 
-    def transform(record):
+    def transform(record) -> str:
         if config.log_grpc_reporter_formatted:
-            layout = config.log_grpc_reporter_layout
+            layout = config.log_grpc_reporter_layout  # type: str
             if layout:
                 from logging import Formatter
                 formatter = Formatter(fmt=layout)
