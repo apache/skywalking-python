@@ -18,7 +18,8 @@
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
 version_rule = {
@@ -39,8 +40,9 @@ def install():
             resp = _get_response(this, request)
             return resp
 
-        context = get_context()
         carrier = Carrier()
+        method = request.method
+
         for item in carrier:
             # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
             # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
@@ -49,12 +51,15 @@ def install():
             if sw_http_header_key in request.META:
                 item.val = request.META[sw_http_header_key]
 
-        with context.new_entry_span(op=request.path, carrier=carrier) as span:
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=request.path, carrier=carrier)
+
+        with span:
             span.layer = Layer.Http
             span.component = Component.Django
             span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
 
-            span.tag(Tag(key=tags.HttpMethod, val=request.method))
+            span.tag(Tag(key=tags.HttpMethod, val=method))
             span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
 
             # you can get request parameters by `request.GET` even though client are using POST or other methods

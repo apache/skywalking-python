@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
 
@@ -26,8 +27,8 @@ def install():
     from pyramid.router import Router
 
     def _sw_invoke_request(self, request, *args, **kwargs):
-        context = get_context()
         carrier = Carrier()
+        method = request.method
 
         for item in carrier:
             val = request.headers.get(item.key)
@@ -35,12 +36,15 @@ def install():
             if val is not None:
                 item.val = val
 
-        with context.new_entry_span(op=request.path, carrier=carrier) as span:
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=request.path, carrier=carrier)
+
+        with span:
             span.layer = Layer.Http
             span.component = Component.Pyramid
             span.peer = request.remote_host or request.remote_addr
 
-            span.tag(Tag(key=tags.HttpMethod, val=request.method))
+            span.tag(Tag(key=tags.HttpMethod, val=method))
             span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))
 
             resp = _invoke_request(self, request, *args, **kwargs)

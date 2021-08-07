@@ -19,7 +19,7 @@ import logging
 from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
+from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
@@ -69,17 +69,21 @@ def _gen_sw_handle_request(_handle_request):
 
     async def _sw_handle_request(self, request, write_callback, stream_callback):
         req = request
-        context = get_context()
         carrier = Carrier()
+        method = req.method
 
         for item in carrier:
             if item.key.capitalize() in req.headers:
                 item.val = req.headers[item.key.capitalize()]
-        with context.new_entry_span(op=req.path, carrier=carrier) as span:
+
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=req.path, carrier=carrier)
+
+        with span:
             span.layer = Layer.Http
             span.component = Component.Sanic
             span.peer = '%s:%s' % (req.remote_addr or req.ip, req.port)
-            span.tag(Tag(key=tags.HttpMethod, val=req.method))
+            span.tag(Tag(key=tags.HttpMethod, val=method))
             span.tag(Tag(key=tags.HttpUrl, val=req.url.split("?")[0]))
             if config.sanic_collect_http_params and req.args:
                 span.tag(Tag(key=tags.HttpParams,
