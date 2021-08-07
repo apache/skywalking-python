@@ -21,6 +21,8 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
+from skywalking.protocol.logging.Logging_pb2 import LogData
+
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking.agent.protocol import Protocol
@@ -28,7 +30,6 @@ from skywalking.agent.protocol.grpc_log import GrpcLogProtocol
 from skywalking.command import command_service
 from skywalking.config import profile_active, profile_task_query_interval
 from skywalking.loggings import logger
-from skywalking.protocol.logging.Logging_pb2 import LogData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
@@ -61,18 +62,22 @@ def __report():
 
 def __log_heartbeat():
     while not __finished.is_set():
-        if log_connected():
+        try:
             __log_protocol.heartbeat()
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(30 if log_connected() else 3)
+        __finished.wait(30)
 
 
 def __log_report():
     while not __finished.is_set():
-        if log_connected():
+        try:
             __log_protocol.report(__log_queue)
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(1)
+        __finished.wait(0)
 
 
 def __query_profile_command():
@@ -106,11 +111,11 @@ def __init_threading():
     __command_dispatch_thread.start()
 
     if config.log_grpc_reporter_active:
-        __log_queue = Queue(maxsize=10000)
-        __log_heartbeat_thread = Thread(name='HeartbeatThread', target=__log_heartbeat, daemon=True)
+        __log_queue = Queue(maxsize=config.log_grpc_reporter_max_buffer_size)
+        __log_heartbeat_thread = Thread(name='LogHeartbeatThread', target=__log_heartbeat, daemon=True)
         __log_report_thread = Thread(name='LogReportThread', target=__log_report, daemon=True)
-        __log_report_thread.start()
         __log_heartbeat_thread.start()
+        __log_report_thread.start()
 
     if profile_active:
         __query_profile_thread.start()
@@ -134,6 +139,7 @@ def __init():
         from skywalking import log
         __log_protocol = GrpcLogProtocol()
         log.install()
+
     __init_threading()
 
 
@@ -204,10 +210,6 @@ def started():
 
 def isfull():
     return __queue.full()
-
-
-def log_connected():
-    return __log_protocol.connected()
 
 
 def archive(segment: 'Segment'):

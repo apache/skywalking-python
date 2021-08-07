@@ -68,16 +68,17 @@ profile_active = True if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
 profile_task_query_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
 
 # NOTE - Log reporting requires a separate channel, will merge in the future.
-log_grpc_reporter_active = False if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'False' else True  # type: bool
+log_grpc_reporter_active = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
+                         os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True' else False  # type: bool
 log_grpc_collector_address = os.getenv('SW_AGENT_LOG_COLLECTOR_BACKEND_SERVICES') or '127.0.0.1:11800'  # type: str
-log_grpc_reporter_max_message_size = os.getenv('SW_AGENT_LOG_REPORTER_MESSAGE_SIZE') or 10485760  # type: int
-log_grpc_reporter_upstream_timeout = os.getenv('SW_AGENT_LOG_REPORTER_GRPC_TIMEOUT') or 300  # type: int
+log_grpc_reporter_max_buffer_size = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')  # type: int
+log_grpc_reporter_max_message_size = int(os.getenv('SW_AGENT_LOG_REPORTER_MESSAGE_SIZE') or '10485760')  # type: int
 log_grpc_reporter_level = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'  # type: str
-log_grpc_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
-                        '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
 log_grpc_reporter_formatted = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') and \
                          os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
+log_grpc_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
+                        '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
+
 
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 

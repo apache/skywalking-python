@@ -62,16 +62,16 @@ class GrpcProtocol(Protocol):
         self.profile_query.do_query()
 
     def heartbeat(self):
-        logger.debug(
-            'segment reporter service heart beats, [%s], [%s]',
-            config.service_name,
-            config.service_instance,
-        )
         try:
             if not self.properties_sent:
                 self.service_management.send_instance_props()
                 self.properties_sent = True
 
+            logger.debug(
+                'segment reporter service heart beats, [%s], [%s]',
+                config.service_name,
+                config.service_instance,
+            )
             self.service_management.send_heart_beat()
 
         except grpc.RpcError:
