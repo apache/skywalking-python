@@ -17,10 +17,11 @@
 
 import inspect
 
-from skywalking import Layer, Component
+from skywalking import Layer, Component, config
 from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import Tag
 
 
@@ -55,17 +56,22 @@ def wrap_werkzeug_request_handler(handler):
     _run_wsgi = handler.run_wsgi
 
     def _wrap_run_wsgi():
-        context = get_context()
         carrier = Carrier()
+        method = handler.command
+
         for item in carrier:
             item.val = handler.headers[item.key.capitalize()]
         path = handler.path or '/'
-        with context.new_entry_span(op=path.split("?")[0], carrier=carrier) as span:
+
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
+
+        with span:
             url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
             span.layer = Layer.Http
             span.component = Component.General
             span.peer = '%s:%s' % handler.client_address
-            span.tag(Tag(key=tags.HttpMethod, val=handler.command))
+            span.tag(Tag(key=tags.HttpMethod, val=method))
             span.tag(Tag(key=tags.HttpUrl, val=url))
 
             try:
@@ -103,12 +109,15 @@ def _wrap_do_method(handler, method):
         _do_method = getattr(handler, 'do_' + method)
 
         def _sw_do_method():
-            context = get_context()
             carrier = Carrier()
             for item in carrier:
                 item.val = handler.headers[item.key.capitalize()]
             path = handler.path or '/'
-            with context.new_entry_span(op=path.split("?")[0], carrier=carrier) as span:
+
+            span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+                else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
+
+            with span:
                 url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
                 span.layer = Layer.Http
                 span.component = Component.General
