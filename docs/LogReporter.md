@@ -15,8 +15,8 @@ agent.start()
 
 `log_grpc_reporter_active=True` - Enables the log reporter.
 
-`log_grpc_collector_address` - For now, the log reporter uses a separate gRPC channel(will be merged upon the [SkyWalking-Satellite](https://github.com/apache/skywalking-satellite) project matures). 
-If you would like to use [SkyWalking-Satellite](https://github.com/apache/skywalking-satellite), you will need to configure an address pointing to the Satellite. Otherwise, you can simply keep the address the same as the OAP.
+`log_grpc_collector_address` - For now, the log reporter uses a separate gRPC channel(will be merged upon the [SkyWalking Satellite Sidecar](https://github.com/apache/skywalking-satellite) project matures). 
+If you would like to use the Satellite sidecar, you will need to configure an address pointing to its gatherer. Otherwise, you can simply keep the address the same as the OAP.
 
 `log_grpc_reporter_max_buffer_size` and  `log_grpc_reporter_max_message_size` - Used to limit the reporting overhead.
 
