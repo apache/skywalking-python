@@ -21,13 +21,13 @@ from queue import Queue, Empty
 from time import time
 
 import grpc
-from skywalking.protocol.logging.Logging_pb2 import LogData
 
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcLogDataReportService
 from skywalking.loggings import logger
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 
 class GrpcLogProtocol(Protocol):
@@ -92,7 +92,7 @@ class GrpcLogProtocol(Protocol):
 
                 queue.task_done()
 
-                logger.debug('Reporting Log %s', log_data)
+                logger.debug('Reporting Log')
 
                 yield log_data
 

@@ -24,7 +24,11 @@ from skywalking.trace.context import get_context
 
 
 def install():
-    from logging import Logger
+    from logging import Logger, Formatter
+
+    layout = config.log_grpc_reporter_layout  # type: str
+    if layout:
+        formatter = Formatter(fmt=layout)
 
     _handle = Logger.handle
     log_reporter_level = logging.getLevelName(config.log_grpc_reporter_level)  # type: int
@@ -84,10 +88,7 @@ def install():
 
     def transform(record) -> str:
         if config.log_grpc_reporter_formatted:
-            layout = config.log_grpc_reporter_layout  # type: str
             if layout:
-                from logging import Formatter
-                formatter = Formatter(fmt=layout)
                 return formatter.format(record=record)
             return record.getMessage()
 
