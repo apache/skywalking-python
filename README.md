@@ -55,6 +55,11 @@ Alternatively, you can also pass the configurations via environment variables (s
 
 All supported environment variables can be found [here](docs/EnvVars.md)
 
+## Report logs with Python Agent
+The Python agent is capable of reporting collected logs to the backend(SkyWalking OAP/ [SkyWalking Satellite Sidecar](https://github.com/apache/skywalking-satellite)), enabling Log & Trace Correlation.
+
+Please refer to the [Log Reporter Doc](docs/LogReporter.md) for a detailed guide.
+
 ## Supported Libraries
 
 There are some built-in plugins (such as `http.server`, `Flask`, `Django` etc.) that support automatic instrumentation of Python libraries, the complete lists can be found [here](docs/Plugins.md)
