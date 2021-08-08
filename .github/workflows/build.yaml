@@ -38,7 +38,7 @@ jobs:
         with:
           submodules: true
       - name: Check License
-        uses: apache/skywalking-eyes@9bd5feb86b5817aa6072b008f9866a2c3bbc8587
+        uses: apache/skywalking-eyes@63d89639812f1a94bd45d9329d0f936ec4769a37
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Python ${{ matrix.python-version }}

@@ -95,7 +95,7 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
                     'tags': [{
                         'key': tag.key,
                         'value': tag.val,
-                    } for tag in span.tags],
+                    } for tag in span.iter_tags()],
                     'refs': [{
                         'refType': 0,
                         'traceId': ref.trace_id,
