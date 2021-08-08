@@ -16,11 +16,10 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, TagHttpParams
 
 
 def install():
@@ -50,17 +49,16 @@ def install():
             span.layer = Layer.Http
             span.component = Component.Flask
             span.peer = '%s:%s' % (req.environ["REMOTE_ADDR"], req.environ["REMOTE_PORT"])
-            span.tag(Tag(key=tags.HttpMethod, val=method))
-            span.tag(Tag(key=tags.HttpUrl, val=req.url.split("?")[0]))
+            span.tag(TagHttpMethod(method))
+            span.tag(TagHttpURL(req.url.split("?")[0]))
             if config.flask_collect_http_params and req.values:
-                span.tag(Tag(key=tags.HttpParams,
-                             val=params_tostring(req.values)[0:config.http_params_length_threshold]))
+                span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
             resp = _full_dispatch_request(this)
 
             if resp.status_code >= 400:
                 span.error_occurred = True
 
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code, overridable=True))
+            span.tag(TagHttpStatusCode(resp.status_code))
             return resp
 
     def _sw_handle_user_exception(this: Flask, e):

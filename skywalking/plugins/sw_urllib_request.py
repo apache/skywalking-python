@@ -18,10 +18,9 @@
 from urllib.request import Request
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -56,11 +55,11 @@ def install():
                 code = e.code
                 raise
             finally:  # we do this here because it may change in _open()
-                span.tag(Tag(key=tags.HttpMethod, val=method))
-                span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
+                span.tag(TagHttpMethod(method))
+                span.tag(TagHttpURL(fullurl.full_url))
 
                 if code is not None:
-                    span.tag(Tag(key=tags.HttpStatus, val=code, overridable=True))
+                    span.tag(TagHttpStatusCode(code))
 
                     if code >= 400:
                         span.error_occurred = True

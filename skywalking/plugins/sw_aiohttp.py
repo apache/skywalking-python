@@ -16,11 +16,10 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -38,8 +37,8 @@ def install():
 
         with span:
             span.layer = Layer.Http
-            span.tag(Tag(key=tags.HttpMethod, val=method.upper()))  # pyre-ignore
-            span.tag(Tag(key=tags.HttpUrl, val=url))  # pyre-ignore
+            span.tag(TagHttpMethod(method.upper()))  # pyre-ignore
+            span.tag(TagHttpURL(url))  # pyre-ignore
 
             carrier = span.inject()
             headers = kwargs.get('headers')
@@ -54,7 +53,7 @@ def install():
 
             res = await _request(self, method, str_or_url, **kwargs)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status, overridable=True))
+            span.tag(TagHttpStatusCode(res.status))
 
             if res.status >= 400:
                 span.error_occurred = True
@@ -83,12 +82,12 @@ def install():
             span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple))\
                 else request._transport_peername
 
-            span.tag(Tag(key=tags.HttpMethod, val=method))  # pyre-ignore
-            span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))  # pyre-ignore
+            span.tag(TagHttpMethod(method))  # pyre-ignore
+            span.tag(TagHttpURL(str(request.url)))  # pyre-ignore
 
             resp, reset = await _handle_request(self, request, start_time)
 
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status, overridable=True))
+            span.tag(TagHttpStatusCode(resp.status))
 
             if resp.status >= 400:
                 span.error_occurred = True
