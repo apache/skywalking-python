@@ -67,6 +67,11 @@ class GrpcProtocol(Protocol):
                 self.service_management.send_instance_props()
                 self.properties_sent = True
 
+            logger.debug(
+                'segment reporter service heart beats, [%s], [%s]',
+                config.service_name,
+                config.service_instance,
+            )
             self.service_management.send_heart_beat()
 
         except grpc.RpcError:
