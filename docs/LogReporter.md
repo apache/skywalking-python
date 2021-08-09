@@ -9,16 +9,13 @@ To utilize this feature, you will need to add some new configurations to the age
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:11800', service_name='your awesome service',
-                log_grpc_reporter_active=True, log_grpc_collector_address='127.0.0.1:11800')
+                log_grpc_reporter_active=True)
 agent.start()
 ``` 
 
 `log_grpc_reporter_active=True` - Enables the log reporter.
 
-`log_grpc_collector_address` - For now, the log reporter uses a separate gRPC channel(will be merged upon the [SkyWalking Satellite Sidecar](https://github.com/apache/skywalking-satellite) project matures). 
-If you would like to use the Satellite sidecar, you will need to configure an address pointing to its gatherer. Otherwise, you can simply keep the address the same as the OAP.
-
-`log_grpc_reporter_max_buffer_size` and  `log_grpc_reporter_max_message_size` - Used to limit the reporting overhead.
+`log_grpc_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
 
 Alternatively, you can pass configurations through environment variables. 
 Please refer to [EnvVars.md](EnvVars.md) for the list of environment variables associated with the log reporter.
@@ -30,6 +27,21 @@ In other words, the agent ignores some unwanted logs based on your level thresho
 `log_grpc_reporter_level` - The string name of a logger level. 
 
 Note that it also works with your custom logger levels, simply specify its string name in the config.
+
+### Ignore log filters
+The following config is disabled by default. When enabled, the log reporter will collect logs disregarding your custom log filters.
+
+For example, if you attach the filter below to the logger - the default behavior of log reporting aligns with the filter
+(not reporting any logs with a message starting with `SW test`)
+```python
+class AppFilter(logging.Filter):
+    def filter(self, record):
+        return not record.getMessage().startswith('SW test')
+
+logger.addFilter(AppFilter())
+```
+However, if you do would like to report those filtered logs, set the `log_grpc_reporter_ignore_filter` to `True`.
+
 
 ## Formatting
 Note that regardless of the formatting, Python agent will always report the following three tags - 
@@ -46,7 +58,7 @@ If not set, the agent uses the layout below by default, else the agent uses your
 
 `'%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'`
 
-If the layout is set to `None`, the reported log content will only contain the pre-formatted `LogRecord.message`(`msg % args`) without any additional styles and information.
+If the layout is set to `None`, the reported log content will only contain the pre-formatted `LogRecord.message`(`msg % args`) without any additional styles, information or extra fields.
 
 ### Transmit un-formatted logs
 You can also choose to report the log messages without any formatting.
@@ -55,7 +67,7 @@ It separates the raw log msg `logRecord.msg` and `logRecord.args`, then puts the
 Note when you set `log_grpc_reporter_formatted` to False, it ignores your custom layout introduced above.
 
 As an example, the following code:
-```Python
+```python
 logger.info("SW test log %s %s %s", 'arg0', 'arg1', 'arg2')
 ```
 

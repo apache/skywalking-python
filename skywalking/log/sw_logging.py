@@ -17,9 +17,10 @@
 
 import logging
 
-from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
+
+from skywalking import config, agent
 from skywalking.trace.context import get_context
 
 
@@ -34,11 +35,14 @@ def install():
     log_reporter_level = logging.getLevelName(config.log_grpc_reporter_level)  # type: int
 
     def _sw_handle(self, record):
-        if self.name == "skywalking":  # Ignore SkyWalking internal logger
+        if record.name == "skywalking":  # Ignore SkyWalking internal logger
             return _handle(self, record)
 
         if record.levelno < log_reporter_level:
             return _handle(self, record)
+
+        if not config.log_grpc_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
+            return _handle(self, record)  # return handle to original if record is vetoed, just to be safe
 
         def build_log_tags() -> LogTags:
             core_tags = [
@@ -79,7 +83,6 @@ def install():
             ),
             tags=build_log_tags(),
         )
-
         _handle(self=self, record=record)
 
         agent.archive_log(log_data)

@@ -33,9 +33,8 @@ Environment Variable | Description | Default
 | `SW_AGENT_PROFILE_ACTIVE` | If `True`, Python agent will enable profile when user create a new profile task. Otherwise disable profile. | `False` |
 | `SW_PROFILE_TASK_QUERY_INTERVAL` | The number of seconds between two profile task query. | `20` |
 | `SW_AGENT_LOG_REPORTER_ACTIVE` | If `True`, Python agent will report collected logs to the OAP or Satellite. Otherwise, it disables the feature. | `False` |
-| `SW_AGENT_LOG_COLLECTOR_BACKEND_SERVICES` | The log reporter will use a separate gRPC channel until the [Satellite](https://github.com/apache/skywalking-satellite) project is ready. | `127.0.0.1:11800` |
 | `SW_AGENT_LOG_REPORTER_BUFFER_SIZE` | The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped. | `10000` |
-| `SW_AGENT_LOG_REPORTER_MESSAGE_SIZE` | Max message size allowed for log transmission. | `10485760` |
 | `SW_AGENT_LOG_REPORTER_LEVEL` | This config specifies the logger levels of concern, any logs with a level below the config will be ignored. | `WARNING` |
+| `SW_AGENT_LOG_IGNORE_FILTER` | This config customizes whether to ignore the application-defined logger filters, if `True`, all logs are reported disregarding any filter rules. | `False` |
 | `SW_AGENT_LOG_REPORTER_FORMATTED` | If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised. | `True` |
 | `SW_AGENT_LOG_REPORTER_LAYOUT` | The log reporter formats the logRecord message based on the layout given. | `%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s` |
