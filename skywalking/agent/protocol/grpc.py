@@ -23,12 +23,13 @@ from time import time
 import grpc
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
-    GrpcProfileTaskChannelService
+    GrpcProfileTaskChannelService, GrpcLogDataReportService
 from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
 
@@ -52,6 +53,7 @@ class GrpcProtocol(Protocol):
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
         self.profile_query = GrpcProfileTaskChannelService(self.channel)
+        self.log_reporter = GrpcLogDataReportService(self.channel)
 
     def _cb(self, state):
         logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
@@ -67,11 +69,6 @@ class GrpcProtocol(Protocol):
                 self.service_management.send_instance_props()
                 self.properties_sent = True
 
-            logger.debug(
-                'segment reporter service heart beats, [%s], [%s]',
-                config.service_name,
-                config.service_instance,
-            )
             self.service_management.send_heart_beat()
 
         except grpc.RpcError:
@@ -140,5 +137,29 @@ class GrpcProtocol(Protocol):
 
         try:
             self.traces_reporter.report(generator())
+        except grpc.RpcError:
+            self.on_error()
+
+    def report_log(self, queue: Queue, block: bool = True):
+        start = time()
+
+        def generator():
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
+                    log_data = queue.get(block=block, timeout=timeout)  # type: LogData
+                except Empty:
+                    return
+
+                queue.task_done()
+
+                logger.debug('Reporting Log')
+
+                yield log_data
+
+        try:
+            self.log_reporter.report(generator())
         except grpc.RpcError:
             self.on_error()
