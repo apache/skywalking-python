@@ -18,11 +18,10 @@
 from inspect import iscoroutinefunction, isawaitable
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 version_rule = {
     "name": "tornado",
@@ -71,13 +70,12 @@ def _gen_sw_get_response_func(old_execute):
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
-                span.tag(Tag(key=tags.HttpMethod, val=method))
-                span.tag(
-                    Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpMethod(method))
+                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
                 result = old_execute(self, *args, **kwargs)
                 if isawaitable(result):
                     result = await result
-                span.tag(Tag(key=tags.HttpStatus, val=self._status_code, overridable=True))
+                span.tag(TagHttpStatusCode(self._status_code))
                 if self._status_code >= 400:
                     span.error_occurred = True
             return result
@@ -100,11 +98,10 @@ def _gen_sw_get_response_func(old_execute):
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
-                span.tag(Tag(key=tags.HttpMethod, val=method))
-                span.tag(
-                    Tag(key=tags.HttpUrl, val='{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpMethod(method))
+                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
                 result = yield from old_execute(self, *args, **kwargs)
-                span.tag(Tag(key=tags.HttpStatus, val=self._status_code, overridable=True))
+                span.tag(TagHttpStatusCode(self._status_code))
                 if self._status_code >= 400:
                     span.error_occurred = True
             return result

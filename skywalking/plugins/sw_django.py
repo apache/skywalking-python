@@ -16,11 +16,10 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, TagHttpParams
 
 version_rule = {
     "name": "django",
@@ -59,16 +58,15 @@ def install():
             span.component = Component.Django
             span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
 
-            span.tag(Tag(key=tags.HttpMethod, val=method))
-            span.tag(Tag(key=tags.HttpUrl, val=request.build_absolute_uri().split("?")[0]))
+            span.tag(TagHttpMethod(method))
+            span.tag(TagHttpURL(request.build_absolute_uri().split("?")[0]))
 
             # you can get request parameters by `request.GET` even though client are using POST or other methods
             if config.django_collect_http_params and request.GET:
-                span.tag(Tag(key=tags.HttpParams,
-                             val=params_tostring(request.GET)[0:config.http_params_length_threshold]))
+                span.tag(TagHttpParams(params_tostring(request.GET)[0:config.http_params_length_threshold]))
 
             resp = _get_response(this, request)
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status_code, overridable=True))
+            span.tag(TagHttpStatusCode(resp.status_code))
             if resp.status_code >= 400:
                 span.error_occurred = True
             return resp

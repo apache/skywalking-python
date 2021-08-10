@@ -35,9 +35,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: POST
-              - key: url
+              - key: http.url
                 value: http://provider:9091/users
-              - key: status.code
+              - key: http.status.code
                 value: '200'
             refs:
               - parentEndpoint: /users
@@ -67,9 +67,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: POST
-              - key: url
+              - key: http.url
                 value: http://provider:9091/users
-              - key: status.code
+              - key: http.status.code
                 value: '200'
           - operationName: /users
             operationId: 0
@@ -85,9 +85,9 @@ segmentItems:
             tags:
               - key: http.method
                 value: GET
-              - key: url
+              - key: http.url
                 value: http://0.0.0.0:9090/users
               - key: http.params
                 value: "test=[test1,test2]\ntest2=[test2]"
-              - key: status.code
+              - key: http.status.code
                 value: '200'

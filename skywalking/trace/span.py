@@ -18,8 +18,8 @@
 import time
 import traceback
 from abc import ABC
-from copy import deepcopy
-from typing import List
+from collections import defaultdict
+from typing import List, Union, DefaultDict
 from typing import TYPE_CHECKING
 
 from skywalking import Kind, Layer, Log, Component, LogItem, config
@@ -57,7 +57,7 @@ class Span(ABC):
         self.layer = layer or Layer.Unknown  # type: Layer
         self.inherit = Component.Unknown  # type: Component
 
-        self.tags = []  # type: List[Tag]
+        self.tags = defaultdict(list)  # type: DefaultDict[str, Union[Tag, List[Tag]]]
         self.logs = []  # type: List[Log]
         self.refs = []  # type: List[SegmentRef]
         self.start_time = 0  # type: int
@@ -98,14 +98,18 @@ class Span(ABC):
 
     def tag(self, tag: Tag) -> 'Span':
         if tag.overridable:
-            for i, t in enumerate(self.tags):
-                if t.key == tag.key:
-                    self.tags[i] = deepcopy(tag)
-                    return self
-
-        self.tags.append(deepcopy(tag))
+            self.tags[tag.key] = tag
+        else:
+            self.tags[tag.key].append(tag)
 
         return self
+
+    def iter_tags(self):
+        for tag in self.tags.values():
+            if isinstance(tag, Tag):
+                yield tag
+            else:
+                yield from tag
 
     def inject(self) -> 'Carrier':
         raise RuntimeWarning(
@@ -165,7 +169,7 @@ class EntrySpan(Span):
         self.component = 0
         self.layer = Layer.Unknown
         self.logs = []
-        self.tags = []
+        self.tags = defaultdict(list)
 
     def extract(self, carrier: 'Carrier') -> 'Span':
         Span.extract(self, carrier)

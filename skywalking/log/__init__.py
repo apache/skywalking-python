@@ -15,25 +15,18 @@
 # limitations under the License.
 #
 
+import logging
+import traceback
 
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
+from skywalking.log import sw_logging
+from skywalking.loggings import logger
 
 
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class LogDataReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
+def install():
+    logger.debug('Installing plugin for logging module')
+    # noinspection PyBroadException
+    try:
+        sw_logging.install()
+    except Exception:
+        logger.warning('Failed to install sw_logging plugin')
+        traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None

@@ -16,10 +16,9 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagMqBroker, TagCeleryParameters
 
 
 def install():
@@ -45,13 +44,13 @@ def install():
         with get_context().new_exit_span(op=op, peer=peer, component=Component.Celery) as span:
             span.layer = Layer.MQ
 
-            span.tag(Tag(key=tags.MqBroker, val=broker_url))
-            # span.tag(Tag(key=tags.MqTopic, val=exchange))
-            # span.tag(Tag(key=tags.MqQueue, val=queue))
+            span.tag(TagMqBroker(broker_url))
+            # span.tag(TagMqTopic(exchange))
+            # span.tag(TagMqQueue(queue))
 
             if config.celery_parameters_length:
                 params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
-                span.tag(Tag(key=tags.CeleryParameters, val=params))
+                span.tag(TagCeleryParameters(params))
 
             options = {**options}
             headers = options.get('headers')
@@ -95,13 +94,13 @@ def install():
                 span.layer = Layer.MQ
                 span.component = Component.Celery
 
-                span.tag(Tag(key=tags.MqBroker, val=task.app.conf['broker_url']))
-                # span.tag(Tag(key=tags.MqTopic, val=exchange))
-                # span.tag(Tag(key=tags.MqQueue, val=queue))
+                span.tag(TagMqBroker(task.app.conf['broker_url']))
+                # span.tag(TagMqTopic(exchange))
+                # span.tag(TagMqQueue(queue))
 
                 if config.celery_parameters_length:
                     params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
-                    span.tag(Tag(key=tags.CeleryParameters, val=params))
+                    span.tag(TagCeleryParameters(params))
 
                 return _fun(*args, **kwargs)
 

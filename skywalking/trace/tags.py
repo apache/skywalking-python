@@ -15,20 +15,57 @@
 # limitations under the License.
 #
 
-from collections import namedtuple
+class Tag:
+    overridable = True
 
-Tag = namedtuple('Tag', 'key val overridable')
-Tag.__new__.__defaults__ = (None, None, False)
+    def __init__(self, val):
+        self.val = val
 
-HttpUrl = 'url'
-HttpMethod = 'http.method'
-HttpStatus = 'status.code'
-DbType = 'db.type'
-DbInstance = 'db.instance'
-DbStatement = 'db.statement'
-DbSqlParameters = 'db.sql.parameters'
-HttpParams = 'http.params'
-MqBroker = 'mq.broker'
-MqTopic = 'mq.topic'
-MqQueue = 'mq.queue'
-CeleryParameters = 'celery.parameters'
+
+class TagHttpMethod(Tag):
+    key = 'http.method'
+
+
+class TagHttpURL(Tag):
+    key = 'http.url'
+
+
+class TagHttpStatusCode(Tag):
+    key = 'http.status.code'
+
+
+class TagHttpParams(Tag):
+    key = 'http.params'
+
+
+class TagDbType(Tag):
+    key = 'db.type'
+
+
+class TagDbInstance(Tag):
+    key = 'db.instance'
+
+
+class TagDbStatement(Tag):
+    key = 'db.statement'
+
+
+class TagDbSqlParameters(Tag):
+    key = 'db.sql.parameters'
+    overridable = False
+
+
+class TagMqBroker(Tag):
+    key = 'mq.broker'
+
+
+class TagMqTopic(Tag):
+    key = 'mq.topic'
+
+
+class TagMqQueue(Tag):
+    key = 'mq.queue'
+
+
+class TagCeleryParameters(Tag):
+    key = 'celery.parameters'

@@ -67,6 +67,11 @@ class GrpcProtocol(Protocol):
                 self.service_management.send_instance_props()
                 self.properties_sent = True
 
+            logger.debug(
+                'segment reporter service heart beats, [%s], [%s]',
+                config.service_name,
+                config.service_instance,
+            )
             self.service_management.send_heart_beat()
 
         except grpc.RpcError:
@@ -115,9 +120,9 @@ class GrpcProtocol(Protocol):
                             data=[KeyStringValuePair(key=item.key, value=item.val) for item in log.items],
                         ) for log in span.logs],
                         tags=[KeyStringValuePair(
-                            key=str(tag.key),
+                            key=tag.key,
                             value=str(tag.val),
-                        ) for tag in span.tags],
+                        ) for tag in span.iter_tags()],
                         refs=[SegmentReference(
                             refType=0 if ref.ref_type == "CrossProcess" else 1,
                             traceId=ref.trace_id,
