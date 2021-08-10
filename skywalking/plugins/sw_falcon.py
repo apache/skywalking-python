@@ -20,7 +20,7 @@ from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import Tag, TagHttpMethod, TagHttpURL, TagHttpParams
 
 
 def install():
@@ -49,10 +49,11 @@ def install():
             req = request.Request(env, RequestOptions())
             span.op = str(req.url).split("?")[0]
             span.peer = "%s:%s" % (req.remote_addr, req.port)
-            span.tag(Tag(key=tags.HttpMethod, val=req.method))
-            span.tag(Tag(key=tags.HttpUrl, val=str(req.url)))
+
+            span.tag(TagHttpMethod(req.method))
+            span.tag(TagHttpURL(str(req.url)))
             if req.params:
-                span.tag(Tag(key=tags.HttpParams, val=params_tostring(req.params)[0:]))
+                span.tag(TagHttpParams(params_tostring(req.params)[0:]))
 
             resp = _original_falcon_api(this, env, start_response)
 
