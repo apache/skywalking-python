@@ -28,6 +28,7 @@ from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService, \
     LogDataReportService
 from skywalking.command import command_service
+from skywalking.loggings import logger
 from skywalking.profile import profile_task_execution_service
 
 
@@ -43,6 +44,11 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         ))
 
     def send_heart_beat(self):
+        logger.debug(
+            'service heart beats, [%s], [%s]',
+            config.service_name,
+            config.service_instance,
+        )
         self.service_stub.keepAlive(InstancePingPkg(
             service=config.service_name,
             serviceInstance=config.service_instance,
@@ -52,6 +58,14 @@ class GrpcServiceManagementClient(ServiceManagementClient):
 class GrpcTraceSegmentReportService(TraceSegmentReportService):
     def __init__(self, channel: grpc.Channel):
         self.report_stub = TraceSegmentReportServiceStub(channel)
+
+    def report(self, generator):
+        self.report_stub.collect(generator)
+
+
+class GrpcLogDataReportService(LogDataReportService):
+    def __init__(self, channel: grpc.Channel):
+        self.report_stub = LogReportServiceStub(channel)
 
     def report(self, generator):
         self.report_stub.collect(generator)
@@ -71,11 +85,3 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
 
         commands = self.task_stub.getProfileTaskCommands(query)
         command_service.receive_command(commands)
-
-
-class GrpcLogDataReportService(LogDataReportService):
-    def __init__(self, channel: grpc.Channel):
-        self.report_stub = LogReportServiceStub(channel)
-
-    def report(self, generator):
-        self.report_stub.collect(generator)

@@ -35,5 +35,8 @@ class Protocol(ABC):
     def report(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
 
+    def report_log(self, queue: Queue, block: bool = True):
+        raise NotImplementedError()
+
     def query_profile_commands(self):
         pass
