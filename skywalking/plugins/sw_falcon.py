@@ -19,7 +19,7 @@ from skywalking import Layer, Component
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams, TagHttpStatusCode
 
 
 def install():
@@ -63,6 +63,8 @@ def install():
             resp_status = parse_status(resp_obj.status)
             if int(resp_status[0]) >= 400:
                 span.error_occurred = True
+
+            span.tag(TagHttpStatusCode(int(resp_status[0])))
 
             return resp
 
