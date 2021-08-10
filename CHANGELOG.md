@@ -1,9 +1,11 @@
 ## Change Logs
 
-### 0.6.0
+### 0.7.0
 
 - New plugins
     - Falcon Plugin (#146)
+
+### 0.6.0
 
 - Fixes:
     - Segment data loss when gRPC timing out. (#116)

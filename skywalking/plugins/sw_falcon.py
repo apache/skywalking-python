@@ -16,11 +16,10 @@
 #
 
 from skywalking import Layer, Component
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import Tag, TagHttpMethod, TagHttpURL, TagHttpParams
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams
 
 
 def install():
