@@ -2,6 +2,9 @@
 
 ### 0.6.0
 
+- New plugins
+    - Falcon Plugin (#146)
+
 - Fixes:
     - Segment data loss when gRPC timing out. (#116)
     - `sw_tornado` plugin async handler status set correctly. (#115)
