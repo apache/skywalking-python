@@ -101,8 +101,8 @@ def inject_bulk_write(_Bulk, bulk_op_map):
     _execute = _Bulk.execute
 
     def _sw_execute(this: _Bulk, *args, **kwargs):
-        address = this.collection.database.client.address
-        peer = "%s:%s" % address
+        nodes = this.collection.database.client.nodes
+        peer = ",".join(["%s:%s" % address for address in nodes])
         context = get_context()
 
         sw_op = "MixedBulkWriteOperation"
@@ -134,8 +134,8 @@ def inject_cursor(Cursor):
     __send_message = Cursor._Cursor__send_message
 
     def _sw_send_message(this: Cursor, operation):
-        address = this.collection.database.client.address
-        peer = "%s:%s" % address
+        nodes = this.collection.database.client.nodes
+        peer = ",".join(["%s:%s" % address for address in nodes])
 
         context = get_context()
         op = "FindOperation"
