@@ -99,8 +99,8 @@ def __init_threading():
     __report_thread.start()
     __command_dispatch_thread.start()
 
-    if config.log_grpc_reporter_active:
-        __log_queue = Queue(maxsize=config.log_grpc_reporter_max_buffer_size)
+    if config.log_reporter_active:
+        __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
         __log_report_thread = Thread(name='LogReportThread', target=__report_log, daemon=True)
         __log_report_thread.start()
 
@@ -122,7 +122,7 @@ def __init():
         __protocol = KafkaProtocol()
 
     plugins.install()
-    if config.log_grpc_reporter_active:  # todo - Add support for printing traceID/ context in logs
+    if config.log_reporter_active:  # todo - Add support for printing traceID/ context in logs
         from skywalking import log
         log.install()
 
@@ -132,7 +132,7 @@ def __init():
 def __fini():
     __protocol.report(__queue, False)
     __queue.join()
-    if config.log_grpc_reporter_active:
+    if config.log_reporter_active:
         __protocol.report_log(__log_queue, False)
         __log_queue.join()
     __finished.set()

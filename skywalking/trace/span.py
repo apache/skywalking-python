@@ -16,7 +16,6 @@
 #
 
 import time
-import traceback
 from abc import ABC
 from collections import defaultdict
 from typing import List, Union, DefaultDict
@@ -85,9 +84,10 @@ class Span(ABC):
         return True
 
     def raised(self) -> 'Span':
+        from skywalking.utils.filter import sw_traceback
         self.error_occurred = True
         self.logs = [Log(items=[
-            LogItem(key='Traceback', val=traceback.format_exc()),
+            LogItem(key='Traceback', val=sw_traceback()),
         ])]
         return self
 

@@ -27,9 +27,9 @@ def install():
     _request = RequestMethods.request
 
     def _sw_request(this: RequestMethods, method, url, fields=None, headers=None, **urlopen_kw):
-        from urllib.parse import urlparse
+        from skywalking.utils.filter import sw_urlparse
 
-        url_param = urlparse(url)
+        url_param = sw_urlparse(url)
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
             else get_context().new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
@@ -45,7 +45,7 @@ def install():
                 headers[item.key] = item.val
 
             span.tag(TagHttpMethod(method.upper()))
-            span.tag(TagHttpURL(url))
+            span.tag(TagHttpURL(url_param.geturl()))
 
             res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
 
