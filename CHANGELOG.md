@@ -1,5 +1,10 @@
 ## Change Logs
 
+### 0.7.0
+
+- New plugins
+    - Falcon Plugin (#146)
+
 ### 0.6.0
 
 - Fixes:
