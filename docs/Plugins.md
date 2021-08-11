@@ -20,6 +20,7 @@ Library | Versions | Plugin Name
 | [pyramid](https://trypyramid.com) | >= 1.9 | `sw_pyramid` |
 | [psycopg2](https://www.psycopg.org/) | >= 2.8.6 | `sw_psycopg2` |
 | [celery](https://docs.celeryproject.org/) | >= 4.2.1 | `sw_celery` |
+| [falcon](https://falcon.readthedocs.io/en/stable/) | >= 1.4.1 | `sw_falcon` |
 
 * Note: The celery server running with "celery -A ..." should be run with the http protocol as it uses multiprocessing by default which is not compatible with the grpc protocol implementation in skywalking currently. Celery clients can use whatever protocol they want.
 
