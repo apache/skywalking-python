@@ -44,10 +44,51 @@ SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
 > If you want to try out the latest features that are not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
 
+By default, SkyWalking Python agent uses gRPC protocol to report data to SkyWalking backend,
+in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTTP protocol is `12800`,
+you should configure `collector_address` (or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`)
+according to the protocol you want.
+
+### Report data via gRPC protocol (Default)
+
+For example, if you want to use gRPC protocol to report data, configure `collector_address`
+(or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`) to `<oap-ip-or-host>:11800`,
+such as `127.0.0.1:11800`:
+
 ```python
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:11800', service_name='your awesome service')
+agent.start()
+```
+
+### Report data via HTTP protocol
+
+However, if you want to use HTTP protocol to report data, configure `collector_address`
+(or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`) to `<oap-ip-or-host>:12800`,
+such as `127.0.0.1:12800`:
+
+> Remember you should install `skywalking-python` with extra requires `http`, `pip install "apache-skywalking[http]`.
+
+```python
+from skywalking import agent, config
+
+config.init(collector_address='127.0.0.1:12800', service_name='your awesome service')
+agent.start()
+```
+
+### Report data via Kafka protocol
+
+Finally, if you want to use Kafka protocol to report data, configure `kafka_bootstrap_servers`
+(or environment variable `SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS`) to `kafka-brokers`,
+such as `127.0.0.1:9200`:
+
+> Remember you should install `skywalking-python` with extra requires `kafka`, `pip install "apache-skywalking[kafka]`.
+
+```python
+from skywalking import agent, config
+
+config.init(kafka_bootstrap_servers='127.0.0.1:9200', service_name='your awesome service')
 agent.start()
 ```
 
