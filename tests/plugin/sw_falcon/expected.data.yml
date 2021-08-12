@@ -23,7 +23,7 @@ segmentItems:
       endTime: gt 0
       isError: false
       operationId: 0
-      operationName: http://provider:9091/users
+      operationName: /users
       parentSpanId: -1
       peer: not null
       skipAnalysis: false
@@ -38,6 +38,8 @@ segmentItems:
         value: http://provider:9091/users
       - key: http.status.code
         value: '200'
+      - key: http.status.msg
+        value: OK
   serviceName: provider
 - segmentSize: 1
   segments:
@@ -66,7 +68,7 @@ segmentItems:
       endTime: gt 0
       isError: false
       operationId: 0
-      operationName: http://0.0.0.0:9090/users
+      operationName: /users
       parentSpanId: -1
       peer: not null
       skipAnalysis: false
@@ -81,4 +83,6 @@ segmentItems:
         value: http://0.0.0.0:9090/users
       - key: http.status.code
         value: '200'
+      - key: http.status.msg
+        value: OK
   serviceName: consumer

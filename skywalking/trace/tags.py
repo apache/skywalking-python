@@ -34,6 +34,10 @@ class TagHttpStatusCode(Tag):
     key = 'http.status.code'
 
 
+class TagHttpStatusMsg(Tag):
+    key = 'http.status.msg'
+
+
 class TagHttpParams(Tag):
     key = 'http.params'
 
