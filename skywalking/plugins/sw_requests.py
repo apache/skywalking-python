@@ -31,8 +31,8 @@ def install():
                     auth=None, timeout=None, allow_redirects=True, proxies=None,
                     hooks=None, stream=None, verify=None, cert=None, json=None):
 
-        from urllib.parse import urlparse
-        url_param = urlparse(url)
+        from skywalking.utils.filter import sw_urlparse
+        url_param = sw_urlparse(url)
 
         # ignore trace skywalking self request
         if config.protocol == 'http' and config.collector_address.rstrip('/').endswith(url_param.netloc):
@@ -55,7 +55,7 @@ def install():
                 headers[item.key] = item.val
 
             span.tag(TagHttpMethod(method.upper()))
-            span.tag(TagHttpURL(url))
+            span.tag(TagHttpURL(url_param.geturl()))
 
             res = _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
                            allow_redirects,

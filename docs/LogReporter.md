@@ -9,13 +9,13 @@ To utilize this feature, you will need to add some new configurations to the age
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:11800', service_name='your awesome service',
-                log_grpc_reporter_active=True)
+                log_reporter_active=True)
 agent.start()
 ``` 
 
-`log_grpc_reporter_active=True` - Enables the log reporter.
+`log_reporter_active=True` - Enables the log reporter.
 
-`log_grpc_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
+`log_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
 
 Alternatively, you can pass configurations through environment variables. 
 Please refer to [EnvVars.md](EnvVars.md) for the list of environment variables associated with the log reporter.
@@ -24,7 +24,7 @@ Please refer to [EnvVars.md](EnvVars.md) for the list of environment variables a
 Only the logs with a level equal to or higher than the specified will be collected and reported. 
 In other words, the agent ignores some unwanted logs based on your level threshold.
 
-`log_grpc_reporter_level` - The string name of a logger level. 
+`log_reporter_level` - The string name of a logger level. 
 
 Note that it also works with your custom logger levels, simply specify its string name in the config.
 
@@ -40,7 +40,7 @@ class AppFilter(logging.Filter):
 
 logger.addFilter(AppFilter())
 ```
-However, if you do would like to report those filtered logs, set the `log_grpc_reporter_ignore_filter` to `True`.
+However, if you do would like to report those filtered logs, set the `log_reporter_ignore_filter` to `True`.
 
 
 ## Formatting
@@ -51,20 +51,27 @@ Note that regardless of the formatting, Python agent will always report the foll
 `logger` - the logger name  
 
 `thread` - the thread name
+
+### Limit stacktrace depth
+You can set the `cause_exception_depth` config entry to a desired level(defaults to 5), which limits the output depth of exception stacktrace in reporting.
+
+This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback](https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations.
+
 ### Customize the reported log format
 You can choose to report collected logs in a custom layout.
 
-If not set, the agent uses the layout below by default, else the agent uses your custom layout set in `log_grpc_reporter_layout`.
+If not set, the agent uses the layout below by default, else the agent uses your custom layout set in `log_reporter_layout`.
 
 `'%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'`
 
-If the layout is set to `None`, the reported log content will only contain the pre-formatted `LogRecord.message`(`msg % args`) without any additional styles, information or extra fields.
+If the layout is set to `None`, the reported log content will only contain 
+the pre-formatted `LogRecord.message`(`msg % args`) without any additional styles or extra fields, stacktrace will be attached if an exception was raised. 
 
 ### Transmit un-formatted logs
 You can also choose to report the log messages without any formatting.
 It separates the raw log msg `logRecord.msg` and `logRecord.args`, then puts them into message content and tags starting from `argument.0`, respectively, along with an `exception` tag if an exception was raised.
 
-Note when you set `log_grpc_reporter_formatted` to False, it ignores your custom layout introduced above.
+Note when you set `log_reporter_formatted` to False, it ignores your custom layout introduced above.
 
 As an example, the following code:
 ```python

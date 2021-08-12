@@ -15,61 +15,32 @@
 # limitations under the License.
 #
 
-class Tag:
-    overridable = True
+import re
+import traceback
+from urllib.parse import urlparse
 
-    def __init__(self, val):
-        self.val = val
-
-
-class TagHttpMethod(Tag):
-    key = 'http.method'
+from skywalking import config
 
 
-class TagHttpURL(Tag):
-    key = 'http.url'
+def sw_urlparse(url):
+    # Removes basic auth credentials from netloc
+    url_param = urlparse(url)
+    safe_netloc = url_param.netloc
+    try:
+        safe_netloc = str(url_param.hostname) + (':' + str(url_param.port) if url_param.port else '')
+    except ValueError:  # illegal url, skip
+        pass
+
+    return url_param._replace(netloc=safe_netloc)
 
 
-class TagHttpStatusCode(Tag):
-    key = 'http.status.code'
+def sw_filter(target: str):
+    # Remove user:pw from any valid full urls
+
+    return re.sub(r'://(.*?)@', r'://', target)
 
 
-class TagHttpStatusMsg(Tag):
-    key = 'http.status.msg'
+def sw_traceback():
+    stack_trace = traceback.format_exc(limit=config.cause_exception_depth)
 
-
-class TagHttpParams(Tag):
-    key = 'http.params'
-
-
-class TagDbType(Tag):
-    key = 'db.type'
-
-
-class TagDbInstance(Tag):
-    key = 'db.instance'
-
-
-class TagDbStatement(Tag):
-    key = 'db.statement'
-
-
-class TagDbSqlParameters(Tag):
-    key = 'db.sql.parameters'
-    overridable = False
-
-
-class TagMqBroker(Tag):
-    key = 'mq.broker'
-
-
-class TagMqTopic(Tag):
-    key = 'mq.topic'
-
-
-class TagMqQueue(Tag):
-    key = 'mq.queue'
-
-
-class TagCeleryParameters(Tag):
-    key = 'celery.parameters'
+    return sw_filter(target=stack_trace)
