@@ -1,4 +1,4 @@
-# Python agent gRPC log reporter
+# Python agent log reporter
 
 This functionality reports logs collected from the Python logging module(in theory, also logging libraries depending on the core logging module).
 
@@ -12,6 +12,8 @@ config.init(collector_address='127.0.0.1:11800', service_name='your awesome serv
                 log_reporter_active=True)
 agent.start()
 ``` 
+
+Note, if chosen `HTTP` protocol instead of `gRPC`/`Kafka`, the logs will be batch-reported to the collector REST endpoint.
 
 `log_reporter_active=True` - Enables the log reporter.
 

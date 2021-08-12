@@ -15,13 +15,14 @@
 # limitations under the License.
 #
 
-from skywalking.loggings import logger
 from queue import Queue, Empty
 from time import time
 
 from skywalking import config
 from skywalking.agent import Protocol
-from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService
+from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService, HttpLogDataReportService
+from skywalking.loggings import logger
+from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
 
@@ -30,6 +31,7 @@ class HttpProtocol(Protocol):
         self.properties_sent = False
         self.service_management = HttpServiceManagementClient()
         self.traces_reporter = HttpTraceSegmentReportService()
+        self.log_reporter = HttpLogDataReportService()
 
     def fork_after_in_child(self):
         self.service_management.fork_after_in_child()
@@ -62,5 +64,28 @@ class HttpProtocol(Protocol):
 
         try:
             self.traces_reporter.report(generator=generator())
+        except Exception:
+            pass
+
+    def report_log(self, queue: Queue, block: bool = True):
+        start = time()
+
+        def generator():
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
+                    log_data = queue.get(block=block, timeout=timeout)  # type: LogData
+                except Empty:
+                    return
+                queue.task_done()
+
+                logger.debug('Reporting Log')
+
+                yield log_data
+
+        try:
+            self.log_reporter.report(generator=generator())
         except Exception:
             pass

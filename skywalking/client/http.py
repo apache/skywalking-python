@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from skywalking.loggings import logger
+import json
 
 import requests
+from google.protobuf import json_format
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService
+from skywalking.loggings import logger
 
 
 class HttpServiceManagementClient(ServiceManagementClient):
@@ -109,3 +110,20 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
                 } for span in segment.spans]
             })
             logger.debug('report traces response: %s', res)
+
+
+class HttpLogDataReportService(TraceSegmentReportService):
+    def __init__(self):
+        proto = 'https://' if config.force_tls else 'http://'
+        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/logs'
+        self.session = requests.Session()
+
+    def fork_after_in_child(self):
+        self.session.close()
+        self.session = requests.Session()
+
+    def report(self, generator):
+        log_batch = [json.loads(json_format.MessageToJson(log_data)) for log_data in generator]
+        if log_batch:  # prevent empty batches
+            res = self.session.post(self.url_report, json=log_batch)
+            logger.debug('report batch log response: %s', res)
