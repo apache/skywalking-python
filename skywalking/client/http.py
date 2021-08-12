@@ -123,7 +123,7 @@ class HttpLogDataReportService(TraceSegmentReportService):
         self.session = requests.Session()
 
     def report(self, generator):
-        for log_data in generator:
-            json_string = json_format.MessageToJson(log_data)
-            res = self.session.post(self.url_report, json=[json.loads(json_string)])
-            logger.debug('report log response: %s', res)
+        log_batch = [json.loads(json_format.MessageToJson(log_data)) for log_data in generator]
+        if log_batch:  # prevent empty batches
+            res = self.session.post(self.url_report, json=log_batch)
+            logger.debug('report batch log response: %s', res)
