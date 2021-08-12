@@ -2,9 +2,15 @@
 
 ### 0.7.0
 
-- New plugins
+- Feature:
+    - Support collecting and reporting logs to backend (#147)
+
+- New plugins:
     - Falcon Plugin (#146)
 
+- Fixes:
+    - Now properly removes HTTP basic auth credentials from segments and logs (#152)
+ 
 ### 0.6.0
 
 - Fixes:

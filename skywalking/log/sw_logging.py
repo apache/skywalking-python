@@ -22,17 +22,19 @@ from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceC
 
 from skywalking import config, agent
 from skywalking.trace.context import get_context
+from skywalking.utils.filter import sw_traceback, sw_filter
 
 
 def install():
-    from logging import Logger, Formatter
+    from logging import Logger
 
-    layout = config.log_grpc_reporter_layout  # type: str
+    layout = config.log_reporter_layout  # type: str
     if layout:
-        formatter = Formatter(fmt=layout)
+        from skywalking.log.formatter import SWFormatter
+        formatter = SWFormatter(fmt=layout, tb_limit=config.cause_exception_depth)
 
     _handle = Logger.handle
-    log_reporter_level = logging.getLevelName(config.log_grpc_reporter_level)  # type: int
+    log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
 
     def _sw_handle(self, record):
         if record.name == "skywalking":  # Ignore SkyWalking internal logger
@@ -41,7 +43,7 @@ def install():
         if record.levelno < log_reporter_level:
             return _handle(self, record)
 
-        if not config.log_grpc_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
+        if not config.log_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
             return _handle(self, record)  # return handle to original if record is vetoed, just to be safe
 
         def build_log_tags() -> LogTags:
@@ -53,15 +55,16 @@ def install():
             l_tags = LogTags()
             l_tags.data.extend(core_tags)
 
-            if config.log_grpc_reporter_formatted:
+            if config.log_reporter_formatted:
                 return l_tags
 
             for i, arg in enumerate(record.args):
                 l_tags.data.append(KeyStringValuePair(key='argument.' + str(i), value=str(arg)))
 
             if record.exc_info:
-                l_tags.data.append(KeyStringValuePair(key='exception', value=str(record.exc_info)))
-
+                l_tags.data.append(KeyStringValuePair(key='exception',
+                                                      value=sw_traceback()
+                                                      ))  # \n doesn't work in tags for UI
             return l_tags
 
         context = get_context()
@@ -73,7 +76,7 @@ def install():
             body=LogDataBody(
                 type='text',
                 text=TextLog(
-                    text=transform(record)
+                    text=sw_filter(transform(record))
                 )
             ),
             traceContext=TraceContext(
@@ -90,9 +93,8 @@ def install():
     Logger.handle = _sw_handle
 
     def transform(record) -> str:
-        if config.log_grpc_reporter_formatted:
+        if config.log_reporter_formatted:
             if layout:
                 return formatter.format(record=record)
-            return record.getMessage()
-
-        return record.msg
+            return record.getMessage() + '\n' + sw_traceback()
+        return str(record.msg)  # convert possible exception to str
