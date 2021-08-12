@@ -43,6 +43,7 @@ class Component(Enum):
     Pyramid = 7009
     Psycopg = 7010
     Celery = 7011
+    Falcon = 7012
 
 
 class Layer(Enum):
