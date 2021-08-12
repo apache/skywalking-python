@@ -20,7 +20,7 @@ import requests
 from google.protobuf import json_format
 
 from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService
+from skywalking.client import ServiceManagementClient, TraceSegmentReportService, LogDataReportService
 from skywalking.loggings import logger
 
 
@@ -112,7 +112,7 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
             logger.debug('report traces response: %s', res)
 
 
-class HttpLogDataReportService(TraceSegmentReportService):
+class HttpLogDataReportService(LogDataReportService):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
         self.url_report = proto + config.collector_address.rstrip('/') + '/v3/logs'

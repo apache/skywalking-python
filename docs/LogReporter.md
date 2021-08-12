@@ -9,11 +9,17 @@ To utilize this feature, you will need to add some new configurations to the age
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:11800', service_name='your awesome service',
-                log_reporter_active=True)
+                log_reporter_active=True)  # defaults to grpc protocol
 agent.start()
 ``` 
 
-Note, if chosen `HTTP` protocol instead of `gRPC`/`Kafka`, the logs will be batch-reported to the collector REST endpoint.
+Log reporter supports all three protocols including `grpc`, `http` and `kafka`, which shares the same config `protocol` with trace reporter.
+
+If chosen `http` protocol, the logs will be batch-reported to the collector REST endpoint `oap/v3/logs`.
+
+If chosen `kafka` protocol, please make sure to config 
+[kafka-fetcher](https://skywalking.apache.org/docs/main/v8.4.0/en/setup/backend/backend-fetcher/#kafka-fetcher) 
+on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` points to your Kafka brokers.
 
 `log_reporter_active=True` - Enables the log reporter.
 

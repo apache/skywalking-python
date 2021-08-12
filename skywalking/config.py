@@ -62,6 +62,7 @@ elasticsearch_trace_dsl = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') and \
 kafka_bootstrap_servers = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') or "localhost:9092"  # type: str
 kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or "skywalking-managements"  # type: str
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or "skywalking-segments"  # type: str
+kafka_topic_log = os.getenv('SW_KAFKA_REPORTER_TOPIC_LOG') or "skywalking-logs"  # type: str
 celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
 profile_active = True if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
                          os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'True' else False  # type: bool
@@ -72,8 +73,8 @@ log_reporter_active = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
                               os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True' else False  # type: bool
 log_reporter_max_buffer_size = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')  # type: int
 log_reporter_level = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'  # type: str
-log_reporter_ignore_filter = True if os.getenv('SW_AGENT_LOG_IGNORE_FILTER') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'True' else False  # type: bool
+log_reporter_ignore_filter = True if os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') and \
+                         os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True' else False  # type: bool
 log_reporter_formatted = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') and \
                          os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
 log_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
