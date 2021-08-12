@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-from skywalking import config
 from skywalking import Layer, Component
+from skywalking import config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagMqTopic
@@ -64,8 +64,10 @@ def _sw__poll_once_func(__poll_once):
 
 def _sw_send_func(_send):
     def _sw_send(this, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
-        # ignore trace skywalking self request
-        if config.protocol == 'kafka' and config.kafka_topic_segment == topic or config.kafka_topic_management == topic:
+        # ignore trace & log reporter - skywalking self request
+        if config.protocol == 'kafka' and config.kafka_topic_segment == topic \
+                or config.kafka_topic_log == topic \
+                or config.kafka_topic_management == topic:
             return _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                          timestamp_ms=timestamp_ms)
 

@@ -96,5 +96,5 @@ def install():
         if config.log_reporter_formatted:
             if layout:
                 return formatter.format(record=record)
-            return record.getMessage() + '\n' + sw_traceback()
+            return record.getMessage() + ('\n' + sw_traceback() if record.exc_info else '')
         return str(record.msg)  # convert possible exception to str

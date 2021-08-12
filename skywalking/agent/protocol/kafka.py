@@ -16,15 +16,18 @@
 #
 
 import logging
-from skywalking.loggings import logger, getLogger
 from queue import Queue, Empty
 from time import time
 
-from skywalking import config
-from skywalking.agent import Protocol
-from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.logging.Logging_pb2 import LogData
+
+from skywalking import config
+from skywalking.agent import Protocol
+from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService, \
+    KafkaLogDataReportService
+from skywalking.loggings import logger, getLogger
 from skywalking.trace.segment import Segment
 
 # avoid too many kafka logs
@@ -36,6 +39,7 @@ class KafkaProtocol(Protocol):
     def __init__(self):
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
+        self.log_reporter = KafkaLogDataReportService()
 
     def heartbeat(self):
         self.service_management.send_heart_beat()
@@ -97,3 +101,23 @@ class KafkaProtocol(Protocol):
                 yield s
 
         self.traces_reporter.report(generator())
+
+    def report_log(self, queue: Queue, block: bool = True):
+        start = time()
+
+        def generator():
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
+                    log_data = queue.get(block=block, timeout=timeout)  # type: LogData
+                except Empty:
+                    return
+                queue.task_done()
+
+                logger.debug('Reporting Log')
+
+                yield log_data
+
+        self.log_reporter.report(generator=generator())
