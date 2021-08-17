@@ -34,7 +34,6 @@ from skywalking.protocol.management.Management_pb2_grpc import ManagementService
 from skywalking.command import command_service
 from skywalking.profile import profile_task_execution_service
 from skywalking.profile.profile_task import ProfileTask
-from skywalking.profile.tracing_thread_snapshot import TracingThreadSnapshot
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):
@@ -71,7 +70,6 @@ class GrpcTraceSegmentReportService(TraceSegmentReportService):
 class GrpcProfileTaskChannelService(ProfileTaskChannelService):
     def __init__(self, channel: grpc.Channel):
         self.profile_stub = ProfileTaskStub(channel)
-        self.snapshot_queue = Queue(maxsize=500)
 
     def do_query(self):
 

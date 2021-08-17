@@ -31,7 +31,8 @@ from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegment
     GrpcProfileTaskChannelService
 from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
-from skywalking.profile.tracing_thread_snapshot import TracingThreadSnapshot
+from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.profile.profile_task import ProfileTask
 
 
 class GrpcProtocol(Protocol):
@@ -61,6 +62,9 @@ class GrpcProtocol(Protocol):
     def query_profile_commands(self):
         logger.debug("query profile commands")
         self.profile_channel.do_query()
+
+    def notify_profile_task_finish(self, task: ProfileTask):
+        self.profile_channel.finish(task)
 
     def heartbeat(self):
         try:
@@ -145,26 +149,24 @@ class GrpcProtocol(Protocol):
                 except Full:
                     pass
 
-    def send_thread_snapshot(self, queue: Queue):
-        # TODO: 这个Queue可以换为从GrpcProfileTaskChannelService中直接拿
-        # 还是直接初始化吧...
+    def send_snapshot(self, queue, block: bool = True):
+        start = time()
         snapshot = None
 
         def generator():
             nonlocal snapshot
 
             while True:
-                # TODO: 思考queue与timeout，目前先不管
                 try:
-                    snapshot = queue.get()  # type: TracingThreadSnapshot
+                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    snapshot = queue.get(block=block, timeout=timeout)  # type: TracingThreadSnapshot
                 except Empty:
                     return
 
                 logger.debug("reporting profile thread snapshot %s", snapshot)
-
                 transform_snapshot = snapshot.transform()
-                yield transform_snapshot
 
+                yield transform_snapshot
                 queue.task_done()
 
         try:

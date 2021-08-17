@@ -16,12 +16,15 @@
 #
 
 from skywalking import agent, config
+from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
+from skywalking.utils.time import current_milli_time
+from skywalking import profile
 
 
 try:  # attempt to use async-local instead of thread-local context and spans
@@ -74,8 +77,8 @@ class SpanContext(object):
         self._sid = Counter()
         self._correlation = {}  # type: dict
         self._nspans = 0
-        # TODO: profile_status
-        self.profile_status = None
+        self.profile_status = None  # type: ProfileStatusReference
+        self.create_time = current_milli_time()
 
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
@@ -98,6 +101,9 @@ class SpanContext(object):
         if span is not None:
             return span
 
+        if self.profile_status is None:
+            self.profile_status = profile.profile_task_execution_service.add_profiling(self, self.segment.segment_id, op)
+
         spans = _spans_dup()
         parent = spans[-1] if spans else None  # type: Span
 
@@ -107,6 +113,9 @@ class SpanContext(object):
             pid=parent.sid if parent else -1,
         )
         span.op = op
+
+        # the operation name could be override in entry span, recheck here
+        self.profiling_recheck(span, op)
 
         if carrier is not None and carrier.is_valid:
             span.extract(carrier=carrier)
@@ -139,6 +148,12 @@ class SpanContext(object):
             )
 
         return None
+
+    def profiling_recheck(self, span:'Span', op_name: str):
+        # only check first span, e.g, first opname is correct.
+        if span.sid != 0:
+            return
+        profile.profile_task_execution_service.profiling_recheck(self, self.segment.segment_id, op_name)
 
     def start(self, span: Span):
         self._nspans += 1

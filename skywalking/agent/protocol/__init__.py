@@ -40,3 +40,9 @@ class Protocol(ABC):
 
     def query_profile_commands(self):
         pass
+
+    def send_snapshot(self, queue: Queue, block: bool = True):
+        pass
+
+    def notify_profile_task_finish(self, task):
+        pass

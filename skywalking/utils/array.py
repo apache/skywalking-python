@@ -8,6 +8,11 @@ class AtomicArray:
         self._array = [None] * self._length
         self._lock = threading.Lock()
 
+    def __getitem__(self, idx):
+        # for iteration
+        with self._lock:
+            return self._array[idx]
+
     def length(self) -> int:
         return self._length
 

@@ -19,16 +19,35 @@ from queue import Queue
 from skywalking.loggings import logger
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_task import ProfileTask
-from skywalking.profile.profile_task_execution_context import ProfileTaskExecutionContext
-
+from skywalking.profile.profile_context import ProfileTaskExecutionContext
 from skywalking.profile.profile_status import ProfileStatusReference
 
 from skywalking.trace.context import SpanContext
 
 from skywalking.utils.atomic_ref import AtomicRef
+from skywalking import agent
 
 from concurrent.futures import ThreadPoolExecutor
-from threading import Timer, RLock
+from threading import Timer, RLock, Lock
+
+from skywalking.utils.time import current_milli_time
+
+
+class Scheduler:
+
+    @staticmethod
+    def schedule(milliseconds, func, *args, **kwargs):
+        seconds = milliseconds/1000
+        if seconds < 0:
+            seconds = 0
+
+        # TODO For debug
+        # if seconds > 60:
+        #     seconds = 60
+
+        t = Timer(seconds, func, *args, **kwargs)
+        t.daemon = True
+        t.start()
 
 
 class ProfileTaskExecutionService:
@@ -37,13 +56,40 @@ class ProfileTaskExecutionService:
     def __init__(self):
         # Queue is thread safe
         self._profile_task_list = Queue()  # type: Queue
+        # queue_lock for making sure complex operation of this profile_task_list is thread safe
+        self.queue_lock = Lock()
+
         self._last_command_create_time = -1  # type: int
         # single thread executor
-        self._profile_executor = ThreadPoolExecutor(max_workers=1)
+        self.profile_executor = ThreadPoolExecutor(max_workers=1)
         self.task_execution_context = AtomicRef(None)
+
+        self.profile_task_scheduler = Scheduler()
 
         # rlock for processProfileTask and stopCurrentProfileTask
         self._rlock = RLock()
+
+    def remove_from_profile_task_list(self, task: ProfileTask) -> bool:
+        """
+        Remove a task from profile_task_list in a thread safe state
+        """
+        with self.queue_lock:
+            item_left = []
+            result = False
+
+            while not self._profile_task_list.empty():
+                item = self._profile_task_list.get()
+                if item == task:
+                    result = True
+                    # not put in item_list for removing it
+                    continue
+
+                item_left.append(item)
+
+            for item in item_left:
+                self._profile_task_list.put(item)
+
+            return result
 
     def get_last_command_create_time(self) -> int:
         return self._last_command_create_time
@@ -54,13 +100,17 @@ class ProfileTaskExecutionService:
             self._last_command_create_time = task.create_time
 
         # check profile task object
-        result = self.__check_profile_task(task)
+        result = self._check_profile_task(task)
         if not result.success:
             logger.warning("check command error, cannot process this profile task. reason: %s", result.error_reason)
             return
 
         # add task to list
         self._profile_task_list.put(task)
+
+        delay_mills = task.start_time - current_milli_time()
+        # schedule to start task
+        self.profile_task_scheduler.schedule(delay_mills, self.process_profile_task, [task])
 
     def add_profiling(self, context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
         execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
@@ -70,25 +120,50 @@ class ProfileTaskExecutionService:
         return execution_context.attempt_profiling(context, segment_id, first_span_opname)
 
     def profiling_recheck(self, trace_context: SpanContext, segment_id: str, first_span_opname: str):
-        # TODO
-        pass
+        """
+        Re-check current trace need profiling, in case that third-party plugins change the operation name.
+        """
+        execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
+        if execution_context is None:
+            return
+        execution_context.profiling_recheck(trace_context, segment_id, first_span_opname)
 
-    # TODO: synchronized processProfileTask and stopCurrentProfileTask 需要使用可重入锁实现
-
+    # using reentrant lock for process_profile_task and stop_current_profile_task,
+    # to make sure thread safe.
     def process_profile_task(self, task: ProfileTask):
         with self._rlock:
-            pass
+            # make sure prev profile task already stopped
+            self.stop_current_profile_task(self.task_execution_context.get())
+
+            # make stop task schedule and task context
+            current_context = ProfileTaskExecutionContext(task)
+            self.task_execution_context.set(current_context)
+
+            # start profiling this task
+            current_context.start_profiling(self.profile_executor)
+
+            millis = task.duration * self.MINUTE_TO_MILLIS
+            self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
 
     def stop_current_profile_task(self, need_stop: ProfileTaskExecutionContext):
         with self._rlock:
-            pass
+            # need_stop is None or task_execution_context is not need_stop context
+            if need_stop is None or not self.task_execution_context.compare_and_set(need_stop, None):
+                return
+
+            need_stop.stop_profiling()
+
+            self.remove_from_profile_task_list(need_stop.task)
+
+            # notify profiling task has finished
+            agent.notify_profile_finish(need_stop.task)
 
     class CheckResult:
         def __init__(self, success: bool, error_reason: str):
             self.success = success  # type: bool
             self.error_reason = error_reason  # type: str
 
-    def __check_profile_task(self, task: ProfileTask) -> CheckResult:
+    def _check_profile_task(self, task: ProfileTask) -> CheckResult:
         try:
             # endpoint name
             if len(task.first_span_op_name) == 0:
@@ -118,13 +193,13 @@ class ProfileTaskExecutionService:
                                                " than {}".format(ProfileConstants.TASK_MAX_SAMPLING_COUNT))
 
             # check task queue
-            task_finish_time = self.__cal_profile_task_finish_time(task)
+            task_finish_time = self._cal_profile_task_finish_time(task)
 
-            # lock the self.__profile_task_list.queue when check the item in it, avoid concurrency errors
+            # lock the self._profile_task_list.queue when check the item in it, avoid concurrency errors
             with self._profile_task_list.mutex:
                 for profile_task in self._profile_task_list.queue:  # type: ProfileTask
                     # if the end time of the task to be added is during the execution of any data, means is a error data
-                    if task.start_time <= task_finish_time <= self.__cal_profile_task_finish_time(profile_task):
+                    if task.start_time <= task_finish_time <= self._cal_profile_task_finish_time(profile_task):
                         return self.CheckResult(False, "there already have processing task in time range, "
                                                        "could not add a new task again. processing task monitor "
                                                        "endpoint name: {}".format(profile_task.first_span_op_name))
@@ -134,5 +209,5 @@ class ProfileTaskExecutionService:
         except TypeError:
             return self.CheckResult(False, "ProfileTask attributes has type error")
 
-    def __cal_profile_task_finish_time(self, task: ProfileTask) -> int:
+    def _cal_profile_task_finish_time(self, task: ProfileTask) -> int:
         return task.start_time + task.duration * self.MINUTE_TO_MILLIS
