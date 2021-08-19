@@ -101,21 +101,27 @@ class SpanContext(object):
         if span is not None:
             return span
 
+        # start profiling if profile_context is set
         if self.profile_status is None:
-            self.profile_status = profile.profile_task_execution_service.add_profiling(self, self.segment.segment_id, op)
+            self.profile_status = profile.profile_task_execution_service.add_profiling(self,
+                                                                                       self.segment.segment_id,
+                                                                                       op)
 
         spans = _spans_dup()
         parent = spans[-1] if spans else None  # type: Span
 
-        span = parent if parent is not None and parent.kind.is_entry else EntrySpan(
-            context=self,
-            sid=self._sid.next(),
-            pid=parent.sid if parent else -1,
-        )
+        if parent and parent.kind.is_entry:
+            # Span's operation name could be override, recheck here
+            # if the new op name is being profiling, start here
+            self.profiling_recheck(parent, op)
+            span = parent
+        else:
+            span = EntrySpan(
+                        context=self,
+                        sid=self._sid.next(),
+                        pid=parent.sid if parent else -1,
+                   )
         span.op = op
-
-        # the operation name could be override in entry span, recheck here
-        self.profiling_recheck(span, op)
 
         if carrier is not None and carrier.is_valid:
             span.extract(carrier=carrier)
@@ -149,7 +155,7 @@ class SpanContext(object):
 
         return None
 
-    def profiling_recheck(self, span:'Span', op_name: str):
+    def profiling_recheck(self, span: Span, op_name: str):
         # only check first span, e.g, first opname is correct.
         if span.sid != 0:
             return

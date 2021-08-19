@@ -43,4 +43,4 @@ class AtomicArray:
                 self._array[idx] = update
                 return True
 
-        return False
+            return False

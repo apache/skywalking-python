@@ -1,7 +1,7 @@
 import time
-from concurrent.futures import ThreadPoolExecutor, Future
-from threading import Thread
-from threading import current_thread
+from threading import Thread, Event, current_thread
+import sys
+import traceback
 
 from skywalking import agent
 from skywalking import config
@@ -17,27 +17,29 @@ from skywalking.utils.time import current_milli_time
 
 
 class ProfileTaskExecutionContext:
-    def __init__(self, task: 'ProfileTask'):
+    def __init__(self, task: ProfileTask):
         self.task = task  # type: ProfileTask
         self._current_profiling_cnt = AtomicInteger(var=0)
         self._total_started_profiling_cnt = AtomicInteger(var=0)
         self.profiling_segment_slots = AtomicArray(length=config.profile_max_parallel)
-        self._profiling_future = None  # type: Future
+        self._profiling_thread = None  # type: Thread
+        self._profiling_stop_event = None  # type: Event
 
-    def start_profiling(self, executor_service: ThreadPoolExecutor):
+    def start_profiling(self):
         profile_thread = ProfileThread(self)
-        # init a thread for profile
-        self._profiling_future = executor_service.submit(profile_thread.start)
+        self._profiling_stop_event = Event()
+
+        self._profiling_thread = Thread(target=profile_thread.start, args=[self._profiling_stop_event], daemon=True)
+        self._profiling_thread.start()
 
     def stop_profiling(self):
-        if self._profiling_future is not None:
-            self._profiling_future.cancel()
+        if self._profiling_thread is not None and self._profiling_stop_event is not None:
+            self._profiling_stop_event.set()
 
     def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
         """
         check have available slot to profile and add it
         """
-
         # check has available slot
         using_slot_cnt = self._current_profiling_cnt.get()
         if using_slot_cnt >= config.profile_max_parallel:
@@ -56,6 +58,8 @@ class ProfileTaskExecutionContext:
                                                            using_slot_cnt+1):
             return ProfileStatusReference.create_with_none()
 
+        #print(f"using_slot_cnt {using_slot_cnt}")
+
         thread_profiler = ThreadProfiler(trace_context=trace_context,
                                          segment_id=segment_id,
                                          profiling_thread=current_thread(),
@@ -73,6 +77,7 @@ class ProfileTaskExecutionContext:
         if trace_context.profile_status.is_being_watched():
             return
 
+        # if first_span_opname was changed by other plugin, there can start profile as well
         trace_context.profile_status.update_status(self.attempt_profiling(trace_context,
                                                                           segment_id,
                                                                           first_span_opname).get())
@@ -88,17 +93,28 @@ class ProfileTaskExecutionContext:
                 self._current_profiling_cnt.add_and_get(-1)
                 break
 
+    def is_start_profileable(self):
+        result = self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
+        print(f"result {result}")
+        return result
+
+        # TODO: modify back
+        #return self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
+
 
 class ProfileThread:
     def __init__(self, context: ProfileTaskExecutionContext):
         self._task_execution_context = context
         self._task_execution_service = profile.profile_task_execution_service
+        self._stop_event = None  # type: Event
 
     @staticmethod
     def current_milli_time() -> int:
         return round(time.time() * 1000)
 
-    def start(self):
+    def start(self, stop_event: Event):
+        self._stop_event = stop_event
+
         try:
             self.profiling(self._task_execution_context)
         except Exception as e:
@@ -108,9 +124,8 @@ class ProfileThread:
 
     def profiling(self, context: ProfileTaskExecutionContext):
         max_sleep_period = context.task.thread_dump_period
-        current_loop_start_time = -1
 
-        while current_thread().is_alive():
+        while not self._stop_event.is_set():
             current_loop_start_time = self.current_milli_time()
             profilers = self._task_execution_context.profiling_segment_slots
 
@@ -120,16 +135,14 @@ class ProfileThread:
 
                 if profiler.profile_status.get() is ProfileStatus.PENDING:
                     profiler.start_profiling_if_need()
-                    break
                 elif profiler.profile_status.get() is ProfileStatus.PROFILING:
                     snapshot = profiler.build_snapshot()
-
+                    print(f"snapshot {snapshot}")
                     if snapshot is not None:
                         agent.add_profiling_snapshot(snapshot)
                     else:
                         # tell execution context current tracing thread dump failed, stop it
                         context.stop_tracing_profile(profiler.trace_context)
-                    break
 
             need_sleep = (current_loop_start_time + max_sleep_period) - self.current_milli_time()
             if not need_sleep > 0:
@@ -149,6 +162,8 @@ class ThreadProfiler:
         self._profile_start_time = -1
         self.profiling_max_time_mills = config.profile_duration * 60 * 1000
 
+        self.dump_sequence = 0
+
         if trace_context.profile_status is None:
             self.profile_status = ProfileStatusReference.create_with_pending()
         else:
@@ -164,10 +179,35 @@ class ThreadProfiler:
         self.trace_context.profile_status.update_status(ProfileStatus.STOPPED)
 
     def build_snapshot(self) -> TracingThreadSnapshot:
-        # TODO
-        pass
+        if not self._profiling_thread.is_alive():
+            return None
 
-    # TODO: 检查这里是否有效
+        current_time = current_milli_time()
+
+        stack_list = []
+
+        # get thread stack of target thread
+        stack = sys._current_frames().get(self._profiling_thread.ident)
+        if not stack:
+            return None
+
+        extracted = traceback.extract_stack(stack)
+        for item in extracted:
+            code_sig = f"{item.filename}.{item.name}: {item.lineno}"
+            stack_list.append(code_sig)
+
+        # if is first dump, check is can start profiling
+        if self.dump_sequence == 0 and not self._profile_context.is_start_profileable():
+            return None
+
+        t = TracingThreadSnapshot(self._profile_context.task.task_id,
+                                  self._segment_id,
+                                  self.dump_sequence,
+                                  current_time,
+                                  stack_list)
+        self.dump_sequence += 1
+        return t
+
     def matches(self, trace_context: SpanContext) -> bool:
         return self.trace_context == trace_context
 

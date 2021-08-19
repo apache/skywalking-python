@@ -41,10 +41,6 @@ class Scheduler:
         if seconds < 0:
             seconds = 0
 
-        # TODO For debug
-        # if seconds > 60:
-        #     seconds = 60
-
         t = Timer(seconds, func, *args, **kwargs)
         t.daemon = True
         t.start()
@@ -66,7 +62,7 @@ class ProfileTaskExecutionService:
 
         self.profile_task_scheduler = Scheduler()
 
-        # rlock for processProfileTask and stopCurrentProfileTask
+        # rlock for process_profile_task and stop_current_profile_task
         self._rlock = RLock()
 
     def remove_from_profile_task_list(self, task: ProfileTask) -> bool:
@@ -140,7 +136,7 @@ class ProfileTaskExecutionService:
             self.task_execution_context.set(current_context)
 
             # start profiling this task
-            current_context.start_profiling(self.profile_executor)
+            current_context.start_profiling()
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])

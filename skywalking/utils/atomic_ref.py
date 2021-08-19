@@ -24,8 +24,7 @@ class AtomicRef:
             if self._var == expect:
                 self._var = update
                 return True
-
-        return False
+            return False
 
 
 

@@ -14,5 +14,4 @@ class AtomicInteger(AtomicRef):
         """
         with self._lock:
             self._var += delta
-
-        return self._var
+            return self._var

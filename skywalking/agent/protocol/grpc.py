@@ -23,6 +23,7 @@ from time import time
 import grpc
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
 
 from skywalking import config
 from skywalking.agent import Protocol
@@ -149,7 +150,8 @@ class GrpcProtocol(Protocol):
                 except Full:
                     pass
 
-    def send_snapshot(self, queue, block: bool = True):
+    # TODO: complete this
+    def send_snapshot(self, queue: Queue, block: bool = True):
         start = time()
         snapshot = None
 
@@ -163,15 +165,22 @@ class GrpcProtocol(Protocol):
                 except Empty:
                     return
 
-                logger.debug("reporting profile thread snapshot %s", snapshot)
-                transform_snapshot = snapshot.transform()
+                logger.debug("reporting profile thread snapshot %s  hash %s", snapshot, hash(snapshot))
+
+                transform_snapshot = ThreadSnapshot(
+                    taskId=str(snapshot.task_id),
+                    traceSegmentId=str(snapshot.trace_segment_id),
+                    time=int(snapshot.time),
+                    sequence=int(snapshot.sequence),
+                    stack=ThreadStack(codeSignatures=snapshot.stack_list)
+                )
 
                 yield transform_snapshot
                 queue.task_done()
 
         try:
             self.profile_channel.send(generator())
-        except grpc.RpcError:
+        except grpc.RpcError as e:
             self.on_error()
 
             if snapshot:

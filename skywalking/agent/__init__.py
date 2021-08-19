@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
 __started = False
 __protocol = Protocol()  # type: Protocol
-__heartbeat_thread = __report_thread = __query_profile_thread = __command_dispatch_thread = __queue = __snapshot_queue = __finished = None
+__heartbeat_thread = __report_thread = __query_profile_thread = __command_dispatch_thread = __send_profile_thread = __queue = __snapshot_queue = __finished = None
 
 
 def __heartbeat():
@@ -68,7 +68,7 @@ def __send_profile_snapshot():
         if connected():
             __protocol.send_snapshot(__snapshot_queue)
 
-        __finished.wait()
+        __finished.wait(0.5)
 
 
 def __command_dispatch():
@@ -77,7 +77,7 @@ def __command_dispatch():
 
 
 def __init_threading():
-    global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __queue, __snapshot_queue,  __finished
+    global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __send_profile_thread, __queue, __snapshot_queue,  __finished
 
     __queue = Queue(maxsize=10000)
     __finished = Event()
@@ -94,6 +94,9 @@ def __init_threading():
 
         __query_profile_thread = Thread(name='QueryProfileCommandThread', target=__query_profile_command, daemon=True)
         __query_profile_thread.start()
+
+        __send_profile_thread = Thread(name='SendProfileSnapShotThread', target=__send_profile_snapshot, daemon=True)
+        __send_profile_thread.start()
 
 
 def __init():
