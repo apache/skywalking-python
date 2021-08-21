@@ -199,7 +199,10 @@ class ThreadProfiler:
             return None
 
         extracted = traceback.extract_stack(stack)
-        for item in extracted:
+        for idx, item in enumerate(extracted):
+            if idx > config.profile_dump_max_stack_depth:
+                break
+
             code_sig = f"{item.filename}.{item.name}: {item.lineno}"
             stack_list.append(code_sig)
 
