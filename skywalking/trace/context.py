@@ -17,6 +17,8 @@
 
 from skywalking import agent, config
 from skywalking.profile.profile_status import ProfileStatusReference
+from skywalking import Component, agent, config
+from skywalking.agent import isfull
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -30,23 +32,20 @@ from skywalking import profile
 try:  # attempt to use async-local instead of thread-local context and spans
     import contextvars
 
-    __local = contextvars.ContextVar('local')
-    __spans = contextvars.ContextVar('spans')  # this needs to be a per-task variable, can't be part of __local
+    __spans = contextvars.ContextVar('spans')
     _spans = __spans.get
     _spans_set = __spans.set  # pyre-ignore
 
-    class AsyncLocal:
-        pass
+    def _spans():  # need to do this because can't set mutable default = [] in contextvars.ContextVar()
+        spans = __spans.get(None)
 
-    def _local():
-        try:
-            return __local.get()
+        if spans is not None:
+            return spans
 
-        except LookupError:
-            local = AsyncLocal()
-            __local.set(local)
+        spans = []
+        __spans.set(spans)
 
-            return local
+        return spans
 
     def _spans_dup():
         spans = __spans.get()[:]
@@ -54,13 +53,16 @@ try:  # attempt to use async-local instead of thread-local context and spans
 
         return spans
 
+    __spans.set([])
+
 except ImportError:
     import threading
 
-    __local = threading.local()
+    class SwLocal(threading.local):
+        def __init__(self):
+            self.spans = []
 
-    def _local():
-        return __local
+    __local = SwLocal()
 
     def _spans():
         return __local.spans
@@ -80,12 +82,18 @@ class SpanContext(object):
         self.profile_status = None  # type: ProfileStatusReference
         self.create_time = current_milli_time()
 
+    def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
+        if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
+            return NoopSpan(context=NoopContext())
+
+        return None
+
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
         if span is not None:
             return span
 
-        spans = _spans_dup()
+        spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
         return Span(
@@ -96,10 +104,13 @@ class SpanContext(object):
             kind=Kind.Local,
         )
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
-        span = self.ignore_check(op, Kind.Entry)
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+        span = self.ignore_check(op, Kind.Entry, carrier)
         if span is not None:
             return span
+
+        spans = _spans()
+        parent = spans[-1] if spans else None  # type: Span
 
         # start profiling if profile_context is set
         if self.profile_status is None:
@@ -107,53 +118,53 @@ class SpanContext(object):
                                                                                        self.segment.segment_id,
                                                                                        op)
 
-        spans = _spans_dup()
-        parent = spans[-1] if spans else None  # type: Span
-
-        if parent and parent.kind.is_entry:
+        if parent is not None and parent.kind.is_entry and inherit == parent.component:
             # Span's operation name could be override, recheck here
-            # if the new op name is being profiling, start here
+            # if the op name now is being profiling, start profile it here
             self.profiling_recheck(parent, op)
+
             span = parent
+            span.op = op
         else:
             span = EntrySpan(
-                        context=self,
-                        sid=self._sid.next(),
-                        pid=parent.sid if parent else -1,
-                   )
-        span.op = op
+                context=self,
+                sid=self._sid.next(),
+                pid=parent.sid if parent else -1,
+                op=op,
+            )
 
-        if carrier is not None and carrier.is_valid:
-            span.extract(carrier=carrier)
+            if carrier is not None and carrier.is_valid:  # TODO: should this be done irrespective of inheritance?
+                span.extract(carrier=carrier)
 
         return span
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
+    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
         span = self.ignore_check(op, Kind.Exit)
         if span is not None:
             return span
 
-        spans = _spans_dup()
+        spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
-        span = ExitSpan(
-            context=self,
-            sid=self._sid.next(),
-            pid=parent.sid if parent else -1,
-            op=op,
-            peer=peer,
-        )
-
-        return span
-
-    def ignore_check(self, op: str, kind: Kind):
-        if config.RE_IGNORE_PATH.match(op):
-            return NoopSpan(
-                context=NoopContext(),
-                kind=kind,
+        if parent is not None and parent.kind.is_exit and component == parent.inherit:
+            span = parent
+            span.op = op
+            span.peer = peer
+            span.component = component
+        else:
+            span = ExitSpan(
+                context=self,
+                sid=self._sid.next(),
+                pid=parent.sid if parent else -1,
+                op=op,
+                peer=peer,
+                component=component,
             )
 
-        return None
+        if inherit:
+            span.inherit = inherit
+
+        return span
 
     def profiling_recheck(self, span: Span, op_name: str):
         # only check first span, e.g, first opname is correct.
@@ -163,18 +174,21 @@ class SpanContext(object):
 
     def start(self, span: Span):
         self._nspans += 1
-        spans = _spans()
+        spans = _spans_dup()
         if span not in spans:
             spans.append(span)
 
     def stop(self, span: Span) -> bool:
-        spans = _spans()
+        spans = _spans_dup()
         span.finish(self.segment)
-        del spans[spans.index(span)]
+
+        try:
+            spans.remove(span)
+        except Exception:
+            pass
 
         self._nspans -= 1
         if self._nspans == 0:
-            _local().context = None
             agent.archive(self.segment)
             return True
 
@@ -232,30 +246,27 @@ class SpanContext(object):
 class NoopContext(SpanContext):
     def __init__(self):
         super().__init__()
-        self._depth = 0
-        self._noop_span = NoopSpan(self, kind=Kind.Local)
-        self.correlation = {}  # type: dict
 
     def new_local_span(self, op: str) -> Span:
-        return self._noop_span
+        return NoopSpan(self)
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None) -> Span:
-        if carrier is not None:
-            self._noop_span.extract(carrier)
-        return self._noop_span
+    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+        return NoopSpan(self)
 
-    def new_exit_span(self, op: str, peer: str) -> Span:
-        return self._noop_span
-
-    def start(self, span: Span):
-        self._depth += 1
+    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
+        return NoopSpan(self)
 
     def stop(self, span: Span) -> bool:
-        self._depth -= 1
-        return self._depth == 0
+        spans = _spans_dup()
 
-    def active_span(self):
-        return self._noop_span
+        try:
+            spans.remove(span)
+        except Exception:
+            pass
+
+        self._nspans -= 1
+
+        return self._nspans == 0
 
     def capture(self):
         return Snapshot(
@@ -271,11 +282,9 @@ class NoopContext(SpanContext):
 
 
 def get_context() -> SpanContext:
-    local = _local()
-    context = getattr(local, 'context', False)
+    spans = _spans()
 
-    if not context:
-        context = local.context = (SpanContext() if agent.connected() else NoopContext())
-        _spans_set([])  # XXX would be better in SpanContext.__init__() but for some reason doesn't work there
+    if spans:
+        return spans[len(spans) - 1].context
 
-    return context
+    return SpanContext()

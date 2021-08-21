@@ -16,14 +16,18 @@
 #
 
 import logging
-from skywalking.loggings import logger, getLogger
 from queue import Queue, Empty
+from time import time
+
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 from skywalking import config
 from skywalking.agent import Protocol
-from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService, \
+    KafkaLogDataReportService
+from skywalking.loggings import logger, getLogger
 from skywalking.trace.segment import Segment
 
 # avoid too many kafka logs
@@ -35,20 +39,25 @@ class KafkaProtocol(Protocol):
     def __init__(self):
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
-
-    def connected(self):
-        return True
+        self.log_reporter = KafkaLogDataReportService()
 
     def heartbeat(self):
         self.service_management.send_heart_beat()
 
     def report(self, queue: Queue, block: bool = True):
+        start = time()
+
         def generator():
             while True:
                 try:
-                    segment = queue.get(block=block)  # type: Segment
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                        return
+                    segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
+
+                queue.task_done()
 
                 logger.debug('reporting segment %s', segment)
 
@@ -73,9 +82,9 @@ class KafkaProtocol(Protocol):
                             data=[KeyStringValuePair(key=item.key, value=item.val) for item in log.items],
                         ) for log in span.logs],
                         tags=[KeyStringValuePair(
-                            key=str(tag.key),
+                            key=tag.key,
                             value=str(tag.val),
-                        ) for tag in span.tags],
+                        ) for tag in span.iter_tags()],
                         refs=[SegmentReference(
                             refType=0 if ref.ref_type == "CrossProcess" else 1,
                             traceId=ref.trace_id,
@@ -91,6 +100,24 @@ class KafkaProtocol(Protocol):
 
                 yield s
 
+        self.traces_reporter.report(generator())
+
+    def report_log(self, queue: Queue, block: bool = True):
+        start = time()
+
+        def generator():
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
+                    log_data = queue.get(block=block, timeout=timeout)  # type: LogData
+                except Empty:
+                    return
                 queue.task_done()
 
-        self.traces_reporter.report(generator())
+                logger.debug('Reporting Log')
+
+                yield log_data
+
+        self.log_reporter.report(generator=generator())

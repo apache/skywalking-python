@@ -28,5 +28,6 @@ header:
     - 'LICENSE'
     - 'NOTICE'
     - '.github/PULL_REQUEST_TEMPLATE'
+    - '.gitignore'
 
   comment: on-failure

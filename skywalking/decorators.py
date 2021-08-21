@@ -32,16 +32,17 @@ def trace(
 ):
     def decorator(func):
         _op = op or func.__name__
-        context = get_context()
-
-        span = context.new_local_span(op=_op)
-        span.layer = layer
-        span.component = component
-        [span.tag(tag) for tag in tags or []]
 
         if inspect.iscoroutinefunction(func):
             @wraps(func)
             async def wrapper(*args, **kwargs):
+                context = get_context()
+                span = context.new_local_span(op=_op)
+                span.layer = layer
+                span.component = component
+                if tags:
+                    for tag in tags:
+                        span.tag(tag)
                 with span:
                     return await func(*args, **kwargs)
             return wrapper
@@ -49,6 +50,13 @@ def trace(
         else:
             @wraps(func)
             def wrapper(*args, **kwargs):
+                context = get_context()
+                span = context.new_local_span(op=_op)
+                span.layer = layer
+                span.component = component
+                if tags:
+                    for tag in tags:
+                        span.tag(tag)
                 with span:
                     return func(*args, **kwargs)
             return wrapper
@@ -73,7 +81,9 @@ def runnable(
                 context.continued(snapshot)
                 span.layer = layer
                 span.component = component
-                [span.tag(tag) for tag in tags or []]
+                if tags:
+                    for tag in tags:
+                        span.tag(tag)
                 func(*args, **kwargs)
 
         return wrapper

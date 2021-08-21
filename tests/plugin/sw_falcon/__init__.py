@@ -14,35 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from abc import ABC
-from queue import Queue
-
-
-class Protocol(ABC):
-    def fork_before(self):
-        pass
-
-    def fork_after_in_parent(self):
-        pass
-
-    def fork_after_in_child(self):
-        pass
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
-
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass

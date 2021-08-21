@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 
 
 def install():
@@ -30,14 +29,13 @@ def install():
         peer = "%s:%s" % (this.host, this.port)
         op = args[0]
         context = get_context()
-        with context.new_exit_span(op="Redis/"+op or "/", peer=peer) as span:
+        with context.new_exit_span(op="Redis/"+op or "/", peer=peer, component=Component.Redis) as span:
             span.layer = Layer.Cache
-            span.component = Component.Redis
 
             res = _send_command(this, *args, **kwargs)
-            span.tag(Tag(key=tags.DbType, val="Redis"))
-            span.tag(Tag(key=tags.DbInstance, val=this.db))
-            span.tag(Tag(key=tags.DbStatement, val=op))
+            span.tag(TagDbType("Redis"))
+            span.tag(TagDbInstance(this.db))
+            span.tag(TagDbStatement(op))
 
             return res
 

@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagDbSqlParameters
 
 
 def install():
@@ -30,20 +29,19 @@ def install():
         peer = "%s:%s" % (this.connection.host, this.connection.port)
 
         context = get_context()
-        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer) as span:
+        with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, component=Component.PyMysql) as span:
             span.layer = Layer.Database
-            span.component = Component.PyMysql
             res = _execute(this, query, args)
 
-            span.tag(Tag(key=tags.DbType, val="mysql"))
-            span.tag(Tag(key=tags.DbInstance, val=(this.connection.db or b'').decode("utf-8")))
-            span.tag(Tag(key=tags.DbStatement, val=query))
+            span.tag(TagDbType("mysql"))
+            span.tag(TagDbInstance((this.connection.db or b'').decode("utf-8")))
+            span.tag(TagDbStatement(query))
 
             if config.sql_parameters_length and args:
                 parameter = ",".join([str(arg) for arg in args])
                 max_len = config.sql_parameters_length
                 parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
-                span.tag(Tag(key=tags.DbSqlParameters, val='[' + parameter + ']'))
+                span.tag(TagDbSqlParameters('[' + parameter + ']'))
 
             return res
 

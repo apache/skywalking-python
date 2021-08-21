@@ -15,30 +15,18 @@
 # limitations under the License.
 #
 
-FROM openjdk:8
+import logging
+import traceback
 
-WORKDIR /tests
+from skywalking.log import sw_logging
+from skywalking.loggings import logger
 
-ARG COMMIT_HASH=8a48c49b4420df5c9576d2aea178b2ebcb7ecd09
 
-ADD https://github.com/apache/skywalking-agent-test-tool/archive/${COMMIT_HASH}.tar.gz .
-
-RUN tar -xf ${COMMIT_HASH}.tar.gz --strip 1
-
-RUN rm ${COMMIT_HASH}.tar.gz
-
-RUN ./mvnw -B -DskipTests package
-
-FROM openjdk:8
-
-EXPOSE 19876 12800
-
-WORKDIR /tests
-
-COPY --from=0 /tests/dist/skywalking-mock-collector.tar.gz /tests
-
-RUN tar -xf skywalking-mock-collector.tar.gz --strip 1
-
-RUN chmod +x bin/collector-startup.sh
-
-ENTRYPOINT bin/collector-startup.sh
+def install():
+    logger.debug('Installing plugin for logging module')
+    # noinspection PyBroadException
+    try:
+        sw_logging.install()
+    except Exception:
+        logger.warning('Failed to install sw_logging plugin')
+        traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None

@@ -14,35 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from skywalking import agent, config
 
-from abc import ABC
-from queue import Queue
+import requests
+import hug
+
+config.service_name = 'consumer'
+config.logging_level = 'DEBUG'
+agent.start()
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
+@hug.get('/users')
+def get():
+    res = requests.get("http://provider:9091/users")
+    return res.json()
 
-    def fork_after_in_parent(self):
-        pass
 
-    def fork_after_in_child(self):
-        pass
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
-
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass
+hug.API(__name__).http.serve(port=9090)

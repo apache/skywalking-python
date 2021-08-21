@@ -15,12 +15,11 @@
 # limitations under the License.
 #
 
-from skywalking import config
 from skywalking import Layer, Component
-from skywalking.trace import tags
+from skywalking import config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagMqBroker, TagMqTopic
 
 
 def install():
@@ -53,8 +52,8 @@ def _sw__poll_once_func(__poll_once):
                                     item.val = str(header[1])
 
                         span.extract(carrier)
-                    span.tag(Tag(key=tags.MqBroker, val=brokers))
-                    span.tag(Tag(key=tags.MqTopic, val=topics))
+                    span.tag(TagMqBroker(brokers))
+                    span.tag(TagMqTopic(topics))
                     span.layer = Layer.MQ
                     span.component = Component.KafkaConsumer
 
@@ -65,17 +64,19 @@ def _sw__poll_once_func(__poll_once):
 
 def _sw_send_func(_send):
     def _sw_send(this, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
-        # ignore trace skywalking self request
-        if config.protocol == 'kafka' and config.kafka_topic_segment == topic or config.kafka_topic_management == topic:
+        # ignore trace & log reporter - skywalking self request
+        if config.protocol == 'kafka' and config.kafka_topic_segment == topic \
+                or config.kafka_topic_log == topic \
+                or config.kafka_topic_management == topic:
             return _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                          timestamp_ms=timestamp_ms)
 
         peer = ";".join(this.config["bootstrap_servers"])
         context = get_context()
-        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer) as span:
+        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer,
+                                   component=Component.KafkaProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
-            span.component = Component.KafkaProducer
 
             if headers is None:
                 headers = []
@@ -84,8 +85,8 @@ def _sw_send_func(_send):
 
             res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                         timestamp_ms=timestamp_ms)
-            span.tag(Tag(key=tags.MqBroker, val=peer))
-            span.tag(Tag(key=tags.MqTopic, val=topic))
+            span.tag(TagMqBroker(peer))
+            span.tag(TagMqTopic(topic))
 
             return res
 

@@ -15,11 +15,10 @@
 # limitations under the License.
 #
 
-from skywalking import Layer, Component
-from skywalking.trace import tags
-from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
-from skywalking import config
+from skywalking import Layer, Component, config
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -32,8 +31,8 @@ def install():
                     auth=None, timeout=None, allow_redirects=True, proxies=None,
                     hooks=None, stream=None, verify=None, cert=None, json=None):
 
-        from urllib.parse import urlparse
-        url_param = urlparse(url)
+        from skywalking.utils.filter import sw_urlparse
+        url_param = sw_urlparse(url)
 
         # ignore trace skywalking self request
         if config.protocol == 'http' and config.collector_address.rstrip('/').endswith(url_param.netloc):
@@ -42,26 +41,28 @@ def install():
                             proxies,
                             hooks, stream, verify, cert, json)
 
-        context = get_context()
-        with context.new_exit_span(op=url_param.path or "/", peer=url_param.netloc) as span:
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
+                                             component=Component.Requests)
+
+        with span:
             carrier = span.inject()
             span.layer = Layer.Http
-            span.component = Component.Requests
 
             if headers is None:
                 headers = {}
             for item in carrier:
                 headers[item.key] = item.val
 
-            span.tag(Tag(key=tags.HttpMethod, val=method.upper()))
-            span.tag(Tag(key=tags.HttpUrl, val=url))
+            span.tag(TagHttpMethod(method.upper()))
+            span.tag(TagHttpURL(url_param.geturl()))
 
             res = _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
                            allow_redirects,
                            proxies,
                            hooks, stream, verify, cert, json)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status_code, overridable=True))
+            span.tag(TagHttpStatusCode(res.status_code))
             if res.status_code >= 400:
                 span.error_occurred = True
 

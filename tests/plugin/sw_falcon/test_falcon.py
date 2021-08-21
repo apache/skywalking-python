@@ -15,34 +15,25 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+from typing import Callable
+
+import pytest
+import requests
+
+from tests.plugin.base import TestPluginBase
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
 
-    def fork_after_in_parent(self):
-        pass
 
-    def fork_after_in_child(self):
-        pass
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
-
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', [
+        'hug==2.4.1',
+        'hug==2.5.0',
+        'hug==2.6.0',
+    ])
+    def test_plugin(self, docker_compose, version):
+        self.validate()

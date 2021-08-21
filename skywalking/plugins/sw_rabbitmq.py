@@ -16,10 +16,9 @@
 #
 
 from skywalking import Layer, Component
-from skywalking.trace import tags
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 
 
 def install():
@@ -41,10 +40,9 @@ def _sw_basic_publish_func(_basic_publish):
         context = get_context()
         import pika
         with context.new_exit_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key + "/Producer" or "/",
-                                   peer=peer) as span:
+                                   peer=peer, component=Component.RabbitmqProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
-            span.component = Component.RabbitmqProducer
             properties = pika.BasicProperties() if properties is None else properties
 
             if properties.headers is None:
@@ -57,9 +55,9 @@ def _sw_basic_publish_func(_basic_publish):
                                  body,
                                  properties=properties,
                                  mandatory=mandatory)
-            span.tag(Tag(key=tags.MqBroker, val=peer))
-            span.tag(Tag(key=tags.MqTopic, val=exchange))
-            span.tag(Tag(key=tags.MqQueue, val=routing_key))
+            span.tag(TagMqBroker(peer))
+            span.tag(TagMqTopic(exchange))
+            span.tag(TagMqQueue(routing_key))
 
             return res
 
@@ -82,8 +80,8 @@ def _sw__on_deliver_func(__on_deliver):
             span.layer = Layer.MQ
             span.component = Component.RabbitmqConsumer
             __on_deliver(this, method_frame, header_frame, body)
-            span.tag(Tag(key=tags.MqBroker, val=peer))
-            span.tag(Tag(key=tags.MqTopic, val=exchange))
-            span.tag(Tag(key=tags.MqQueue, val=routing_key))
+            span.tag(TagMqBroker(peer))
+            span.tag(TagMqTopic(exchange))
+            span.tag(TagMqQueue(routing_key))
 
     return _sw__on_deliver

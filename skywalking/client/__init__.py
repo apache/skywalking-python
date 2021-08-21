@@ -29,6 +29,11 @@ class TraceSegmentReportService(object):
         raise NotImplementedError()
 
 
+class LogDataReportService(object):
+    def report(self, generator):
+        raise NotImplementedError()
+
+
 class ProfileTaskChannelService(object):
     def do_query(self):
         raise NotImplementedError()

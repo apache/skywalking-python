@@ -15,34 +15,24 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+import io
+import logging
+import traceback
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
+class SWFormatter(logging.Formatter):
+    """ A slightly modified formatter that allows traceback depth """
 
-    def fork_after_in_parent(self):
-        pass
+    def __init__(self, fmt, tb_limit):
+        logging.Formatter.__init__(self, fmt)
+        self.tb_limit = tb_limit
 
-    def fork_after_in_child(self):
-        pass
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
-
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass
+    def formatException(self, ei):
+        sio = io.StringIO()
+        tb = ei[2]
+        traceback.print_exception(ei[0], ei[1], tb, self.tb_limit, sio)
+        s = sio.getvalue()
+        sio.close()
+        if s[-1:] == "\n":
+            s = s[:-1]
+        return s

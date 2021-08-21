@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-from skywalking import Layer, Component
-from skywalking.trace import tags
+from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -31,13 +31,14 @@ def install():
     async def _sw_request(self: ClientSession, method: str, str_or_url, **kwargs):
         url = URL(str_or_url).with_user(None).with_password(None)
         peer = '%s:%d' % (url.host or '', url.port)
-        context = get_context()
 
-        with context.new_exit_span(op=url.path or "/", peer=peer) as span:
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_exit_span(op=url.path or "/", peer=peer, component=Component.AioHttp)
+
+        with span:
             span.layer = Layer.Http
-            span.component = Component.AioHttp
-            span.tag(Tag(key=tags.HttpMethod, val=method.upper()))  # pyre-ignore
-            span.tag(Tag(key=tags.HttpUrl, val=url))  # pyre-ignore
+            span.tag(TagHttpMethod(method.upper()))  # pyre-ignore
+            span.tag(TagHttpURL(url))  # pyre-ignore
 
             carrier = span.inject()
             headers = kwargs.get('headers')
@@ -52,7 +53,7 @@ def install():
 
             res = await _request(self, method, str_or_url, **kwargs)
 
-            span.tag(Tag(key=tags.HttpStatus, val=res.status, overridable=True))
+            span.tag(TagHttpStatusCode(res.status))
 
             if res.status >= 400:
                 span.error_occurred = True
@@ -63,8 +64,8 @@ def install():
     ClientSession._request = _sw_request
 
     async def _sw_handle_request(self, request, start_time: float):
-        context = get_context()
         carrier = Carrier()
+        method = request.method
 
         for item in carrier:
             val = request.headers.get(item.key)
@@ -72,18 +73,21 @@ def install():
             if val is not None:
                 item.val = val
 
-        with context.new_entry_span(op=request.path, carrier=carrier) as span:
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=request.path, carrier=carrier)
+
+        with span:
             span.layer = Layer.Http
             span.component = Component.AioHttp
             span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple))\
                 else request._transport_peername
 
-            span.tag(Tag(key=tags.HttpMethod, val=request.method))  # pyre-ignore
-            span.tag(Tag(key=tags.HttpUrl, val=str(request.url)))  # pyre-ignore
+            span.tag(TagHttpMethod(method))  # pyre-ignore
+            span.tag(TagHttpURL(str(request.url)))  # pyre-ignore
 
             resp, reset = await _handle_request(self, request, start_time)
 
-            span.tag(Tag(key=tags.HttpStatus, val=resp.status, overridable=True))
+            span.tag(TagHttpStatusCode(resp.status))
 
             if resp.status >= 400:
                 span.error_occurred = True

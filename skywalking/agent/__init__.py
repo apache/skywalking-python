@@ -21,7 +21,10 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking import config, plugins, loggings
+from skywalking.protocol.logging.Logging_pb2 import LogData
+
+from skywalking import config, plugins
+from skywalking import loggings
 from skywalking.agent.protocol import Protocol
 from skywalking.command import command_service
 from skywalking.loggings import logger
@@ -33,36 +36,53 @@ from skywalking.profile.snapshot import TracingThreadSnapshot
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
-
 __started = False
 __protocol = Protocol()  # type: Protocol
-__heartbeat_thread = __report_thread = __query_profile_thread = __command_dispatch_thread = __send_profile_thread = __queue = __snapshot_queue = __finished = None
+__heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
+  = __send_profile_thread  = __queue = __log_queue = __snapshot_queue = __finished = None
 
 
 def __heartbeat():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.heartbeat()
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(30 if connected() else 3)
+        __finished.wait(30)
 
 
 def __report():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.report(__queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+        except Exception as exc:
+            logger.error(str(exc))
 
-        __finished.wait(1)
+        __finished.wait(0)
+
+
+def __report_log():
+    while not __finished.is_set():
+        try:
+            __protocol.report_log(__log_queue)
+        except Exception as exc:
+            logger.error(str(exc))
+
+        __finished.wait(0)
 
 
 def __query_profile_command():
     while not __finished.is_set():
-        if connected():
+        try:
             __protocol.query_profile_commands()
+        except Exception as exc:
+            logger.error(str(exc))
 
         __finished.wait(config.get_profile_task_interval)
 
 
+# TODO: 和上面匹配
 def __send_profile_snapshot():
     while not __finished.is_set():
         if connected():
@@ -77,14 +97,21 @@ def __command_dispatch():
 
 
 def __init_threading():
-    global __heartbeat_thread, __report_thread,  __query_profile_thread, __command_dispatch_thread, __send_profile_thread, __queue, __snapshot_queue,  __finished
+    global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
+        __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue,  __finished
 
-    __queue = Queue(maxsize=10000)
+    __queue = Queue(maxsize=config.max_buffer_size)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
     __heartbeat_thread.start()
     __report_thread.start()
+    __command_dispatch_thread.start()
+
+    if config.log_reporter_active:
+        __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
+        __log_report_thread = Thread(name='LogReportThread', target=__report_log, daemon=True)
+        __log_report_thread.start()
 
     if config.profile_active:
         __snapshot_queue = Queue(maxsize=config.profile_snapshot_transport_buffer_size)
@@ -112,6 +139,10 @@ def __init():
         __protocol = KafkaProtocol()
 
     plugins.install()
+    if config.log_reporter_active:  # todo - Add support for printing traceID/ context in logs
+        from skywalking import log
+        log.install()
+
     __init_threading()
 
 
@@ -119,8 +150,13 @@ def __fini():
     __protocol.report(__queue, False)
     __queue.join()
 
-    __protocol.send_snapshot(__snapshot_queue, False)
-    __snapshot_queue.join()
+    if config.log_reporter_active:
+        __protocol.report_log(__log_queue, False)
+        __log_queue.join()
+
+    if config.profile_active:
+        __protocol.send_snapshot(__snapshot_queue, False)
+        __snapshot_queue.join()
 
     __finished.set()
 
@@ -191,18 +227,3 @@ def archive(segment: 'Segment'):
         __queue.put(segment, block=False)
     except Full:
         logger.warning('the queue is full, the segment will be abandoned')
-
-
-# Thread Snapshot related func
-def add_profiling_snapshot(snapshot: TracingThreadSnapshot):
-    try:
-        __snapshot_queue.put(snapshot)
-    except Full:
-        logger.warning('the snapshot queue is full, the snapshot will be abandoned')
-
-
-def notify_profile_finish(task: ProfileTask):
-    try:
-        __protocol.notify_profile_task_finish(task)
-    except Exception as e:
-        logger.error("notify profile task finish to backend fail. " + str(e))

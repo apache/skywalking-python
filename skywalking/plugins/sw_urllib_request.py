@@ -17,10 +17,10 @@
 
 from urllib.request import Request
 
-from skywalking import Layer, Component
-from skywalking.trace import tags
-from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking import Layer, Component, config
+from skywalking.trace.context import get_context, NoopContext
+from skywalking.trace.span import NoopSpan
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
 
 def install():
@@ -34,15 +34,19 @@ def install():
         if isinstance(fullurl, str):
             fullurl = Request(fullurl, data)
 
-        context = get_context()
         url = fullurl.selector.split("?")[0] if fullurl.selector else '/'
-        with context.new_exit_span(op=url, peer=fullurl.host) as span:
+        method = getattr(fullurl, 'method', None) or ('GET' if data is None else 'POST')
+
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_exit_span(op=url, peer=fullurl.host, component=Component.General)
+
+        with span:
             carrier = span.inject()
             span.layer = Layer.Http
-            span.component = Component.General
             code = None
 
-            [fullurl.add_header(item.key, item.val) for item in carrier]
+            for item in carrier:
+                fullurl.add_header(item.key, item.val)
 
             try:
                 res = _open(this, fullurl, data, timeout)
@@ -51,11 +55,11 @@ def install():
                 code = e.code
                 raise
             finally:  # we do this here because it may change in _open()
-                span.tag(Tag(key=tags.HttpMethod, val=fullurl.get_method()))
-                span.tag(Tag(key=tags.HttpUrl, val=fullurl.full_url))
+                span.tag(TagHttpMethod(method))
+                span.tag(TagHttpURL(fullurl.full_url))
 
                 if code is not None:
-                    span.tag(Tag(key=tags.HttpStatus, val=code, overridable=True))
+                    span.tag(TagHttpStatusCode(code))
 
                     if code >= 400:
                         span.error_occurred = True

@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-import os
 import ast
-from skywalking.loggings import logger
+import os
 
-from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
 from kafka import KafkaProducer
+from skywalking import config
+from skywalking.client import ServiceManagementClient, TraceSegmentReportService, LogDataReportService
+from skywalking.loggings import logger
 
 kafka_configs = {}
 
@@ -103,6 +103,18 @@ class KafkaTraceSegmentReportService(TraceSegmentReportService):
         for segment in generator:
             key = bytes(segment.traceSegmentId, encoding="utf-8")
             value = bytes(segment.SerializeToString())
+            self.producer.send(topic=self.topic, key=key, value=value)
+
+
+class KafkaLogDataReportService(LogDataReportService):
+    def __init__(self):
+        self.producer = KafkaProducer(**kafka_configs)
+        self.topic = config.kafka_topic_log
+
+    def report(self, generator):
+        for log_data in generator:
+            key = bytes(log_data.traceContext.traceSegmentId, encoding="utf-8")
+            value = bytes(log_data.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
 
 

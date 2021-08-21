@@ -15,34 +15,32 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+import re
+import traceback
+from urllib.parse import urlparse
+
+from skywalking import config
 
 
-class Protocol(ABC):
-    def fork_before(self):
+def sw_urlparse(url):
+    # Removes basic auth credentials from netloc
+    url_param = urlparse(url)
+    safe_netloc = url_param.netloc
+    try:
+        safe_netloc = str(url_param.hostname) + (':' + str(url_param.port) if url_param.port else '')
+    except ValueError:  # illegal url, skip
         pass
 
-    def fork_after_in_parent(self):
-        pass
+    return url_param._replace(netloc=safe_netloc)
 
-    def fork_after_in_child(self):
-        pass
 
-    def heartbeat(self):
-        raise NotImplementedError()
+def sw_filter(target: str):
+    # Remove user:pw from any valid full urls
 
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
+    return re.sub(r'://(.*?)@', r'://', target)
 
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
 
-    def query_profile_commands(self):
-        pass
+def sw_traceback():
+    stack_trace = traceback.format_exc(limit=config.cause_exception_depth)
 
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass
+    return sw_filter(target=stack_trace)

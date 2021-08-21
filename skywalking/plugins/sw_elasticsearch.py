@@ -16,9 +16,8 @@
 #
 
 from skywalking import Layer, Component, config
-from skywalking.trace import tags
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import Tag
+from skywalking.trace.tags import TagDbType, TagDbStatement
 
 
 def install():
@@ -28,14 +27,14 @@ def install():
     def _sw_perform_request(this: Transport, method, url, headers=None, params=None, body=None):
         context = get_context()
         peer = ",".join([host["host"] + ":" + str(host["port"]) for host in this.hosts])
-        with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer) as span:
+        with context.new_exit_span(op="Elasticsearch/" + method + url, peer=peer,
+                                   component=Component.Elasticsearch) as span:
             span.layer = Layer.Database
-            span.component = Component.Elasticsearch
             res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 
-            span.tag(Tag(key=tags.DbType, val="Elasticsearch"))
+            span.tag(TagDbType("Elasticsearch"))
             if config.elasticsearch_trace_dsl:
-                span.tag(Tag(key=tags.DbStatement, val="" if body is None else body))
+                span.tag(TagDbStatement("" if body is None else body))
 
             return res
 
