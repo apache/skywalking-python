@@ -19,6 +19,7 @@ import time
 from threading import Thread, Event, current_thread
 import sys
 import traceback
+from typing import Optional
 
 from skywalking import agent
 from skywalking import config
@@ -39,8 +40,8 @@ class ProfileTaskExecutionContext:
         self._current_profiling_cnt = AtomicInteger(var=0)
         self._total_started_profiling_cnt = AtomicInteger(var=0)
         self.profiling_segment_slots = AtomicArray(length=config.profile_max_parallel)
-        self._profiling_thread = None  # type: Thread
-        self._profiling_stop_event = None  # type: Event
+        self._profiling_thread = None  # type: Optional[Thread]
+        self._profiling_stop_event = None  # type: Optional[Event]
 
     def start_profiling(self):
         profile_thread = ProfileThread(self)
@@ -118,7 +119,7 @@ class ProfileThread:
     def __init__(self, context: ProfileTaskExecutionContext):
         self._task_execution_context = context
         self._task_execution_service = profile.profile_task_execution_service
-        self._stop_event = None  # type: Event
+        self._stop_event = None  # type: Optional[Event]
 
     def start(self, stop_event: Event):
         self._stop_event = stop_event
@@ -185,7 +186,7 @@ class ThreadProfiler:
     def stop_profiling(self):
         self.trace_context.profile_status.update_status(ProfileStatus.STOPPED)
 
-    def build_snapshot(self) -> TracingThreadSnapshot:
+    def build_snapshot(self) -> Optional[TracingThreadSnapshot]:
         if not self._profiling_thread.is_alive():
             return None
 
@@ -194,7 +195,7 @@ class ThreadProfiler:
         stack_list = []
 
         # get thread stack of target thread
-        stack = sys._current_frames().get(self._profiling_thread.ident)
+        stack = sys._current_frames().get(int(self._profiling_thread.ident))
         if not stack:
             return None
 
