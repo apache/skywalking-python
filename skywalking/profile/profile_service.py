@@ -37,7 +37,7 @@ class Scheduler:
 
     @staticmethod
     def schedule(milliseconds, func, *args, **kwargs):
-        seconds = milliseconds/1000
+        seconds = milliseconds / 1000
         if seconds < 0:
             seconds = 0
 
@@ -104,9 +104,9 @@ class ProfileTaskExecutionService:
         # add task to list
         self._profile_task_list.put(task)
 
-        delay_mills = task.start_time - current_milli_time()
+        delay_millis = task.start_time - current_milli_time()
         # schedule to start task
-        self.profile_task_scheduler.schedule(delay_mills, self.process_profile_task, [task])
+        self.profile_task_scheduler.schedule(delay_millis, self.process_profile_task, [task])
 
     def add_profiling(self, context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
         execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
@@ -137,6 +137,7 @@ class ProfileTaskExecutionService:
 
             # start profiling this task
             current_context.start_profiling()
+            logger.debug("profile task [%s] for endpoint [%s] started", task.task_id, task.first_span_op_name)
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
@@ -148,6 +149,8 @@ class ProfileTaskExecutionService:
                 return
 
             need_stop.stop_profiling()
+            logger.debug("profile task [%s] for endpoint [%s] stoped", need_stop.task.task_id,
+                         need_stop.task.first_span_op_name)
 
             self.remove_from_profile_task_list(need_stop.task)
 

@@ -24,7 +24,6 @@ if __name__ == '__main__':
     config.service_name = 'consumer'
     config.logging_level = 'DEBUG'
     config.flask_collect_http_params = True
-    config.profile_active = True
     agent.start()
 
     from flask import Flask, jsonify
@@ -33,10 +32,22 @@ if __name__ == '__main__':
 
     @app.route("/users", methods=["POST", "GET"])
     def application():
-        res = requests.get("http://localhost:9090")
-        d = res.json()
-        d["test"] = "test"
-        return jsonify(d)
+        from skywalking.trace.context import get_context
+        get_context().put_correlation("correlation", "correlation")
 
-    PORT = 18080
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+        @runnable(op="/test")
+        def post():
+            requests.post("http://provider:9091/users")
+
+        from threading import Thread
+        t = Thread(target=post)
+        t.start()
+
+        res = requests.post("http://provider:9091/users")
+
+        t.join()
+
+        return jsonify(res.json())
+
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

@@ -150,7 +150,6 @@ class GrpcProtocol(Protocol):
                 except Full:
                     pass
 
-    # TODO: complete this
     def send_snapshot(self, queue: Queue, block: bool = True):
         start = time()
         snapshot = None
@@ -165,8 +164,6 @@ class GrpcProtocol(Protocol):
                 except Empty:
                     return
 
-                logger.debug("reporting profile thread snapshot %s  hash %s", snapshot, hash(snapshot))
-
                 transform_snapshot = ThreadSnapshot(
                     taskId=str(snapshot.task_id),
                     traceSegmentId=str(snapshot.trace_segment_id),
@@ -180,7 +177,7 @@ class GrpcProtocol(Protocol):
 
         try:
             self.profile_channel.send(generator())
-        except grpc.RpcError as e:
+        except grpc.RpcError:
             self.on_error()
 
             if snapshot:

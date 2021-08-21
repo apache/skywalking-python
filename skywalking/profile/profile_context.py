@@ -1,3 +1,20 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import time
 from threading import Thread, Event, current_thread
 import sys
@@ -36,10 +53,12 @@ class ProfileTaskExecutionContext:
         if self._profiling_thread is not None and self._profiling_stop_event is not None:
             self._profiling_stop_event.set()
 
-    def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
+    def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> \
+            ProfileStatusReference:
         """
         check have available slot to profile and add it
         """
+
         # check has available slot
         using_slot_cnt = self._current_profiling_cnt.get()
         if using_slot_cnt >= config.profile_max_parallel:
@@ -57,8 +76,6 @@ class ProfileTaskExecutionContext:
         if not self._current_profiling_cnt.compare_and_set(using_slot_cnt,
                                                            using_slot_cnt+1):
             return ProfileStatusReference.create_with_none()
-
-        #print(f"using_slot_cnt {using_slot_cnt}")
 
         thread_profiler = ThreadProfiler(trace_context=trace_context,
                                          segment_id=segment_id,
@@ -94,12 +111,7 @@ class ProfileTaskExecutionContext:
                 break
 
     def is_start_profileable(self):
-        result = self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
-        print(f"result {result}")
-        return result
-
-        # TODO: modify back
-        #return self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
+        return self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
 
 
 class ProfileThread:
@@ -108,17 +120,13 @@ class ProfileThread:
         self._task_execution_service = profile.profile_task_execution_service
         self._stop_event = None  # type: Event
 
-    @staticmethod
-    def current_milli_time() -> int:
-        return round(time.time() * 1000)
-
     def start(self, stop_event: Event):
         self._stop_event = stop_event
 
         try:
             self.profiling(self._task_execution_context)
         except Exception as e:
-            logger.error("Profiling task fail. taskId:[%s] error:[%s]", self._task_execution_context.task.task_id, e)
+            logger.error("profiling task fail. task_id:[%s] error:[%s]", self._task_execution_context.task.task_id, e)
         finally:
             self._task_execution_service.stop_current_profile_task(self._task_execution_context)
 
@@ -126,7 +134,7 @@ class ProfileThread:
         max_sleep_period = context.task.thread_dump_period
 
         while not self._stop_event.is_set():
-            current_loop_start_time = self.current_milli_time()
+            current_loop_start_time = current_milli_time()
             profilers = self._task_execution_context.profiling_segment_slots
 
             for profiler in profilers:  # type: ThreadProfiler
@@ -137,7 +145,6 @@ class ProfileThread:
                     profiler.start_profiling_if_need()
                 elif profiler.profile_status.get() is ProfileStatus.PROFILING:
                     snapshot = profiler.build_snapshot()
-                    print(f"snapshot {snapshot}")
                     if snapshot is not None:
                         agent.add_profiling_snapshot(snapshot)
                     else:
@@ -148,7 +155,7 @@ class ProfileThread:
             if not need_sleep > 0:
                 need_sleep = max_sleep_period
 
-            # convert to float sec
+            # convert to float second
             time.sleep(need_sleep/1000)
 
 
@@ -210,4 +217,3 @@ class ThreadProfiler:
 
     def matches(self, trace_context: SpanContext) -> bool:
         return self.trace_context == trace_context
-

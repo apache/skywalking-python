@@ -19,9 +19,6 @@ from skywalking.loggings import logger
 
 import grpc
 
-from typing import List
-from queue import Queue
-
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
@@ -92,4 +89,3 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
             taskId=task.task_id
         )
         self.profile_stub.reportTaskFinish(finish_report)
-
