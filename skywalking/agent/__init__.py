@@ -32,14 +32,13 @@ from skywalking import profile
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
 
-
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
 __started = False
 __protocol = Protocol()  # type: Protocol
 __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
-  = __send_profile_thread  = __queue = __log_queue = __snapshot_queue = __finished = None
+    = __send_profile_thread = __queue = __log_queue = __snapshot_queue = __finished = None
 
 
 def __heartbeat():
@@ -72,6 +71,16 @@ def __report_log():
         __finished.wait(0)
 
 
+def __send_profile_snapshot():
+    while not __finished.is_set():
+        try:
+            __protocol.send_snapshot(__snapshot_queue)
+        except Exception as exc:
+            logger.error(str(exc))
+
+        __finished.wait(0.5)
+
+
 def __query_profile_command():
     while not __finished.is_set():
         try:
@@ -82,15 +91,6 @@ def __query_profile_command():
         __finished.wait(config.get_profile_task_interval)
 
 
-# TODO: 和上面匹配
-def __send_profile_snapshot():
-    while not __finished.is_set():
-        if connected():
-            __protocol.send_snapshot(__snapshot_queue)
-
-        __finished.wait(0.5)
-
-
 def __command_dispatch():
     # command dispatch will stuck when there are no commands
     command_service.dispatch()
@@ -98,12 +98,14 @@ def __command_dispatch():
 
 def __init_threading():
     global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
-        __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue,  __finished
+        __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue, __finished
 
     __queue = Queue(maxsize=config.max_buffer_size)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
+    __command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
+
     __heartbeat_thread.start()
     __report_thread.start()
     __command_dispatch_thread.start()
@@ -115,9 +117,6 @@ def __init_threading():
 
     if config.profile_active:
         __snapshot_queue = Queue(maxsize=config.profile_snapshot_transport_buffer_size)
-
-        __command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
-        __command_dispatch_thread.start()
 
         __query_profile_thread = Thread(name='QueryProfileCommandThread', target=__query_profile_command, daemon=True)
         __query_profile_thread.start()
@@ -218,8 +217,8 @@ def started():
     return __started
 
 
-def connected():
-    return __protocol.connected()
+def isfull():
+    return __queue.full()
 
 
 def archive(segment: 'Segment'):
@@ -227,3 +226,24 @@ def archive(segment: 'Segment'):
         __queue.put(segment, block=False)
     except Full:
         logger.warning('the queue is full, the segment will be abandoned')
+
+
+def archive_log(log_data: 'LogData'):
+    try:
+        __log_queue.put(log_data, block=False)
+    except Full:
+        logger.warning('the queue is full, the log will be abandoned')
+
+
+def add_profiling_snapshot(snapshot: TracingThreadSnapshot):
+    try:
+        __snapshot_queue.put(snapshot)
+    except Full:
+        logger.warning('the snapshot queue is full, the snapshot will be abandoned')
+
+
+def notify_profile_finish(task: ProfileTask):
+    try:
+        __protocol.notify_profile_task_finish(task)
+    except Exception as e:
+        logger.error("notify profile task finish to backend fail. " + str(e))

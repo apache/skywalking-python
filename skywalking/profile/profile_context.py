@@ -151,7 +151,7 @@ class ProfileThread:
                         # tell execution context current tracing thread dump failed, stop it
                         context.stop_tracing_profile(profiler.trace_context)
 
-            need_sleep = (current_loop_start_time + max_sleep_period) - self.current_milli_time()
+            need_sleep = (current_loop_start_time + max_sleep_period) - current_milli_time()
             if not need_sleep > 0:
                 need_sleep = max_sleep_period
 

@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from skywalking import agent, config
 from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking import Component, agent, config
 from skywalking.agent import isfull

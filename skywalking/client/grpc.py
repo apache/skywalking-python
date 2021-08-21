@@ -23,8 +23,6 @@ from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, Pro
 from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
-from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery
-from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService, \
@@ -90,7 +88,7 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
         command_service.receive_command(commands)
 
     def send(self, generator):
-        self.profile_stub.collectSnapshot(generator, timeout=config.GRPC_TIMEOUT)
+        self.profile_stub.collectSnapshot(generator)
 
     def finish(self, task: ProfileTask):
         finish_report = ProfileTaskFinishReport(

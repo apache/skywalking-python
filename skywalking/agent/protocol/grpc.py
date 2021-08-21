@@ -17,7 +17,7 @@
 
 import logging
 import traceback
-from queue import Queue, Empty, Full
+from queue import Queue, Empty
 from time import time
 
 import grpc
@@ -170,20 +170,20 @@ class GrpcProtocol(Protocol):
         except grpc.RpcError:
             self.on_error()
 
-    # TODO
     def send_snapshot(self, queue: Queue, block: bool = True):
         start = time()
-        snapshot = None
 
         def generator():
-            nonlocal snapshot
-
             while True:
                 try:
-                    timeout = max(0, config.QUEUE_TIMEOUT - int(time() - start))  # type: int
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
                     snapshot = queue.get(block=block, timeout=timeout)  # type: TracingThreadSnapshot
                 except Empty:
                     return
+
+                queue.task_done()
 
                 transform_snapshot = ThreadSnapshot(
                     taskId=str(snapshot.task_id),
@@ -194,15 +194,8 @@ class GrpcProtocol(Protocol):
                 )
 
                 yield transform_snapshot
-                queue.task_done()
 
         try:
             self.profile_channel.send(generator())
         except grpc.RpcError:
             self.on_error()
-
-            if snapshot:
-                try:
-                    queue.put(snapshot, block=False)
-                except Full:
-                    pass
