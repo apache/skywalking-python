@@ -16,6 +16,7 @@
 #
 
 from queue import Queue
+from typing import Tuple
 from skywalking.loggings import logger
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_task import ProfileTask
@@ -96,9 +97,9 @@ class ProfileTaskExecutionService:
             self._last_command_create_time = task.create_time
 
         # check profile task object
-        result = self._check_profile_task(task)
-        if not result.success:
-            logger.warning("check command error, cannot process this profile task. reason: %s", result.error_reason)
+        success, error_reason = self._check_profile_task(task)
+        if not success:
+            logger.warning("check command error, cannot process this profile task. reason: %s", error_reason)
             return
 
         # add task to list
@@ -149,7 +150,7 @@ class ProfileTaskExecutionService:
                 return
 
             need_stop.stop_profiling()
-            logger.debug("profile task [%s] for endpoint [%s] stoped", need_stop.task.task_id,
+            logger.debug("profile task [%s] for endpoint [%s] stopped", need_stop.task.task_id,
                          need_stop.task.first_span_op_name)
 
             self.remove_from_profile_task_list(need_stop.task)
@@ -157,39 +158,34 @@ class ProfileTaskExecutionService:
             # notify profiling task has finished
             agent.notify_profile_finish(need_stop.task)
 
-    class CheckResult:
-        def __init__(self, success: bool, error_reason: str):
-            self.success = success  # type: bool
-            self.error_reason = error_reason  # type: str
-
-    def _check_profile_task(self, task: ProfileTask) -> CheckResult:
+    def _check_profile_task(self, task: ProfileTask) -> Tuple[bool, str]:
         try:
             # endpoint name
             if len(task.first_span_op_name) == 0:
-                return self.CheckResult(False, "endpoint name [{}] error, "
-                                               "should be str and not empty".format(task.first_span_op_name))
+                return (False, "endpoint name [{}] error, "
+                               "should be str and not empty".format(task.first_span_op_name))
             # duration
             if task.duration < ProfileConstants.TASK_DURATION_MIN_MINUTE:
-                return self.CheckResult(False, "monitor duration must greater"
-                                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MIN_MINUTE))
+                return (False, "monitor duration must greater"
+                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MIN_MINUTE))
             if task.duration > ProfileConstants.TASK_DURATION_MAX_MINUTE:
-                return self.CheckResult(False, "monitor duration must less"
-                                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MAX_MINUTE))
+                return (False, "monitor duration must less"
+                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MAX_MINUTE))
             # min duration threshold
             if task.min_duration_threshold < 0:
-                return self.CheckResult(False, "min duration threshold must greater than or equals zero")
+                return False, "min duration threshold must greater than or equals zero"
 
             # dump period
             if task.thread_dump_period < ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS:
-                return self.CheckResult(False, "dump period must be greater than or equals to {}"
-                                               " milliseconds".format(ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS))
+                return (False, "dump period must be greater than or equals to {}"
+                               " milliseconds".format(ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS))
 
             # max sampling count
             if task.max_sampling_count <= 0:
-                return self.CheckResult(False, "max sampling count must greater than zero")
+                return False, "max sampling count must greater than zero"
             if task.max_sampling_count >= ProfileConstants.TASK_MAX_SAMPLING_COUNT:
-                return self.CheckResult(False, "max sampling count must less"
-                                               " than {}".format(ProfileConstants.TASK_MAX_SAMPLING_COUNT))
+                return (False, "max sampling count must less"
+                               " than {}".format(ProfileConstants.TASK_MAX_SAMPLING_COUNT))
 
             # check task queue
             task_finish_time = self._cal_profile_task_finish_time(task)
@@ -199,14 +195,14 @@ class ProfileTaskExecutionService:
                 for profile_task in self._profile_task_list.queue:  # type: ProfileTask
                     # if the end time of the task to be added is during the execution of any data, means is a error data
                     if task.start_time <= task_finish_time <= self._cal_profile_task_finish_time(profile_task):
-                        return self.CheckResult(False, "there already have processing task in time range, "
-                                                       "could not add a new task again. processing task monitor "
-                                                       "endpoint name: {}".format(profile_task.first_span_op_name))
+                        return (False, "there already have processing task in time range, "
+                                       "could not add a new task again. processing task monitor "
+                                       "endpoint name: {}".format(profile_task.first_span_op_name))
 
-            return self.CheckResult(True, "")
+            return True, ""
 
         except TypeError:
-            return self.CheckResult(False, "ProfileTask attributes has type error")
+            return False, "ProfileTask attributes has type error"
 
     def _cal_profile_task_finish_time(self, task: ProfileTask) -> int:
         return task.start_time + task.duration * self.MINUTE_TO_MILLIS

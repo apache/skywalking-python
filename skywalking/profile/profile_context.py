@@ -75,7 +75,7 @@ class ProfileTaskExecutionContext:
 
         # try to occupy slot
         if not self._current_profiling_cnt.compare_and_set(using_slot_cnt,
-                                                           using_slot_cnt+1):
+                                                           using_slot_cnt + 1):
             return ProfileStatusReference.create_with_none()
 
         thread_profiler = ThreadProfiler(trace_context=trace_context,
@@ -157,7 +157,7 @@ class ProfileThread:
                 need_sleep = max_sleep_period
 
             # convert to float second
-            time.sleep(need_sleep/1000)
+            time.sleep(need_sleep / 1000)
 
 
 class ThreadProfiler:
