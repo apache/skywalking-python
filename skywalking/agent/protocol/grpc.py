@@ -24,6 +24,7 @@ import grpc
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.protocol.logging.Logging_pb2 import LogData
+from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
 
 from skywalking import config
 from skywalking.agent import Protocol
@@ -32,6 +33,8 @@ from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegment
     GrpcProfileTaskChannelService, GrpcLogDataReportService
 from skywalking.loggings import logger
 from skywalking.trace.segment import Segment
+from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.profile.profile_task import ProfileTask
 
 
 class GrpcProtocol(Protocol):
@@ -52,7 +55,7 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
         self.service_management = GrpcServiceManagementClient(self.channel)
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
-        self.profile_query = GrpcProfileTaskChannelService(self.channel)
+        self.profile_channel = GrpcProfileTaskChannelService(self.channel)
         self.log_reporter = GrpcLogDataReportService(self.channel)
 
     def _cb(self, state):
@@ -61,7 +64,10 @@ class GrpcProtocol(Protocol):
 
     def query_profile_commands(self):
         logger.debug("query profile commands")
-        self.profile_query.do_query()
+        self.profile_channel.do_query()
+
+    def notify_profile_task_finish(self, task: ProfileTask):
+        self.profile_channel.finish(task)
 
     def heartbeat(self):
         try:
@@ -161,5 +167,35 @@ class GrpcProtocol(Protocol):
 
         try:
             self.log_reporter.report(generator())
+        except grpc.RpcError:
+            self.on_error()
+
+    def send_snapshot(self, queue: Queue, block: bool = True):
+        start = time()
+
+        def generator():
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
+                    if timeout <= 0:
+                        return
+                    snapshot = queue.get(block=block, timeout=timeout)  # type: TracingThreadSnapshot
+                except Empty:
+                    return
+
+                queue.task_done()
+
+                transform_snapshot = ThreadSnapshot(
+                    taskId=str(snapshot.task_id),
+                    traceSegmentId=str(snapshot.trace_segment_id),
+                    time=int(snapshot.time),
+                    sequence=int(snapshot.sequence),
+                    stack=ThreadStack(codeSignatures=snapshot.stack_list)
+                )
+
+                yield transform_snapshot
+
+        try:
+            self.profile_channel.send(generator())
         except grpc.RpcError:
             self.on_error()

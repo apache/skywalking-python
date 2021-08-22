@@ -15,34 +15,36 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+from enum import Enum
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
+class ProfileStatus(Enum):
+    NONE = 0
+    PENDING = 1
+    PROFILING = 2
+    STOPPED = 3
 
-    def fork_after_in_parent(self):
-        pass
 
-    def fork_after_in_child(self):
-        pass
+class ProfileStatusReference:
+    def __init__(self, status: ProfileStatus):
+        self.status = status
 
-    def heartbeat(self):
-        raise NotImplementedError()
+    @staticmethod
+    def create_with_none():
+        return ProfileStatusReference(ProfileStatus.NONE)
 
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
+    @staticmethod
+    def create_with_pending():
+        return ProfileStatusReference(ProfileStatus.PENDING)
 
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
+    def get(self) -> ProfileStatus:
+        return self.status
 
-    def query_profile_commands(self):
-        pass
+    def update_status(self, update: ProfileStatus):
+        self.status = update
 
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
+    def is_being_watched(self):
+        return self.status is not ProfileStatus.NONE
 
-    def notify_profile_task_finish(self, task):
-        pass
+    def is_profiling(self):
+        return self.status is ProfileStatus.PROFILING

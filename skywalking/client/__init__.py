@@ -37,3 +37,6 @@ class LogDataReportService(object):
 class ProfileTaskChannelService(object):
     def do_query(self):
         raise NotImplementedError()
+
+    def send(self, generator):
+        raise NotImplementedError()
