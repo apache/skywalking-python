@@ -15,6 +15,14 @@
 # limitations under the License.
 #
 
-from skywalking.profile.profile_task_execution_service import ProfileTaskExecutionService
+profile_task_execution_service = None
 
-profile_task_execution_service = ProfileTaskExecutionService()
+
+def init():
+    from skywalking.profile.profile_service import ProfileTaskExecutionService
+
+    global profile_task_execution_service
+    if profile_task_execution_service:
+        return
+
+    profile_task_execution_service = ProfileTaskExecutionService()

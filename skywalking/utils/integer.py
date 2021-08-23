@@ -15,34 +15,20 @@
 # limitations under the License.
 #
 
-from abc import ABC
-from queue import Queue
+from skywalking.utils.atomic_ref import AtomicRef
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
+class AtomicInteger(AtomicRef):
+    def __init__(self, var: int):
+        super().__init__(var)
 
-    def fork_after_in_parent(self):
-        pass
+    def add_and_get(self, delta: int):
+        """
+        Atomically adds the given value to the current value.
 
-    def fork_after_in_child(self):
-        pass
-
-    def heartbeat(self):
-        raise NotImplementedError()
-
-    def report(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def report_log(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
-
-    def query_profile_commands(self):
-        pass
-
-    def send_snapshot(self, queue: Queue, block: bool = True):
-        pass
-
-    def notify_profile_task_finish(self, task):
-        pass
+        :param delta: the value to add
+        :return: the updated value
+        """
+        with self._lock:
+            self._var += delta
+            return self._var

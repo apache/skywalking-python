@@ -30,38 +30,38 @@ from skywalking.loggings import logger
 class CommandService:
 
     def __init__(self):
-        self.__commands = queue.Queue()  # type: queue.Queue
+        self._commands = queue.Queue()  # type: queue.Queue
         # don't execute same command twice
-        self.__command_serial_number_cache = CommandSerialNumberCache()
+        self._command_serial_number_cache = CommandSerialNumberCache()
 
     def dispatch(self):
         while True:
             # block until a command is available
-            command = self.__commands.get()  # type: BaseCommand
+            command = self._commands.get()  # type: BaseCommand
             if not self.__is_command_executed(command):
                 command_executor_service.execute(command)
-                self.__command_serial_number_cache.add(command.serial_number)
+                self._command_serial_number_cache.add(command.serial_number)
 
     def __is_command_executed(self, command: BaseCommand):
-        return self.__command_serial_number_cache.contains(command.serial_number)
+        return self._command_serial_number_cache.contains(command.serial_number)
 
     def receive_command(self, commands: Commands):
         for command in commands.commands:
             try:
                 base_command = CommandDeserializer.deserialize(command)
-                logger.debug("Received command [{%s} {%s}]", base_command.command, base_command.serial_number)
+                logger.debug("received command [{%s} {%s}]", base_command.command, base_command.serial_number)
 
                 if self.__is_command_executed(base_command):
-                    logger.warning("Command[{%s}] is executed, ignored.", base_command.command)
+                    logger.warning("command[{%s}] is executed, ignored.", base_command.command)
                     continue
 
                 try:
-                    self.__commands.put(base_command)
+                    self._commands.put(base_command)
                 except queue.Full:
-                    logger.warning("Command[{%s}, {%s}] cannot add to command list. because the command list is full.",
+                    logger.warning("command[{%s}, {%s}] cannot add to command list. because the command list is full.",
                                    base_command.command, base_command.serial_number)
             except UnsupportedCommandException as e:
-                logger.warning("Received unsupported command[{%s}].", e.command.command)
+                logger.warning("received unsupported command[{%s}].", e.command.command)
 
 
 class CommandSerialNumberCache:

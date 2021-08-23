@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking import Component, agent, config
 from skywalking.agent import isfull
 from skywalking.trace import ID
@@ -23,6 +24,8 @@ from skywalking.trace.segment import Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
+from skywalking.utils.time import current_milli_time
+from skywalking import profile
 
 
 try:  # attempt to use async-local instead of thread-local context and spans
@@ -75,6 +78,8 @@ class SpanContext(object):
         self._sid = Counter()
         self._correlation = {}  # type: dict
         self._nspans = 0
+        self.profile_status = None  # type: ProfileStatusReference
+        self.create_time = current_milli_time()
 
     def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
         if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
@@ -106,7 +111,17 @@ class SpanContext(object):
         spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
+        # start profiling if profile_context is set
+        if self.profile_status is None:
+            self.profile_status = profile.profile_task_execution_service.add_profiling(self,
+                                                                                       self.segment.segment_id,
+                                                                                       op)
+
         if parent is not None and parent.kind.is_entry and inherit == parent.component:
+            # Span's operation name could be override, recheck here
+            # if the op name now is being profiling, start profile it here
+            self.profiling_recheck(parent, op)
+
             span = parent
             span.op = op
         else:
@@ -149,6 +164,12 @@ class SpanContext(object):
             span.inherit = inherit
 
         return span
+
+    def profiling_recheck(self, span: Span, op_name: str):
+        # only check first span, e.g, first opname is correct.
+        if span.sid != 0:
+            return
+        profile.profile_task_execution_service.profiling_recheck(self, self.segment.segment_id, op_name)
 
     def start(self, span: Span):
         self._nspans += 1
