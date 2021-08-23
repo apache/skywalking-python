@@ -37,7 +37,7 @@ def install():
     log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
 
     def _sw_handle(self, record):
-        if record.name == "skywalking":  # Ignore SkyWalking internal logger
+        if record.name in ["skywalking", "skywalking-cli"]:  # Ignore SkyWalking internal loggers
             return _handle(self, record)
 
         if record.levelno < log_reporter_level:
