@@ -51,7 +51,7 @@ def execute(command: List[str]) -> None:
 
     # Used in sitecustomize to compare command's Python installation with CLI
     # If not match, need to stop agent from loading, and kill the process
-    os.environ['SW_PYTHON_PREFIX'] = sys.prefix
+    os.environ['SW_PYTHON_PREFIX'] = os.path.realpath(os.path.normpath(sys.prefix))
     os.environ['SW_PYTHON_VERSION'] = platform.python_version()
 
     # Pass down the logger debug setting to the replaced process, need a new logger there

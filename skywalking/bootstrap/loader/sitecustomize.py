@@ -108,13 +108,14 @@ cli_python_version = os.environ.get('SW_PYTHON_VERSION')
 cli_python_prefix = os.environ.get('SW_PYTHON_PREFIX')
 
 version_match = cli_python_version == platform.python_version()
-prefix_match = cli_python_prefix == sys.prefix
+prefix_match = cli_python_prefix == os.path.realpath(os.path.normpath(sys.prefix))
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
         "\nPython used by sw-python CLI - v{} at {}\n"
         "Python used by your actual program - v{} at {}".format(
-            cli_python_version, cli_python_prefix, platform.python_version(), sys.prefix
+            cli_python_version, cli_python_prefix, platform.python_version(),
+            os.path.realpath(os.path.normpath(sys.prefix))
         )
     )
     _sw_loader_logger.error("The sw-python CLI was instructed to run a program "
