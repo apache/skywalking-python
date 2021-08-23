@@ -34,19 +34,20 @@ def execute(command: List[str]) -> None:
 
     cli_logger.debug("Adding sitecustomize.py to PYTHONPATH")
 
-    from skywalking.bootstrap.loader import __file__ as loader_path
+    from skywalking.bootstrap.loader import __file__ as loader_dir
 
-    loader_path = os.path.dirname(loader_path)
+    loader_path = os.path.dirname(loader_dir)
+    new_path = ""
 
     python_path = os.environ.get('PYTHONPATH')
     if python_path:  # If there is already a different PYTHONPATH, PREPEND to it as we must get loaded first.
         partitioned = python_path.split(os.path.pathsep)
         if loader_path not in partitioned:  # check if we are already there
-            loader_path = os.path.pathsep.join([loader_path, python_path])  # type: str
+            new_path = os.path.pathsep.join([loader_path, python_path])  # type: str
 
     # When constructing sys.path PYTHONPATH is always
     # before other paths and after interpreter invoker path, which is here or none
-    os.environ['PYTHONPATH'] = loader_path
+    os.environ['PYTHONPATH'] = new_path if new_path else loader_path
     cli_logger.debug("Updated PYTHONPATH - {}".format(os.environ['PYTHONPATH']))
 
     # Used in sitecustomize to compare command's Python installation with CLI

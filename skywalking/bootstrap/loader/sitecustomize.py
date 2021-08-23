@@ -70,8 +70,8 @@ if sys.prefix != sys.base_prefix:
 # just to be safe, remove loader thoroughly from sys.path and also sys.modules
 
 cleared_path = [p for p in sys.path if p != os.path.dirname(__file__)]
-sys.path = cleared_path  # at this stage any user added pth still exists
-loaded = sys.modules.pop('sitecustomize', None)  # Remove sitecustomize from loaded
+sys.path = cleared_path  # remove this version from path
+loaded = sys.modules.pop('sitecustomize', None)  # pop sitecustomize from loaded
 
 # now try to find the original sitecustomize provided in user env
 try:
@@ -79,8 +79,8 @@ try:
     _sw_loader_logger.debug("Found user sitecustomize file {}, imported".format(loaded))
 except ImportError:  # ModuleNotFoundError
     _sw_loader_logger.debug("Original sitecustomize module not found, skipping.")
-finally:
-    sys.modules.update(sitecustomize=loaded)
+finally:  # surprise the import error by adding loaded back
+    sys.modules['sitecustomize'] = loaded
 
 
 # This sitecustomize by default doesn't remove the loader dir from PYTHONPATH,
