@@ -22,9 +22,8 @@ import platform
 import sys
 from typing import List
 
-from skywalking.bootstrap import get_cli_logger
-
-cli_logger = get_cli_logger()
+from skywalking.bootstrap import cli_logger
+from skywalking.bootstrap.cli import SWRunnerFailure
 
 
 def execute(command: List[str]) -> None:
@@ -62,4 +61,4 @@ def execute(command: List[str]) -> None:
         cli_logger.debug('New process starting with file - `{}` args - `{}`'.format(command[0], command))
         os.execvp(command[0], command)
     except OSError:
-        raise
+        raise SWRunnerFailure

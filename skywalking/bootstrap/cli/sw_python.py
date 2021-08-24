@@ -19,15 +19,13 @@
 import argparse
 import logging
 
-from skywalking.bootstrap import __version__, get_cli_logger
+from skywalking.bootstrap import __version__, cli_logger
 from skywalking.bootstrap.cli import SWRunnerFailure
 from skywalking.bootstrap.cli.utility import runner
 
 _options = {
     'run': runner,
 }
-
-cli_logger = get_cli_logger()
 
 
 def start() -> None:
@@ -63,8 +61,9 @@ def start() -> None:
     try:
         dispatch(args)
     except SWRunnerFailure:
-        cli_logger.debug('Failed to run the given user application command `{}`'.format(' '.join(args.command)))
-        pass
+        cli_logger.debug('Failed to run the given user application command `{}`, please make sure it is valid'.
+                         format(' '.join(args.command)))
+        return
 
 
 def dispatch(args: argparse.Namespace) -> None:

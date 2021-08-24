@@ -35,3 +35,6 @@ def get_cli_logger():
     logger.propagate = False
 
     return logger
+
+
+cli_logger = get_cli_logger()
