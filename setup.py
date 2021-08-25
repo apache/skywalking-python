@@ -70,5 +70,10 @@ setup(
         "Programming Language :: Python :: 3.9",
 
         "Topic :: Software Development",
-    ]
+    ],
+    entry_points={
+        "console_scripts": [
+            'sw-python = skywalking.bootstrap.cli.sw_python:start'
+        ]
+    },
 )

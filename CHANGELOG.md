@@ -4,6 +4,7 @@
 
 - Feature:
     - Support collecting and reporting logs to backend (#147)
+    - Add a new `sw-python` CLI that enables agent non-intrusive integration (#156)
 
 - New plugins:
     - Falcon Plugin (#146)

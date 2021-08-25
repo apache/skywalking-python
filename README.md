@@ -49,6 +49,17 @@ in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTT
 you should configure `collector_address` (or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`)
 according to the protocol you want.
 
+### Non-intrusive integration (CLI)
+
+SkyWalking Python agent supports running and attaching to your awesome applications without adding any code to your
+project. The package installation comes with a new command-line script named `sw-python`, which you can use to run your Python-based
+applications and programs in the following manner `sw-python run python abc.py` or `sw-python run program arg0 arg1` 
+
+Please do read the [CLI Guide](docs/CLI.md) for a detailed introduction to this new feature before using in production.
+
+You can always fall back to our traditional way of integration as introduced below, 
+which is by importing SkyWalking into your project and starting the agent.
+
 ### Report data via gRPC protocol (Default)
 
 For example, if you want to use gRPC protocol to report data, configure `collector_address`
@@ -97,6 +108,7 @@ Alternatively, you can also pass the configurations via environment variables (s
 All supported environment variables can be found [here](docs/EnvVars.md)
 
 ## Report logs with Python Agent
+
 The Python agent is capable of reporting collected logs to the backend(SkyWalking OAP), enabling Log & Trace Correlation.
 
 Please refer to the [Log Reporter Doc](docs/LogReporter.md) for a detailed guide.

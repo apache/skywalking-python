@@ -17,10 +17,9 @@
 
 import logging
 
+from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
-
-from skywalking import config, agent
 from skywalking.trace.context import get_context
 from skywalking.utils.filter import sw_traceback, sw_filter
 
@@ -37,7 +36,7 @@ def install():
     log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
 
     def _sw_handle(self, record):
-        if record.name == "skywalking":  # Ignore SkyWalking internal logger
+        if record.name in ["skywalking", "skywalking-cli", "skywalking-loader"]:  # Ignore SkyWalking internal loggers
             return _handle(self, record)
 
         if record.levelno < log_reporter_level:
