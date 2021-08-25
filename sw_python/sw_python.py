@@ -16,11 +16,12 @@
 #
 
 """ Just an entry point script
-python -m sw-python run command
+python -m sw_python -d run command
 or just use the setup console script
 sw-python run command after setup install
 """
 from skywalking.bootstrap.cli import sw_python
 
-if __name__ == '__main__':
+
+def start():
     sw_python.start()

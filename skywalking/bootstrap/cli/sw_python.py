@@ -19,7 +19,7 @@
 import argparse
 import logging
 
-from skywalking.bootstrap import __version__, cli_logger
+from skywalking.bootstrap import cli_logger
 from skywalking.bootstrap.cli import SWRunnerFailure
 from skywalking.bootstrap.cli.utility import runner
 
@@ -69,10 +69,10 @@ def start() -> None:
 
 def dispatch(args: argparse.Namespace) -> None:
     """ Dispatches parsed args to a worker """
-    cli_command, actual_command = args.option, args.command
+    cli_option, actual_command = args.option, args.command
 
-    cli_logger.debug("SkyWalking Python agent version {} with CLI command '{}' and argument {}".format
-                     (__version__, cli_command, actual_command))
+    cli_logger.debug("SkyWalking Python agent with CLI option '{}' and command {}".format
+                     (cli_option, actual_command))
 
     # Dispatch actual user application command to runner
-    _options[cli_command].execute(actual_command)
+    _options[cli_option].execute(actual_command)
