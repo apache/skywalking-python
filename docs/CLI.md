@@ -14,10 +14,10 @@ just like the [SkyWalking Java Agent](https://github.com/apache/skywalking).
 
 ## Usage
 
-Upon successful installation of the SkyWalking Python agent via pip, 
+Upon successful [installation of the SkyWalking Python agent via pip](../README.md#install),
 a command-line script `sw-python` is installed in your environment(virtual env preferred).
 
-### The run option
+### The `run` option
 
 Currently, the `sw-python` CLI provides a `run` option, which you can use to execute your applications
 (either begins with the `python` command or Python-based programs like `gunicorn` on your path) 
