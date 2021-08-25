@@ -16,7 +16,7 @@
 #
 
 """ Just an entry point script
-python -m cli run command
+python -m sw-python run command
 or just use the setup console script
 sw-python run command after setup install
 """
