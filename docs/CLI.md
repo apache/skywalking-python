@@ -1,6 +1,6 @@
 # SkyWalking Python Agent Command-Line Interface(CLI)
 
-You would at least need to add the following lines to your applications in previous releases to get the agent attached and running.  
+In earlier releases than 0.7.0, you would at least need to add the following lines to your applications to get the agent attached and running.  
 
 ```python
 from skywalking import agent
