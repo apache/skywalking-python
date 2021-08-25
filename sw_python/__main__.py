@@ -18,4 +18,3 @@
 from .sw_python import start
 
 start()
-
