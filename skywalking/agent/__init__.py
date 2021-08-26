@@ -42,53 +42,73 @@ __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thr
 
 
 def __heartbeat():
+    wait = base = 30
+
     while not __finished.is_set():
         try:
             __protocol.heartbeat()
+            wait = base  # reset to base wait time on success
         except Exception as exc:
             logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)  # double wait time with each consecutive error up to a maximum
 
-        __finished.wait(30)
+        __finished.wait(wait)
 
 
 def __report():
+    wait = base = 0
+
     while not __finished.is_set():
         try:
             __protocol.report(__queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+            wait = base
         except Exception as exc:
             logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)
 
-        __finished.wait(0)
+        __finished.wait(wait)
 
 
 def __report_log():
+    wait = base = 0
+
     while not __finished.is_set():
         try:
             __protocol.report_log(__log_queue)
+            wait = base
         except Exception as exc:
             logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)
 
-        __finished.wait(0)
+        __finished.wait(wait)
 
 
 def __send_profile_snapshot():
+    wait = base = 0.5
+
     while not __finished.is_set():
         try:
             __protocol.send_snapshot(__snapshot_queue)
+            wait = base
         except Exception as exc:
             logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)
 
-        __finished.wait(0.5)
+        __finished.wait(wait)
 
 
 def __query_profile_command():
+    wait = base = config.get_profile_task_interval
+
     while not __finished.is_set():
         try:
             __protocol.query_profile_commands()
+            wait = base
         except Exception as exc:
             logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)
 
-        __finished.wait(config.get_profile_task_interval)
+        __finished.wait(wait)
 
 
 def __command_dispatch():
