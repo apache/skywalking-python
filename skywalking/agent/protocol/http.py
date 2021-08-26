@@ -44,14 +44,20 @@ class HttpProtocol(Protocol):
         self.service_management.send_heart_beat()
 
     def report(self, queue: Queue, block: bool = True):
-        start = time()
+        start = None
 
         def generator():
+            nonlocal start
+
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
-                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
-                        return
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
                     segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
@@ -68,14 +74,20 @@ class HttpProtocol(Protocol):
             pass
 
     def report_log(self, queue: Queue, block: bool = True):
-        start = time()
+        start = None
 
         def generator():
+            nonlocal start
+
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
-                    if timeout <= 0:
-                        return
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
                     log_data = queue.get(block=block, timeout=timeout)  # type: LogData
                 except Empty:
                     return

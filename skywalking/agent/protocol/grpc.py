@@ -79,6 +79,7 @@ class GrpcProtocol(Protocol):
 
         except grpc.RpcError:
             self.on_error()
+            raise
 
     def on_error(self):
         traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
@@ -86,14 +87,20 @@ class GrpcProtocol(Protocol):
         self.channel.subscribe(self._cb, try_to_connect=True)
 
     def report(self, queue: Queue, block: bool = True):
-        start = time()
+        start = None
 
         def generator():
+            nonlocal start
+
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
-                    if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
-                        return
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
                     segment = queue.get(block=block, timeout=timeout)  # type: Segment
                 except Empty:
                     return
@@ -145,16 +152,23 @@ class GrpcProtocol(Protocol):
             self.traces_reporter.report(generator())
         except grpc.RpcError:
             self.on_error()
+            raise  # reraise so that incremental reconnect wait can process
 
     def report_log(self, queue: Queue, block: bool = True):
-        start = time()
+        start = None
 
         def generator():
+            nonlocal start
+
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
-                    if timeout <= 0:
-                        return
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
                     log_data = queue.get(block=block, timeout=timeout)  # type: LogData
                 except Empty:
                     return
@@ -169,16 +183,23 @@ class GrpcProtocol(Protocol):
             self.log_reporter.report(generator())
         except grpc.RpcError:
             self.on_error()
+            raise
 
     def send_snapshot(self, queue: Queue, block: bool = True):
-        start = time()
+        start = None
 
         def generator():
+            nonlocal start
+
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT - int(time() - start)  # type: int
-                    if timeout <= 0:
-                        return
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
                     snapshot = queue.get(block=block, timeout=timeout)  # type: TracingThreadSnapshot
                 except Empty:
                     return
@@ -199,3 +220,4 @@ class GrpcProtocol(Protocol):
             self.profile_channel.send(generator())
         except grpc.RpcError:
             self.on_error()
+            raise

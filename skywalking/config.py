@@ -74,7 +74,6 @@ profile_duration = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')  # type: 
 profile_dump_max_stack_depth = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')  # type: int
 profile_snapshot_transport_buffer_size = int(os.getenv('SW_AGENT_PROFILE_SNAPSHOT_TRANSPORT_BUFFER_SIZE') or '50')
 
-# NOTE - Log reporting requires a separate channel, will merge in the future.
 log_reporter_active = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
                               os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True' else False  # type: bool
 log_reporter_max_buffer_size = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')  # type: int
