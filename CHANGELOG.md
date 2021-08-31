@@ -4,13 +4,32 @@
 
 - Feature:
     - Support collecting and reporting logs to backend (#147)
+    - Support profiling Python method level performance (#127
     - Add a new `sw-python` CLI that enables agent non-intrusive integration (#156)
+    - Add exponential reconnection backoff strategy when OAP is down (#157)
+    - Suport ignoring traces by http method (#143)
+    - `NoopSpan` on queue full, propagation downstream (#141)
+    - Support agent namespace. (#126)
+    - Added `grpc.max_connection_age_grace_ms` (#130)
+    - Support secure connection option for GRPC and HTTP (#134)
 
-- New plugins:
-    - Falcon Plugin (#146)
+- Plugins:
+    - Add Falcon Plugin (#146)
+    - Update `sw_pymongo.py` to be compatible with cluster mode (#150)
+    - Add Python celery plugin (#125)
+    - Support tornado5+ and tornado6+ (#119)
+    - Add psycopg plugin (#122)
 
 - Fixes:
     - Now properly removes HTTP basic auth credentials from segments and logs (#152)
+    - Remove HTTP basic auth credentials from log, stacktrace, segment (#152)
+    - Fix `@trace` decorator not work (#136)
+    - Fix grpc disconnect, add `SW_AGENT_MAX_BUFFER_SIZE` to control buffer queue size (#138)
+
+- Others:
+    - chore: bump up `requests` version to avoid license issue (#142)
+    - fix module wrapt as normal install dependancy (#123)
+    - Explicit component inheritance (#132)
  
 ### 0.6.0
 
