@@ -25,7 +25,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="apache-skywalking",
-    version="0.6.0",
+    version="0.7.0",
     description="Python Agent for Apache SkyWalking",
     long_description=README,
     long_description_content_type="text/markdown",
