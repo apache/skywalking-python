@@ -52,6 +52,12 @@ upload-test: package
 upload: package
 	twine upload dist/*
 
+build-image:
+	$(MAKE) -C docker build
+
+push-image:
+	$(MAKE) -C docker push
+
 clean:
 	rm -rf skywalking/protocol
 	rm -rf apache_skywalking.egg-info dist build

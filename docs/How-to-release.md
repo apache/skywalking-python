@@ -210,13 +210,11 @@ Vote result should follow these:
     Release Notes : https://github.com/apache/skywalking-python/blob/v$VERSION/CHANGELOG.md
 
     Website: http://skywalking.apache.org/
-
+    
     SkyWalking Python Resources:
-- Issue: https://github.com/apache/skywalking/issues
-    - Mailing list: dev@skywalking.apache.org
-    - Documents: https://github.com/apache/skywalking-python/blob/v$VERSION/README.md
+    - Issue: https://github.com/apache/skywalking/issues
+        - Mailing list: dev@skywalking.apache.org
+        - Documents: https://github.com/apache/skywalking-python/blob/v$VERSION/README.md
     
     The Apache SkyWalking Team
-```
-    
-    
+    ```
