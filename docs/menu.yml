@@ -16,18 +16,28 @@
 
 
 catalog:
-  - name: "Python Agent Setup"
-    path: "/en/setup/readme"
-  - name: "Container Environment"
+  - name: "Python Agent Overview"
+    path: "readme"
+  - name: "Agent Setup"
     catalog:
+      - name: "Non-intrusive Setup"
+        path: "/en/setup/cli/CLI"
+      - name: "Intrusive Setup"
+        path: "/en/setup/Intrusive"
       - name: "Setup with Docker image"
-        path: "..docker/README.md"
+        path: "/en/setup/Container"
+      - name: "Environment Variables"
+        path: "/en/setup/EnvVars"
+      - name: "Advanced Features"
+        catalog:
+          - name: "Log Reporter"
+            path: "/en/setup/advanced/LogReporter"
   - name: "Plugins"
     catalog:
-      - name: "Supported middleware, frameworks and libraries"
+      - name: "Supported Libraries"
         path: "/en/setup/Plugins"
-      - name: "Log Reporter"
-        path: "/en/setup/LogReporter"
+  - name: "FAQ"
+    path: "/en/setup/FAQ"
   - name: "Contribution"
     catalog:
       - name: "Python Agent developer Guidance"
@@ -39,4 +49,4 @@ catalog:
       - name: "Python Agent Image Release Guidance"
         path: "/en/contribution/How-to-release-docker"
   - name: "Changelog"
-    path: "https://github.com/apache/skywalking-python/blob/master/CHANGELOG"
+    path: "https://github.com/apache/skywalking-python/blob/master/CHANGELOG.md"

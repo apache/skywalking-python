@@ -39,7 +39,7 @@ pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no ma
 SkyWalking Python agent provides convenient dockerfile and images for easy integration utilizing its auto-bootstrap
 capability. You can build your Python application image based on our agent-enabled Python images and start
 your applications with SkyWalking agent enabled for you. Please refer to our 
-[dockerfile guide](docker/README.md) for further instructions on building and configurations.
+[dockerfile guide](docs/en/setup/Container.md) for further instructions on building and configurations.
 
 ### From Source Codes
 
@@ -62,7 +62,7 @@ SkyWalking Python agent supports running and attaching to your awesome applicati
 project. The package installation comes with a new command-line script named `sw-python`, which you can use to run your Python-based
 applications and programs in the following manner `sw-python run python abc.py` or `sw-python run program arg0 arg1` 
 
-Please do read the [CLI Guide](docs/en/setup/CLI.md) for a detailed introduction to this new feature before using in production.
+Please do read the [CLI Guide](docs/en/setup/cli/CLI.md) for a detailed introduction to this new feature before using in production.
 
 You can always fall back to our traditional way of integration as introduced below, 
 which is by importing SkyWalking into your project and starting the agent.
@@ -118,7 +118,7 @@ All supported environment variables can be found [here](docs/en/setup/EnvVars.md
 
 The Python agent is capable of reporting collected logs to the backend(SkyWalking OAP), enabling Log & Trace Correlation.
 
-Please refer to the [Log Reporter Doc](docs/en/setup/LogReporter.md) for a detailed guide.
+Please refer to the [Log Reporter Doc](docs/en/setup/advanced/LogReporter.md) for a detailed guide.
 
 ## Supported Libraries
 
