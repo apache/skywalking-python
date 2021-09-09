@@ -7,7 +7,7 @@
     - Support profiling Python method level performance (#127
     - Add a new `sw-python` CLI that enables agent non-intrusive integration (#156)
     - Add exponential reconnection backoff strategy when OAP is down (#157)
-    - Suport ignoring traces by http method (#143)
+    - Support ignoring traces by http method (#143)
     - `NoopSpan` on queue full, propagation downstream (#141)
     - Support agent namespace. (#126)
     - Added `grpc.max_connection_age_grace_ms` (#130)
@@ -27,9 +27,10 @@
     - Fix grpc disconnect, add `SW_AGENT_MAX_BUFFER_SIZE` to control buffer queue size (#138)
 
 - Others:
-    - chore: bump up `requests` version to avoid license issue (#142)
-    - fix module wrapt as normal install dependancy (#123)
+    - Chore: bump up `requests` version to avoid license issue (#142)
+    - Fix module wrapt as normal install dependency (#123)
     - Explicit component inheritance (#132)
+    - Provide dockerfile & images for easy integration in containerized scenarios (#159)
  
 ### 0.6.0
 
