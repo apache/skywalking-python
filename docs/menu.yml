@@ -17,10 +17,10 @@
 
 catalog:
   - name: "Python Agent Overview"
-    path: "readme"
+    path: "/readme"
   - name: "Agent Setup"
     catalog:
-      - name: "Non-intrusive Setup"
+      - name: "Non-intrusive Setup(CLI)"
         path: "/en/setup/cli/CLI"
       - name: "Intrusive Setup"
         path: "/en/setup/Intrusive"
