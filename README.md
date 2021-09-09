@@ -43,13 +43,13 @@ your applications with SkyWalking agent enabled for you. Please refer to our
 
 ### From Source Codes
 
-Refer to the [FAQ](docs/FAQ.md#q-how-to-build-from-sources).
+Refer to the [FAQ](docs/en/setup/FAQ.md#q-how-to-build-from-sources).
 
 ## Set up Python Agent
 
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
-> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/FAQ.md#q-how-to-build-from-sources) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
 
 By default, SkyWalking Python agent uses gRPC protocol to report data to SkyWalking backend,
 in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTTP protocol is `12800`,
@@ -62,7 +62,7 @@ SkyWalking Python agent supports running and attaching to your awesome applicati
 project. The package installation comes with a new command-line script named `sw-python`, which you can use to run your Python-based
 applications and programs in the following manner `sw-python run python abc.py` or `sw-python run program arg0 arg1` 
 
-Please do read the [CLI Guide](docs/CLI.md) for a detailed introduction to this new feature before using in production.
+Please do read the [CLI Guide](docs/en/setup/CLI.md) for a detailed introduction to this new feature before using in production.
 
 You can always fall back to our traditional way of integration as introduced below, 
 which is by importing SkyWalking into your project and starting the agent.
@@ -112,17 +112,17 @@ agent.start()
 
 Alternatively, you can also pass the configurations via environment variables (such as `SW_AGENT_NAME`, `SW_AGENT_COLLECTOR_BACKEND_SERVICES`, etc.) so that you don't need to call `config.init`.
 
-All supported environment variables can be found [here](docs/EnvVars.md)
+All supported environment variables can be found [here](docs/en/setup/EnvVars.md)
 
 ## Report logs with Python Agent
 
 The Python agent is capable of reporting collected logs to the backend(SkyWalking OAP), enabling Log & Trace Correlation.
 
-Please refer to the [Log Reporter Doc](docs/LogReporter.md) for a detailed guide.
+Please refer to the [Log Reporter Doc](docs/en/setup/LogReporter.md) for a detailed guide.
 
 ## Supported Libraries
 
-There are some built-in plugins (such as `http.server`, `Flask`, `Django` etc.) that support automatic instrumentation of Python libraries, the complete lists can be found [here](docs/Plugins.md)
+There are some built-in plugins (such as `http.server`, `Flask`, `Django` etc.) that support automatic instrumentation of Python libraries, the complete lists can be found [here](docs/en/setup/Plugins.md)
 
 ## API
 
@@ -206,11 +206,11 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
 
 ## Contributing
 
-Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/Developer.md).
+Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
 
 ## FAQs
 
-Check [the FAQ page](docs/FAQ.md) or add the FAQs there.
+Check [the FAQ page](docs/en/setup/FAQ.md) or add the FAQs there.
 
 ## License
 Apache 2.0

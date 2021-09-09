@@ -14,7 +14,7 @@ just like the [SkyWalking Java Agent](https://github.com/apache/skywalking).
 
 ## Usage
 
-Upon successful [installation of the SkyWalking Python agent via pip](../README.md#install),
+Upon successful [installation of the SkyWalking Python agent via pip](../../../README.md#install),
 a command-line script `sw-python` is installed in your environment(virtual env preferred).
 
 ### The `run` option
@@ -62,7 +62,7 @@ You would normally want to provide additional configurations other than the defa
 #### Through environment variables
 
 The currently supported method is to provide the environment variables listed 
-in [EnvVars Doc](EnvVars.md) as instructed in the [README](../README.md).
+in [EnvVars Doc](EnvVars.md) as instructed in the [README](../../../README.md).
 
 #### Through a sw-config.yaml
 
