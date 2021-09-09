@@ -10,7 +10,6 @@
     - Suport ignoring traces by http method (#143)
     - `NoopSpan` on queue full, propagation downstream (#141)
     - Support agent namespace. (#126)
-    - Added `grpc.max_connection_age_grace_ms` (#130)
     - Support secure connection option for GRPC and HTTP (#134)
 
 - Plugins:
@@ -18,7 +17,6 @@
     - Update `sw_pymongo.py` to be compatible with cluster mode (#150)
     - Add Python celery plugin (#125)
     - Support tornado5+ and tornado6+ (#119)
-    - Add psycopg plugin (#122)
 
 - Fixes:
     - Now properly removes HTTP basic auth credentials from segments and logs (#152)
