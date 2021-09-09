@@ -43,9 +43,9 @@ it should be adopted and bootstrapped automatically through the `sw-python` CLI.
 Provide the following arguments to build your own image from the dockerfile.
 
 ```text
-SW_PYTHON_VERSION # the Python base image version
+BASE_IMAGE # the Python base image to build upon
 SW_PYTHON_AGENT_VERSION # agent version to be pulled from PyPI
-SW_PYTHON_PROTOCOL # protocol - grpc/ http/ kafka
+SW_PYTHON_AGENT_PROTOCOL # agent protocol - grpc/ http/ kafka
 ```
 
 ## License

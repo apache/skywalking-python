@@ -20,11 +20,11 @@ P := grpc http kafka
 
 TARGETS := py3.5 py3.6 py3.7 py3.8 py3.9
 
-py3.5: VERSION = 3.5
-py3.6: VERSION = 3.6
-py3.7: VERSION = 3.7
-py3.8: VERSION = 3.8
-py3.9: VERSION = 3.9
+py3.5: BASE_IMAGE = python:3.5
+py3.6: BASE_IMAGE = python:3.6
+py3.7: BASE_IMAGE = python:3.7
+py3.8: BASE_IMAGE = python:3.8
+py3.9: BASE_IMAGE = python:3.9
 
 PUSH_TARGETS := $(TARGETS:%=push-%)
 
@@ -36,8 +36,8 @@ push: $(PUSH_TARGETS)
 $(TARGETS):
 	for p in $(P); do \
 		$(D) build $(SW_BUILD_ARGS) \
-				--build-arg SW_PYTHON_VERSION=$(VERSION) \
-				--build-arg SW_PTTHON_PROTOCOL=$$p \
+				--build-arg BASE_IMAGE=$(BASE_IMAGE) \
+				--build-arg SW_PYTHON_AGENT_PROTOCOL=$$p \
 				--build-arg SW_PYTHON_AGENT_VERSION=${AGENT_VERSION} \
 				-t apache/skywalking-python:${AGENT_VERSION}-$$p-$@ \
 				. ; \

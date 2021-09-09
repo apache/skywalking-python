@@ -14,13 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG SW_PYTHON_VERSION
+ARG BASE_IMAGE
 
-FROM python:${SW_PYTHON_VERSION}
+FROM ${BASE_IMAGE}
 
-ARG SW_PYTHON_PROTOCOL
+ARG SW_PYTHON_AGENT_PROTOCOL
 ARG SW_PYTHON_AGENT_VERSION
 
-RUN pip install --no-cache-dir "apache-skywalking"[${SW_PYTHON_PROTOCOL}]==${SW_PYTHON_AGENT_VERSION}
+RUN pip install --no-cache-dir "apache-skywalking[${SW_PYTHON_AGENT_PROTOCOL}]==${SW_PYTHON_AGENT_VERSION}"
 
 ENTRYPOINT ["sw-python", "run"]

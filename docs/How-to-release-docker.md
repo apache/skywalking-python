@@ -20,7 +20,7 @@ The `make` command will generate three images(grpc, http, kafka) for each Python
 
 At the root folder -
 ```shell
-source docker/v/<version>.sh
+export AGENT_VERSION=<version>
 
 make build-image
 ```
@@ -29,7 +29,7 @@ Or at the docker folder -
 ```shell
 cd docker
 
-source v/<version>.sh
+export AGENT_VERSION=<version>
 
 make
 ```
@@ -43,8 +43,8 @@ please compose a new script named `<version>.sh` to `docker/v` folder.
 2. Build images from the project root:
     
     ```shell
-    source docker/v/<version>.sh
-    
+    export AGENT_VERSION=<version>
+
     make build-image
     ```
 
