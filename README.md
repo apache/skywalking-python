@@ -34,6 +34,13 @@ pip install "apache-skywalking[kafka]"
 pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no matter what the latest version is
 ```
 
+### From Docker Hub
+
+SkyWalking Python agent provides convenient dockerfile and images for easy integration utilizing its auto-bootstrap
+capability. You can build your Python application image based on our agent-enabled Python images and start
+your applications with SkyWalking agent enabled for you. Please refer to our 
+[dockerfile guide](docker/README.md) for further instructions on building and configurations.
+
 ### From Source Codes
 
 Refer to the [FAQ](docs/FAQ.md#q-how-to-build-from-sources).
