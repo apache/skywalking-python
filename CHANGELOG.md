@@ -19,7 +19,6 @@
     - Support tornado5+ and tornado6+ (#119)
 
 - Fixes:
-    - Now properly removes HTTP basic auth credentials from segments and logs (#152)
     - Remove HTTP basic auth credentials from log, stacktrace, segment (#152)
     - Fix `@trace` decorator not work (#136)
     - Fix grpc disconnect, add `SW_AGENT_MAX_BUFFER_SIZE` to control buffer queue size (#138)
