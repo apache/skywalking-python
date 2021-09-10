@@ -87,6 +87,31 @@ class SpanContext(object):
 
         return None
 
+    def new_span(self, parent: Span, SpanType: type, **kwargs) -> Span:
+        finished = parent and not parent._depth
+        context = SpanContext() if finished else self
+        span = SpanType(context=context,
+                        sid=context._sid.next(),
+                        pid=parent.sid if parent and not finished else -1,
+                        **kwargs)
+
+        # if parent finished and segment was archived before this child starts then we need to refer to parent
+        if finished:
+            carrier = Carrier(
+                trace_id=str(parent.context.segment.related_traces[0]),
+                segment_id=str(parent.context.segment.segment_id),
+                span_id=str(parent.sid),
+                service=config.service_name,
+                service_instance=config.service_instance,
+                endpoint=parent.op,
+                client_address=parent.peer,
+                correlation=parent.context._correlation,
+            )
+
+            Span.extract(span, carrier)
+
+        return span
+
     def new_local_span(self, op: str) -> Span:
         span = self.ignore_check(op, Kind.Local)
         if span is not None:
@@ -95,13 +120,7 @@ class SpanContext(object):
         spans = _spans()
         parent = spans[-1] if spans else None  # type: Span
 
-        return Span(
-            context=self,
-            sid=self._sid.next(),
-            pid=parent.sid if parent else -1,
-            op=op,
-            kind=Kind.Local,
-        )
+        return self.new_span(parent, Span, op=op, kind=Kind.Local)
 
     def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
         span = self.ignore_check(op, Kind.Entry, carrier)
@@ -124,13 +143,9 @@ class SpanContext(object):
 
             span = parent
             span.op = op
+
         else:
-            span = EntrySpan(
-                context=self,
-                sid=self._sid.next(),
-                pid=parent.sid if parent else -1,
-                op=op,
-            )
+            span = self.new_span(parent, EntrySpan, op=op)
 
             if carrier is not None and carrier.is_valid:  # TODO: should this be done irrespective of inheritance?
                 span.extract(carrier=carrier)
@@ -150,15 +165,9 @@ class SpanContext(object):
             span.op = op
             span.peer = peer
             span.component = component
+
         else:
-            span = ExitSpan(
-                context=self,
-                sid=self._sid.next(),
-                pid=parent.sid if parent else -1,
-                op=op,
-                peer=peer,
-                component=component,
-            )
+            span = self.new_span(parent, ExitSpan, op=op, peer=peer, component=component)
 
         if inherit:
             span.inherit = inherit
