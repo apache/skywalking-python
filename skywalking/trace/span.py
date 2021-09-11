@@ -123,6 +123,15 @@ class Span(ABC):
 
         self.context.segment.relate(ID(carrier.trace_id))
         self.context._correlation = carrier.correlation_carrier.correlation
+
+        if not carrier.is_valid:
+            return self
+
+        ref = SegmentRef(carrier=carrier)
+
+        if ref not in self.refs:
+            self.refs.append(ref)
+
         return self
 
     def __enter__(self):
@@ -170,19 +179,6 @@ class EntrySpan(Span):
         self.layer = Layer.Unknown
         self.logs = []
         self.tags = defaultdict(list)
-
-    def extract(self, carrier: 'Carrier') -> 'Span':
-        Span.extract(self, carrier)
-
-        if carrier is None or not carrier.is_valid:
-            return self
-
-        ref = SegmentRef(carrier=carrier)
-
-        if ref not in self.refs:
-            self.refs.append(ref)
-
-        return self
 
 
 @tostring
