@@ -1,4 +1,7 @@
-# Instrusive setup
+# Legacy Setup
+
+You can always fall back to our traditional way of integration as introduced below, 
+which is by importing SkyWalking into your project and starting the agent.
 
 ## Set up Python Agent
 
@@ -11,16 +14,6 @@ in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTT
 you should configure `collector_address` (or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`)
 according to the protocol you want.
 
-### Non-intrusive integration (CLI)
-
-SkyWalking Python agent supports running and attaching to your awesome applications without adding any code to your
-project. The package installation comes with a new command-line script named `sw-python`, which you can use to run your Python-based
-applications and programs in the following manner `sw-python run python abc.py` or `sw-python run program arg0 arg1` 
-
-Please do read the [CLI Guide](docs/en/setup/cli/CLI.md) for a detailed introduction to this new feature before using in production.
-
-You can always fall back to our traditional way of integration as introduced below, 
-which is by importing SkyWalking into your project and starting the agent.
 
 ### Report data via gRPC protocol (Default)
 
@@ -32,6 +25,7 @@ such as `127.0.0.1:11800`:
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:11800', service_name='your awesome service')
+
 agent.start()
 ```
 
@@ -47,6 +41,7 @@ such as `127.0.0.1:12800`:
 from skywalking import agent, config
 
 config.init(collector_address='127.0.0.1:12800', service_name='your awesome service')
+
 agent.start()
 ```
 
@@ -62,9 +57,10 @@ such as `127.0.0.1:9200`:
 from skywalking import agent, config
 
 config.init(kafka_bootstrap_servers='127.0.0.1:9200', service_name='your awesome service')
+
 agent.start()
 ```
 
 Alternatively, you can also pass the configurations via environment variables (such as `SW_AGENT_NAME`, `SW_AGENT_COLLECTOR_BACKEND_SERVICES`, etc.) so that you don't need to call `config.init`.
 
-All supported environment variables can be found [here](docs/en/setup/EnvVars.md)
+All supported environment variables can be found [here](EnvVars.md)

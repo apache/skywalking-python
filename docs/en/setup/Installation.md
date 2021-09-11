@@ -2,6 +2,8 @@
 
 You can install the SkyWalking Python agent via various ways.
 
+> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
+
 ### From PyPI
 
 The Python agent module is published to [PyPI](https://pypi.org/project/apache-skywalking/), from where you can use `pip` to install:
@@ -24,12 +26,12 @@ pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no ma
 ### From Docker Hub
 
 SkyWalking Python agent provides convenient dockerfile and images for easy integration utilizing its 
-[auto-bootstrap](../cli/CLI.md) capability.
+[auto-bootstrap](CLI.md) capability.
 
 You can build your Python application image based on our agent-enabled Python images and start
 your applications with SkyWalking agent enabled for you. Please refer to our 
-[Dockerfile Guide](../Container.md) for further instructions on building and configuring.
+[Dockerfile Guide](Container.md) for further instructions on building and configuring.
 
 ### From Source Codes
 
-Please refer to the [FAQ](../FAQ.md#q-how-to-build-from-sources).
+Please refer to the [FAQ](FAQ.md#q-how-to-build-from-sources).

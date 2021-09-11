@@ -62,7 +62,7 @@ SkyWalking Python agent supports running and attaching to your awesome applicati
 project. The package installation comes with a new command-line script named `sw-python`, which you can use to run your Python-based
 applications and programs in the following manner `sw-python run python abc.py` or `sw-python run program arg0 arg1` 
 
-Please do read the [CLI Guide](docs/en/setup/cli/CLI.md) for a detailed introduction to this new feature before using in production.
+Please do read the [CLI Guide](docs/en/setup/CLI.md) for a detailed introduction to this new feature before using in production.
 
 You can always fall back to our traditional way of integration as introduced below, 
 which is by importing SkyWalking into your project and starting the agent.
@@ -206,7 +206,7 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
 
 ## Contributing
 
-Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
+Before submitting a pull request or push a commit, please read our [contributing](docs/en/contribution/CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
 
 ## FAQs
 
