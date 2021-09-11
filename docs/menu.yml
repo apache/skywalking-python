@@ -20,13 +20,13 @@ catalog:
     path: "/readme"
   - name: "Installation"
     path: "/en/setup/installation"
-  - name: "Agent Setup"
+  - name: "Integration"
     catalog:
       - name: "Non-Intrusive Setup(CLI)"
         path: "/en/setup/cli/CLI"
       - name: "Legacy Setup"
         path: "/en/setup/Intrusive"
-      - name: "Setup with Docker image"
+      - name: "Containerized Setup"
         path: "/en/setup/Container"
       - name: "Environment Variables"
         path: "/en/setup/EnvVars"
@@ -39,7 +39,9 @@ catalog:
       - name: "Supported Libraries"
         path: "/en/setup/Plugins"
   - name: "FAQs"
-    path: "/en/setup/FAQ"
+    catalog:
+      - name: "How To Disable Plugins"
+        path: "/en/setup/faq/How-to-disable-plugin"
   - name: "Contribution"
     catalog:
       - name: "Developer Guidance"

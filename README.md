@@ -206,7 +206,7 @@ with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as s
 
 ## Contributing
 
-Before submitting a pull request or push a commit, please read our [contributing](docs/en/contribution/CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
+Before submitting a pull request or push a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
 
 ## FAQs
 
