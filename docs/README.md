@@ -1,12 +1,13 @@
 # SkyWalking Python Agent
 
+<img src="http://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
+
 **This is the official documentation of SkyWalking Python agent. Welcome to the SkyWalking community!**
 
 The Python Agent for Apache SkyWalking, which provides the native tracing/logging abilities for Python projects.
 
 In here, you could learn how to set up the Python agent for various use cases.
 
-<img src="http://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
 
 [![GitHub stars](https://img.shields.io/github/stars/apache/skywalking-python.svg?style=for-the-badge&label=Stars&logo=github)](https://github.com/apache/skywalking-python)
 [![Twitter Follow](https://img.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
