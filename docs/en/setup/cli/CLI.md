@@ -1,6 +1,6 @@
 # SkyWalking Python Agent Command-Line Interface(CLI)
 
-In earlier releases than 0.7.0, you would at least need to add the following lines to your applications to get the agent attached and running.  
+In releases before 0.7.0, you would at least need to add the following lines to your applications to get the agent attached and running.  
 
 ```python
 from skywalking import agent
@@ -10,7 +10,7 @@ agent.start()
 
 Now the SkyWalking Python agent implements a command-line interface that can be utilized to attach the agent to your
 awesome applications during deployment **without changing any application code**, 
-just like the [SkyWalking Java Agent](https://github.com/apache/skywalking).
+just like the [SkyWalking Java Agent](https://github.com/apache/skywalking-java).
 
 ## Usage
 

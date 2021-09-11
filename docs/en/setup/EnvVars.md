@@ -1,5 +1,8 @@
 # Supported Environment Variables
 
+Below is the full list of supported environment variables you can set to 
+customize the agent behavior, please read the descriptions for what they can achieve.
+
 Environment Variable | Description | Default
 | :--- | :--- | :--- |
 | `SW_AGENT_NAME` | The name of the Python service | `Python Service Name` |

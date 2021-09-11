@@ -16,13 +16,13 @@
 
 
 catalog:
-  - name: "Python Agent Overview"
+  - name: "SkyWalking Python Overview"
     path: "/readme"
   - name: "Agent Setup"
     catalog:
-      - name: "Non-intrusive Setup(CLI)"
+      - name: "Non-Intrusive Setup(CLI)"
         path: "/en/setup/cli/CLI"
-      - name: "Intrusive Setup"
+      - name: "Legacy Setup"
         path: "/en/setup/Intrusive"
       - name: "Setup with Docker image"
         path: "/en/setup/Container"
