@@ -14,7 +14,7 @@ In here, you could learn how to set up the Python agent for various use cases.
 ## Contact Us
 * Submit an [issue](https://github.com/apache/skywalking/issues/new) by using [Python] as title prefix.
 * Mail list: **dev@skywalking.apache.org**. 
-Mail to [dev-subscribe@skywalking.apache.org](mailto:dev-subscribe@skywalking.apache.org), follow the reply to subscribe the mail list.
+Mail to **dev-subscribe@skywalking.apache.org**, follow the reply to subscribe the mail list.
 * Join `skywalking` channel by sending a request to join SkyWalking slack mail to the mail list - dev@skywalking.apache.org, we will invite you in.
 * Twitter, [ASFSkyWalking](https://twitter.com/ASFSkyWalking)
 
