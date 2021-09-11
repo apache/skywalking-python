@@ -18,6 +18,8 @@
 catalog:
   - name: "SkyWalking Python Overview"
     path: "/readme"
+  - name: "Installation"
+    path: "/en/setup/installation"
   - name: "Agent Setup"
     catalog:
       - name: "Non-Intrusive Setup(CLI)"
@@ -36,17 +38,17 @@ catalog:
     catalog:
       - name: "Supported Libraries"
         path: "/en/setup/Plugins"
-  - name: "FAQ"
+  - name: "FAQs"
     path: "/en/setup/FAQ"
   - name: "Contribution"
     catalog:
-      - name: "Python Agent developer Guidance"
+      - name: "Developer Guidance"
         path: "/en/contribution/Developer"
-      - name: "Python Agent Plugin Testing Guidance"
+      - name: "Plugin Testing Guidance"
         path: "/en/contribution/PluginTest"
-      - name: "Python Agent Release Guidance"
+      - name: "Release Guidance"
         path: "/en/contribution/How-to-release"
-      - name: "Python Agent Image Release Guidance"
+      - name: "Image Release Guidance"
         path: "/en/contribution/How-to-release-docker"
   - name: "Changelog"
     path: "https://github.com/apache/skywalking-python/blob/master/CHANGELOG.md"

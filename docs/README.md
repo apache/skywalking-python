@@ -17,7 +17,7 @@ In here, you could learn how to set up the Python agent for various use cases.
 
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
-> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to [the guide](/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
 
 By default, SkyWalking Python agent uses gRPC protocol to report data to SkyWalking backend,
 in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTTP protocol is `12800`,
