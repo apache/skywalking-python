@@ -4,7 +4,7 @@
 
 You can install the SkyWalking Python agent via various ways.
 
-> If you want to try out the latest features that are not released yet, please refer to this [guide](faq/How-to-build-from-sources) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to this [guide](faq/How-to-build-from-sources.md) to build from sources.
 
 ### From PyPI
 
@@ -45,4 +45,4 @@ your applications with SkyWalking agent enabled for you. Please refer to our
 
 ### From Source Code
 
-Please refer to the [How-to-build-from-sources FAQ](faq/How-to-build-from-sources).
+Please refer to the [How-to-build-from-sources FAQ](faq/How-to-build-from-sources.md).
