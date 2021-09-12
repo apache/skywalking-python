@@ -28,11 +28,11 @@ they match. This can be done through the `/dataValidate` of the mock collector, 
 If we want to test the plugin for the built-in library `http`, we will:
 
 1. Build a tested service, which sets up an HTTP server by `http` library, and exposes an HTTP endpoint to be triggered in the test codes, say `/trigger`, 
-take [this provider service](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/services/provider.py) as example.
+take this [provider service](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/services/provider.py) as example.
 2. Compose a `docker-compose.yml` file, orchestrating the service built in step 1 and the mock collector, 
-take [this docker-compose.yml](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/docker-compose.yml) as an example.
+take this [docker-compose.yml](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/docker-compose.yml) as an example.
 3. Write test codes to trigger the endpoint int step 1, and send the expected data file to the mock collector to verify, 
-take [this test](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/test_http.py) as example.
+take this [test](https://github.com/apache/skywalking-python/blob/master/tests/plugin/sw_http/test_http.py) as example.
 
 ## Notes
 

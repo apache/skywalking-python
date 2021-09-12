@@ -62,7 +62,7 @@ You would normally want to provide additional configurations other than the defa
 #### Through environment variables
 
 The currently supported method is to provide the environment variables listed 
-and explained in the [EnvVars Doc](EnvVars.md).
+and explained in the [Environment Variables List](EnvVars.md).
 
 #### Through a sw-config.yaml
 

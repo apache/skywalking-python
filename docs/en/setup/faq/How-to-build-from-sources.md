@@ -1,6 +1,7 @@
-### Q: How to build from sources?
+# How to build from sources?
 
-#### A: Download the source tar from [the official website](http://skywalking.apache.org/downloads/), and run the following commands to build from source
+**Download the source tar from [the official website](http://skywalking.apache.org/downloads/), 
+and run the following commands to build from source**
 
 ```shell
 $ tar -zxf skywalking-python-src-<version>.tgz

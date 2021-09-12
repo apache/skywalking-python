@@ -1,5 +1,7 @@
 ## Installation
 
+**SkyWalking Python agent requires SkyWalking 8.0+ and Python 3.5+**
+
 You can install the SkyWalking Python agent via various ways.
 
 > If you want to try out the latest features that are not released yet, please refer to this [guide](faq/How-to-build-from-sources) to build from sources.

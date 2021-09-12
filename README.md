@@ -112,7 +112,7 @@ agent.start()
 
 Alternatively, you can also pass the configurations via environment variables (such as `SW_AGENT_NAME`, `SW_AGENT_COLLECTOR_BACKEND_SERVICES`, etc.) so that you don't need to call `config.init`.
 
-All supported environment variables can be found [here](docs/en/setup/EnvVars.md)
+All supported environment variables can be found in the [Environment Variables List](docs/en/setup/EnvVars.md)
 
 ## Report logs with Python Agent
 

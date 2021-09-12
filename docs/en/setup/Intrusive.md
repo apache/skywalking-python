@@ -3,10 +3,7 @@
 You can always fall back to our traditional way of integration as introduced below, 
 which is by importing SkyWalking into your project and starting the agent.
 
-SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
-
-> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
-
+## Defaults
 By default, SkyWalking Python agent uses gRPC protocol to report data to SkyWalking backend,
 in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTTP protocol is `12800`,
 you should configure `collector_address` (or environment variable `SW_AGENT_COLLECTOR_BACKEND_SERVICES`)
@@ -61,4 +58,4 @@ agent.start()
 
 Alternatively, you can also pass the configurations via environment variables (such as `SW_AGENT_NAME`, `SW_AGENT_COLLECTOR_BACKEND_SERVICES`, etc.) so that you don't need to call `config.init`.
 
-All supported environment variables can be found [here](EnvVars.md)
+All supported environment variables can be found in the [Environment Variables List](EnvVars.md).
