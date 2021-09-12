@@ -8,13 +8,15 @@ $ cd skywalking-python-src-<version>
 $ make install
 ```
 
-If you want to build from the latest source codes from GitHub, for some reasons, for example, you want to try the latest features that are not released yet, please clone the source codes from GitHub and `make install` it:
+If you want to build from the latest source codes from GitHub for some reasons, 
+for example, you want to try the latest features that are not released yet, 
+please clone the source codes from GitHub and `make install` it:
 
 ```shell
-git clone https://github.com/apache/skywalking-python
-cd skywalking-python
-git submodule update --init
-make install
+$ git clone https://github.com/apache/skywalking-python
+$ cd skywalking-python
+$ git submodule update --init
+$ make install
 ``` 
 
 **NOTE** that only releases from [the website](http://skywalking.apache.org/downloads/) are official Apache releases. 

@@ -14,7 +14,7 @@ The images are hosted at [Docker Hub](https://hub.docker.com/r/apache/skywalking
 
 ### Build your Python application image on top of this image
 
-Start by pulling the skywalking-python image as the base of your application image.
+Start by pulling the `skywalking-python` image as the base of your application image.
 Refer to [Docker Hub](https://hub.docker.com/r/apache/skywalking-python) for the list of tags available.
 
 ```dockerfile
@@ -39,7 +39,3 @@ BASE_IMAGE # the Python base image to build upon
 SW_PYTHON_AGENT_VERSION # agent version to be pulled from PyPI
 SW_PYTHON_AGENT_PROTOCOL # agent protocol - grpc/ http/ kafka
 ```
-
-## License
-
-[Apache 2.0 License.](/LICENSE)

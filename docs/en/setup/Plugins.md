@@ -22,6 +22,6 @@ Library | Versions | Plugin Name
 | [celery](https://docs.celeryproject.org/) | >= 4.2.1 | `sw_celery` |
 | [falcon](https://falcon.readthedocs.io/en/stable/) | >= 1.4.1 | `sw_falcon` |
 
-* Note: The celery server running with "celery -A ..." should be run with the http protocol as it uses multiprocessing by default which is not compatible with the grpc protocol implementation in skywalking currently. Celery clients can use whatever protocol they want.
+* Note: The celery server running with "celery -A ..." should be run with the HTTP protocol as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation in SkyWalking currently. Celery clients can use whatever protocol they want.
 
 The column `Versions` only indicates that the versions are tested, if you found the newer versions are also supported, welcome to add the newer version into the table.

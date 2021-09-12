@@ -25,13 +25,22 @@ pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no ma
 
 ### From Docker Hub
 
-SkyWalking Python agent provides convenient dockerfile and images for easy integration utilizing its 
-[auto-bootstrap](CLI.md) capability.
+SkyWalking Python agent starts to provide convenient dockerfile 
+and images for easy integration utilizing its [auto-bootstrap](CLI.md) capability.
 
-You can build your Python application image based on our agent-enabled Python images and start
+Simply pull SkyWalking Python image from [Docker Hub](https://hub.docker.com/r/apache/skywalking-python)
+based on desired agent version, protocol and Python version.
+
+```dockerfile
+FROM apache/skywalking-python:0.7.0-grpc-py3.9
+
+# ... build your Python application
+```
+
+Then, You can build your Python application image based on our agent-enabled Python images and start
 your applications with SkyWalking agent enabled for you. Please refer to our 
-[Dockerfile Guide](Container.md) for further instructions on building and configuring.
+[Containerization Guide](Container.md) for further instructions on integration and configuring.
 
-### From Source Codes
+### From Source Code
 
 Please refer to the [How-to-build-from-sources FAQ](faq/How-to-build-from-sources).

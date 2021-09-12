@@ -43,13 +43,13 @@ your applications with SkyWalking agent enabled for you. Please refer to our
 
 ### From Source Codes
 
-Refer to the [FAQ](docs/en/setup/FAQ.md#q-how-to-build-from-sources).
+Refer to the [FAQ](docs/en/setup/faq/How-to-build-from-sources.md).
 
 ## Set up Python Agent
 
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
-> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/faq/How-to-build-from-sources.md) to build from sources.
 
 By default, SkyWalking Python agent uses gRPC protocol to report data to SkyWalking backend,
 in SkyWalking backend, the port of gRPC protocol is `11800`, and the port of HTTP protocol is `12800`,
@@ -210,7 +210,7 @@ Before submitting a pull request or push a commit, please read our [contributing
 
 ## FAQs
 
-Check [the FAQ page](docs/en/setup/FAQ.md) or add the FAQs there.
+Check the FAQ page in our official documentation site or contribute FAQs to the doc folder.
 
 ## License
 Apache 2.0

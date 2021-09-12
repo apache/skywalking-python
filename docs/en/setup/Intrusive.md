@@ -3,8 +3,6 @@
 You can always fall back to our traditional way of integration as introduced below, 
 which is by importing SkyWalking into your project and starting the agent.
 
-## Set up Python Agent
-
 SkyWalking Python SDK requires SkyWalking 8.0+ and Python 3.5+.
 
 > If you want to try out the latest features that are not released yet, please refer to [the guide](docs/en/setup/FAQ.md#q-how-to-build-from-sources) to build from sources.

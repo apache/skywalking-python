@@ -22,8 +22,8 @@ catalog:
     path: "/en/setup/installation"
   - name: "Integration"
     catalog:
-      - name: "Non-Intrusive Setup(CLI)"
-        path: "/en/setup/cli/CLI"
+      - name: "Non-Intrusive Setup"
+        path: "/en/setup/CLI"
       - name: "Legacy Setup"
         path: "/en/setup/Intrusive"
       - name: "Containerized Setup"
@@ -34,6 +34,8 @@ catalog:
         catalog:
           - name: "Log Reporter"
             path: "/en/setup/advanced/LogReporter"
+          - name: "Manual Instrumentation"
+            path: "/en/setup/advanced/API"
   - name: "Plugins"
     catalog:
       - name: "Supported Libraries"
@@ -42,6 +44,8 @@ catalog:
     catalog:
       - name: "How To Disable Plugins"
         path: "/en/setup/faq/How-to-disable-plugin"
+      - name: "How To Build from Sources"
+        path: "/en/setup/faq/How-to-build-from-sources"
   - name: "Contribution"
     catalog:
       - name: "Developer Guidance"

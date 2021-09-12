@@ -1,6 +1,7 @@
-## SkyWalking Python instrumentation API
+## SkyWalking Python Instrumentation API
 
-Apart from the [libraries](#supported-libraries) that can be instrumented automatically, we also provide some APIs to enable manual instrumentation.
+Apart from the [supported libraries](../Plugins.md) that can be instrumented automatically, 
+SkyWalking also provides some APIs to enable manual instrumentation.
 
 ### Create Spans
 
