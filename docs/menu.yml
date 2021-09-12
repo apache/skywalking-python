@@ -1,0 +1,60 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+catalog:
+  - name: "SkyWalking Python Overview"
+    path: "/readme"
+  - name: "Installation"
+    path: "/en/setup/installation"
+  - name: "Integration"
+    catalog:
+      - name: "Non-Intrusive Setup"
+        path: "/en/setup/CLI"
+      - name: "Legacy Setup"
+        path: "/en/setup/Intrusive"
+      - name: "Containerized Setup"
+        path: "/en/setup/Container"
+      - name: "Environment Variables"
+        path: "/en/setup/EnvVars"
+      - name: "Advanced Features"
+        catalog:
+          - name: "Log Reporter"
+            path: "/en/setup/advanced/LogReporter"
+          - name: "Manual Instrumentation"
+            path: "/en/setup/advanced/API"
+  - name: "Plugins"
+    catalog:
+      - name: "Supported Libraries"
+        path: "/en/setup/Plugins"
+  - name: "FAQs"
+    catalog:
+      - name: "How To Disable Plugins"
+        path: "/en/setup/faq/How-to-disable-plugin"
+      - name: "How To Build from Sources"
+        path: "/en/setup/faq/How-to-build-from-sources"
+  - name: "Contribution"
+    catalog:
+      - name: "Developer Guidance"
+        path: "/en/contribution/Developer"
+      - name: "Plugin Testing Guidance"
+        path: "/en/contribution/PluginTest"
+      - name: "Release Guidance"
+        path: "/en/contribution/How-to-release"
+      - name: "Image Release Guidance"
+        path: "/en/contribution/How-to-release-docker"
+  - name: "Changelog"
+    path: "https://github.com/apache/skywalking-python/blob/master/CHANGELOG.md"

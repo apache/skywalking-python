@@ -1,4 +1,4 @@
-# Python agent log reporter
+# Python Agent Log Reporter
 
 This functionality reports logs collected from the Python logging module(in theory, also logging libraries depending on the core logging module).
 
@@ -18,7 +18,7 @@ Log reporter supports all three protocols including `grpc`, `http` and `kafka`, 
 If chosen `http` protocol, the logs will be batch-reported to the collector REST endpoint `oap/v3/logs`.
 
 If chosen `kafka` protocol, please make sure to config 
-[kafka-fetcher](https://skywalking.apache.org/docs/main/v8.4.0/en/setup/backend/backend-fetcher/#kafka-fetcher) 
+[kafka-fetcher](https://skywalking.apache.org/docs/main/v8.7.0/en/setup/backend/backend-fetcher/#kafka-fetcher) 
 on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` points to your Kafka brokers.
 
 `log_reporter_active=True` - Enables the log reporter.
@@ -26,7 +26,7 @@ on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` poi
 `log_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
 
 Alternatively, you can pass configurations through environment variables. 
-Please refer to [EnvVars.md](EnvVars.md) for the list of environment variables associated with the log reporter.
+Please refer to the [Environment Variables List](../EnvVars.md) for the list of environment variables associated with the log reporter.
 
 ## Specify a logging level
 Only the logs with a level equal to or higher than the specified will be collected and reported. 

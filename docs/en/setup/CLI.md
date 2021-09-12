@@ -1,6 +1,6 @@
 # SkyWalking Python Agent Command-Line Interface(CLI)
 
-In earlier releases than 0.7.0, you would at least need to add the following lines to your applications to get the agent attached and running.  
+In releases before 0.7.0, you would at least need to add the following lines to your applications to get the agent attached and running.  
 
 ```python
 from skywalking import agent
@@ -10,11 +10,11 @@ agent.start()
 
 Now the SkyWalking Python agent implements a command-line interface that can be utilized to attach the agent to your
 awesome applications during deployment **without changing any application code**, 
-just like the [SkyWalking Java Agent](https://github.com/apache/skywalking).
+just like the [SkyWalking Java Agent](https://github.com/apache/skywalking-java).
 
 ## Usage
 
-Upon successful [installation of the SkyWalking Python agent via pip](../README.md#install),
+Upon successful [installation of the SkyWalking Python agent via pip](Installation.md#from-pypi),
 a command-line script `sw-python` is installed in your environment(virtual env preferred).
 
 ### The `run` option
@@ -62,7 +62,7 @@ You would normally want to provide additional configurations other than the defa
 #### Through environment variables
 
 The currently supported method is to provide the environment variables listed 
-in [EnvVars Doc](EnvVars.md) as instructed in the [README](../README.md).
+and explained in the [Environment Variables List](EnvVars.md).
 
 #### Through a sw-config.yaml
 

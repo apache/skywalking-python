@@ -22,7 +22,7 @@ Be sure to include a **title and clear description**, as much relevant informati
 
 ## Compiling and building
 
-Check [here](docs/FAQ.md#q-how-to-build-from-sources).
+Check [here](docs/en/setup/faq/How-to-build-from-sources.md).
 
 ## Add a new feature or enhance an existing one
 
