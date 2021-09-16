@@ -17,8 +17,13 @@
 
 import time
 
+from skywalking import agent, config
 
 if __name__ == '__main__':
+    config.service_name = 'provider'
+    config.logging_level = 'DEBUG'
+    agent.start()
+
     from sanic import Sanic, response
 
     app = Sanic(__name__)
