@@ -59,6 +59,6 @@ services:
     environment:
       SW_AGENT_NAME: consumer
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_ELASTICSEARCH_TRACE_DSL: True
+      SW_ELASTICSEARCH_TRACE_DSL: 'True'
 networks:
   beyond:

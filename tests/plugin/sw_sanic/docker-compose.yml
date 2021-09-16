@@ -61,6 +61,6 @@ services:
     environment:
       SW_AGENT_NAME: consumer
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_SANIC_COLLECT_HTTP_PARAMS: True
+      SW_SANIC_COLLECT_HTTP_PARAMS: 'True'
 networks:
   beyond:

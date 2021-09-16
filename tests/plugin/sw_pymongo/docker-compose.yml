@@ -58,7 +58,7 @@ services:
     environment:
       SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_PYMONGO_TRACE_PARAMETERS: True
+      SW_PYMONGO_TRACE_PARAMETERS: 'True'
 
   consumer:
     extends:
