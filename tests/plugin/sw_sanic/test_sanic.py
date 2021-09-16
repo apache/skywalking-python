@@ -34,6 +34,7 @@ class TestPlugin(TestPluginBase):
         'sanic==20.6.0',
         'sanic==20.9.0',
         'sanic==20.9.1',
+        'sanic==20.12.3'
     ])
     def test_plugin(self, docker_compose, version):
         self.validate()
