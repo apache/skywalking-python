@@ -29,12 +29,10 @@ if __name__ == '__main__':
 
     app = Sanic(__name__)
 
-
     @app.route("/users", methods=["GET"])
     async def application(req):
         res = requests.get("http://provider:9091/users")
         return response.json(res.json())
-
 
     PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)
