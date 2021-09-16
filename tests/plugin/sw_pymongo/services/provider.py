@@ -20,14 +20,6 @@ import time
 from flask import Flask, jsonify
 from pymongo import MongoClient
 
-from skywalking import agent, config
-
-config.service_name = "provider"
-config.logging_level = "DEBUG"
-config.pymongo_trace_parameters = True
-agent.start()
-
-
 client = MongoClient('mongodb://mongo:27017/')
 db = client['test-database']
 collection = db['test-collection']

@@ -20,8 +20,6 @@ from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from skywalking import agent, config
-
 
 def index(request):
     return Response('Hello World!')
@@ -32,10 +30,6 @@ def error(request):
 
 
 if __name__ == '__main__':
-    config.service_name = 'provider'
-    config.logging_level = 'DEBUG'
-    agent.start()
-
     with Configurator() as config:
         config.add_route('pyramid', '/pyramid')
         config.add_route('error', '/error')

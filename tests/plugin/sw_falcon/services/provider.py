@@ -20,12 +20,6 @@ import time
 
 import hug
 
-from skywalking import agent, config
-
-config.service_name = 'provider'
-config.logging_level = 'DEBUG'
-agent.start()
-
 
 @hug.get('/users')
 def get():

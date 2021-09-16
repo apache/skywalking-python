@@ -17,12 +17,6 @@
 import hug
 import requests
 
-from skywalking import agent, config
-
-config.service_name = 'consumer'
-config.logging_level = 'DEBUG'
-agent.start()
-
 
 @hug.get('/users')
 def get():

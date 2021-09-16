@@ -17,12 +17,8 @@
 
 import time
 
-from skywalking import agent, config
 
 if __name__ == '__main__':
-    config.service_name = 'provider'
-    agent.start()
-
     from werkzeug import Request, Response
 
     @Request.application

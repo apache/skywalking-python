@@ -55,6 +55,10 @@ services:
       interval: 5s
       timeout: 60s
       retries: 120
+    environment:
+      SW_AGENT_NAME: provider
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_PYMONGO_TRACE_PARAMETERS: True
 
   consumer:
     extends:
@@ -70,6 +74,9 @@ services:
         condition: service_healthy
       provider:
         condition: service_healthy
+    environment:
+      SW_AGENT_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: DEBUG
 
 networks:
   beyond:

@@ -15,13 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking import config, agent
-
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    config.logging_level = 'INFO'
-    agent.start()
-
     import pika
 
     parameters = (pika.URLParameters("amqp://admin:admin@rabbitmq-server:5672/%2F"))

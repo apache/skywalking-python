@@ -20,8 +20,6 @@ from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
 
-from skywalking import agent, config
-
 
 def index(req):
     data = '{"name": "whatever"}'.encode('utf8')
@@ -33,9 +31,6 @@ def index(req):
 
 
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    agent.start()
-
     with Configurator() as config:
         config.add_route('pyramid', '/pyramid')
         config.add_view(index, route_name='pyramid')

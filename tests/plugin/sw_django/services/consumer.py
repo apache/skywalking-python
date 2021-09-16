@@ -22,14 +22,6 @@ from django.conf import settings
 from django.conf.urls import url
 from django.http import JsonResponse
 
-from skywalking import agent, config
-
-config.service_name = "consumer"
-config.logging_level = "DEBUG"
-config.django_collect_http_params = True
-agent.start()
-
-
 settings.configure(
     DEBUG=True,
     ROOT_URLCONF=__name__,

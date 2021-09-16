@@ -78,6 +78,9 @@ services:
         condition: service_healthy
       consumer:
         condition: service_healthy
+    environment:
+      SW_AGENT_NAME: producer
+      SW_AGENT_LOGGING_LEVEL: INFO
 
   consumer:
     extends:
@@ -98,6 +101,9 @@ services:
         condition: service_healthy
       kafka-server:
         condition: service_healthy
+    environment:
+      SW_AGENT_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: INFO
 
 networks:
   beyond:

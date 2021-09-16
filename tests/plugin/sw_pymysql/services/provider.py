@@ -17,14 +17,7 @@
 
 import time
 
-from skywalking import agent, config
-
 if __name__ == '__main__':
-    config.service_name = 'provider'
-    config.logging_level = 'DEBUG'
-    config.sql_parameters_length = 512
-    agent.start()
-
     from flask import Flask, jsonify
     import pymysql.cursors
 
