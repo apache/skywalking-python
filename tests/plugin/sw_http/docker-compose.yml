@@ -30,7 +30,8 @@ services:
     ports:
       - 9091:9091
     volumes:
-      - ./services/provider.py:/entrypoint.py
+      - .:/app
+    command: [ 'bash', '-c', 'sw-python run python3 /app/services/provider.py' ]
     depends_on:
       collector:
         condition: service_healthy
@@ -50,7 +51,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./services/consumer.py:/entrypoint.py
+      - .:/app
+    command: [ 'bash', '-c', 'sw-python run python3 /app/services/consumer.py' ]
     depends_on:
       collector:
         condition: service_healthy
