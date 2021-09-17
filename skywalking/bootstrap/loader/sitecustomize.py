@@ -108,7 +108,10 @@ cli_python_version = os.environ.get('SW_PYTHON_VERSION')
 cli_python_prefix = os.environ.get('SW_PYTHON_PREFIX')
 
 version_match = cli_python_version == platform.python_version()
-prefix_match = cli_python_prefix == os.path.realpath(os.path.normpath(sys.prefix))
+
+# windows can sometimes make capitalized path, lower them can help
+prefix_match = cli_python_prefix.lower() == os.path.realpath(os.path.normpath(sys.prefix)).lower()
+
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
@@ -131,6 +134,12 @@ else:
     from skywalking import agent
 
     # Currently supports configs read from os.environ
+
+    # This is for python 3.6 - 3.7(maybe) argv is not set for embedded interpreter thus will cause failure in
+    # those libs that imports argv from sys, we need to set it manually if it's not there already
+    # otherwise the plugin install will fail and things won't work properly, example - Sanic
+    if not hasattr(sys, 'argv'):
+        sys.argv = ['']
 
     # noinspection PyBroadException
     try:
