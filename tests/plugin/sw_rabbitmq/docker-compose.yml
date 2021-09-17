@@ -64,7 +64,7 @@ services:
         condition: service_healthy
     environment:
       SW_AGENT_NAME: producer
-      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_LOGGING_LEVEL: INFO
 
   consumer:
     extends:
@@ -87,7 +87,7 @@ services:
         condition: service_healthy
     environment:
       SW_AGENT_NAME: consumer
-      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_LOGGING_LEVEL: INFO
 
 networks:
   beyond:
