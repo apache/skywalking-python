@@ -19,15 +19,15 @@ VERSION ?= latest
 .PHONY: license
 
 setup:
-	python -m pip install --upgrade pip
-	python -m pip install grpcio --ignore-installed
+	python3 -m pip install --upgrade pip
+	python3 -m pip install grpcio --ignore-installed
 
 setup-test: setup
 	pip3 install -e .[test]
 
 gen:
-	python -m grpc_tools.protoc --version || python -m pip install grpcio-tools
-	python tools/codegen.py
+	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
+	python3 tools/codegen.py
 
 lint: clean
 	flake8 --version || python3 -m pip install flake8
@@ -38,7 +38,7 @@ license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
 test: gen setup-test
-	python -m pytest -vv tests
+	python3 -m pytest -v tests
 
 install: gen
 	python3 setup.py install --force
