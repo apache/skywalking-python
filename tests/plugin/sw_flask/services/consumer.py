@@ -17,15 +17,9 @@
 
 import requests
 
-from skywalking import agent, config
 from skywalking.decorators import runnable
 
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    config.logging_level = 'DEBUG'
-    config.flask_collect_http_params = True
-    agent.start()
-
     from flask import Flask, jsonify
 
     app = Flask(__name__)

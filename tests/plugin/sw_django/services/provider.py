@@ -18,17 +18,9 @@
 import sys
 import time
 
-from skywalking import agent, config
-
 from django.conf import settings
 from django.conf.urls import url
 from django.http import JsonResponse
-
-
-config.service_name = "provider"
-config.logging_level = "DEBUG"
-agent.start()
-
 
 settings.configure(
     DEBUG=True,

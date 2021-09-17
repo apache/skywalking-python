@@ -15,13 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking import config, agent
-
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    config.logging_level = 'INFO'
-    agent.start()
-
     topic = "skywalking"
     server_list = ["kafka-server:9092"]
     group_id = "skywalking"

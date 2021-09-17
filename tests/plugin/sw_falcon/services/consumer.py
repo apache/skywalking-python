@@ -14,14 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from skywalking import agent, config
-
-import requests
 import hug
-
-config.service_name = 'consumer'
-config.logging_level = 'DEBUG'
-agent.start()
+import requests
 
 
 @hug.get('/users')

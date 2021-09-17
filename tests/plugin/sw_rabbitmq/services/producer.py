@@ -16,13 +16,7 @@
 #
 
 
-from skywalking import agent, config
-
 if __name__ == '__main__':
-    config.service_name = 'producer'
-    config.logging_level = 'INFO'
-    agent.start()
-
     from flask import Flask, jsonify
     app = Flask(__name__)
     import pika

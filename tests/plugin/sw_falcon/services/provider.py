@@ -15,15 +15,10 @@
 # limitations under the License.
 #
 
-from skywalking import agent, config
+import json
+import time
 
 import hug
-import time
-import json
-
-config.service_name = 'provider'
-config.logging_level = 'DEBUG'
-agent.start()
 
 
 @hug.get('/users')

@@ -17,11 +17,8 @@
 
 from urllib import request
 
-from skywalking import agent, config
 
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    agent.start()
 
     import socketserver
     from http.server import BaseHTTPRequestHandler

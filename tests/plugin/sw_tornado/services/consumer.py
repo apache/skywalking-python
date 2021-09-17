@@ -14,13 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from skywalking import agent, config
 
 if __name__ == "__main__":
-    config.service_name = 'consumer'
-    config.logging_level = 'DEBUG'
-    agent.start()
-
     import requests
     import tornado.ioloop
     import tornado.web
