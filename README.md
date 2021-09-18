@@ -19,7 +19,7 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 
 ## Installation Requirements
 
-SkyWalking Python Agent requires SkyWalking 8.0+ and Python 3.5+.
+SkyWalking Python Agent requires SkyWalking 8.0+ and Python 3.6+.
 
 > If you would like to try out the latest features that are not released yet, please refer to this [guide](docs/en/setup/faq/How-to-build-from-sources.md) to build from sources.
 

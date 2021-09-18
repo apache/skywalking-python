@@ -18,9 +18,8 @@ D := docker
 
 P := grpc http kafka
 
-TARGETS := py3.5 py3.6 py3.7 py3.8 py3.9
+TARGETS := py3.6 py3.7 py3.8 py3.9
 
-py3.5: BASE_IMAGE = python:3.5
 py3.6: BASE_IMAGE = python:3.6
 py3.7: BASE_IMAGE = python:3.7
 py3.8: BASE_IMAGE = python:3.8
