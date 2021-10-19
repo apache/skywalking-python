@@ -131,7 +131,11 @@ if not (version_match and prefix_match):
     os._exit(1)  # do not go further
 
 else:
-    from skywalking import agent
+    from skywalking import agent, config
+
+    # also override debug for skywalking agent itself
+    if os.environ.get('SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
+        config.logging_level = 'DEBUG'
 
     # Currently supports configs read from os.environ
 

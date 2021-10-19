@@ -21,6 +21,14 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagMqTopic
 
+link_vector = ["https://kafka-python.readthedocs.io"]
+
+support_matrix = {
+    "kafka-python": {
+        ">=3.6": ["2.0"]
+    }
+}
+
 
 def install():
     from kafka import KafkaProducer
@@ -38,8 +46,8 @@ def _sw__poll_once_func(__poll_once):
         if res:
             brokers = ";".join(this.config["bootstrap_servers"])
             context = get_context()
-            topics = ";".join(this._subscription.subscription or
-                              [t.topic for t in this._subscription._user_assignment])
+            topics = ";".join(this._subscription.subscription
+                              or [t.topic for t in this._subscription._user_assignment])
 
             with context.new_entry_span(
                     op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:

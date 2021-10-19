@@ -29,10 +29,10 @@ if __name__ == '__main__':
         channel.queue_declare("test")
         channel.exchange_declare("test")
         channel.queue_bind(exchange='test', queue="test", routing_key='test')
-        channel.basic_publish(exchange='test', routing_key='test',  properties=pika.BasicProperties(
-            headers={'key': 'value'}
-        ),
-                              body=b'Test message.')
+        channel.basic_publish(
+            exchange='test', routing_key='test',
+            properties=pika.BasicProperties(headers={'key': 'value'}),
+            body=b'Test message.')
         connection.close()
 
         return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})

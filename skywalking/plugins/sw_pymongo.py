@@ -19,9 +19,11 @@ from skywalking import Layer, Component, config
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 
-version_rule = {
-    "name": "pymongo",
-    "rules": [">=3.7.0"]
+link_vector = ["https://pymongo.readthedocs.io"]
+support_matrix = {
+    "pymongo": {
+        ">=3.6": ["3.11"]  # TODO: "3.12" incompatible with all python versions, need investigation
+    }
 }
 
 
@@ -31,10 +33,10 @@ def install():
     from pymongo.pool import SocketInfo
 
     bulk_op_map = {
-            0: "insert",
-            1: "update",
-            2: "delete"
-        }
+        0: "insert",
+        1: "update",
+        2: "delete"
+    }
     # handle insert_many and bulk write
     inject_bulk_write(_Bulk, bulk_op_map)
 
@@ -106,7 +108,7 @@ def inject_bulk_write(_Bulk, bulk_op_map):
         context = get_context()
 
         sw_op = "MixedBulkWriteOperation"
-        with context.new_exit_span(op="MongoDB/"+sw_op, peer=peer, component=Component.MongoDB) as span:
+        with context.new_exit_span(op="MongoDB/" + sw_op, peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
 
             bulk_result = _execute(this, *args, **kwargs)
@@ -140,7 +142,7 @@ def inject_cursor(Cursor):
         context = get_context()
         op = "FindOperation"
 
-        with context.new_exit_span(op="MongoDB/"+op, peer=peer, component=Component.MongoDB) as span:
+        with context.new_exit_span(op="MongoDB/" + op, peer=peer, component=Component.MongoDB) as span:
             span.layer = Layer.Database
 
             # __send_message return nothing

@@ -18,14 +18,14 @@
 import unittest
 
 from packaging import version
-
-from skywalking.plugins import _operators, check
+from skywalking.plugins import check
+from skywalking.utils.comparator import operators
 
 
 class TestVersionCheck(unittest.TestCase):
     def test_operators(self):
         # <
-        f = _operators.get("<")
+        f = operators.get("<")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.1")
         self.assertTrue(f(v1, v2))
@@ -35,7 +35,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertFalse(f(v1, v2))
 
         # <=
-        f = _operators.get("<=")
+        f = operators.get("<=")
         v1 = version.parse("1.0")
         v2 = version.parse("1.0")
         self.assertTrue(v1, v2)
@@ -45,7 +45,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertFalse(f(v2, v1))
 
         # =
-        f = _operators.get("==")
+        f = operators.get("==")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.0")
         self.assertTrue(f(v1, v2))
@@ -54,7 +54,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertFalse(f(v1, v2))
 
         # >=
-        f = _operators.get(">=")
+        f = operators.get(">=")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.0")
         self.assertTrue(f(v1, v2))
@@ -64,7 +64,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertTrue(f(v2, v1))
 
         # >
-        f = _operators.get(">")
+        f = operators.get(">")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.1")
         self.assertFalse(f(v1, v2))
@@ -74,7 +74,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertFalse(f(v1, v2))
 
         # !=
-        f = _operators.get("!=")
+        f = operators.get("!=")
         v1 = version.parse("1.0.0")
         v2 = version.parse("1.0.1")
         self.assertTrue(f(v1, v2))

@@ -17,14 +17,7 @@
 
 import requests
 
-from skywalking import agent, config
-
 if __name__ == '__main__':
-    config.service_name = 'consumer'
-    config.logging_level = 'DEBUG'
-    config.sanic_collect_http_params = True
-    agent.start()
-
     from sanic import Sanic, response
 
     app = Sanic(__name__)

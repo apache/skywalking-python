@@ -20,6 +20,14 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagCeleryParameters
 
+link_vector = ["https://docs.celeryproject.org"]
+# TODO: Celery is missing plugin test
+support_matrix = {
+    "celery": {
+        ">=3.6": ["5.1"]
+    }
+}
+
 
 def install():
     from urllib.parse import urlparse

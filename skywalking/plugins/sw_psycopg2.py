@@ -19,6 +19,14 @@ from skywalking import Layer, Component, config
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagDbSqlParameters
 
+link_vector = ["https://www.psycopg.org/"]
+support_matrix = {
+    "psycopg2-binary": {
+        ">=3.10": [],
+        ">=3.6": ["2.9"]  # transition to psycopg(3), not working for python 3.10
+    }
+}
+
 
 def install():
     import wrapt  # psycopg2 is read-only C extension objects so they need to be proxied

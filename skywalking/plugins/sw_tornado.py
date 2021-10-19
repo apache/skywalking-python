@@ -23,9 +23,15 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-version_rule = {
-    "name": "tornado",
-    "rules": [">=5.0"]
+# version_rule = {
+#     "name": "tornado",
+#     "rules": [">=5.0"]
+# }
+link_vector = ["https://www.tornadoweb.org"]
+support_matrix = {
+    "tornado": {
+        ">=3.6": ["6.0", "6.1"]
+    }
 }
 
 

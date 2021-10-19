@@ -19,6 +19,8 @@ from typing import Callable
 import pytest
 import requests
 
+from skywalking.plugins.sw_http_server import support_matrix
+from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 
 
@@ -29,8 +31,6 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', [
-        'werkzeug==1.0.1',
-    ])
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='werkzeug', support_matrix=support_matrix))
     def test_plugin(self, docker_compose, version):
         self.validate()

@@ -1,5 +1,17 @@
 ## Change Logs
 
+### 1.0.0 
+- Feature:
+
+- Plugins:
+  - Add Psycopg(3.x) support (#167)
+
+- Fixes:
+
+- Others:
+  - Drop support for Python 3.5
+  - Add support for Python 3.10
+
 ### 0.7.0
 
 - Feature:

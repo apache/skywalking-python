@@ -20,6 +20,8 @@ from typing import Callable
 import pytest
 import requests
 
+from skywalking.plugins.sw_falcon import support_matrix
+from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 
 
@@ -30,10 +32,6 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', [
-        'hug==2.4.1',
-        'hug==2.5.0',
-        'hug==2.6.0',
-    ])
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='hug', support_matrix=support_matrix))
     def test_plugin(self, docker_compose, version):
         self.validate()

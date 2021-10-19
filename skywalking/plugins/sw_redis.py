@@ -19,6 +19,13 @@ from skywalking import Layer, Component
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 
+link_vector = ["https://github.com/andymccurdy/redis-py/"]
+support_matrix = {
+    "redis": {
+        ">=3.6": ["3.5"]  # "4.0" next, incompatible to current instrumentation
+    }
+}
+
 
 def install():
     from redis.connection import Connection
@@ -29,7 +36,7 @@ def install():
         peer = "%s:%s" % (this.host, this.port)
         op = args[0]
         context = get_context()
-        with context.new_exit_span(op="Redis/"+op or "/", peer=peer, component=Component.Redis) as span:
+        with context.new_exit_span(op="Redis/" + op or "/", peer=peer, component=Component.Redis) as span:
             span.layer = Layer.Cache
 
             res = _send_command(this, *args, **kwargs)

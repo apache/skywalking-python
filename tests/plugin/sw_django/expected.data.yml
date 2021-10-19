@@ -22,7 +22,6 @@ segmentItems:
       - segmentId: not null
         spans:
           - operationName: /users
-            operationId: 0
             parentSpanId: -1
             spanId: 0
             spanLayer: Http
@@ -54,7 +53,6 @@ segmentItems:
       - segmentId: not null
         spans:
           - operationName: /users
-            operationId: 0
             parentSpanId: 0
             spanId: 1
             spanLayer: Http
@@ -72,7 +70,6 @@ segmentItems:
               - key: http.status.code
                 value: '200'
           - operationName: /users
-            operationId: 0
             parentSpanId: -1
             spanId: 0
             spanLayer: Http

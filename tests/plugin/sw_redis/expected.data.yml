@@ -22,7 +22,6 @@ segmentItems:
       - segmentId: not null
         spans:
           - operationName: Redis/SET
-            operationId: 0
             parentSpanId: 0
             spanId: 1
             spanLayer: Cache
@@ -40,7 +39,6 @@ segmentItems:
             peer: redis:6379
             skipAnalysis: false
           - operationName: Redis/GET
-            operationId: 0
             parentSpanId: 0
             spanId: 2
             spanLayer: Cache
@@ -90,7 +88,6 @@ segmentItems:
       - segmentId: not null
         spans:
           - operationName: /users
-            operationId: 0
             parentSpanId: 0
             spanId: 1
             spanLayer: Http

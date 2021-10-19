@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
+import inspect
 from functools import wraps
 from typing import List
-import inspect
 
 from skywalking import Layer, Component
 from skywalking.trace.context import get_context
@@ -75,7 +75,7 @@ def runnable(
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            _op = op or "Thread/"+func.__name__
+            _op = op or "Thread/" + func.__name__
             context = get_context()
             with context.new_local_span(op=_op) as span:
                 context.continued(snapshot)
