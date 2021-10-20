@@ -27,8 +27,8 @@ support_matrix = {
         ">=3.6": ["5.1"]
     }
 }
-note = """The celery server running with "celery -A ..." should be run with the HTTP protocol 
-as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation 
+note = """The celery server running with "celery -A ..." should be run with the HTTP protocol
+as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation
 in SkyWalking currently. Celery clients can use whatever protocol they want."""
 
 

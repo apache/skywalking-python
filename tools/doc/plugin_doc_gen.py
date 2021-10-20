@@ -27,10 +27,10 @@ This document is **automatically** generated from the SkyWalking Python testing 
 
 The column of versions only indicates the set of library versions tested in a best-effort manner.
 
-If you find newer major versions that are missing from the following table, and it's not documented as a limitation, 
+If you find newer major versions that are missing from the following table, and it's not documented as a limitation,
 please PR to update the test matrix in the plugin.
 
-Versions marked as NOT SUPPORTED may be due to 
+Versions marked as NOT SUPPORTED may be due to
 an incompatible version with Python in the original library
 or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 
@@ -75,7 +75,7 @@ def generate_plugin_doc():
             table_entry = f"| [{lib_entry}]({lib_link}) | {pretty_vector} | `{modname}` |"
             table_entries.append(table_entry)
 
-    with open("../docs/en/setup/Plugins.md", "w") as plugin_doc:
+    with open("../../docs/en/setup/Plugins.md", "w") as plugin_doc:
         plugin_doc.write(doc_head)
 
         plugin_doc.write(table_head)

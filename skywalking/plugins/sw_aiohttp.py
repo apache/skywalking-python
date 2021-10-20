@@ -30,6 +30,7 @@ support_matrix = {
 }
 note = """"""
 
+
 def install():
     from aiohttp import ClientSession
     from aiohttp.web_protocol import RequestHandler
