@@ -28,6 +28,7 @@ support_matrix = {
         ">=3.6": ["2.4.1", "2.5", "2.6"],  # support begins 2.4.1
     }
 }
+note = """"""
 
 
 def install():

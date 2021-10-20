@@ -28,7 +28,7 @@ support_matrix = {
         ">=3.6": ["3.7.4"]
     }
 }
-
+note = """"""
 
 def install():
     from aiohttp import ClientSession

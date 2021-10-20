@@ -22,28 +22,46 @@ import pkgutil
 
 from skywalking.plugins import __path__ as plugins_path
 
-table_head = """
-Library | Python Version: Lib Version | Plugin Name
+doc_head = """# Supported Libraries
+This document is **automatically** generated from the SkyWalking Python testing matrix.
+
+The column of versions only indicates the set of library versions tested in a best-effort manner.
+
+If you find newer major versions that are missing from the following table, and it's not documented as a limitation, 
+please PR to update the test matrix in the plugin.
+
+Versions marked as NOT SUPPORTED may be due to 
+an incompatible version with Python in the original library
+or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
+
+"""
+table_head = """### Plugin Support Table
+Library | Python Version - Lib Version | Plugin Name
 | :--- | :--- | :--- |
 """
 
 
-def generate_doc_table():
+def generate_plugin_doc():
     """
     Generates a test matrix table to the current dir
-    # TODO inject into the plugins.md doc instead of manual copy
 
     Returns: None
 
     """
     table_entries = []
+    note_entries = []
     for importer, modname, ispkg in pkgutil.iter_modules(plugins_path):
         plugin = importer.find_module(modname).load_module(modname)
 
-        plugin_support_matrix = plugin.support_matrix
-        plugin_support_links = plugin.link_vector
-        libs_tested = list(plugin_support_matrix.keys())
-        links_tested = plugin_support_links
+        try:
+            plugin_support_matrix = plugin.support_matrix  # type: dict
+            plugin_support_links = plugin.link_vector  # type: list
+            libs_tested = list(plugin_support_matrix.keys())
+            links_tested = plugin_support_links  # type: list
+            if plugin.note:
+                note_entries.append(plugin.note)
+        except AttributeError:
+            raise AttributeError(f"Missing attribute in {modname}, please follow the correct plugin style.")
 
         for lib, link in zip(libs_tested, links_tested):  # NOTE: maybe a two lib support like http.server + werkzeug
             lib_entry = str(lib)
@@ -57,11 +75,17 @@ def generate_doc_table():
             table_entry = f"| [{lib_entry}]({lib_link}) | {pretty_vector} | `{modname}` |"
             table_entries.append(table_entry)
 
-    with open("plugin_doc.md", "w") as doc:
-        doc.write(table_head)
-        for entry in table_entries:
-            doc.write(entry + '\n')
+    with open("../docs/en/setup/Plugins.md", "w") as plugin_doc:
+        plugin_doc.write(doc_head)
+
+        plugin_doc.write(table_head)
+        for table_entry in table_entries:
+            plugin_doc.write(f"{table_entry}\n")
+
+        plugin_doc.write("### Notes\n")
+        for note_entry in note_entries:
+            plugin_doc.write(f"- {note_entry}\n")
 
 
 if __name__ == "__main__":
-    generate_doc_table()
+    generate_plugin_doc()

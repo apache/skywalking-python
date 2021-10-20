@@ -28,6 +28,7 @@ support_matrix = {
         # ">=3.8": ["4.0a1"]  # expected Dec 2021
     }
 }
+note = """"""
 
 
 def install():

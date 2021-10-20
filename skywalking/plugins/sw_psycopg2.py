@@ -26,6 +26,7 @@ support_matrix = {
         ">=3.6": ["2.9"]  # transition to psycopg(3), not working for python 3.10
     }
 }
+note = """"""
 
 
 def install():

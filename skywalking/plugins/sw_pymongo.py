@@ -25,6 +25,7 @@ support_matrix = {
         ">=3.6": ["3.11"]  # TODO: "3.12" incompatible with all python versions, need investigation
     }
 }
+note = """"""
 
 
 def install():

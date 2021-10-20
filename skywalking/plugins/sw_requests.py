@@ -26,7 +26,7 @@ support_matrix = {
         ">=3.6": ["2.26", "2.25"]
     }
 }
-
+note = """"""
 
 def install():
     from requests import Session

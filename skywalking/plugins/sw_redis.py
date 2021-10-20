@@ -25,6 +25,7 @@ support_matrix = {
         ">=3.6": ["3.5"]  # "4.0" next, incompatible to current instrumentation
     }
 }
+note = """"""
 
 
 def install():

@@ -37,6 +37,7 @@ support_matrix = {
         ">=3.6": ["20.12"]  # 20.12 last LTS for python 3.6
     }  # TODO: add instrumentation for 21.9 (method signature change) remove - write_callback, stream_callback
 }
+note = """"""
 
 
 def install():

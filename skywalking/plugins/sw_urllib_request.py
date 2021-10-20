@@ -28,6 +28,7 @@ support_matrix = {
         ">=3.6": ["*"]
     }
 }
+note = """"""
 
 
 def install():

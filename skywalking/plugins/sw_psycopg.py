@@ -25,6 +25,7 @@ support_matrix = {
         ">=3.6": ["3.0"]  # psycopg is psycopg3
     }
 }
+note = """"""
 
 
 def install():

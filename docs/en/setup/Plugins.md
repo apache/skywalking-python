@@ -1,7 +1,7 @@
 # Supported Libraries
-The following table is **automatically** generated from SkyWalking Python testing matrix.
+This document is **automatically** generated from the SkyWalking Python testing matrix.
 
-The column `Versions` only indicates that library versions tested in the best effort manner.
+The column of versions only indicates the set of library versions tested in a best-effort manner.
 
 If you find newer major versions that are missing from the following table, and it's not documented as a limitation, 
 please PR to update the test matrix in the plugin.
@@ -10,7 +10,8 @@ Versions marked as NOT SUPPORTED may be due to
 an incompatible version with Python in the original library
 or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 
-Library | Python Version: Lib Version | Plugin Name
+### Plugin Support Table
+Library | Python Version - Lib Version | Plugin Name
 | :--- | :--- | :--- |
 | [aiohttp](https://docs.aiohttp.org) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.6 - ['3.7.4'];  | `sw_aiohttp` |
 | [celery](https://docs.celeryproject.org) | Python >=3.6 - ['5.1'];  | `sw_celery` |
@@ -33,8 +34,7 @@ Library | Python Version: Lib Version | Plugin Name
 | [tornado](https://www.tornadoweb.org) | Python >=3.6 - ['6.0', '6.1'];  | `sw_tornado` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.6 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib_request](https://docs.python.org/3/library/urllib.request.html) | Python >=3.6 - ['*'];  | `sw_urllib_request` |
-
-
-
-* Note: The celery server running with "celery -A ..." should be run with the HTTP protocol as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation in SkyWalking currently. Celery clients can use whatever protocol they want.
-
+### Notes
+- The celery server running with "celery -A ..." should be run with the HTTP protocol 
+as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation 
+in SkyWalking currently. Celery clients can use whatever protocol they want.
