@@ -28,7 +28,7 @@ support_matrix = {
 note = """"""
 
 
-def install():
+def install_sync():
     import wrapt  # psycopg is read-only C extension objects so they need to be proxied
     import psycopg
 
@@ -141,7 +141,10 @@ def install():
     psycopg.Connection.connect = connect
     psycopg.connect = connect
 
-    # asynchronous
+
+def install_async():
+    import wrapt  # psycopg is read-only C extension objects so they need to be proxied
+    import psycopg
 
     class ProxyAsyncCursor(wrapt.ObjectProxy):
         def __init__(self, cur):
@@ -255,3 +258,8 @@ def install():
 
     _aconnect = psycopg.AsyncConnection.connect
     psycopg.AsyncConnection.connect = aconnect
+
+
+def install():
+    install_sync()
+    install_async()
