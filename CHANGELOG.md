@@ -4,12 +4,11 @@
 - Feature:
 
 - Plugins:
-  - Add Psycopg(3.x) support (#167)
+  - Add Psycopg(3.x) support (In-progress)
 
 - Fixes:
 
 - Others:
-  - Drop support for Python 3.5
   - Add support for Python 3.10
 
 ### 0.7.0
