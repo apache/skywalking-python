@@ -4,7 +4,7 @@
 source**
 
 This image hosts the SkyWalking Python agent package on top of official Python base images providing support from 
-Python 3.6 - 3.9.
+Python 3.6 - 3.10.
 
 ## How to use this image
 

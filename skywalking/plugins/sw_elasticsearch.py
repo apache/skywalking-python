@@ -19,6 +19,14 @@ from skywalking import Layer, Component, config
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbStatement
 
+link_vector = ["https://github.com/elastic/elasticsearch-py"]
+support_matrix = {
+    "elasticsearch": {
+        ">=3.6": ["7.13", "7.14", "7.15"],
+    }
+}
+note = """"""
+
 
 def install():
     from elasticsearch import Transport

@@ -22,7 +22,6 @@ segmentItems:
     - componentId: 7012
       endTime: gt 0
       isError: false
-      operationId: 0
       operationName: /users
       parentSpanId: -1
       peer: not null
@@ -48,7 +47,6 @@ segmentItems:
     - componentId: 7002
       endTime: gt 0
       isError: false
-      operationId: 0
       operationName: /users
       parentSpanId: 0
       peer: provider:9091
@@ -67,7 +65,6 @@ segmentItems:
     - componentId: 7012
       endTime: gt 0
       isError: false
-      operationId: 0
       operationName: /users
       parentSpanId: -1
       peer: not null

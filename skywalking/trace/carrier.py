@@ -23,7 +23,7 @@ from skywalking.utils.lang import b64encode, b64decode
 
 class CarrierItem(object):
     def __init__(self, key: str = '', val: str = ''):
-        self.key = config.agent_namespace + "-" + key if config.agent_namespace else key   # type: str
+        self.key = config.agent_namespace + "-" + key if config.agent_namespace else key  # type: str
         self.val = val  # type: str
 
     @property

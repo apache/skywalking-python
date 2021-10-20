@@ -29,5 +29,6 @@ header:
     - 'NOTICE'
     - '.github/PULL_REQUEST_TEMPLATE'
     - '.gitignore'
+    - '**/*.json'
 
   comment: on-failure

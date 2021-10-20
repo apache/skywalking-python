@@ -24,20 +24,31 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 
 logger = logging.getLogger(__name__)
 
-version_rule = {
-    "name": "sanic",
-    "rules": [">=20.3.0", "<21.0.0"]
+# version_rule = {
+#     "name": "sanic",
+#     "rules": [">=20.3.0 <21.0.0"]
+# }
+
+link_vector = ["https://sanic.readthedocs.io/en/latest"]
+support_matrix = {
+    "sanic": {
+        ">=3.10": [],  # not supporting any version yet
+        ">=3.7": ["20.12"],  # 21.9 Future LTS - Not supported by SW yet
+        ">=3.6": ["20.12"]  # 20.12 last LTS for python 3.6
+    }  # TODO: add instrumentation for 21.9 (method signature change) remove - write_callback, stream_callback
 }
+note = """"""
 
 
 def install():
     from sanic import Sanic, handlers, response
+    # TODO: format_http1_response is removed from response in later versions.
 
     _format_http1_response = response.format_http1_response
     _handle_request = Sanic.handle_request
-    _handlers_ErrorHandler_reponse = handlers.ErrorHandler.response
+    _handlers_ErrorHandler_response = handlers.ErrorHandler.response
 
-    def _sw_format_http1_reponse(status: int, headers, body=b""):
+    def _sw_format_http1_response(status: int, headers, body=b""):
         if status is not None:
             entry_span = get_context().active_span()
             if entry_span is not None and type(entry_span) is not NoopSpan:
@@ -47,17 +58,17 @@ def install():
 
         return _format_http1_response(status, headers, body)
 
-    def _sw_handlers_ErrorHandler_reponse(self: handlers.ErrorHandler, req, e):
+    def _sw_handlers_ErrorHandler_response(self: handlers.ErrorHandler, req, e):
         if e is not None:
             entry_span = get_context().active_span()
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 entry_span.raised()
 
-        return _handlers_ErrorHandler_reponse(self, req, e)
+        return _handlers_ErrorHandler_response(self, req, e)
 
-    response.format_http1_response = _sw_format_http1_reponse
+    response.format_http1_response = _sw_format_http1_response
     Sanic.handle_request = _gen_sw_handle_request(_handle_request)
-    handlers.ErrorHandler.response = _sw_handlers_ErrorHandler_reponse
+    handlers.ErrorHandler.response = _sw_handlers_ErrorHandler_response
 
 
 def _gen_sw_handle_request(_handle_request):
@@ -91,4 +102,5 @@ def _gen_sw_handle_request(_handle_request):
                 result = await resp
 
         return result
+
     return _sw_handle_request

@@ -20,6 +20,14 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
+link_vector = ["https://requests.readthedocs.io/en/master/"]
+support_matrix = {
+    "requests": {
+        ">=3.6": ["2.26", "2.25"]
+    }
+}
+note = """"""
+
 
 def install():
     from requests import Session

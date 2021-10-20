@@ -21,6 +21,15 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
+link_vector = ["https://docs.aiohttp.org"]
+support_matrix = {
+    "aiohttp": {
+        ">=3.10": [],  # waiting for 3.8 release
+        ">=3.6": ["3.7.4"]
+    }
+}
+note = """"""
+
 
 def install():
     from aiohttp import ClientSession
@@ -79,7 +88,7 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.AioHttp
-            span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple))\
+            span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple)) \
                 else request._transport_peername
 
             span.tag(TagHttpMethod(method))  # pyre-ignore

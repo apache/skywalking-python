@@ -18,7 +18,6 @@ from typing import Callable
 
 import pytest
 import requests
-
 from tests.plugin.base import TestPluginBase
 
 

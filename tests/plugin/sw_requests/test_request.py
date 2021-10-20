@@ -19,6 +19,8 @@ from typing import Callable
 import pytest
 import requests
 
+from skywalking.plugins.sw_requests import support_matrix
+from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 
 
@@ -29,12 +31,6 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', [
-        'requests==2.24.0',
-        'requests==2.20.0',
-        'requests==2.19.0',
-        'requests==2.13.0',
-        'requests==2.9.0',
-    ])
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='requests', support_matrix=support_matrix))
     def test_plugin(self, docker_compose, version):
         self.validate()

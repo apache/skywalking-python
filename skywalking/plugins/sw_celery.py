@@ -20,6 +20,17 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagCeleryParameters
 
+link_vector = ["https://docs.celeryproject.org"]
+# TODO: Celery is missing plugin test
+support_matrix = {
+    "celery": {
+        ">=3.6": ["5.1"]
+    }
+}
+note = """The celery server running with "celery -A ..." should be run with the HTTP protocol
+as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation
+in SkyWalking currently. Celery clients can use whatever protocol they want."""
+
 
 def install():
     from urllib.parse import urlparse

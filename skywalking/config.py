@@ -68,7 +68,7 @@ celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512'
 # profile configs
 get_profile_task_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')  # type: int
 profile_active = False if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
-                         os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True  # type: bool
+                          os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True  # type: bool
 profile_max_parallel = int(os.getenv("SW_AGENT_PROFILE_MAX_PARALLEL") or '5')  # type: int
 profile_duration = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')  # type: int
 profile_dump_max_stack_depth = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')  # type: int
@@ -79,11 +79,11 @@ log_reporter_active = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') and \
 log_reporter_max_buffer_size = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')  # type: int
 log_reporter_level = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'  # type: str
 log_reporter_ignore_filter = True if os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True' else False  # type: bool
+                                     os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True' else False  # type: bool
 log_reporter_formatted = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') and \
-                         os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
+                                  os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True  # type: bool
 log_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
-                        '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
+                      '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
 cause_exception_depth = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '5')  # type: int
 
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
@@ -104,10 +104,10 @@ def finalize():
     suffix = r'^.+(?:' + '|'.join(reesc.sub(r'\\\1', s.strip()) for s in ignore_suffix.split(',')) + ')$'
     method = r'^' + '|'.join(s.strip() for s in http_ignore_method.split(',')) + '$'
     path = '^(?:' + \
-           '|'.join(                          # replaces ","
+           '|'.join(  # replaces ","
                '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
-                   '[^/]*'.join(              # replaces "*"
-                       '[^/]'.join(           # replaces "?"
+                   '[^/]*'.join(  # replaces "*"
+                       '[^/]'.join(  # replaces "?"
                            reesc.sub(r'\\\1', s) for s in p2.split('?')
                        ) for p2 in p1.split('*')
                    ) for p1 in p0.strip().split('**')
