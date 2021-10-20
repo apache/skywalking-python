@@ -8,7 +8,7 @@ please PR to update the test matrix in the plugin.
 
 Versions marked as NOT SUPPORTED may be due to 
 an incompatible version with Python in the original library
-or a limitation of SkyWalking auto-instrumentation(welcome to contribute!)
+or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 
 Library | Python Version: Lib Version | Plugin Name
 | :--- | :--- | :--- |

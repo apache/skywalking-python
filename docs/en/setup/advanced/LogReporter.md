@@ -1,6 +1,6 @@
 # Python Agent Log Reporter
 
-This functionality reports logs collected from the Python logging module(in theory, also logging libraries depending on the core logging module).
+This functionality reports logs collected from the Python logging module (in theory, also logging libraries depending on the core logging module).
 
 To utilize this feature, you will need to add some new configurations to the agent initialization step.
 
@@ -39,7 +39,7 @@ Note that it also works with your custom logger levels, simply specify its strin
 ### Ignore log filters
 The following config is disabled by default. When enabled, the log reporter will collect logs disregarding your custom log filters.
 
-For example, if you attach the filter below to the logger - the default behavior of log reporting aligns with the filter
+For example, if you attach the filter below to the logger - the default behavior of log reporting aligns with the filter 
 (not reporting any logs with a message starting with `SW test`)
 ```python
 class AppFilter(logging.Filter):
