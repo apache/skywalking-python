@@ -35,7 +35,6 @@ lint: clean
 
 dev-check:
 	flake8 --version || python3 -m pip install flake8 && flake8 .
-	python3 tools/check-license-header.py skywalking tests tools
 
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
