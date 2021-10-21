@@ -58,7 +58,7 @@ def install():
                 return l_tags
 
             for i, arg in enumerate(record.args):
-                l_tags.data.append(KeyStringValuePair(key='argument.' + str(i), value=str(arg)))
+                l_tags.data.append(KeyStringValuePair(key=f"argument.{str(i)}", value=str(arg)))
 
             if record.exc_info:
                 l_tags.data.append(KeyStringValuePair(key='exception',
@@ -95,5 +95,5 @@ def install():
         if config.log_reporter_formatted:
             if layout:
                 return formatter.format(record=record)
-            return record.getMessage() + ('\n' + sw_traceback() if record.exc_info else '')
+            return f"{record.getMessage()}'\n'{sw_traceback() if record.exc_info else ''}"
         return str(record.msg)  # convert possible exception to str

@@ -265,4 +265,4 @@ def notify_profile_finish(task: ProfileTask):
     try:
         __protocol.notify_profile_task_finish(task)
     except Exception as e:
-        logger.error("notify profile task finish to backend fail. " + str(e))
+        logger.error(f"notify profile task finish to backend fail. {str(e)}")

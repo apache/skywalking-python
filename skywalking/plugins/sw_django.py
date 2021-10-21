@@ -88,4 +88,4 @@ def install():
 
 
 def params_tostring(params):
-    return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+    return "\n".join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])

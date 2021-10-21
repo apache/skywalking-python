@@ -78,7 +78,7 @@ def wrap_werkzeug_request_handler(handler):
             else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
 
         with span:
-            url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
+            url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
             span.layer = Layer.Http
             span.component = Component.General
             span.peer = '%s:%s' % handler.client_address
@@ -116,8 +116,8 @@ def wrap_default_request_handler(handler):
 
 
 def _wrap_do_method(handler, method):
-    if hasattr(handler, 'do_' + method) and inspect.ismethod(getattr(handler, 'do_' + method)):
-        _do_method = getattr(handler, 'do_' + method)
+    if hasattr(handler, f"do_{method}") and inspect.ismethod(getattr(handler, f"do_{method}")):
+        _do_method = getattr(handler, f"do_{method}")
 
         def _sw_do_method():
             carrier = Carrier()
@@ -129,7 +129,7 @@ def _wrap_do_method(handler, method):
                 else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
 
             with span:
-                url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
+                url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
                 span.layer = Layer.Http
                 span.component = Component.General
                 span.peer = '%s:%s' % handler.client_address
@@ -145,4 +145,4 @@ def _wrap_do_method(handler, method):
                         if status_code >= 400:
                             span.error_occurred = True
 
-        setattr(handler, 'do_' + method, _sw_do_method)
+        setattr(handler, f"do_{method}", _sw_do_method)

@@ -75,7 +75,7 @@ def _gen_sw_handle_request(_handle_request):
     from inspect import isawaitable
 
     def params_tostring(params):
-        return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+        return "\n".join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
     async def _sw_handle_request(self, request, write_callback, stream_callback):
         req = request

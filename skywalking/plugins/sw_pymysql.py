@@ -48,8 +48,8 @@ def install():
             if config.sql_parameters_length and args:
                 parameter = ",".join([str(arg) for arg in args])
                 max_len = config.sql_parameters_length
-                parameter = parameter[0:max_len] + "..." if len(parameter) > max_len else parameter
-                span.tag(TagDbSqlParameters('[' + parameter + ']'))
+                parameter = f"{parameter[0:max_len]}..." if len(parameter) > max_len else parameter
+                span.tag(TagDbSqlParameters(f"[{parameter}]"))
 
             return res
 

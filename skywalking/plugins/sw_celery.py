@@ -44,7 +44,7 @@ def install():
         # exchange = options['exchange']
         # queue = options['routing_key']
         # op = 'celery/{}/{}/{}'.format(exchange or '', queue or '', name)
-        op = 'celery/' + name
+        op = f"celery/{name}"
 
         if broker_url:
             url = urlparse(broker_url)
@@ -83,7 +83,7 @@ def install():
             # exchange = di and di.get('exchange')
             # queue = di and di.get('routing_key')
             # op = 'celery/{}/{}/{}'.format(exchange or '', queue or '', name)
-            op = 'celery/' + name
+            op = f"celery/{name}"
             carrier = Carrier()
 
             for item in carrier:

@@ -47,7 +47,7 @@ def _sw_basic_publish_func(_basic_publish):
         peer = f'{this.connection.params.host}:{this.connection.params.port}'
         context = get_context()
         import pika
-        with context.new_exit_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key + "/Producer" or "/",
+        with context.new_exit_span(op=f"RabbitMQ/Topic/{exchange}/Queue/{routing_key}/Producer" or "/",
                                    peer=peer, component=Component.RabbitmqProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ

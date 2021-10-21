@@ -37,7 +37,7 @@ def install():
     _handle_exception = Flask.handle_exception
 
     def params_tostring(params):
-        return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+        return "\n".join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
     def _sw_full_dispatch_request(this: Flask):
         import flask

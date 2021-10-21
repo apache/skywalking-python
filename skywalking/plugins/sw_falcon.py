@@ -60,7 +60,7 @@ def install():
             span.tag(TagHttpURL(str(req.url)))
 
             if req.params:
-                span.tag(TagHttpParams(','.join([k + '=' + v for k, v in req.params.items()])))
+                span.tag(TagHttpParams(','.join([f"{k}={v}" for k, v in req.params.items()])))
 
             def _start_response(resp_status, headers):
                 try:

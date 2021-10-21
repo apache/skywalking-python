@@ -27,8 +27,8 @@ from skywalking.loggings import logger
 class HttpServiceManagementClient(ServiceManagementClient):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_instance_props = proto + config.collector_address.rstrip('/') + '/v3/management/reportProperties'
-        self.url_heart_beat = proto + config.collector_address.rstrip('/') + '/v3/management/keepAlive'
+        self.url_instance_props = f"{proto + config.collector_address.rstrip('/')}/v3/management/reportProperties"
+        self.url_heart_beat = f"{proto + config.collector_address.rstrip('/')}/v3/management/keepAlive"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
@@ -61,7 +61,7 @@ class HttpServiceManagementClient(ServiceManagementClient):
 class HttpTraceSegmentReportService(TraceSegmentReportService):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/segment'
+        self.url_report = f"{proto + config.collector_address.rstrip('/')}/v3/segment"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
@@ -115,7 +115,7 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
 class HttpLogDataReportService(LogDataReportService):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/logs'
+        self.url_report = f"{proto + config.collector_address.rstrip('/')}/v3/logs"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
