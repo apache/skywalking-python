@@ -163,9 +163,8 @@ class ProfileTaskExecutionService:
                                f"should be str and not empty")
             # duration
             if task.duration < ProfileConstants.TASK_DURATION_MIN_MINUTE:
-                return (
-                False, f"monitor duration must greater than "
-                       f"{ProfileConstants.TASK_DURATION_MIN_MINUTE} minutes")
+                return (False, f"monitor duration must greater than "
+                               f"{ProfileConstants.TASK_DURATION_MIN_MINUTE} minutes")
             if task.duration > ProfileConstants.TASK_DURATION_MAX_MINUTE:
                 return (False, f"monitor duration must less than "
                                f"{ProfileConstants.TASK_DURATION_MAX_MINUTE} minutes")
