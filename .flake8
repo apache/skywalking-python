@@ -17,5 +17,7 @@
 [flake8]
 ignore = E501, E126, W503  # careful with E303, which may cause too many blank lines in pycharm formatted code
 max-line-length = 120
-max-complexity = 15
+max-complexity = 20
 exclude = venv*,*egg_info,protocol
+count = True
+show-source = True
