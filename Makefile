@@ -30,12 +30,12 @@ gen:
 	python3 tools/codegen.py
 
 lint: clean
-	flake8 --version || python3 -m pip install flake8
-	flake8 . --count --show-source --max-complexity 20
+	# flake8 configurations should go to the file .flake8
+	flake8 --version || python3 -m pip install flake8 && flake8 .
 
 dev-check:
-	flake8 --version || python3 -m pip install flake8
-	flake8 . --count --show-source --max-complexity 20
+	# flake8 configurations should go to the file .flake8
+	flake8 --version || python3 -m pip install flake8 && flake8 .
 	python3 tools/check-license-header.py skywalking tests tools
 
 license: clean
