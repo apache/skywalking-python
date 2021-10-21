@@ -29,12 +29,11 @@ gen:
 	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
 	python3 tools/codegen.py
 
+# flake8 configurations should go to the file .flake8
 lint: clean
-	# flake8 configurations should go to the file .flake8
 	flake8 --version || python3 -m pip install flake8 && flake8 .
 
 dev-check:
-	# flake8 configurations should go to the file .flake8
 	flake8 --version || python3 -m pip install flake8 && flake8 .
 	python3 tools/check-license-header.py skywalking tests tools
 
