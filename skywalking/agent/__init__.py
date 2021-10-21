@@ -21,16 +21,15 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking.protocol.logging.Logging_pb2 import LogData
-
 from skywalking import config, plugins
 from skywalking import loggings
+from skywalking import profile
 from skywalking.agent.protocol import Protocol
 from skywalking.command import command_service
 from skywalking.loggings import logger
-from skywalking import profile
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
@@ -182,7 +181,7 @@ def __fini():
 
 def __fork_before():
     if config.protocol != 'http':
-        logger.warning('fork() not currently supported with %s protocol' % config.protocol)
+        logger.warning(f'fork() not currently supported with {config.protocol} protocol')
 
     # TODO: handle __queue and __finished correctly (locks, mutexes, etc...), need to lock before fork and unlock after
     # if possible, or ensure they are not locked in threads (end threads and restart after fork?)

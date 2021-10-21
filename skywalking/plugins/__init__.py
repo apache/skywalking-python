@@ -107,6 +107,6 @@ def check(rule_unit, current_version):
     expect_version = version.parse(expect_pkg_version)
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException("version rule {} error. only allow >,>=,==,<=,<,!= symbols".format(rule_unit))
+        raise VersionRuleException(f"version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols")
 
     return f(current_version, expect_version)

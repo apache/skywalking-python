@@ -78,7 +78,7 @@ def _gen_sw_get_response_func(old_execute):
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
                 span.tag(TagHttpMethod(method))
-                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = old_execute(self, *args, **kwargs)
                 if isawaitable(result):
                     result = await result
@@ -106,7 +106,7 @@ def _gen_sw_get_response_func(old_execute):
                 peer = request.connection.stream.socket.getpeername()
                 span.peer = '{0}:{1}'.format(*peer)
                 span.tag(TagHttpMethod(method))
-                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = yield from old_execute(self, *args, **kwargs)
                 span.tag(TagHttpStatusCode(self._status_code))
                 if self._status_code >= 400:

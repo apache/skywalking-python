@@ -44,7 +44,7 @@ def _sw_basic_publish_func(_basic_publish):
                           body,
                           properties=None,
                           mandatory=False):
-        peer = '%s:%s' % (this.connection.params.host, this.connection.params.port)
+        peer = f'{this.connection.params.host}:{this.connection.params.port}'
         context = get_context()
         import pika
         with context.new_exit_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key + "/Producer" or "/",
@@ -74,7 +74,7 @@ def _sw_basic_publish_func(_basic_publish):
 
 def _sw__on_deliver_func(__on_deliver):
     def _sw__on_deliver(this, method_frame, header_frame, body):
-        peer = '%s:%s' % (this.connection.params.host, this.connection.params.port)
+        peer = f'{this.connection.params.host}:{this.connection.params.port}'
         context = get_context()
         exchange = method_frame.method.exchange
         routing_key = method_frame.method.routing_key

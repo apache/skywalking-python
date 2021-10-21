@@ -31,7 +31,7 @@ def compare_version(rule_unit):
     test_python_version = sys.version_info[:2]  # type: tuple
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException("version rule {} error. only allow >,>=,==,<=,<,!= symbols".format(rule_unit))
+        raise VersionRuleException(f"version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols")
 
     return f(test_python_version, expect_python_version)
 

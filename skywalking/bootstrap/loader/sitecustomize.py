@@ -54,11 +54,11 @@ _sw_loader_logger = _get_sw_loader_logger()
 
 # DEBUG messages in case execution goes wrong
 _sw_loader_logger.debug('---------------sitecustomize.py---------------')
-_sw_loader_logger.debug("Successfully imported sitecustomize.py from `{}`".format(__file__))
-_sw_loader_logger.debug('You are inside working dir - {}'.format(os.getcwd()))
-_sw_loader_logger.debug('Using Python version - {} '.format(sys.version))
-_sw_loader_logger.debug('Using executable at - {}'.format(sys.executable))
-_sw_loader_logger.debug('System Base Python executable location {}'.format(sys.base_prefix))
+_sw_loader_logger.debug(f"Successfully imported sitecustomize.py from `{__file__}`")
+_sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
+_sw_loader_logger.debug(f'Using Python version - {sys.version} ')
+_sw_loader_logger.debug(f'Using executable at - {sys.executable}')
+_sw_loader_logger.debug(f'System Base Python executable location {sys.base_prefix}')
 
 if sys.prefix != sys.base_prefix:
     _sw_loader_logger.debug("[The SkyWalking agent bootstrapper is running inside a virtual environment]")
@@ -76,7 +76,7 @@ loaded = sys.modules.pop('sitecustomize', None)  # pop sitecustomize from loaded
 # now try to find the original sitecustomize provided in user env
 try:
     loaded = importlib.import_module('sitecustomie')
-    _sw_loader_logger.debug("Found user sitecustomize file {}, imported".format(loaded))
+    _sw_loader_logger.debug(f"Found user sitecustomize file {loaded}, imported")
 except ImportError:  # ModuleNotFoundError
     _sw_loader_logger.debug("Original sitecustomize module not found, skipping.")
 finally:  # surprise the import error by adding loaded back

@@ -66,7 +66,7 @@ def docker_compose(request, prepare, version):
     if exception:
         time.sleep(100)
         compose.stop()
-        raise Exception("""Wait time exceeded {0} sec. Exception {1}""".format(100, exception))
+        raise Exception(f"""Wait time exceeded {100} sec. Exception {exception}""")
 
     yield compose
 

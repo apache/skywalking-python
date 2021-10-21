@@ -34,7 +34,7 @@ def install():
     _send_command = Connection.send_command
 
     def _sw_send_command(this: Connection, *args, **kwargs):
-        peer = "%s:%s" % (this.host, this.port)
+        peer = f"{this.host}:{this.port}"
         op = args[0]
         context = get_context()
         with context.new_exit_span(op="Redis/" + op or "/", peer=peer, component=Component.Redis) as span:

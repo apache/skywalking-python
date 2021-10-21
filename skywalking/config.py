@@ -94,7 +94,7 @@ def init(**kwargs):
 
     for key, val in kwargs.items():
         if key not in options:
-            raise KeyError('invalid config option %s' % key)
+            raise KeyError(f'invalid config option {key}')
 
         glob[key] = val
 
@@ -115,7 +115,7 @@ def finalize():
            ) + ')$'
 
     global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD
-    RE_IGNORE_PATH = re.compile('%s|%s' % (suffix, path))
+    RE_IGNORE_PATH = re.compile(f'{suffix}|{path}')
     RE_HTTP_IGNORE_METHOD = re.compile(method, re.IGNORECASE)
 
 

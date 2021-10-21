@@ -29,7 +29,7 @@ from skywalking.bootstrap.cli import SWRunnerFailure
 def execute(command: List[str]) -> None:
     """ Set up environ and invokes the given command to replace current process """
 
-    cli_logger.debug("SkyWalking Python agent `runner` received command {}".format(command))
+    cli_logger.debug(f"SkyWalking Python agent `runner` received command {command}")
 
     cli_logger.debug("Adding sitecustomize.py to PYTHONPATH")
 
@@ -47,7 +47,7 @@ def execute(command: List[str]) -> None:
     # When constructing sys.path PYTHONPATH is always
     # before other paths and after interpreter invoker path, which is here or none
     os.environ['PYTHONPATH'] = new_path if new_path else loader_path
-    cli_logger.debug("Updated PYTHONPATH - {}".format(os.environ['PYTHONPATH']))
+    cli_logger.debug(f"Updated PYTHONPATH - {os.environ['PYTHONPATH']}")
 
     # Used in sitecustomize to compare command's Python installation with CLI
     # If not match, need to stop agent from loading, and kill the process
@@ -58,7 +58,7 @@ def execute(command: List[str]) -> None:
     os.environ['SW_PYTHON_CLI_DEBUG_ENABLED'] = 'True' if cli_logger.level == logging.DEBUG else 'False'
 
     try:
-        cli_logger.debug('New process starting with file - `{}` args - `{}`'.format(command[0], command))
+        cli_logger.debug(f'New process starting with file - `{command[0]}` args - `{command}`')
         os.execvp(command[0], command)
     except OSError:
         raise SWRunnerFailure

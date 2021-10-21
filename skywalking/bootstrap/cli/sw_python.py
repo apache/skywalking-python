@@ -53,7 +53,7 @@ def start() -> None:
 
     cli_logger.setLevel(logging.DEBUG if args.debug else logging.INFO)
 
-    cli_logger.debug("Args received {}".format(args))
+    cli_logger.debug(f"Args received {args}")
 
     if not args.command:
         cli_logger.error("Command is not provided, please type `sw-python -h` for the list of command line arguments")

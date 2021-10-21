@@ -48,7 +48,7 @@ def install():
 
         if broker_url:
             url = urlparse(broker_url)
-            peer = '{}:{}'.format(url.hostname, url.port)
+            peer = f'{url.hostname}:{url.port}'
         else:
             peer = '???'
 
@@ -60,7 +60,7 @@ def install():
             # span.tag(TagMqQueue(queue))
 
             if config.celery_parameters_length:
-                params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
+                params = f'*{args}, **{kwargs}'[:config.celery_parameters_length]
                 span.tag(TagCeleryParameters(params))
 
             options = {**options}
@@ -110,7 +110,7 @@ def install():
                 # span.tag(TagMqQueue(queue))
 
                 if config.celery_parameters_length:
-                    params = '*{}, **{}'.format(args, kwargs)[:config.celery_parameters_length]
+                    params = f'*{args}, **{kwargs}'[:config.celery_parameters_length]
                     span.tag(TagCeleryParameters(params))
 
                 return _fun(*args, **kwargs)

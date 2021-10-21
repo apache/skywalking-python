@@ -34,7 +34,7 @@ def install():
     _execute = Cursor.execute
 
     def _sw_execute(this: Cursor, query, args=None):
-        peer = "%s:%s" % (this.connection.host, this.connection.port)
+        peer = f"{this.connection.host}:{this.connection.port}"
 
         context = get_context()
         with context.new_exit_span(op="Mysql/PyMsql/execute", peer=peer, component=Component.PyMysql) as span:

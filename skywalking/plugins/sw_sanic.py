@@ -92,7 +92,7 @@ def _gen_sw_handle_request(_handle_request):
         with span:
             span.layer = Layer.Http
             span.component = Component.Sanic
-            span.peer = '%s:%s' % (req.remote_addr or req.ip, req.port)
+            span.peer = f'{req.remote_addr or req.ip}:{req.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split("?")[0]))
             if config.sanic_collect_http_params and req.args:
