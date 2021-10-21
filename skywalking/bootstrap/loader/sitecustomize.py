@@ -63,7 +63,6 @@ _sw_loader_logger.debug(f'System Base Python executable location {sys.base_prefi
 if sys.prefix != sys.base_prefix:
     _sw_loader_logger.debug("[The SkyWalking agent bootstrapper is running inside a virtual environment]")
 
-
 # It is possible that someone else also has a sitecustomize.py
 # in sys.path either set by .pth files or manually, we need to run them as well
 # The path to user sitecustomize.py is after ours in sys.path, needs to be imported here.
@@ -82,7 +81,6 @@ except ImportError:  # ModuleNotFoundError
 finally:  # surprise the import error by adding loaded back
     sys.modules['sitecustomize'] = loaded
 
-
 # This sitecustomize by default doesn't remove the loader dir from PYTHONPATH,
 # Thus, subprocesses and multiprocessing also inherits this sitecustomize.py
 # This behavior can be turned off using a user provided env below
@@ -96,7 +94,6 @@ if os.environ.get('SW_PYTHON_BOOTSTRAP_PROPAGATE') == 'False':
             partitioned.remove(loader_path)
             os.environ["PYTHONPATH"] = os.path.pathsep.join(partitioned)
             _sw_loader_logger.debug("Removed loader from PYTHONPATH, spawned process will not have agent enabled")
-
 
 # Note that users could be misusing the CLI to call a Python program that
 # their Python env doesn't have SkyWalking installed. Or even call another
@@ -115,11 +112,9 @@ prefix_match = cli_python_prefix.lower() == os.path.realpath(os.path.normpath(sy
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
-        "\nPython used by sw-python CLI - v{} at {}\n"
-        "Python used by your actual program - v{} at {}".format(
-            cli_python_version, cli_python_prefix, platform.python_version(),
-            os.path.realpath(os.path.normpath(sys.prefix))
-        )
+        f"\nPython used by sw-python CLI - v{cli_python_version} at "
+        f"{cli_python_prefix}\nPython used by your actual program - "
+        f"v{platform.python_version()} at {os.path.realpath(os.path.normpath(sys.prefix))}"
     )
     _sw_loader_logger.error("The sw-python CLI was instructed to run a program "
                             "using an different Python installation "
