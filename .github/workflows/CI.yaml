@@ -43,14 +43,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint codes
         run: make lint
+  prep-plugin-and-unit-tests:
+    name: Prepare Plugin and Unit Tests
+    needs: license-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
   plugin-and-unit-tests:
     name: Plugin and Unit Tests
-    needs: license-and-lint
+    needs: prep-plugin-and-unit-tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       matrix:
         python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
       SW_PYTHON_VERSION: ${{ matrix.python-version }}
@@ -66,7 +79,9 @@ jobs:
       - name: Set up dependencies
         run: make setup install
       - name: Run unit tests
-        run: make test
+        run: |
+          make test-parallel-setup
+          python3 -m pytest -v ${{ matrix.test-path }}
   CheckStatus:
     runs-on: ubuntu-latest
     timeout-minutes: 60
