@@ -14,12 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# get tests from both unit and plugin
-declare -a unit_tests=( $(ls -d tests/unit ) )
-
-declare -a plugin_tests=( $(ls -d tests/plugin/{data,http,web} | grep -v '__pycache__' ))
-
-dest=( "${unit_tests[@]}" "${plugin_tests[@]}" )
-
-printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .

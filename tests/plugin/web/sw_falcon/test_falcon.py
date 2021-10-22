@@ -15,11 +15,23 @@
 # limitations under the License.
 #
 
-# get tests from both unit and plugin
-declare -a unit_tests=( $(ls -d tests/unit ) )
+from typing import Callable
 
-declare -a plugin_tests=( $(ls -d tests/plugin/{data,http,web} | grep -v '__pycache__' ))
+import pytest
+import requests
+from skywalking.plugins.web.sw_falcon import support_matrix
 
-dest=( "${unit_tests[@]}" "${plugin_tests[@]}" )
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
-printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
+
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
+
+
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='hug', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        self.validate()

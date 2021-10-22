@@ -14,12 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
-# get tests from both unit and plugin
-declare -a unit_tests=( $(ls -d tests/unit ) )
+import pytest
+import requests
+from skywalking.plugins.data.sw_redis import support_matrix
 
-declare -a plugin_tests=( $(ls -d tests/plugin/{data,http,web} | grep -v '__pycache__' ))
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
-dest=( "${unit_tests[@]}" "${plugin_tests[@]}" )
 
-printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users')
+
+
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='redis', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        self.validate()

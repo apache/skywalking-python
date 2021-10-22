@@ -1,4 +1,4 @@
-#
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,11 +15,31 @@
 # limitations under the License.
 #
 
-# get tests from both unit and plugin
-declare -a unit_tests=( $(ls -d tests/unit ) )
+version: '2.1'
 
-declare -a plugin_tests=( $(ls -d tests/plugin/{data,http,web} | grep -v '__pycache__' ))
+services:
+  collector:
+    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:5acb890f225ca37ee60675ce3e330545e23e3cbc
+    ports:
+      - 19876:19876
+      - 12800:12800
+    networks:
+      - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/12800"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
 
-dest=( "${unit_tests[@]}" "${plugin_tests[@]}" )
-
-printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
+  agent:
+    build:
+      context: ../..
+      args:
+        - SW_PYTHON_VERSION=${SW_PYTHON_VERSION:-latest}
+    image: skywalking-agent:ci
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+    networks:
+      - beyond
+    command: ['python3', '/entrypoint.py']
