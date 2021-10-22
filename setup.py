@@ -21,58 +21,58 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-README = (HERE / "README.md").read_text()
+README = (HERE / 'README.md').read_text()
 
 setup(
-    name="apache-skywalking",
-    version="0.7.0",
-    description="Python Agent for Apache SkyWalking",
+    name='apache-skywalking',
+    version='0.7.0',
+    description='Python Agent for Apache SkyWalking',
     long_description=README,
-    long_description_content_type="text/markdown",
-    url="https://github.com/apache/skywalking-python/",
-    author="Apache",
-    author_email="dev@skywalking.apache.org",
-    license="Apache 2.0",
-    packages=find_packages(exclude=("tests", "tests.*")),
+    long_description_content_type='text/markdown',
+    url='https://github.com/apache/skywalking-python/',
+    author='Apache',
+    author_email='dev@skywalking.apache.org',
+    license='Apache 2.0',
+    packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     install_requires=[
-        "grpcio",
-        "grpcio-tools",
-        "packaging",
-        "wrapt",
+        'grpcio',
+        'grpcio-tools',
+        'packaging',
+        'wrapt',
     ],
     extras_require={
-        "test": [
-            "testcontainers",
-            "pyyaml",
-            "pytest",
+        'test': [
+            'testcontainers',
+            'pyyaml',
+            'pytest',
         ],
-        "http": [
-            "requests>=2.26.0",
+        'http': [
+            'requests>=2.26.0',
         ],
-        "kafka": [
-            "kafka",
+        'kafka': [
+            'kafka',
         ],
     },
     classifiers=[
-        "Framework :: Flake8",
+        'Framework :: Flake8',
 
-        "License :: OSI Approved :: Apache Software License",
+        'License :: OSI Approved :: Apache Software License',
 
-        "Operating System :: OS Independent",
+        'Operating System :: OS Independent',
 
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
 
-        "Topic :: Software Development",
+        'Topic :: Software Development',
     ],
     entry_points={
-        "console_scripts": [
+        'console_scripts': [
             'sw-python = skywalking.bootstrap.cli.sw_python:start'
         ]
     },

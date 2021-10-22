@@ -60,7 +60,7 @@ def walk_through_dir(d) -> bool:
     return checked
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     checked = True
     for _, directory in enumerate(sys.argv):
         checked &= walk_through_dir(directory)

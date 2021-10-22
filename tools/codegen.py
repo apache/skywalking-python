@@ -35,10 +35,10 @@ def codegen():
     touch(os.path.join(dest_dir, '__init__.py'))
 
     protoc.main(['grpc_tools.protoc',
-                 f"--proto_path={src_dir}",
-                 f"--python_out={dest_dir}",
-                 f"--grpc_python_out={dest_dir}"
-                 ] + [proto for proto in glob.iglob(f"{src_dir}/**/*.proto")])
+                 f'--proto_path={src_dir}',
+                 f'--python_out={dest_dir}',
+                 f'--grpc_python_out={dest_dir}'
+                 ] + [proto for proto in glob.iglob(f'{src_dir}/**/*.proto')])
 
     for py_file in glob.iglob(os.path.join(dest_dir, '**/*.py')):
         touch(os.path.join(os.path.dirname(py_file), '__init__.py'))
