@@ -30,9 +30,9 @@ kafka_configs = {}
 
 
 def __init_kafka_configs():
-    kafka_configs["bootstrap_servers"] = config.kafka_bootstrap_servers.split(",")
+    kafka_configs['bootstrap_servers'] = config.kafka_bootstrap_servers.split(',')
     # process all kafka configs in env
-    kafka_keys = [key for key in os.environ.keys() if key.startswith("SW_KAFKA_REPORTER_CONFIG_")]
+    kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_KAFKA_REPORTER_CONFIG_')]
     for kafka_key in kafka_keys:
         key = kafka_key[25:]
         val = os.environ.get(kafka_key)
@@ -40,7 +40,7 @@ def __init_kafka_configs():
         if val is not None:
             if val.isnumeric():
                 val = int(val)
-            elif val in ["True", "False"]:
+            elif val in ['True', 'False']:
                 val = ast.literal_eval(val)
         else:
             continue
@@ -57,9 +57,9 @@ __init_kafka_configs()
 
 class KafkaServiceManagementClient(ServiceManagementClient):
     def __init__(self):
-        logger.debug("kafka reporter configs: %s", kafka_configs)
+        logger.debug('kafka reporter configs: %s', kafka_configs)
         self.producer = KafkaProducer(**kafka_configs)
-        self.topic_key_register = "register-"
+        self.topic_key_register = 'register-'
         self.topic = config.kafka_topic_management
 
         self.send_instance_props()
@@ -87,7 +87,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
             serviceInstance=config.service_instance,
         )
 
-        key = bytes(instance_ping_pkg.serviceInstance, encoding="utf-8")
+        key = bytes(instance_ping_pkg.serviceInstance, encoding='utf-8')
         value = bytes(instance_ping_pkg.SerializeToString())
         future = self.producer.send(topic=self.topic, key=key, value=value)
         res = future.get(timeout=10)
@@ -101,7 +101,7 @@ class KafkaTraceSegmentReportService(TraceSegmentReportService):
 
     def report(self, generator):
         for segment in generator:
-            key = bytes(segment.traceSegmentId, encoding="utf-8")
+            key = bytes(segment.traceSegmentId, encoding='utf-8')
             value = bytes(segment.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
 
@@ -113,7 +113,7 @@ class KafkaLogDataReportService(LogDataReportService):
 
     def report(self, generator):
         for log_data in generator:
-            key = bytes(log_data.traceContext.traceSegmentId, encoding="utf-8")
+            key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
             value = bytes(log_data.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
 

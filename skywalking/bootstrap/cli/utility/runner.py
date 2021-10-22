@@ -29,14 +29,14 @@ from skywalking.bootstrap.cli import SWRunnerFailure
 def execute(command: List[str]) -> None:
     """ Set up environ and invokes the given command to replace current process """
 
-    cli_logger.debug(f"SkyWalking Python agent `runner` received command {command}")
+    cli_logger.debug(f'SkyWalking Python agent `runner` received command {command}')
 
-    cli_logger.debug("Adding sitecustomize.py to PYTHONPATH")
+    cli_logger.debug('Adding sitecustomize.py to PYTHONPATH')
 
     from skywalking.bootstrap.loader import __file__ as loader_dir
 
     loader_path = os.path.dirname(loader_dir)
-    new_path = ""
+    new_path = ''
 
     python_path = os.environ.get('PYTHONPATH')
     if python_path:  # If there is already a different PYTHONPATH, PREPEND to it as we must get loaded first.

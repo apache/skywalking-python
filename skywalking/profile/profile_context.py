@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-import time
-from threading import Thread, Event, current_thread
 import sys
+import time
 import traceback
+from threading import Thread, Event, current_thread
 from typing import Optional
 
 from skywalking import agent
 from skywalking import config
-from skywalking.loggings import logger
 from skywalking import profile
+from skywalking.loggings import logger
 from skywalking.profile.profile_status import ProfileStatusReference, ProfileStatus
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
@@ -127,7 +127,7 @@ class ProfileThread:
         try:
             self.profiling(self._task_execution_context)
         except Exception as e:
-            logger.error("profiling task fail. task_id:[%s] error:[%s]", self._task_execution_context.task.task_id, e)
+            logger.error('profiling task fail. task_id:[%s] error:[%s]', self._task_execution_context.task.task_id, e)
         finally:
             self._task_execution_service.stop_current_profile_task(self._task_execution_context)
 
@@ -204,7 +204,7 @@ class ThreadProfiler:
             if idx > config.profile_dump_max_stack_depth:
                 break
 
-            code_sig = f"{item.filename}.{item.name}: {item.lineno}"
+            code_sig = f'{item.filename}.{item.name}: {item.lineno}'
             stack_list.append(code_sig)
 
         # if is first dump, check is can start profiling

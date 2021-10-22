@@ -20,11 +20,11 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagCeleryParameters
 
-link_vector = ["https://docs.celeryproject.org"]
+link_vector = ['https://docs.celeryproject.org']
 # TODO: Celery is missing plugin test
 support_matrix = {
-    "celery": {
-        ">=3.6": ["5.1"]
+    'celery': {
+        '>=3.6': ['5.1']
     }
 }
 note = """The celery server running with "celery -A ..." should be run with the HTTP protocol
@@ -44,7 +44,7 @@ def install():
         # exchange = options['exchange']
         # queue = options['routing_key']
         # op = 'celery/{}/{}/{}'.format(exchange or '', queue or '', name)
-        op = f"celery/{name}"
+        op = f'celery/{name}'
 
         if broker_url:
             url = urlparse(broker_url)
@@ -83,7 +83,7 @@ def install():
             # exchange = di and di.get('exchange')
             # queue = di and di.get('routing_key')
             # op = 'celery/{}/{}/{}'.format(exchange or '', queue or '', name)
-            op = f"celery/{name}"
+            op = f'celery/{name}'
             carrier = Carrier()
 
             for item in carrier:

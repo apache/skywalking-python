@@ -21,11 +21,11 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams, TagHttpStatusCode, TagHttpStatusMsg
 
-link_vector = ["https://falcon.readthedocs.io/en/stable/"]
+link_vector = ['https://falcon.readthedocs.io/en/stable/']
 support_matrix = {
-    "hug": {
-        ">=3.10": ["2.5", "2.6"],  # api deprecated for 3.10
-        ">=3.6": ["2.4.1", "2.5", "2.6"],  # support begins 2.4.1
+    'hug': {
+        '>=3.10': ['2.5', '2.6'],  # api deprecated for 3.10
+        '>=3.6': ['2.4.1', '2.5', '2.6'],  # support begins 2.4.1
     }
 }
 note = """"""
@@ -60,7 +60,7 @@ def install():
             span.tag(TagHttpURL(str(req.url)))
 
             if req.params:
-                span.tag(TagHttpParams(','.join([f"{k}={v}" for k, v in req.params.items()])))
+                span.tag(TagHttpParams(','.join([f'{k}={v}' for k, v in req.params.items()])))
 
             def _start_response(resp_status, headers):
                 try:

@@ -21,10 +21,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, TagHttpParams
 
-link_vector = ["https://flask.palletsprojects.com"]
+link_vector = ['https://flask.palletsprojects.com']
 support_matrix = {
-    "flask": {
-        ">=3.6": ["1.1", "2.0"]  # 1.1 to be removed in near future
+    'flask': {
+        '>=3.6': ['1.1', '2.0']  # 1.1 to be removed in near future
     }
 }
 note = """"""
@@ -37,7 +37,7 @@ def install():
     _handle_exception = Flask.handle_exception
 
     def params_tostring(params):
-        return "\n".join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
+        return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
     def _sw_full_dispatch_request(this: Flask):
         import flask
@@ -58,7 +58,7 @@ def install():
             span.component = Component.Flask
             span.peer = f"{req.environ['REMOTE_ADDR']}:{req.environ['REMOTE_PORT']}"
             span.tag(TagHttpMethod(method))
-            span.tag(TagHttpURL(req.url.split("?")[0]))
+            span.tag(TagHttpURL(req.url.split('?')[0]))
             if config.flask_collect_http_params and req.values:
                 span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
             resp = _full_dispatch_request(this)

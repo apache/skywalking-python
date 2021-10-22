@@ -19,10 +19,10 @@ from skywalking import Layer, Component, config
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagDbSqlParameters
 
-link_vector = ["https://www.psycopg.org/"]
+link_vector = ['https://www.psycopg.org/']
 support_matrix = {
-    "psycopg[binary]": {
-        ">=3.6": ["3.0"]  # psycopg is psycopg3
+    'psycopg[binary]': {
+        '>=3.6': ['3.0']  # psycopg is psycopg3
     }
 }
 note = """"""
@@ -48,11 +48,11 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/execute', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -60,9 +60,9 @@ def install_sync():
                     text = ','.join(str(v) for v in vars)
 
                     if len(text) > config.sql_parameters_length:
-                        text = f"{text[:config.sql_parameters_length]}..."
+                        text = f'{text[:config.sql_parameters_length]}...'
 
-                    span.tag(TagDbSqlParameters(f"[{text}]"))
+                    span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 return self._self_cur.execute(query, vars, *args, **kwargs)
 
@@ -71,11 +71,11 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/executemany', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -89,7 +89,7 @@ def install_sync():
                         total_len += len(text)
 
                         if total_len > max_len:
-                            text_list.append(f"{text[:max_len - total_len]}...")
+                            text_list.append(f'{text[:max_len - total_len]}...')
 
                             break
 
@@ -104,11 +104,11 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/stream", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/stream', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -116,9 +116,9 @@ def install_sync():
                     text = ','.join(str(v) for v in vars)
 
                     if len(text) > config.sql_parameters_length:
-                        text = f"{text[:config.sql_parameters_length]}..."
+                        text = f'{text[:config.sql_parameters_length]}...'
 
-                    span.tag(TagDbSqlParameters(f"[{text}]"))
+                    span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 yield from self._self_cur.stream(query, vars, *args, **kwargs)
 
@@ -163,11 +163,11 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/execute", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/execute', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -175,9 +175,9 @@ def install_async():
                     text = ','.join(str(v) for v in vars)
 
                     if len(text) > config.sql_parameters_length:
-                        text = f"{text[:config.sql_parameters_length]}..."
+                        text = f'{text[:config.sql_parameters_length]}...'
 
-                    span.tag(TagDbSqlParameters(f"[{text}]"))
+                    span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 return await self._self_cur.execute(query, vars, *args, **kwargs)
 
@@ -186,11 +186,11 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/executemany", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/executemany', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -204,7 +204,7 @@ def install_async():
                         total_len += len(text)
 
                         if total_len > max_len:
-                            text_list.append(f"{text[:max_len - total_len]}...")
+                            text_list.append(f'{text[:max_len - total_len]}...')
 
                             break
 
@@ -219,11 +219,11 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op="PostgreSLQ/Psycopg/stream", peer=peer,
+            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/stream', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
-                span.tag(TagDbType("PostgreSQL"))
+                span.tag(TagDbType('PostgreSQL'))
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
@@ -231,9 +231,9 @@ def install_async():
                     text = ','.join(str(v) for v in vars)
 
                     if len(text) > config.sql_parameters_length:
-                        text = f"{text[:config.sql_parameters_length]}..."
+                        text = f'{text[:config.sql_parameters_length]}...'
 
-                    span.tag(TagDbSqlParameters(f"[{text}]"))
+                    span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 async for r in self._self_cur.stream(query, vars, *args, **kwargs):
                     yield r

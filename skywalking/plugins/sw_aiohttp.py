@@ -21,11 +21,11 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://docs.aiohttp.org"]
+link_vector = ['https://docs.aiohttp.org']
 support_matrix = {
-    "aiohttp": {
-        ">=3.10": [],  # waiting for 3.8 release
-        ">=3.6": ["3.7.4"]
+    'aiohttp': {
+        '>=3.10': [],  # waiting for 3.8 release
+        '>=3.6': ['3.7.4']
     }
 }
 note = """"""
@@ -42,7 +42,7 @@ def install():
         peer = f"{url.host or ''}:{url.port or ''}"
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_exit_span(op=url.path or "/", peer=peer, component=Component.AioHttp)
+            else get_context().new_exit_span(op=url.path or '/', peer=peer, component=Component.AioHttp)
 
         with span:
             span.layer = Layer.Http

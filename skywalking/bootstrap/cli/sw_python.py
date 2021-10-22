@@ -53,16 +53,16 @@ def start() -> None:
 
     cli_logger.setLevel(logging.DEBUG if args.debug else logging.INFO)
 
-    cli_logger.debug(f"Args received {args}")
+    cli_logger.debug(f'Args received {args}')
 
     if not args.command:
-        cli_logger.error("Command is not provided, please type `sw-python -h` for the list of command line arguments")
+        cli_logger.error('Command is not provided, please type `sw-python -h` for the list of command line arguments')
         return
     try:
         dispatch(args)
     except SWRunnerFailure:
         cli_logger.error(f"Failed to run the given user application command `{' '.join(args.command)}`, "
-                         f"please make sure given command is valid.")
+                         f'please make sure given command is valid.')
         return
 
 

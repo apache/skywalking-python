@@ -22,10 +22,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://docs.python.org/3/library/urllib.request.html"]
+link_vector = ['https://docs.python.org/3/library/urllib.request.html']
 support_matrix = {
-    "urllib_request": {
-        ">=3.6": ["*"]
+    'urllib_request': {
+        '>=3.6': ['*']
     }
 }
 note = """"""
@@ -42,7 +42,7 @@ def install():
         if isinstance(fullurl, str):
             fullurl = Request(fullurl, data)
 
-        url = fullurl.selector.split("?")[0] if fullurl.selector else '/'
+        url = fullurl.selector.split('?')[0] if fullurl.selector else '/'
         method = getattr(fullurl, 'method', None) or ('GET' if data is None else 'POST')
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \

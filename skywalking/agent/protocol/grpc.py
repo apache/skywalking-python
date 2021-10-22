@@ -32,9 +32,9 @@ from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
     GrpcProfileTaskChannelService, GrpcLogDataReportService
 from skywalking.loggings import logger
-from skywalking.trace.segment import Segment
-from skywalking.profile.snapshot import TracingThreadSnapshot
 from skywalking.profile.profile_task import ProfileTask
+from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.trace.segment import Segment
 
 
 class GrpcProtocol(Protocol):
@@ -63,7 +63,7 @@ class GrpcProtocol(Protocol):
         self.state = state
 
     def query_profile_commands(self):
-        logger.debug("query profile commands")
+        logger.debug('query profile commands')
         self.profile_channel.do_query()
 
     def notify_profile_task_finish(self, task: ProfileTask):
@@ -134,7 +134,7 @@ class GrpcProtocol(Protocol):
                             value=str(tag.val),
                         ) for tag in span.iter_tags()],
                         refs=[SegmentReference(
-                            refType=0 if ref.ref_type == "CrossProcess" else 1,
+                            refType=0 if ref.ref_type == 'CrossProcess' else 1,
                             traceId=ref.trace_id,
                             parentTraceSegmentId=ref.segment_id,
                             parentSpanId=ref.span_id,

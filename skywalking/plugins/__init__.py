@@ -67,11 +67,11 @@ def pkg_version_check(plugin):
     supported = True
 
     # no version rules was set, no checks
-    if not hasattr(plugin, "version_rule"):
+    if not hasattr(plugin, 'version_rule'):
         return supported
 
-    pkg_name = plugin.version_rule.get("name")
-    rules = plugin.version_rule.get("rules")
+    pkg_name = plugin.version_rule.get('name')
+    rules = plugin.version_rule.get('rules')
 
     try:
         current_pkg_version = pkg_resources.get_distribution(pkg_name).version
@@ -82,12 +82,12 @@ def pkg_version_check(plugin):
     current_version = version.parse(current_pkg_version)
     # pass one rule in rules (OR)
     for rule in rules:
-        if rule.find(" ") == -1:
+        if rule.find(' ') == -1:
             if check(rule, current_version):
                 return supported
         else:
             # have to pass all rule_uint in this rule (AND)
-            rule_units = rule.split(" ")
+            rule_units = rule.split(' ')
             results = [check(unit, current_version) for unit in rule_units]
             if False in results:
                 # check failed, try to check next rule
@@ -107,6 +107,6 @@ def check(rule_unit, current_version):
     expect_version = version.parse(expect_pkg_version)
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException(f"version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols")
+        raise VersionRuleException(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
 
     return f(current_version, expect_version)

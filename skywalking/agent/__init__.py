@@ -21,6 +21,8 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
+from skywalking.protocol.logging.Logging_pb2 import LogData
+
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking import profile
@@ -29,7 +31,6 @@ from skywalking.command import command_service
 from skywalking.loggings import logger
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
-from skywalking.protocol.logging.Logging_pb2 import LogData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
@@ -123,7 +124,7 @@ def __init_threading():
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
-    __command_dispatch_thread = Thread(name="CommandDispatchThread", target=__command_dispatch, daemon=True)
+    __command_dispatch_thread = Thread(name='CommandDispatchThread', target=__command_dispatch, daemon=True)
 
     __heartbeat_thread.start()
     __report_thread.start()
@@ -152,7 +153,7 @@ def __init():
     elif config.protocol == 'http':
         from skywalking.agent.protocol.http import HttpProtocol
         __protocol = HttpProtocol()
-    elif config.protocol == "kafka":
+    elif config.protocol == 'kafka':
         from skywalking.agent.protocol.kafka import KafkaProtocol
         __protocol = KafkaProtocol()
 
@@ -207,7 +208,7 @@ def start():
     flag = False
     try:
         from gevent import monkey
-        flag = monkey.is_module_patched("socket")
+        flag = monkey.is_module_patched('socket')
     except ModuleNotFoundError:
         logger.debug("it was found that no gevent was used, if you don't use, please ignore.")
     if flag:
@@ -265,4 +266,4 @@ def notify_profile_finish(task: ProfileTask):
     try:
         __protocol.notify_profile_task_finish(task)
     except Exception as e:
-        logger.error(f"notify profile task finish to backend fail. {str(e)}")
+        logger.error(f'notify profile task finish to backend fail. {str(e)}')
