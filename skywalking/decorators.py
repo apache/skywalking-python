@@ -45,6 +45,7 @@ def trace(
                         span.tag(tag)
                 with span:
                     return await func(*args, **kwargs)
+
             return wrapper
 
         else:
@@ -59,6 +60,7 @@ def trace(
                         span.tag(tag)
                 with span:
                     return func(*args, **kwargs)
+
             return wrapper
 
     return decorator
