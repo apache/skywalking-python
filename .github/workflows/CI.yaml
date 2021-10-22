@@ -79,7 +79,9 @@ jobs:
       - name: Set up dependencies
         run: make setup install
       - name: Run unit tests
-        run: python3 -m pytest -v ${{ matrix.test-path }}
+        run: |
+          make test-parallel-setup
+          python3 -m pytest -v ${{ matrix.test-path }}
   CheckStatus:
     runs-on: ubuntu-latest
     timeout-minutes: 60

@@ -45,6 +45,8 @@ test: gen setup-test
 	python3 -m pytest -v tests -n auto
 
 # This is intended for GitHub CI only
+test-parallel-setup: gen setup-test
+
 test-parallel:
 	python3 -m pytest -v tests -n auto
 
