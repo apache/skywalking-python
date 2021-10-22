@@ -27,7 +27,7 @@ def sw_urlparse(url):
     url_param = urlparse(url)
     safe_netloc = url_param.netloc
     try:
-        safe_netloc = f"{url_param.hostname}:{str(url_param.port) if url_param.port else ''}"
+        safe_netloc = f"{url_param.hostname}{f':{str(url_param.port)}' if url_param.port else ''}"
     except ValueError:  # illegal url, skip
         pass
 

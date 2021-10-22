@@ -61,7 +61,7 @@ def start() -> None:
     try:
         dispatch(args)
     except SWRunnerFailure:
-        cli_logger.debug(f'Failed to run the given user application command `{" ".join(args.command)}`, '
+        cli_logger.error(f'Failed to run the given user application command `{" ".join(args.command)}`, '
                          f'please make sure given command is valid.')
         return
 
