@@ -21,19 +21,19 @@ from queue import Queue, Empty
 from time import time
 
 import grpc
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
-from skywalking.protocol.logging.Logging_pb2 import LogData
-from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
 
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
     GrpcProfileTaskChannelService, GrpcLogDataReportService
-from skywalking.loggings import logger
+from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.logging.Logging_pb2 import LogData
+from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
 from skywalking.trace.segment import Segment
 
 
@@ -59,11 +59,13 @@ class GrpcProtocol(Protocol):
         self.log_reporter = GrpcLogDataReportService(self.channel)
 
     def _cb(self, state):
-        logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
+        if logger_debug_enabled:
+            logger.debug('grpc channel connectivity changed, [%s -> %s]', self.state, state)
         self.state = state
 
     def query_profile_commands(self):
-        logger.debug('query profile commands')
+        if logger_debug_enabled:
+            logger.debug('query profile commands')
         self.profile_channel.do_query()
 
     def notify_profile_task_finish(self, task: ProfileTask):
@@ -107,7 +109,8 @@ class GrpcProtocol(Protocol):
 
                 queue.task_done()
 
-                logger.debug('reporting segment %s', segment)
+                if logger_debug_enabled:
+                    logger.debug('reporting segment %s', segment)
 
                 s = SegmentObject(
                     traceId=str(segment.related_traces[0]),
@@ -175,7 +178,8 @@ class GrpcProtocol(Protocol):
 
                 queue.task_done()
 
-                logger.debug('Reporting Log')
+                if logger_debug_enabled:
+                    logger.debug('Reporting Log')
 
                 yield log_data
 

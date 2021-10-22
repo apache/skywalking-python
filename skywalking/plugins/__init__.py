@@ -38,7 +38,7 @@ def install():
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns if p.strip()]
     for importer, modname, ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
         if any(pattern.match(modname) for pattern in disable_patterns):
-            logger.info('plugin %s is disabled and thus won\'t be installed', modname)
+            logger.info("plugin %s is disabled and thus won't be installed", modname)
             continue
         logger.debug('installing plugin %s', modname)
         plugin = importer.find_module(modname).load_module(modname)
@@ -46,12 +46,12 @@ def install():
         # todo: refactor the version checker, currently it doesn't really work as intended
         supported = pkg_version_check(plugin)
         if not supported:
-            logger.debug('check version for plugin %s\'s corresponding package failed, thus '
-                         'won\'t be installed', modname)
+            logger.debug("check version for plugin %s's corresponding package failed, thus "
+                         "won't be installed", modname)
             continue
 
         if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
-            logger.warning('no `install` method in plugin %s, thus the plugin won\'t be installed', modname)
+            logger.warning("no `install` method in plugin %s, thus the plugin won't be installed", modname)
             continue
 
         # noinspection PyBroadException

@@ -21,7 +21,7 @@ from threading import Timer, RLock, Lock
 from typing import Tuple
 
 from skywalking import agent
-from skywalking.loggings import logger
+from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_context import ProfileTaskExecutionContext
 from skywalking.profile.profile_status import ProfileStatusReference
@@ -135,7 +135,8 @@ class ProfileTaskExecutionService:
 
             # start profiling this task
             current_context.start_profiling()
-            logger.debug('profile task [%s] for endpoint [%s] started', task.task_id, task.first_span_op_name)
+            if logger_debug_enabled:
+                logger.debug('profile task [%s] for endpoint [%s] started', task.task_id, task.first_span_op_name)
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
@@ -147,8 +148,9 @@ class ProfileTaskExecutionService:
                 return
 
             need_stop.stop_profiling()
-            logger.debug('profile task [%s] for endpoint [%s] stopped', need_stop.task.task_id,
-                         need_stop.task.first_span_op_name)
+            if logger_debug_enabled:
+                logger.debug('profile task [%s] for endpoint [%s] stopped', need_stop.task.task_id,
+                             need_stop.task.first_span_op_name)
 
             self.remove_from_profile_task_list(need_stop.task)
 

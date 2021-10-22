@@ -21,7 +21,7 @@ from time import time
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.http import HttpServiceManagementClient, HttpTraceSegmentReportService, HttpLogDataReportService
-from skywalking.loggings import logger
+from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
@@ -64,7 +64,8 @@ class HttpProtocol(Protocol):
 
                 queue.task_done()
 
-                logger.debug('reporting segment %s', segment)
+                if logger_debug_enabled:
+                    logger.debug('reporting segment %s', segment)
 
                 yield segment
 
@@ -92,8 +93,8 @@ class HttpProtocol(Protocol):
                 except Empty:
                     return
                 queue.task_done()
-
-                logger.debug('Reporting Log')
+                if logger_debug_enabled:
+                    logger.debug('Reporting Log')
 
                 yield log_data
 

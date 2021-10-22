@@ -51,14 +51,15 @@ def _get_sw_loader_logger():
 
 
 _sw_loader_logger = _get_sw_loader_logger()
-
+_sw_loader_logger_debug_enabled = _sw_loader_logger.isEnabledFor(logging.DEBUG)
 # DEBUG messages in case execution goes wrong
-_sw_loader_logger.debug('---------------sitecustomize.py---------------')
-_sw_loader_logger.debug(f'Successfully imported sitecustomize.py from `{__file__}`')
-_sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
-_sw_loader_logger.debug(f'Using Python version - {sys.version} ')
-_sw_loader_logger.debug(f'Using executable at - {sys.executable}')
-_sw_loader_logger.debug(f'System Base Python executable location {sys.base_prefix}')
+if _sw_loader_logger_debug_enabled:
+    _sw_loader_logger.debug('---------------sitecustomize.py---------------')
+    _sw_loader_logger.debug(f'Successfully imported sitecustomize.py from `{__file__}`')
+    _sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
+    _sw_loader_logger.debug(f'Using Python version - {sys.version} ')
+    _sw_loader_logger.debug(f'Using executable at - {sys.executable}')
+    _sw_loader_logger.debug(f'System Base Python executable location {sys.base_prefix}')
 
 if sys.prefix != sys.base_prefix:
     _sw_loader_logger.debug('[The SkyWalking agent bootstrapper is running inside a virtual environment]')
