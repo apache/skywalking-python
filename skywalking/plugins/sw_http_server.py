@@ -81,7 +81,8 @@ def wrap_werkzeug_request_handler(handler):
             url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
             span.layer = Layer.Http
             span.component = Component.General
-            span.peer = '%s:%s' % handler.client_address
+            client_address = handler.client_address
+            span.peer = f'{client_address[0]}:{client_address[1]}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(url))
 
@@ -132,7 +133,8 @@ def _wrap_do_method(handler, method):
                 url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
                 span.layer = Layer.Http
                 span.component = Component.General
-                span.peer = '%s:%s' % handler.client_address
+                client_address = handler.client_address
+                span.peer = f'{client_address[0]}:{client_address[1]}'
                 span.tag(TagHttpMethod(method))
                 span.tag(TagHttpURL(url))
 

@@ -88,9 +88,11 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.AioHttp
-            # todo fix
-            span.peer = '%s:%d' % request._transport_peername if isinstance(request._transport_peername, (list, tuple)) \
-                else request._transport_peername
+            peer_name = request._transport_peername
+            if isinstance(peer_name, (list, tuple)):
+                span.peer = f'{peer_name[0]}:{peer_name[1]}'
+            else:
+                span.peer = f'{peer_name}'
 
             span.tag(TagHttpMethod(method))  # pyre-ignore
             span.tag(TagHttpURL(str(request.url)))  # pyre-ignore

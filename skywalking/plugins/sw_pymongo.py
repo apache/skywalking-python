@@ -55,7 +55,7 @@ def inject_socket_info(SocketInfo):
         # pymongo sends `ismaster` command continuously. ignore it.
         if spec.get('ismaster') is None:
             address = this.sock.getpeername()
-            peer = '%s:%s' % address
+            peer = f'{address[0]}:{address[1]}'
             context = get_context()
 
             operation = list(spec.keys())[0]
@@ -105,7 +105,7 @@ def inject_bulk_write(_Bulk, bulk_op_map):
 
     def _sw_execute(this: _Bulk, *args, **kwargs):
         nodes = this.collection.database.client.nodes
-        peer = ','.join(['%s:%s' % address for address in nodes])
+        peer = ','.join([f'{address[0]}:{address[1]}' for address in nodes])
         context = get_context()
 
         sw_op = 'MixedBulkWriteOperation'
@@ -138,7 +138,7 @@ def inject_cursor(Cursor):
 
     def _sw_send_message(this: Cursor, operation):
         nodes = this.collection.database.client.nodes
-        peer = ','.join(['%s:%s' % address for address in nodes])
+        peer = ','.join([f'{address[0]}:{address[1]}' for address in nodes])
 
         context = get_context()
         op = 'FindOperation'
