@@ -39,7 +39,7 @@ def install():
 
     async def _sw_request(self: ClientSession, method: str, str_or_url, **kwargs):
         url = URL(str_or_url).with_user(None).with_password(None)
-        peer = f'{url.host or ""}:{url.port or ""}'
+        peer = f"{url.host or ''}:{url.port or ''}"
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
             else get_context().new_exit_span(op=url.path or "/", peer=peer, component=Component.AioHttp)

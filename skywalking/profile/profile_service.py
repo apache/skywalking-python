@@ -163,14 +163,14 @@ class ProfileTaskExecutionService:
                                f"should be str and not empty")
             # duration
             if task.duration < ProfileConstants.TASK_DURATION_MIN_MINUTE:
-                return (False, f"monitor duration must greater than "
-                               f"{ProfileConstants.TASK_DURATION_MIN_MINUTE} minutes")
+                return (False, f"monitor duration must be greater "
+                               f"than {ProfileConstants.TASK_DURATION_MIN_MINUTE} minutes")
             if task.duration > ProfileConstants.TASK_DURATION_MAX_MINUTE:
-                return (False, f"monitor duration must less than "
-                               f"{ProfileConstants.TASK_DURATION_MAX_MINUTE} minutes")
+                return (False, f"monitor duration must be less "
+                               f"than {ProfileConstants.TASK_DURATION_MAX_MINUTE} minutes")
             # min duration threshold
             if task.min_duration_threshold < 0:
-                return False, "min duration threshold must greater than or equals zero"
+                return False, "min duration threshold must be greater than or equals zero"
 
             # dump period
             if task.thread_dump_period < ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS:
@@ -180,9 +180,9 @@ class ProfileTaskExecutionService:
 
             # max sampling count
             if task.max_sampling_count <= 0:
-                return False, "max sampling count must greater than zero"
+                return False, "max sampling count must be greater than zero"
             if task.max_sampling_count >= ProfileConstants.TASK_MAX_SAMPLING_COUNT:
-                return (False, f"max sampling count must less than "
+                return (False, f"max sampling count must be less than "
                                f"{ProfileConstants.TASK_MAX_SAMPLING_COUNT}")
 
             # check task queue
@@ -201,7 +201,7 @@ class ProfileTaskExecutionService:
             return True, ""
 
         except TypeError:
-            return False, "ProfileTask attributes has type error"
+            return False, "ProfileTask attributes have a type error"
 
     def _cal_profile_task_finish_time(self, task: ProfileTask) -> int:
         return task.start_time + task.duration * self.MINUTE_TO_MILLIS

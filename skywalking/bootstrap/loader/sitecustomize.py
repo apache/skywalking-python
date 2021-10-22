@@ -54,7 +54,7 @@ _sw_loader_logger = _get_sw_loader_logger()
 
 # DEBUG messages in case execution goes wrong
 _sw_loader_logger.debug('---------------sitecustomize.py---------------')
-_sw_loader_logger.debug(f"Successfully imported sitecustomize.py from `{__file__}`")
+_sw_loader_logger.debug(f'Successfully imported sitecustomize.py from `{__file__}`')
 _sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
 _sw_loader_logger.debug(f'Using Python version - {sys.version} ')
 _sw_loader_logger.debug(f'Using executable at - {sys.executable}')
@@ -112,9 +112,9 @@ prefix_match = cli_python_prefix.lower() == os.path.realpath(os.path.normpath(sy
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
-        f"\nPython used by sw-python CLI - v{cli_python_version} at "
-        f"{cli_python_prefix}\nPython used by your actual program - "
-        f"v{platform.python_version()} at {os.path.realpath(os.path.normpath(sys.prefix))}"
+        f"\nPython used by sw-python CLI - v{cli_python_version} at {cli_python_prefix}\n"
+        f"Python used by your actual program - v{platform.python_version()} "
+        f"at {os.path.realpath(os.path.normpath(sys.prefix))}"
     )
     _sw_loader_logger.error("The sw-python CLI was instructed to run a program "
                             "using an different Python installation "
