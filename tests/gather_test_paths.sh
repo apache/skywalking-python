@@ -16,7 +16,7 @@
 #
 
 # get tests from both unit and plugin
-declare -a unit_tests=( ".test*.py")
+declare -a unit_tests=( "test*.py")
 declare -a plugin_tests=( $(ls -d tests/plugin/sw_* | grep -v '__pycache__' ))
 
 dest=( "${unit_tests[@]}" "${plugin_tests[@]}" )
