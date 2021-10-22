@@ -35,20 +35,17 @@ lint: clean
 
 dev-check:
 	# flake8 configurations should go to the file .flake8
-	flake8 --version || python3 -m pip install flake8 && flake8 .
+	flake8 --version || python3 -m pip install flake8 && flake8 -v .
 	python3 tools/check-license-header.py skywalking tests tools
 
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
 test: gen setup-test
-	python3 -m pytest -v tests -n auto
+	python3 -m pytest -v tests
 
 # This is intended for GitHub CI only
 test-parallel-setup: gen setup-test
-
-test-parallel:
-	python3 -m pytest -v tests -n auto
 
 install: gen
 	python3 setup.py install --force
