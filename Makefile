@@ -31,11 +31,11 @@ gen:
 
 # flake8 configurations should go to the file .flake8
 lint: clean
-	flake8 --version || python3 -m pip install flake8 flake8-quotes
+	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
 	flake8 .
 
 dev-check:
-	flake8 --version || python3 -m pip install flake8 flake8-quotes
+	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
 	flake8 .
 
 license: clean
