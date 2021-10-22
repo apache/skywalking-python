@@ -31,7 +31,7 @@ def getLogger(name=None):
     return logger
 
 
-logger = getLogger("skywalking")
+logger = getLogger('skywalking')
 logger_debug_enabled = logger.isEnabledFor(logging.DEBUG)
 
 
