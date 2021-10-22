@@ -31,7 +31,7 @@ def compare_version(rule_unit):
     test_python_version = sys.version_info[:2]  # type: tuple
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException(f"version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols")
+        raise VersionRuleException(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
 
     return f(test_python_version, expect_python_version)
 
@@ -51,7 +51,7 @@ def get_test_vector(lib_name: str, support_matrix: dict):
         if compare_version(py_version):
             # proceed if current python version is valid
             version_row = test_matrix[py_version]
-            return [f"{lib_name}=={idx}" for idx in version_row]
+            return [f'{lib_name}=={idx}' for idx in version_row]
     return []  # non-match, CI will skip the test case for this version
 
 

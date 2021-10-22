@@ -23,9 +23,9 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
-        res = requests.post("http://provider:9091/users")
+        res = requests.post('http://provider:9091/users')
         return jsonify(res.json())
 
     PORT = 9090

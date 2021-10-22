@@ -23,10 +23,10 @@ if __name__ == '__main__':
     app = Flask(__name__)
     import urllib3
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
         http = urllib3.PoolManager()
-        res = http.request("POST", "http://provider:9091/users")
+        res = http.request('POST', 'http://provider:9091/users')
 
         return jsonify(json.loads(res.data.decode('utf-8')))
 

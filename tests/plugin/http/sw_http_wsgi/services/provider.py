@@ -29,4 +29,4 @@ if __name__ == '__main__':
     from werkzeug.serving import run_simple
 
     PORT = 9091
-    run_simple("", PORT, application)
+    run_simple('', PORT, application)
