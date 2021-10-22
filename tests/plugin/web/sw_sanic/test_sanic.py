@@ -18,8 +18,8 @@ from typing import Callable
 
 import pytest
 import requests
-from skywalking.plugins.web.sw_sanic import support_matrix
 
+from skywalking.plugins.sw_sanic import support_matrix
 from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 

@@ -18,8 +18,8 @@ from typing import Callable
 
 import pytest
 import requests
-from skywalking.plugins.data.sw_pymongo import support_matrix
 
+from skywalking.plugins.sw_pymongo import support_matrix
 from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 

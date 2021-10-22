@@ -19,8 +19,8 @@ from typing import Callable
 
 import pytest
 import requests
-from skywalking.plugins.web.sw_falcon import support_matrix
 
+from skywalking.plugins.sw_falcon import support_matrix
 from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 
