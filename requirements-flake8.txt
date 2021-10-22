@@ -1,0 +1,15 @@
+flake8
+# Coding style
+flake8-quotes
+flake8-use-fstring
+pep8-naming
+flake8-builtins
+Darglint
+#flake8-isort
+#flake8-spellcheck
+# Design problems
+flake8-bugbear
+flake8-comprehensions
+flake8-bandit
+flake8-eradicate
+flake8-pytest-style

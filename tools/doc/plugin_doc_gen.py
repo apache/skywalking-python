@@ -46,11 +46,11 @@ def generate_plugin_doc():
     Generates a test matrix table to the current dir
 
     Returns: None
-
+    Raises: Attribute Error - missing matrix/link/note in sw_plugin
     """
     table_entries = []
     note_entries = []
-    for importer, modname, ispkg in pkgutil.iter_modules(plugins_path):
+    for importer, modname in pkgutil.iter_modules(plugins_path):
         plugin = importer.find_module(modname).load_module(modname)
 
         try:
