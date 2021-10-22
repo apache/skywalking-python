@@ -46,6 +46,7 @@ setup(
             "testcontainers",
             "pyyaml",
             "pytest",
+            "pytest-xdist"
         ],
         "http": [
             "requests>=2.26.0",

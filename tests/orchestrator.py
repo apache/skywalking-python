@@ -58,4 +58,4 @@ def get_test_vector(lib_name: str, support_matrix: dict):
 if __name__ == '__main__':
     import pytest
 
-    pytest.main(['-v', '../tests/'])
+    pytest.main(['-v', '-n', '1', '../tests/'])

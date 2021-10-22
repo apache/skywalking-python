@@ -42,7 +42,7 @@ license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
 test: gen setup-test
-	python3 -m pytest -v tests
+	python3 -m pytest -v tests -n auto
 
 install: gen
 	python3 setup.py install --force
