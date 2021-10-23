@@ -19,15 +19,14 @@ import logging
 from queue import Queue, Empty
 from time import time
 
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
-from skywalking.protocol.logging.Logging_pb2 import LogData
-
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService, \
     KafkaLogDataReportService
-from skywalking.loggings import logger, getLogger
+from skywalking.loggings import logger, getLogger, logger_debug_enabled
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
 # avoid too many kafka logs
@@ -64,8 +63,8 @@ class KafkaProtocol(Protocol):
                     return
 
                 queue.task_done()
-
-                logger.debug('reporting segment %s', segment)
+                if logger_debug_enabled:
+                    logger.debug('reporting segment %s', segment)
 
                 s = SegmentObject(
                     traceId=str(segment.related_traces[0]),
@@ -92,7 +91,7 @@ class KafkaProtocol(Protocol):
                             value=str(tag.val),
                         ) for tag in span.iter_tags()],
                         refs=[SegmentReference(
-                            refType=0 if ref.ref_type == "CrossProcess" else 1,
+                            refType=0 if ref.ref_type == 'CrossProcess' else 1,
                             traceId=ref.trace_id,
                             parentTraceSegmentId=ref.segment_id,
                             parentSpanId=ref.span_id,
@@ -128,7 +127,8 @@ class KafkaProtocol(Protocol):
                     return
                 queue.task_done()
 
-                logger.debug('Reporting Log')
+                if logger_debug_enabled:
+                    logger.debug('Reporting Log')
 
                 yield log_data
 

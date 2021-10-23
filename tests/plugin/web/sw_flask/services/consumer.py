@@ -24,20 +24,20 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
         from skywalking.trace.context import get_context
-        get_context().put_correlation("correlation", "correlation")
+        get_context().put_correlation('correlation', 'correlation')
 
-        @runnable(op="/test")
+        @runnable(op='/test')
         def post():
-            requests.post("http://provider:9091/users")
+            requests.post('http://provider:9091/users')
 
         from threading import Thread
         t = Thread(target=post)
         t.start()
 
-        res = requests.post("http://provider:9091/users")
+        res = requests.post('http://provider:9091/users')
 
         t.join()
 

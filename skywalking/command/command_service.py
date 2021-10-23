@@ -49,19 +49,19 @@ class CommandService:
         for command in commands.commands:
             try:
                 base_command = CommandDeserializer.deserialize(command)
-                logger.debug("received command [{%s} {%s}]", base_command.command, base_command.serial_number)
+                logger.debug('received command [{%s} {%s}]', base_command.command, base_command.serial_number)
 
                 if self.__is_command_executed(base_command):
-                    logger.warning("command[{%s}] is executed, ignored.", base_command.command)
+                    logger.warning('command[{%s}] is executed, ignored.', base_command.command)
                     continue
 
                 try:
                     self._commands.put(base_command)
                 except queue.Full:
-                    logger.warning("command[{%s}, {%s}] cannot add to command list. because the command list is full.",
+                    logger.warning('command[{%s}, {%s}] cannot add to command list. because the command list is full.',
                                    base_command.command, base_command.serial_number)
             except UnsupportedCommandException as e:
-                logger.warning("received unsupported command[{%s}].", e.command.command)
+                logger.warning('received unsupported command[{%s}].', e.command.command)
 
 
 class CommandSerialNumberCache:

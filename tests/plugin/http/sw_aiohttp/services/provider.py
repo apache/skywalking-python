@@ -19,7 +19,7 @@ from aiohttp import web
 
 
 async def handle(request):
-    name = request.match_info.get('name', "Anonymous")
+    name = request.match_info.get('name', 'Anonymous')
     return web.json_response({
         name: name,
     })

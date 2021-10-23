@@ -20,10 +20,10 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 
-link_vector = ["https://pika.readthedocs.io"]
+link_vector = ['https://pika.readthedocs.io']
 support_matrix = {
-    "pika": {
-        ">=3.6": ["1.2"]
+    'pika': {
+        '>=3.6': ['1.2']
     }
 }
 note = """"""
@@ -44,10 +44,10 @@ def _sw_basic_publish_func(_basic_publish):
                           body,
                           properties=None,
                           mandatory=False):
-        peer = '%s:%s' % (this.connection.params.host, this.connection.params.port)
+        peer = f'{this.connection.params.host}:{this.connection.params.port}'
         context = get_context()
         import pika
-        with context.new_exit_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key + "/Producer" or "/",
+        with context.new_exit_span(op=f'RabbitMQ/Topic/{exchange}/Queue/{routing_key}/Producer' or '/',
                                    peer=peer, component=Component.RabbitmqProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
@@ -74,7 +74,7 @@ def _sw_basic_publish_func(_basic_publish):
 
 def _sw__on_deliver_func(__on_deliver):
     def _sw__on_deliver(this, method_frame, header_frame, body):
-        peer = '%s:%s' % (this.connection.params.host, this.connection.params.port)
+        peer = f'{this.connection.params.host}:{this.connection.params.port}'
         context = get_context()
         exchange = method_frame.method.exchange
         routing_key = method_frame.method.routing_key
@@ -83,8 +83,8 @@ def _sw__on_deliver_func(__on_deliver):
             if item.key in header_frame.properties.headers:
                 item.val = header_frame.properties.headers[item.key]
 
-        with context.new_entry_span(op="RabbitMQ/Topic/" + exchange + "/Queue/" + routing_key
-                                       + "/Consumer" or "", carrier=carrier) as span:
+        with context.new_entry_span(op='RabbitMQ/Topic/' + exchange + '/Queue/' + routing_key
+                                       + '/Consumer' or '', carrier=carrier) as span:
             span.layer = Layer.MQ
             span.component = Component.RabbitmqConsumer
             __on_deliver(this, method_frame, header_frame, body)

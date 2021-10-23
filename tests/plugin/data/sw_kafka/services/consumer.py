@@ -16,10 +16,10 @@
 #
 
 if __name__ == '__main__':
-    topic = "skywalking"
-    server_list = ["kafka-server:9092"]
-    group_id = "skywalking"
-    client_id = "0"
+    topic = 'skywalking'
+    server_list = ['kafka-server:9092']
+    group_id = 'skywalking'
+    client_id = '0'
 
     from kafka import KafkaConsumer
     from kafka import TopicPartition

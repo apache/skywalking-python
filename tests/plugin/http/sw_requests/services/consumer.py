@@ -28,12 +28,12 @@ if __name__ == '__main__':
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
 
-            res = requests.post("http://provider:9091/users")
+            res = requests.post('http://provider:9091/users')
             self.wfile.write(str(res.json()).encode('utf8'))
 
     PORT = 9090
     Handler = SimpleHTTPRequestHandler
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("serving at port", PORT)
+    with socketserver.TCPServer(('', PORT), Handler) as httpd:
+        print('serving at port', PORT)
         httpd.serve_forever()

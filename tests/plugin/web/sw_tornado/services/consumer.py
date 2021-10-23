@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import requests
     import tornado.ioloop
     import tornado.web
 
     class MainHandler(tornado.web.RequestHandler):
         def get(self):
-            res = requests.get("http://provider:9091/users")
+            res = requests.get('http://provider:9091/users')
             self.write(res.text)
 
     def make_app():
         return tornado.web.Application([
-            (r"/users", MainHandler),
+            (r'/users', MainHandler),
         ])
 
     app = make_app()

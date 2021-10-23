@@ -35,14 +35,14 @@ class AtomicArray:
 
     def set(self, idx: int, new_value):
         if idx < 0 or idx >= self.length():
-            raise IndexError("atomic array assignment index out of range")
+            raise IndexError('atomic array assignment index out of range')
 
         with self._lock:
             self._array[idx] = new_value
 
     def get(self, idx: int):
         if idx < 0 or idx >= self.length():
-            raise IndexError("atomic array assignment index out of range")
+            raise IndexError('atomic array assignment index out of range')
 
         with self._lock:
             return self._array[idx]
@@ -53,7 +53,7 @@ class AtomicArray:
         :return: return True if success, False if the actual value was not equal to the expected value.
         """
         if idx < 0 or idx >= self.length():
-            raise IndexError("atomic array assignment index out of range")
+            raise IndexError('atomic array assignment index out of range')
 
         with self._lock:
             if self._array[idx] == expect:

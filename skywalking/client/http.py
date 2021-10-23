@@ -21,14 +21,14 @@ from google.protobuf import json_format
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, LogDataReportService
-from skywalking.loggings import logger
+from skywalking.loggings import logger, logger_debug_enabled
 
 
 class HttpServiceManagementClient(ServiceManagementClient):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_instance_props = proto + config.collector_address.rstrip('/') + '/v3/management/reportProperties'
-        self.url_heart_beat = proto + config.collector_address.rstrip('/') + '/v3/management/keepAlive'
+        self.url_instance_props = f"{proto}{config.collector_address.rstrip('/')}/v3/management/reportProperties"
+        self.url_heart_beat = f"{proto}{config.collector_address.rstrip('/')}/v3/management/keepAlive"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
@@ -43,25 +43,28 @@ class HttpServiceManagementClient(ServiceManagementClient):
                 'language': 'Python',
             }]
         })
-        logger.debug('heartbeat response: %s', res)
+        if logger_debug_enabled:
+            logger.debug('heartbeat response: %s', res)
 
     def send_heart_beat(self):
-        logger.debug(
-            'service heart beats, [%s], [%s]',
-            config.service_name,
-            config.service_instance,
-        )
+        if logger_debug_enabled:
+            logger.debug(
+                'service heart beats, [%s], [%s]',
+                config.service_name,
+                config.service_instance,
+            )
         res = self.session.post(self.url_heart_beat, json={
             'service': config.service_name,
             'serviceInstance': config.service_instance,
         })
-        logger.debug('heartbeat response: %s', res)
+        if logger_debug_enabled:
+            logger.debug('heartbeat response: %s', res)
 
 
 class HttpTraceSegmentReportService(TraceSegmentReportService):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/segment'
+        self.url_report = f"{proto}{config.collector_address.rstrip('/')}/v3/segment"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
@@ -109,13 +112,14 @@ class HttpTraceSegmentReportService(TraceSegmentReportService):
                     } for ref in span.refs if ref.trace_id]
                 } for span in segment.spans]
             })
-            logger.debug('report traces response: %s', res)
+            if logger_debug_enabled:
+                logger.debug('report traces response: %s', res)
 
 
 class HttpLogDataReportService(LogDataReportService):
     def __init__(self):
         proto = 'https://' if config.force_tls else 'http://'
-        self.url_report = proto + config.collector_address.rstrip('/') + '/v3/logs'
+        self.url_report = f"{proto}{config.collector_address.rstrip('/')}/v3/logs"
         self.session = requests.Session()
 
     def fork_after_in_child(self):
@@ -126,4 +130,5 @@ class HttpLogDataReportService(LogDataReportService):
         log_batch = [json.loads(json_format.MessageToJson(log_data)) for log_data in generator]
         if log_batch:  # prevent empty batches
             res = self.session.post(self.url_report, json=log_batch)
-            logger.debug('report batch log response: %s', res)
+            if logger_debug_enabled:
+                logger.debug('report batch log response: %s', res)

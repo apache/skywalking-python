@@ -19,7 +19,6 @@ import time
 from typing import List, TYPE_CHECKING
 
 from skywalking import config
-
 from skywalking.trace import ID
 from skywalking.utils.lang import tostring
 
@@ -62,7 +61,7 @@ class SegmentRef(object):
         carrier.span_id = snapshot.span_id
         carrier.service = config.service_name
         carrier.service_instance = config.service_instance
-        return SegmentRef(carrier, ref_type="CrossThread")
+        return SegmentRef(carrier, ref_type='CrossThread')
 
 
 class _NewID(ID):

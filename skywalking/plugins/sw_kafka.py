@@ -21,11 +21,11 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagMqTopic
 
-link_vector = ["https://kafka-python.readthedocs.io"]
+link_vector = ['https://kafka-python.readthedocs.io']
 
 support_matrix = {
-    "kafka-python": {
-        ">=3.6": ["2.0"]
+    'kafka-python': {
+        '>=3.6': ['2.0']
     }
 }
 note = """"""
@@ -45,13 +45,13 @@ def _sw__poll_once_func(__poll_once):
     def _sw__poll_once(this, timeout_ms, max_records, update_offsets=True):
         res = __poll_once(this, timeout_ms, max_records, update_offsets=update_offsets)
         if res:
-            brokers = ";".join(this.config["bootstrap_servers"])
+            brokers = ';'.join(this.config['bootstrap_servers'])
             context = get_context()
-            topics = ";".join(this._subscription.subscription
+            topics = ';'.join(this._subscription.subscription
                               or [t.topic for t in this._subscription._user_assignment])
 
             with context.new_entry_span(
-                    op="Kafka/" + topics + "/Consumer/" + (this.config["group_id"] or "")) as span:
+                    op=f"Kafka/{topics}/Consumer/{this.config['group_id'] or ''}") as span:
                 for consumerRecords in res.values():
                     for record in consumerRecords:
                         carrier = Carrier()
@@ -80,9 +80,9 @@ def _sw_send_func(_send):
             return _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                          timestamp_ms=timestamp_ms)
 
-        peer = ";".join(this.config["bootstrap_servers"])
+        peer = ';'.join(this.config['bootstrap_servers'])
         context = get_context()
-        with context.new_exit_span(op="Kafka/" + topic + "/Producer" or "/", peer=peer,
+        with context.new_exit_span(op=f'Kafka/{topic}/Producer' or '/', peer=peer,
                                    component=Component.KafkaProducer) as span:
             carrier = span.inject()
             span.layer = Layer.MQ
@@ -90,7 +90,7 @@ def _sw_send_func(_send):
             if headers is None:
                 headers = []
             for item in carrier:
-                headers.append((item.key, item.val.encode("utf-8")))
+                headers.append((item.key, item.val.encode('utf-8')))
 
             res = _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                         timestamp_ms=timestamp_ms)

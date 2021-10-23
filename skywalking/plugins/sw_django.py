@@ -21,10 +21,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, TagHttpParams
 
-link_vector = ["https://www.djangoproject.com/"]
+link_vector = ['https://www.djangoproject.com/']
 support_matrix = {
-    "django": {
-        ">=3.6": ["3.2"],
+    'django': {
+        '>=3.6': ['3.2'],
         # ">=3.8": ["4.0a1"]  # expected Dec 2021
     }
 }
@@ -50,7 +50,7 @@ def install():
             # Any HTTP headers in the request are converted to META keys by converting all characters to uppercase,
             # replacing any hyphens with underscores and adding an HTTP_ prefix to the name.
             # https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest.META
-            sw_http_header_key = 'HTTP_%s' % item.key.upper().replace('-', '_')
+            sw_http_header_key = f"HTTP_{item.key.upper().replace('-', '_')}"
             if sw_http_header_key in request.META:
                 item.val = request.META[sw_http_header_key]
 
@@ -60,10 +60,10 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.Django
-            span.peer = '%s:%s' % (request.META.get('REMOTE_ADDR'), request.META.get('REMOTE_PORT') or "80")
+            span.peer = f"{request.META.get('REMOTE_ADDR')}:{request.META.get('REMOTE_PORT') or '80'}"
 
             span.tag(TagHttpMethod(method))
-            span.tag(TagHttpURL(request.build_absolute_uri().split("?")[0]))
+            span.tag(TagHttpURL(request.build_absolute_uri().split('?')[0]))
 
             # you can get request parameters by `request.GET` even though client are using POST or other methods
             if config.django_collect_http_params and request.GET:
@@ -88,4 +88,4 @@ def install():
 
 
 def params_tostring(params):
-    return "\n".join([k + '=[' + ",".join(params.getlist(k)) + ']' for k, _ in params.items()])
+    return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])

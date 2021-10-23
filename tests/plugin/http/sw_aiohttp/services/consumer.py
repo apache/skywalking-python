@@ -21,7 +21,7 @@ from aiohttp import web
 
 
 async def handle(request):
-    name = request.match_info.get('name', "Anonymous")
+    name = request.match_info.get('name', 'Anonymous')
 
     async with aiohttp.ClientSession() as session:
         async with session.get(f'http://user:pass@provider:9091/{name}') as response:

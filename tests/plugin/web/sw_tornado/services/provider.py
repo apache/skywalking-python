@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import json
     import time
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     def make_app():
         return tornado.web.Application([
-            (r"/users", MainHandler),
+            (r'/users', MainHandler),
         ])
 
     app = make_app()

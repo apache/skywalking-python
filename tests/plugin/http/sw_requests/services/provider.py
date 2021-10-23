@@ -34,5 +34,5 @@ if __name__ == '__main__':
     PORT = 9091
     Handler = SimpleHTTPRequestHandler
 
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    with socketserver.TCPServer(('', PORT), Handler) as httpd:
         httpd.serve_forever()
