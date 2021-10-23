@@ -34,10 +34,15 @@ lint: clean
 	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
 	flake8 .
 
+# used in development
 dev-check:
-	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
-	flake8 .
+	$(VENV)/python -m pip install flake8 flake8-quotes flake8-use-fstring
+	$(VENV)/flake8 .
 
+# fix problems described in CodingStyle.md - verify outcome with care
+dev-fix:
+	$(VENV)/unify -r . --in-place .
+	$(VENV)/flynt -tc -v .
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
@@ -77,3 +82,5 @@ release: clean lint license
 	-tar -zcvf skywalking-python-src-$(VERSION).tgz *
 	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
 	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512
+
+include Makefile.venv
