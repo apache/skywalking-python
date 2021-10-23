@@ -19,7 +19,7 @@ import base64
 
 
 def tostring(cls):
-    def __str__(self):
+    def __str__(self): # noqa
         return f"{type(self).__name__}@{id(self)}[{', '.join(f'{k}={str(v)}' for (k, v) in vars(self).items())}]"
     cls.__str__ = __str__
     return cls

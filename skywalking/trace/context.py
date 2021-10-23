@@ -15,9 +15,11 @@
 # limitations under the License.
 #
 
-from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking import Component, agent, config
+from skywalking import profile
 from skywalking.agent import isfull
+from skywalking.loggings import logger, logger_debug_enabled
+from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -25,8 +27,6 @@ from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
 from skywalking.utils.time import current_milli_time
-from skywalking import profile
-
 
 try:  # attempt to use async-local instead of thread-local context and spans
     import contextvars
@@ -34,6 +34,7 @@ try:  # attempt to use async-local instead of thread-local context and spans
     __spans = contextvars.ContextVar('spans')
     _spans = __spans.get
     _spans_set = __spans.set  # pyre-ignore
+
 
     def _spans():  # need to do this because can't set mutable default = [] in contextvars.ContextVar()
         spans = __spans.get(None)
@@ -46,28 +47,35 @@ try:  # attempt to use async-local instead of thread-local context and spans
 
         return spans
 
+
     def _spans_dup():
         spans = __spans.get()[:]
         __spans.set(spans)
 
         return spans
 
+
     __spans.set([])
 
 except ImportError:
     import threading
 
+
     class SwLocal(threading.local):
         def __init__(self):
             self.spans = []
 
+
     __local = SwLocal()
+
 
     def _spans():
         return __local.spans
 
+
     def _spans_set(spans):
         __local.spans = spans
+
 
     _spans_dup = _spans
 
@@ -78,7 +86,7 @@ class SpanContext(object):
         self._sid = Counter()
         self._correlation = {}  # type: dict
         self._nspans = 0
-        self.profile_status = None  # type: ProfileStatusReference
+        self.profile_status = None  # type: ProfileStatusReference or None
         self.create_time = current_milli_time()
 
     def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
@@ -87,13 +95,13 @@ class SpanContext(object):
 
         return None
 
-    def new_span(self, parent: Span, SpanType: type, **kwargs) -> Span:
+    def new_span(self, parent: Span, span_type: type, **kwargs) -> Span:
         finished = parent and not parent._depth
         context = SpanContext() if finished else self
-        span = SpanType(context=context,
-                        sid=context._sid.next(),
-                        pid=parent.sid if parent and not finished else -1,
-                        **kwargs)
+        span = span_type(context=context,
+                         sid=context._sid.next(),
+                         pid=parent.sid if parent and not finished else -1,
+                         **kwargs)
 
         # if parent finished and segment was archived before this child starts then we need to refer to parent
         if finished:
@@ -192,8 +200,9 @@ class SpanContext(object):
 
         try:
             spans.remove(span)
-        except Exception:
-            pass
+        except Exception as e:
+            if logger_debug_enabled:
+                logger.debug(e)
 
         self._nspans -= 1
         if self._nspans == 0:
@@ -269,9 +278,9 @@ class NoopContext(SpanContext):
 
         try:
             spans.remove(span)
-        except Exception:
-            pass
-
+        except Exception as e:
+            if logger_debug_enabled:
+                logger.debug(e)
         self._nspans -= 1
 
         return self._nspans == 0

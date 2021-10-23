@@ -23,7 +23,7 @@ if __name__ == '__main__':
     from http.server import BaseHTTPRequestHandler
 
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-        def do_POST(self):
+        def do_post(self):
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()

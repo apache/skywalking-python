@@ -18,13 +18,13 @@
 import queue
 from collections import deque
 
-from skywalking.protocol.common.Common_pb2 import Commands, Command
-
 from skywalking.command.base_command import BaseCommand
 from skywalking.command.executors import noop_command_executor_instance
 from skywalking.command.executors.profile_task_command_executor import ProfileTaskCommandExecutor
 from skywalking.command.profile_task_command import ProfileTaskCommand
 from skywalking.loggings import logger
+from skywalking.protocol.common.Common_pb2 import Commands, Command
+from skywalking.utils.exception import UnsupportedCommandError
 
 
 class CommandService:
@@ -60,7 +60,7 @@ class CommandService:
                 except queue.Full:
                     logger.warning('command[{%s}, {%s}] cannot add to command list. because the command list is full.',
                                    base_command.command, base_command.serial_number)
-            except UnsupportedCommandException as e:
+            except UnsupportedCommandError as e:
                 logger.warning('received unsupported command[{%s}].', e.command.command)
 
 
@@ -109,13 +109,7 @@ class CommandDeserializer:
         if ProfileTaskCommand.NAME == command_name:
             return ProfileTaskCommand.deserialize(command)
         else:
-            raise UnsupportedCommandException(command)
-
-
-class UnsupportedCommandException(Exception):
-
-    def __init__(self, command):
-        self.command = command
+            raise UnsupportedCommandError(command)
 
 
 # init

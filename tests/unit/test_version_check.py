@@ -29,73 +29,73 @@ class TestVersionCheck(unittest.TestCase):
         f = operators.get('<')
         v1 = version.parse('1.0.0')
         v2 = version.parse('1.0.1')
-        self.assertTrue(f(v1, v2))
-        self.assertFalse(f(v2, v1))
+        assert f(v1, v2) is True
+        assert f(v2, v1) is False
 
         v2 = version.parse('1.0.0')
-        self.assertFalse(f(v1, v2))
+        assert f(v1, v2) is False
 
         # <=
         f = operators.get('<=')
         v1 = version.parse('1.0')
         v2 = version.parse('1.0')
-        self.assertTrue(v1, v2)
+        assert f(v1, v2) is True
 
         v2 = version.parse('1.1.0')
-        self.assertTrue(f(v1, v2))
-        self.assertFalse(f(v2, v1))
+        assert f(v1, v2) is True
+        assert f(v2, v1) is False
 
         # =
         f = operators.get('==')
         v1 = version.parse('1.0.0')
         v2 = version.parse('1.0.0')
-        self.assertTrue(f(v1, v2))
+        assert f(v1, v2) is True
 
         v2 = version.parse('1.0.1')
-        self.assertFalse(f(v1, v2))
+        assert f(v1, v2) is False
 
         # >=
         f = operators.get('>=')
         v1 = version.parse('1.0.0')
         v2 = version.parse('1.0.0')
-        self.assertTrue(f(v1, v2))
+        assert f(v1, v2) is True
 
         v2 = version.parse('1.0.1')
-        self.assertFalse(f(v1, v2))
-        self.assertTrue(f(v2, v1))
+        assert f(v1, v2) is False
+        assert f(v2, v1) is True
 
         # >
         f = operators.get('>')
         v1 = version.parse('1.0.0')
         v2 = version.parse('1.0.1')
-        self.assertFalse(f(v1, v2))
-        self.assertTrue(f(v2, v1))
+        assert f(v1, v2) is False
+        assert f(v2, v1) is True
 
         v2 = version.parse('1.0.0')
-        self.assertFalse(f(v1, v2))
+        assert f(v1, v2) is False
 
         # !=
         f = operators.get('!=')
         v1 = version.parse('1.0.0')
         v2 = version.parse('1.0.1')
-        self.assertTrue(f(v1, v2))
+        assert f(v1, v2) is True
 
         v2 = version.parse('1.0.0')
-        self.assertFalse(f(v1, v2))
+        assert f(v1, v2) is False
 
     def test_version_check(self):
         current_version = version.parse('1.8.0')
 
-        self.assertTrue(check('>1.1.0', current_version))
-        self.assertTrue(check('>=1.0.0', current_version))
-        self.assertTrue(check('<2.0.0', current_version))
-        self.assertTrue(check('<=1.8.0', current_version))
-        self.assertTrue(check('==1.8.0', current_version))
-        self.assertTrue(check('!=1.6.0', current_version))
+        assert check('>1.1.0', current_version) is True
+        assert check('>=1.0.0', current_version) is True
+        assert check('<2.0.0', current_version) is True
+        assert check('<=1.8.0', current_version) is True
+        assert check('==1.8.0', current_version) is True
+        assert check('!=1.6.0', current_version) is True
 
-        self.assertFalse(check('>1.9.0', current_version))
-        self.assertFalse(check('>=1.8.1', current_version))
-        self.assertFalse(check('<1.8.0', current_version))
-        self.assertFalse(check('<=1.7.0', current_version))
-        self.assertFalse(check('==1.0.0', current_version))
-        self.assertFalse(check('!=1.8.0', current_version))
+        assert check('>1.9.0', current_version) is False
+        assert check('>=1.8.1', current_version) is False
+        assert check('<1.8.0', current_version) is False
+        assert check('<=1.7.0', current_version) is False
+        assert check('==1.0.0', current_version) is False
+        assert check('!=1.8.0', current_version) is False

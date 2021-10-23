@@ -23,14 +23,14 @@ from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService, \
     KafkaLogDataReportService
-from skywalking.loggings import logger, getLogger, logger_debug_enabled
+from skywalking.loggings import logger, get_logger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
 # avoid too many kafka logs
-logger_kafka = getLogger('kafka')
+logger_kafka = get_logger('kafka')
 logger_kafka.setLevel(max(logging.WARN, logger.level))
 
 

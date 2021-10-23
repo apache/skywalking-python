@@ -27,7 +27,7 @@ import skywalking
 from skywalking import config
 from skywalking.loggings import logger
 from skywalking.utils.comparator import operators
-from skywalking.utils.exception import VersionRuleException
+from skywalking.utils.exception import VersionRuleError
 
 
 def install():
@@ -36,7 +36,7 @@ def install():
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns.split(',') if p.strip()]
     else:
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns if p.strip()]
-    for importer, modname, ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
+    for importer, modname, _ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
         if any(pattern.match(modname) for pattern in disable_patterns):
             logger.info("plugin %s is disabled and thus won't be installed", modname)
             continue
@@ -50,7 +50,7 @@ def install():
                          "won't be installed", modname)
             continue
 
-        if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
+        if not hasattr(plugin, 'install') or inspect.ismethod(plugin.install):
             logger.warning("no `install` method in plugin %s, thus the plugin won't be installed", modname)
             continue
 
@@ -107,6 +107,6 @@ def check(rule_unit, current_version):
     expect_version = version.parse(expect_pkg_version)
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
+        raise VersionRuleError(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
 
     return f(current_version, expect_version)

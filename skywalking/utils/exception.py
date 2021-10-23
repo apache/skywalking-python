@@ -15,6 +15,17 @@
 # limitations under the License.
 #
 
-class VersionRuleException(Exception):
+class VersionRuleError(Exception):
     def __init__(self, message):
         self.message = message
+
+
+class KafkaConfigDuplicatedError(Exception):
+    def __init__(self, key):
+        self.key = key
+
+
+class UnsupportedCommandError(Exception):
+
+    def __init__(self, command):
+        self.command = command

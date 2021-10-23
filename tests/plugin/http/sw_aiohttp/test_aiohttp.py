@@ -24,7 +24,7 @@ from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
 
 
-@pytest.fixture  # pyre-ignore
+@pytest.fixture()  # pyre-ignore
 def prepare():
     # type: () -> Callable
     return lambda *_: requests.get('http://0.0.0.0:9090/skywalking')

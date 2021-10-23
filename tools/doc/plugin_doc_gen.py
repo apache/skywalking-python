@@ -43,16 +43,17 @@ Library | Python Version - Lib Version | Plugin Name
 
 def generate_plugin_doc():
     """
-    Generates a test matrix table to the current dir
+    Generates a plugin.md doc to the docs folder
 
     Returns: None
     Raises: Attribute Error - missing matrix/link/note in sw_plugin
+
     """
     table_entries = []
     note_entries = []
-    for importer, modname in pkgutil.iter_modules(plugins_path):
+    for importer, modname, _ispkg in pkgutil.iter_modules(plugins_path):
         plugin = importer.find_module(modname).load_module(modname)
-
+        libs_tested, links_tested, plugin_support_matrix = [], [], {}
         try:
             plugin_support_matrix = plugin.support_matrix  # type: dict
             plugin_support_links = plugin.link_vector  # type: list
@@ -61,7 +62,7 @@ def generate_plugin_doc():
             if plugin.note:
                 note_entries.append(plugin.note)
         except AttributeError:
-            raise AttributeError(f'Missing attribute in {modname}, please follow the correct plugin style.')
+            print(f'Missing attribute in {modname}, please follow the correct plugin style.')
 
         for lib, link in zip(libs_tested, links_tested):  # NOTE: maybe a two lib support like http.server + werkzeug
             lib_entry = str(lib)

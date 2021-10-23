@@ -26,11 +26,6 @@ import requests
 import yaml
 from requests import Response
 
-try:
-    from yaml import CSafeLoader as Loader
-except ImportError:
-    from yaml import SafeLoader as Loader
-
 
 class TestPluginBase(ABC):
     def validate(self, expected_file_name=None):
@@ -38,8 +33,6 @@ class TestPluginBase(ABC):
 
         if expected_file_name is None:
             expected_file_name = os.path.join(dirname(inspect.getfile(self.__class__)), 'expected.data.yml')
-
-        # time.sleep(10)
 
         with open(expected_file_name) as expected_data_file:
             expected_data = os.linesep.join(expected_data_file.readlines())
@@ -49,12 +42,12 @@ class TestPluginBase(ABC):
             if response.status_code != 200:
                 res = requests.get('http://localhost:12800/receiveData')
 
-                actual_data = yaml.dump(yaml.load(res.content, Loader=Loader))
+                actual_data = yaml.dump(yaml.safe_load(res.content))
 
                 differ = Differ()
                 diff_list = list(differ.compare(
                     actual_data.splitlines(keepends=True),
-                    yaml.dump(yaml.load(expected_data, Loader=Loader)).splitlines(keepends=True)
+                    yaml.dump(yaml.safe_load(expected_data)).splitlines(keepends=True)
                 ))
 
                 print('diff list: ')

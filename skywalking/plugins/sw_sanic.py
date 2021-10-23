@@ -46,7 +46,7 @@ def install():
 
     _format_http1_response = response.format_http1_response
     _handle_request = Sanic.handle_request
-    _handlers_ErrorHandler_response = handlers.ErrorHandler.response
+    _handlers_error_handler_response = handlers.ErrorHandler.response
 
     def _sw_format_http1_response(status: int, headers, body=b''):
         if status is not None:
@@ -58,17 +58,17 @@ def install():
 
         return _format_http1_response(status, headers, body)
 
-    def _sw_handlers_ErrorHandler_response(self: handlers.ErrorHandler, req, e):
+    def _sw_handlers_error_handler_response(self: handlers.ErrorHandler, req, e):
         if e is not None:
             entry_span = get_context().active_span()
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 entry_span.raised()
 
-        return _handlers_ErrorHandler_response(self, req, e)
+        return _handlers_error_handler_response(self, req, e)
 
     response.format_http1_response = _sw_format_http1_response
     Sanic.handle_request = _gen_sw_handle_request(_handle_request)
-    handlers.ErrorHandler.response = _sw_handlers_ErrorHandler_response
+    handlers.ErrorHandler.response = _sw_handlers_error_handler_response
 
 
 def _gen_sw_handle_request(_handle_request):

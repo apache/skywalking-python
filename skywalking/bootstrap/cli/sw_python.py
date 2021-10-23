@@ -20,7 +20,7 @@ import argparse
 import logging
 
 from skywalking.bootstrap import cli_logger
-from skywalking.bootstrap.cli import SWRunnerFailure
+from skywalking.bootstrap.cli import SWRunnerFailureError
 from skywalking.bootstrap.cli.utility import runner
 
 _options = {
@@ -60,7 +60,7 @@ def start() -> None:
         return
     try:
         dispatch(args)
-    except SWRunnerFailure:
+    except SWRunnerFailureError:
         cli_logger.error(f"Failed to run the given user application command `{' '.join(args.command)}`, "
                          f'please make sure given command is valid.')
         return

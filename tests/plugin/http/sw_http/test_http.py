@@ -22,7 +22,7 @@ import requests
 from tests.plugin.base import TestPluginBase
 
 
-@pytest.fixture
+@pytest.fixture()
 def prepare():
     # type: () -> Callable
     return lambda *_: requests.post('http://0.0.0.0:9090')

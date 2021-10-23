@@ -21,7 +21,7 @@ A management utility to handle testing matrix for different Pythons and Library 
 import sys
 
 from skywalking.utils.comparator import operators
-from skywalking.utils.exception import VersionRuleException
+from skywalking.utils.exception import VersionRuleError
 
 
 def compare_version(rule_unit):
@@ -31,19 +31,21 @@ def compare_version(rule_unit):
     test_python_version = sys.version_info[:2]  # type: tuple
     f = operators.get(symbol) or None
     if not f:
-        raise VersionRuleException(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
+        raise VersionRuleError(f'version rule {rule_unit} error. only allow >,>=,==,<=,<,!= symbols')
 
     return f(test_python_version, expect_python_version)
 
 
-def get_test_vector(lib_name: str, support_matrix: dict):
+def get_test_vector(lib_name: str, support_matrix: dict) -> list:
     """
     If gets empty or ! will get skipped
+
     Args:
         support_matrix: a test matrix including python version specification and lib version
         lib_name: the name of the tested lib, used for requirements.txt generation
 
     Returns:
+        list of valid versions in string format ["django==3.1", "django==4.0"]
 
     """
     test_matrix = support_matrix[lib_name]

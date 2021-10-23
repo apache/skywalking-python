@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
-import time
 from collections import namedtuple
 from enum import Enum
 from typing import List
+
+from skywalking.utils.time import current_milli_time
 
 
 class Component(Enum):
@@ -77,7 +78,8 @@ LogItem = namedtuple('LogItem', 'key val')
 
 
 class Log(object):
+    timestamp = current_milli_time()
 
-    def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None):
+    def __init__(self, timestamp=timestamp, items: List[LogItem] = None):
         self.timestamp = timestamp
         self.items = items or []

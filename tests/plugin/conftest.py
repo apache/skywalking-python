@@ -26,20 +26,20 @@ from _pytest.fixtures import FixtureRequest
 from testcontainers.compose import DockerCompose
 
 
-@pytest.fixture
+@pytest.fixture()
 def version():
     # type: () -> str
     return ''
 
 
 # noinspection PyUnusedLocal
-@pytest.fixture
+@pytest.fixture()
 def prepare():
     # type: () -> Callable
     return lambda *_: None
 
 
-@pytest.fixture
+@pytest.fixture()
 def docker_compose(request, prepare, version):
     # type: (FixtureRequest, Callable, str) -> None
 

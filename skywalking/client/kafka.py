@@ -25,6 +25,7 @@ from skywalking.client import ServiceManagementClient, TraceSegmentReportService
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
+from skywalking.utils.exception import KafkaConfigDuplicatedError
 
 kafka_configs = {}
 
@@ -49,7 +50,7 @@ def __init_kafka_configs():
         if kafka_configs.get(key) is None:
             kafka_configs[key] = val
         else:
-            raise KafkaConfigDuplicated(key)
+            raise KafkaConfigDuplicatedError(key)
 
 
 __init_kafka_configs()
@@ -119,8 +120,3 @@ class KafkaLogDataReportService(LogDataReportService):
             key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
             value = bytes(log_data.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
-
-
-class KafkaConfigDuplicated(Exception):
-    def __init__(self, key):
-        self.key = key

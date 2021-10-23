@@ -31,63 +31,63 @@ class TestFastPathMatch(unittest.TestCase):
     def test_match(self):
         pattern = '/eureka/*'
         path = '/eureka/apps'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/apps/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
         pattern = '/eureka/*/'
         path = '/eureka/apps/'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
         path = '/eureka/apps/list'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
         pattern = '/eureka/**'
         path = '/eureka/'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/apps/test'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/apps/test/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
         pattern = 'eureka/apps/?'
         path = 'eureka/apps/list'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
         path = 'eureka/apps/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
         path = 'eureka/apps/a'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
 
         pattern = 'eureka/**/lists'
         path = 'eureka/apps/lists'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = 'eureka/apps/test/lists'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = 'eureka/apps/test/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
         path = 'eureka/apps/test'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
         pattern = 'eureka/**/test/**'
         path = 'eureka/apps/test/list'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = 'eureka/apps/foo/test/list/bar'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = 'eureka/apps/foo/test/list/bar/'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
         path = 'eureka/apps/test/list'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = 'eureka/test/list'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
         pattern = '/eureka/**/b/**/*.txt'
         path = '/eureka/a/aa/aaa/b/bb/bbb/xxxxxx.txt'
-        self.assertTrue(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is True
         path = '/eureka/a/aa/aaa/b/bb/bbb/xxxxxx'
-        self.assertFalse(fast_path_match(pattern, path))
+        assert fast_path_match(pattern, path) is False
 
 
 if __name__ == '__main__':

@@ -16,6 +16,6 @@
 #
 
 
-class SWRunnerFailure(Exception):
+class SWRunnerFailureError(Exception):
     """ Exception runner fails to execute given user command """
     pass

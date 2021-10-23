@@ -20,7 +20,7 @@ import logging
 from skywalking import config
 
 
-def getLogger(name=None):
+def get_logger(name=None):
     logger = logging.getLogger(name)
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(name)s [%(threadName)s] [%(levelname)s] %(message)s')
@@ -31,7 +31,7 @@ def getLogger(name=None):
     return logger
 
 
-logger = getLogger('skywalking')
+logger = get_logger('skywalking')
 logger_debug_enabled = logger.isEnabledFor(logging.DEBUG)
 
 
