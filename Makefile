@@ -39,10 +39,11 @@ dev-check:
 	$(VENV)/python -m pip install flake8 flake8-quotes flake8-use-fstring
 	$(VENV)/flake8 .
 
-# fix problems described in CodingStyle.md - verify outcome with care
+# fix problems described in CodingStyle.md - verify outcome with extra care
 dev-fix:
-	$(VENV)/unify -r . --in-place .
+	$(VENV)/unify -r --in-place .
 	$(VENV)/flynt -tc -v .
+
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
