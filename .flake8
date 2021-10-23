@@ -20,6 +20,6 @@ ignore = E501, E126, W503
 extend-ignore = FS003
 max-line-length = 120
 max-complexity = 20
-exclude = venv*,*egg_info,protocol
+exclude = venv*,*egg_info
 count = True
 show-source = True
