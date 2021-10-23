@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
         time.sleep(0.5)
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         r.set('foo', 'bar')
         r.get('foo')
 
-        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
+        return jsonify({'song': 'Despacito', 'artist': 'Luis Fonsi'})
 
     PORT = 9091
     app.run(host='0.0.0.0', port=PORT, debug=True)

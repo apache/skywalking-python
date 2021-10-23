@@ -18,14 +18,14 @@
 if __name__ == '__main__':
     import pika
 
-    parameters = (pika.URLParameters("amqp://admin:admin@rabbitmq-server:5672/%2F"))
+    parameters = (pika.URLParameters('amqp://admin:admin@rabbitmq-server:5672/%2F'))
 
     connection = pika.BlockingConnection(parameters)
 
     channel = connection.channel()
-    channel.queue_declare("test")
-    channel.exchange_declare("test")
-    channel.queue_bind(exchange='test', queue="test", routing_key='test')
+    channel.queue_declare('test')
+    channel.exchange_declare('test')
+    channel.queue_bind(exchange='test', queue='test', routing_key='test')
     for method_frame, properties, body in channel.consume('test'):
         # Display the message parts and acknowledge the message
         print(method_frame, properties, body)

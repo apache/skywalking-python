@@ -19,10 +19,10 @@ from skywalking import Layer, Component
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 
-link_vector = ["https://github.com/andymccurdy/redis-py/"]
+link_vector = ['https://github.com/andymccurdy/redis-py/']
 support_matrix = {
-    "redis": {
-        ">=3.6": ["3.5"]  # "4.0" next, incompatible to current instrumentation
+    'redis': {
+        '>=3.6': ['3.5']  # "4.0" next, incompatible to current instrumentation
     }
 }
 note = """"""
@@ -34,14 +34,14 @@ def install():
     _send_command = Connection.send_command
 
     def _sw_send_command(this: Connection, *args, **kwargs):
-        peer = "%s:%s" % (this.host, this.port)
+        peer = f'{this.host}:{this.port}'
         op = args[0]
         context = get_context()
-        with context.new_exit_span(op="Redis/" + op or "/", peer=peer, component=Component.Redis) as span:
+        with context.new_exit_span(op=f'Redis/{op}' or '/', peer=peer, component=Component.Redis) as span:
             span.layer = Layer.Cache
 
             res = _send_command(this, *args, **kwargs)
-            span.tag(TagDbType("Redis"))
+            span.tag(TagDbType('Redis'))
             span.tag(TagDbInstance(this.db))
             span.tag(TagDbStatement(op))
 

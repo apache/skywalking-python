@@ -23,17 +23,17 @@ if __name__ == '__main__':
 
     app = Flask(__name__)
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
         time.sleep(0.5)
         connection = pymysql.connect(host='mysql', user='root', password='root', db='mysql', charset='utf8mb4')
         with connection.cursor() as cursor:
-            sql = "select * from user where user = %s"
-            cursor.execute(sql, ("root",))
+            sql = 'select * from user where user = %s'
+            cursor.execute(sql, ('root',))
 
         connection.close()
 
-        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
+        return jsonify({'song': 'Despacito', 'artist': 'Luis Fonsi'})
 
     PORT = 9091
     app.run(host='0.0.0.0', port=PORT, debug=True)

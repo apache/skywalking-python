@@ -20,10 +20,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://requests.readthedocs.io/en/master/"]
+link_vector = ['https://requests.readthedocs.io/en/master/']
 support_matrix = {
-    "requests": {
-        ">=3.6": ["2.26", "2.25"]
+    'requests': {
+        '>=3.6': ['2.26', '2.25']
     }
 }
 note = """"""
@@ -50,7 +50,7 @@ def install():
                             hooks, stream, verify, cert, json)
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
+            else get_context().new_exit_span(op=url_param.path or '/', peer=url_param.netloc,
                                              component=Component.Requests)
 
         with span:

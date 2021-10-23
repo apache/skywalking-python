@@ -23,11 +23,11 @@ if __name__ == '__main__':
     app = Flask(__name__)
     producer = KafkaProducer(bootstrap_servers=['kafka-server:9092'], api_version=(1, 0, 1))
 
-    @app.route("/users", methods=["POST", "GET"])
+    @app.route('/users', methods=['POST', 'GET'])
     def application():
         producer.send('skywalking', b'some_message_bytes')
 
-        return jsonify({"song": "Despacito", "artist": "Luis Fonsi"})
+        return jsonify({'song': 'Despacito', 'artist': 'Luis Fonsi'})
 
     PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)

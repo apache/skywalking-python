@@ -53,17 +53,16 @@ def start() -> None:
 
     cli_logger.setLevel(logging.DEBUG if args.debug else logging.INFO)
 
-    cli_logger.debug("Args received {}".format(args))
+    cli_logger.debug(f'Args received {args}')
 
     if not args.command:
-        cli_logger.error("Command is not provided, please type `sw-python -h` for the list of command line arguments")
+        cli_logger.error('Command is not provided, please type `sw-python -h` for the list of command line arguments')
         return
     try:
         dispatch(args)
     except SWRunnerFailure:
-        cli_logger.debug('Failed to run the given user application command `{}`, '
-                         'please make sure given command is valid.'.
-                         format(' '.join(args.command)))
+        cli_logger.error(f"Failed to run the given user application command `{' '.join(args.command)}`, "
+                         f'please make sure given command is valid.')
         return
 
 
@@ -71,8 +70,7 @@ def dispatch(args: argparse.Namespace) -> None:
     """ Dispatches parsed args to a worker """
     cli_option, actual_command = args.option, args.command
 
-    cli_logger.debug("SkyWalking Python agent with CLI option '{}' and command {}".format
-                     (cli_option, actual_command))
+    cli_logger.debug(f"SkyWalking Python agent with CLI option '{cli_option}' and command {actual_command}")
 
     # Dispatch actual user application command to runner
     _options[cli_option].execute(actual_command)

@@ -22,8 +22,8 @@ from skywalking.utils.lang import tostring
 class ProfileTask:
 
     def __init__(self,
-                 task_id: str = "",
-                 first_span_op_name: str = "",
+                 task_id: str = '',
+                 first_span_op_name: str = '',
                  duration: int = -1,
                  min_duration_threshold: int = -1,
                  thread_dump_period: int = -1,

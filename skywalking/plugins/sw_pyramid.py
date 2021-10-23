@@ -21,10 +21,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://trypyramid.com"]
+link_vector = ['https://trypyramid.com']
 support_matrix = {
-    "pyramid": {
-        ">=3.6": ["1.10", "2.0"]
+    'pyramid': {
+        '>=3.6': ['1.10', '2.0']
     }
 }
 note = """"""

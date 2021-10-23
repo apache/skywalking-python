@@ -32,6 +32,7 @@ def getLogger(name=None):
 
 
 logger = getLogger('skywalking')
+logger_debug_enabled = logger.isEnabledFor(logging.DEBUG)
 
 
 def init():

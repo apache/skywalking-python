@@ -30,7 +30,7 @@ settings.configure(
 
 
 def index(request):
-    res = requests.post("http://provider:9091/users")
+    res = requests.post('http://provider:9091/users')
     return JsonResponse(res.json())
 
 
@@ -39,7 +39,7 @@ urlpatterns = (
 )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)
