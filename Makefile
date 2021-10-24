@@ -47,7 +47,6 @@ dev-setup:
 
 dev-check: dev-setup
 	$(VENV)/flake8 .
-# $(VENV)/mypy .
 
 # fix problems described in CodingStyle.md - verify outcome with extra care
 dev-fix: dev-setup
