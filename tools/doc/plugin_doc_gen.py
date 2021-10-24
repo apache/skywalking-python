@@ -50,7 +50,7 @@ def generate_plugin_doc():
     """
     table_entries = []
     note_entries = []
-    for importer, modname, ispkg in pkgutil.iter_modules(plugins_path):
+    for importer, modname, _ispkg in pkgutil.iter_modules(plugins_path):
         plugin = importer.find_module(modname).load_module(modname)
 
         try:

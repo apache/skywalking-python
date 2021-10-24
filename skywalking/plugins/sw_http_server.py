@@ -102,7 +102,7 @@ def wrap_werkzeug_request_handler(handler):
 
         return _send_response(self, code, *args, **kwargs)
 
-    WSGIRequestHandler = handler.__class__
+    WSGIRequestHandler = handler.__class__  # noqa
 
     if not getattr(WSGIRequestHandler, '_sw_wrapped', False):
         _send_response = WSGIRequestHandler.send_response

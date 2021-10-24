@@ -39,3 +39,11 @@ if logger_debug_enabled:
 Please make sure the imports are placed in a good order, or flake8-isort will notify you of the violations.
 
 Run `make dev-fix` to automatically fix the sorting problem.
+
+# Naming
+In PEP8 convention, we are required to use snake_case as the accepted style.
+
+However, there are special cases. For example, you are overriding/monkey-patching a method which happens to use the old style camelCase naming,
+then it is acceptable to have the original naming convention to preserve context. 
+
+Please mark the line with `# noqa` to avoid linting.

@@ -15,9 +15,10 @@
 # limitations under the License.
 #
 
-from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking import Component, agent, config
+from skywalking import profile
 from skywalking.agent import isfull
+from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -25,8 +26,6 @@ from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
 from skywalking.utils.time import current_milli_time
-from skywalking import profile
-
 
 try:  # attempt to use async-local instead of thread-local context and spans
     import contextvars
@@ -87,7 +86,7 @@ class SpanContext(object):
 
         return None
 
-    def new_span(self, parent: Span, SpanType: type, **kwargs) -> Span:
+    def new_span(self, parent: Span, SpanType: type, **kwargs) -> Span: # noqa
         finished = parent and not parent._depth
         context = SpanContext() if finished else self
         span = SpanType(context=context,
