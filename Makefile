@@ -16,6 +16,13 @@
 
 VERSION ?= latest
 
+# determine host platform
+VENV_DIR = venv
+VENV = $(VENV_DIR)/bin
+ifeq (win32,$(shell python3 -c "import sys; print(sys.platform)"))
+VENV=$(VENV_DIR)/Scripts
+endif
+
 .PHONY: license
 
 setup:
@@ -29,14 +36,27 @@ gen:
 	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
 	python3 tools/codegen.py
 
-# flake8 configurations should go to the file .flake8
+# flake8 configurations should go to the file setup.cfg
 lint: clean
-	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
+	python3 -m pip install -r requirements-style.txt
 	flake8 .
 
-dev-check:
-	flake8 --version || python3 -m pip install flake8 flake8-quotes flake8-use-fstring
-	flake8 .
+# used in development
+dev-setup:
+	$(VENV)/python -m pip install -r requirements-style.txt
+
+dev-check: dev-setup
+	$(VENV)/flake8 .
+# $(VENV)/mypy .
+
+# fix problems described in CodingStyle.md - verify outcome with extra care
+dev-fix: dev-setup
+	$(VENV)/isort .
+	$(VENV)/unify -r --in-place .
+	$(VENV)/flynt -tc -v .
+
+doc-gen:
+	$(VENV)/python tools/doc/plugin_doc_gen.py
 
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
