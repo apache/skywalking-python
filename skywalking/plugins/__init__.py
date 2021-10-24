@@ -36,7 +36,7 @@ def install():
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns.split(',') if p.strip()]
     else:
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns if p.strip()]
-    for importer, modname, ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
+    for importer, modname, _ispkg in pkgutil.iter_modules(skywalking.plugins.__path__):
         if any(pattern.match(modname) for pattern in disable_patterns):
             logger.info("plugin %s is disabled and thus won't be installed", modname)
             continue
@@ -50,7 +50,7 @@ def install():
                          "won't be installed", modname)
             continue
 
-        if not hasattr(plugin, 'install') or inspect.ismethod(getattr(plugin, 'install')):
+        if not hasattr(plugin, 'install') or inspect.ismethod(plugin.install):
             logger.warning("no `install` method in plugin %s, thus the plugin won't be installed", modname)
             continue
 

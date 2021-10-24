@@ -48,7 +48,7 @@ def install():
     inject_socket_info(SocketInfo)
 
 
-def inject_socket_info(SocketInfo):
+def inject_socket_info(SocketInfo): # noqa
     _command = SocketInfo.command
 
     def _sw_command(this: SocketInfo, dbname, spec, *args, **kwargs):
@@ -100,7 +100,7 @@ def _get_filter(request_type, spec):
     return f'{request_type} {str(spec)}'
 
 
-def inject_bulk_write(_Bulk, bulk_op_map):
+def inject_bulk_write(_Bulk, bulk_op_map): # noqa
     _execute = _Bulk.execute
 
     def _sw_execute(this: _Bulk, *args, **kwargs):
@@ -133,7 +133,7 @@ def inject_bulk_write(_Bulk, bulk_op_map):
     _Bulk.execute = _sw_execute
 
 
-def inject_cursor(Cursor):
+def inject_cursor(Cursor): # noqa
     __send_message = Cursor._Cursor__send_message
 
     def _sw_send_message(this: Cursor, operation):

@@ -1,0 +1,22 @@
+flake8                  # Plain flake8
+
+## AUTO FIXERS
+#isort                   # import sorter
+unify                   # unify quotes
+flynt                   # fix f-strings
+
+## CODING STYLE
+flake8-quotes           # checks for inconsistent single/double quotes
+flake8-use-fstring      # enforce usage of f-strings
+pep8-naming             # check pep8 naming convention
+Darglint                # docstring description matches the definition
+flake8-eradicate        # dead code checker (commented)
+#flake8-isort            # isort checker | disabled temporarily
+flake8-docstrings       # docstring checker
+
+## DESIGN CHECKER
+flake8-bugbear          # bug checker
+flake8-comprehensions   # misuse of list comprehension
+
+## REGRESSION CHECKER
+flake8-2020             # misuse of version_check in Py3.10 or future 4

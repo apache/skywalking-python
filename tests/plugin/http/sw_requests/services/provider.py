@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
-        def do_POST(self):
+        def do_POST(self):  # noqa
             time.sleep(0.5)
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

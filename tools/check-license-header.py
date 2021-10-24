@@ -48,7 +48,7 @@ comment_leading_chars = ('#', '::')
 
 def walk_through_dir(d) -> bool:
     checked = True
-    for root, sub_dirs, files in os.walk(d):
+    for root, _sub_dirs, files in os.walk(d):
         for filename in files:
             file_path = os.path.join(root, filename)
             with open(file_path, 'r') as f:

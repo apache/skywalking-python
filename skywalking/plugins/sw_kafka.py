@@ -52,8 +52,8 @@ def _sw__poll_once_func(__poll_once):
 
             with context.new_entry_span(
                     op=f"Kafka/{topics}/Consumer/{this.config['group_id'] or ''}") as span:
-                for consumerRecords in res.values():
-                    for record in consumerRecords:
+                for consumer_records in res.values():
+                    for record in consumer_records:
                         carrier = Carrier()
                         for item in carrier:
                             for header in record.headers:

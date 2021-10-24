@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-from .sw_python import start
+from sw_python.src.sw_python import start
 
 start()
