@@ -15,22 +15,19 @@
 # limitations under the License.
 #
 
+from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
+from threading import Timer, RLock, Lock
 from typing import Tuple
-from skywalking.loggings import logger
+
+from skywalking import agent
+from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_constants import ProfileConstants
-from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.profile_context import ProfileTaskExecutionContext
 from skywalking.profile.profile_status import ProfileStatusReference
-
+from skywalking.profile.profile_task import ProfileTask
 from skywalking.trace.context import SpanContext
-
 from skywalking.utils.atomic_ref import AtomicRef
-from skywalking import agent
-
-from concurrent.futures import ThreadPoolExecutor
-from threading import Timer, RLock, Lock
-
 from skywalking.utils.time import current_milli_time
 
 
@@ -99,7 +96,7 @@ class ProfileTaskExecutionService:
         # check profile task object
         success, error_reason = self._check_profile_task(task)
         if not success:
-            logger.warning("check command error, cannot process this profile task. reason: %s", error_reason)
+            logger.warning('check command error, cannot process this profile task. reason: %s', error_reason)
             return
 
         # add task to list
@@ -138,7 +135,8 @@ class ProfileTaskExecutionService:
 
             # start profiling this task
             current_context.start_profiling()
-            logger.debug("profile task [%s] for endpoint [%s] started", task.task_id, task.first_span_op_name)
+            if logger_debug_enabled:
+                logger.debug('profile task [%s] for endpoint [%s] started', task.task_id, task.first_span_op_name)
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
@@ -150,8 +148,9 @@ class ProfileTaskExecutionService:
                 return
 
             need_stop.stop_profiling()
-            logger.debug("profile task [%s] for endpoint [%s] stopped", need_stop.task.task_id,
-                         need_stop.task.first_span_op_name)
+            if logger_debug_enabled:
+                logger.debug('profile task [%s] for endpoint [%s] stopped', need_stop.task.task_id,
+                             need_stop.task.first_span_op_name)
 
             self.remove_from_profile_task_list(need_stop.task)
 
@@ -162,30 +161,31 @@ class ProfileTaskExecutionService:
         try:
             # endpoint name
             if len(task.first_span_op_name) == 0:
-                return (False, "endpoint name [{}] error, "
-                               "should be str and not empty".format(task.first_span_op_name))
+                return (False, f'endpoint name [{task.first_span_op_name}] error, '
+                               f'should be str and not empty')
             # duration
             if task.duration < ProfileConstants.TASK_DURATION_MIN_MINUTE:
-                return (False, "monitor duration must greater"
-                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MIN_MINUTE))
+                return (False, f'monitor duration must be greater '
+                               f'than {ProfileConstants.TASK_DURATION_MIN_MINUTE} minutes')
             if task.duration > ProfileConstants.TASK_DURATION_MAX_MINUTE:
-                return (False, "monitor duration must less"
-                               " than {} minutes".format(ProfileConstants.TASK_DURATION_MAX_MINUTE))
+                return (False, f'monitor duration must be less '
+                               f'than {ProfileConstants.TASK_DURATION_MAX_MINUTE} minutes')
             # min duration threshold
             if task.min_duration_threshold < 0:
-                return False, "min duration threshold must greater than or equals zero"
+                return False, 'min duration threshold must be greater than or equals zero'
 
             # dump period
             if task.thread_dump_period < ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS:
-                return (False, "dump period must be greater than or equals to {}"
-                               " milliseconds".format(ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS))
+                return (False,
+                        f'dump period must be greater than or equals to '
+                        f'{ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS} milliseconds')
 
             # max sampling count
             if task.max_sampling_count <= 0:
-                return False, "max sampling count must greater than zero"
+                return False, 'max sampling count must be greater than zero'
             if task.max_sampling_count >= ProfileConstants.TASK_MAX_SAMPLING_COUNT:
-                return (False, "max sampling count must less"
-                               " than {}".format(ProfileConstants.TASK_MAX_SAMPLING_COUNT))
+                return (False, f'max sampling count must be less than '
+                               f'{ProfileConstants.TASK_MAX_SAMPLING_COUNT}')
 
             # check task queue
             task_finish_time = self._cal_profile_task_finish_time(task)
@@ -195,14 +195,15 @@ class ProfileTaskExecutionService:
                 for profile_task in self._profile_task_list.queue:  # type: ProfileTask
                     # if the end time of the task to be added is during the execution of any data, means is a error data
                     if task.start_time <= task_finish_time <= self._cal_profile_task_finish_time(profile_task):
-                        return (False, "there already have processing task in time range, "
-                                       "could not add a new task again. processing task monitor "
-                                       "endpoint name: {}".format(profile_task.first_span_op_name))
+                        return (False,
+                                f'there already have processing task in time range, '
+                                f'could not add a new task again. processing task '
+                                f'monitor endpoint name: {profile_task.first_span_op_name}')
 
-            return True, ""
+            return True, ''
 
         except TypeError:
-            return False, "ProfileTask attributes has type error"
+            return False, 'ProfileTask attributes have a type error'
 
     def _cal_profile_task_finish_time(self, task: ProfileTask) -> int:
         return task.start_time + task.duration * self.MINUTE_TO_MILLIS

@@ -20,10 +20,10 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://urllib3.readthedocs.io/en/latest/"]
+link_vector = ['https://urllib3.readthedocs.io/en/latest/']
 support_matrix = {
-    "urllib3": {
-        ">=3.6": ["1.26", "1.25"]
+    'urllib3': {
+        '>=3.6': ['1.26', '1.25']
     }
 }
 note = """"""
@@ -40,7 +40,7 @@ def install():
         url_param = sw_urlparse(url)
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_exit_span(op=url_param.path or "/", peer=url_param.netloc,
+            else get_context().new_exit_span(op=url_param.path or '/', peer=url_param.netloc,
                                              component=Component.Urllib3)
 
         with span:

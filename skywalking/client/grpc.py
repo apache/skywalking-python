@@ -16,21 +16,21 @@
 #
 
 import grpc
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
-from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
-from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
-from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, ProfileTaskFinishReport
-from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
-from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
-from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService, \
     LogDataReportService
 from skywalking.command import command_service
-from skywalking.loggings import logger
+from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile import profile_task_execution_service
 from skywalking.profile.profile_task import ProfileTask
+from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
+from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
+from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
+from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
+from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, ProfileTaskFinishReport
+from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
 
 
 class GrpcServiceManagementClient(ServiceManagementClient):
@@ -45,11 +45,12 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         ))
 
     def send_heart_beat(self):
-        logger.debug(
-            'service heart beats, [%s], [%s]',
-            config.service_name,
-            config.service_instance,
-        )
+        if logger_debug_enabled:
+            logger.debug(
+                'service heart beats, [%s], [%s]',
+                config.service_name,
+                config.service_instance,
+            )
         self.service_stub.keepAlive(InstancePingPkg(
             service=config.service_name,
             serviceInstance=config.service_instance,
@@ -77,7 +78,6 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
         self.profile_stub = ProfileTaskStub(channel)
 
     def do_query(self):
-
         query = ProfileTaskCommandQuery(
             service=config.service_name,
             serviceInstance=config.service_instance,

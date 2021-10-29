@@ -45,6 +45,7 @@ def trace(
                         span.tag(tag)
                 with span:
                     return await func(*args, **kwargs)
+
             return wrapper
 
         else:
@@ -59,6 +60,7 @@ def trace(
                         span.tag(tag)
                 with span:
                     return func(*args, **kwargs)
+
             return wrapper
 
     return decorator
@@ -75,7 +77,7 @@ def runnable(
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            _op = op or "Thread/" + func.__name__
+            _op = op or f'Thread/{func.__name__}'
             context = get_context()
             with context.new_local_span(op=_op) as span:
                 context.continued(snapshot)

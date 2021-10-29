@@ -50,6 +50,8 @@ catalog:
     catalog:
       - name: "Developer Guidance"
         path: "/en/contribution/Developer"
+      - name: "Developer Coding Style"
+        path: "/en/contribution/CodingStyle"
       - name: "Plugin Testing Guidance"
         path: "/en/contribution/PluginTest"
       - name: "Release Guidance"

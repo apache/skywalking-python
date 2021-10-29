@@ -27,12 +27,12 @@ class SWFormatter(logging.Formatter):
         logging.Formatter.__init__(self, fmt)
         self.tb_limit = tb_limit
 
-    def formatException(self, ei):
+    def formatException(self, ei):  # noqa
         sio = io.StringIO()
         tb = ei[2]
         traceback.print_exception(ei[0], ei[1], tb, self.tb_limit, sio)
         s = sio.getvalue()
         sio.close()
-        if s[-1:] == "\n":
+        if s[-1:] == '\n':
             s = s[:-1]
         return s

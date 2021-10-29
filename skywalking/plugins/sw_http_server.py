@@ -23,14 +23,14 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 
-link_vector = ["https://docs.python.org/3/library/http.server.html",
-               "https://werkzeug.palletsprojects.com/"]
+link_vector = ['https://docs.python.org/3/library/http.server.html',
+               'https://werkzeug.palletsprojects.com/']
 support_matrix = {
-    "http_server": {
-        ">=3.6": ["*"]
+    'http_server': {
+        '>=3.6': ['*']
     },
-    "werkzeug": {
-        ">=3.6": ["1.0.1", "2.0"]
+    'werkzeug': {
+        '>=3.6': ['1.0.1', '2.0']
     }
 }
 note = """"""
@@ -43,7 +43,7 @@ def install():
 
     def _sw_handle(handler: BaseHTTPRequestHandler):
         clazz = handler.__class__
-        if 'werkzeug.serving.WSGIRequestHandler' == ".".join([clazz.__module__, clazz.__name__]):
+        if 'werkzeug.serving.WSGIRequestHandler' == '.'.join([clazz.__module__, clazz.__name__]):
             wrap_werkzeug_request_handler(handler)
         else:
             wrap_default_request_handler(handler)
@@ -75,13 +75,14 @@ def wrap_werkzeug_request_handler(handler):
         path = handler.path or '/'
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
+            else get_context().new_entry_span(op=path.split('?')[0], carrier=carrier)
 
         with span:
-            url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
+            url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
             span.layer = Layer.Http
             span.component = Component.General
-            span.peer = '%s:%s' % handler.client_address
+            client_address = handler.client_address
+            span.peer = f'{client_address[0]}:{client_address[1]}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(url))
 
@@ -101,7 +102,7 @@ def wrap_werkzeug_request_handler(handler):
 
         return _send_response(self, code, *args, **kwargs)
 
-    WSGIRequestHandler = handler.__class__
+    WSGIRequestHandler = handler.__class__  # noqa
 
     if not getattr(WSGIRequestHandler, '_sw_wrapped', False):
         _send_response = WSGIRequestHandler.send_response
@@ -116,8 +117,8 @@ def wrap_default_request_handler(handler):
 
 
 def _wrap_do_method(handler, method):
-    if hasattr(handler, 'do_' + method) and inspect.ismethod(getattr(handler, 'do_' + method)):
-        _do_method = getattr(handler, 'do_' + method)
+    if hasattr(handler, f'do_{method}') and inspect.ismethod(getattr(handler, f'do_{method}')):
+        _do_method = getattr(handler, f'do_{method}')
 
         def _sw_do_method():
             carrier = Carrier()
@@ -126,13 +127,14 @@ def _wrap_do_method(handler, method):
             path = handler.path or '/'
 
             span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-                else get_context().new_entry_span(op=path.split("?")[0], carrier=carrier)
+                else get_context().new_entry_span(op=path.split('?')[0], carrier=carrier)
 
             with span:
-                url = 'http://' + handler.headers["Host"] + path if 'Host' in handler.headers else path
+                url = f"http://{handler.headers['Host']}{path}" if 'Host' in handler.headers else path
                 span.layer = Layer.Http
                 span.component = Component.General
-                span.peer = '%s:%s' % handler.client_address
+                client_address = handler.client_address
+                span.peer = f'{client_address[0]}:{client_address[1]}'
                 span.tag(TagHttpMethod(method))
                 span.tag(TagHttpURL(url))
 
@@ -145,4 +147,4 @@ def _wrap_do_method(handler, method):
                         if status_code >= 400:
                             span.error_occurred = True
 
-        setattr(handler, 'do_' + method, _sw_do_method)
+        setattr(handler, f'do_{method}', _sw_do_method)

@@ -27,10 +27,10 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 #     "name": "tornado",
 #     "rules": [">=5.0"]
 # }
-link_vector = ["https://www.tornadoweb.org"]
+link_vector = ['https://www.tornadoweb.org']
 support_matrix = {
-    "tornado": {
-        ">=3.6": ["6.0", "6.1"]
+    'tornado': {
+        '>=3.6': ['6.0', '6.1']
     }
 }
 note = """"""
@@ -76,9 +76,9 @@ def _gen_sw_get_response_func(old_execute):
                 span.layer = Layer.Http
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
-                span.peer = '{0}:{1}'.format(*peer)
+                span.peer = f'{peer[0]}:{peer[1]}'
                 span.tag(TagHttpMethod(method))
-                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = old_execute(self, *args, **kwargs)
                 if isawaitable(result):
                     result = await result
@@ -104,9 +104,9 @@ def _gen_sw_get_response_func(old_execute):
                 span.layer = Layer.Http
                 span.component = Component.Tornado
                 peer = request.connection.stream.socket.getpeername()
-                span.peer = '{0}:{1}'.format(*peer)
+                span.peer = f'{peer[0]}:{peer[1]}'
                 span.tag(TagHttpMethod(method))
-                span.tag(TagHttpURL('{}://{}{}'.format(request.protocol, request.host, request.path)))
+                span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = yield from old_execute(self, *args, **kwargs)
                 span.tag(TagHttpStatusCode(self._status_code))
                 if self._status_code >= 400:

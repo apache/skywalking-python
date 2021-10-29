@@ -50,7 +50,7 @@ def generate_plugin_doc():
     """
     table_entries = []
     note_entries = []
-    for importer, modname, ispkg in pkgutil.iter_modules(plugins_path):
+    for importer, modname, _ispkg in pkgutil.iter_modules(plugins_path):
         plugin = importer.find_module(modname).load_module(modname)
 
         try:
@@ -61,31 +61,31 @@ def generate_plugin_doc():
             if plugin.note:
                 note_entries.append(plugin.note)
         except AttributeError:
-            raise AttributeError(f"Missing attribute in {modname}, please follow the correct plugin style.")
+            raise AttributeError(f'Missing attribute in {modname}, please follow the correct plugin style.')
 
         for lib, link in zip(libs_tested, links_tested):  # NOTE: maybe a two lib support like http.server + werkzeug
             lib_entry = str(lib)
             lib_link = link
             version_vector = plugin_support_matrix[lib_entry]  # type: dict
-            pretty_vector = ""
+            pretty_vector = ''
             for python_version in version_vector:  # e.g. {'>=3.10': ['2.5', '2.6'], '>=3.6': ['2.4.1', '2.5', '2.6']}
                 lib_versions = version_vector[python_version]
-                pretty_vector += f"Python {python_version} " \
+                pretty_vector += f'Python {python_version} ' \
                                  f"- {str(lib_versions) if lib_versions else 'NOT SUPPORTED YET'}; "
-            table_entry = f"| [{lib_entry}]({lib_link}) | {pretty_vector} | `{modname}` |"
+            table_entry = f'| [{lib_entry}]({lib_link}) | {pretty_vector} | `{modname}` |'
             table_entries.append(table_entry)
 
-    with open("../../docs/en/setup/Plugins.md", "w") as plugin_doc:
+    with open('../../docs/en/setup/Plugins.md', 'w') as plugin_doc:
         plugin_doc.write(doc_head)
 
         plugin_doc.write(table_head)
         for table_entry in table_entries:
-            plugin_doc.write(f"{table_entry}\n")
+            plugin_doc.write(f'{table_entry}\n')
 
-        plugin_doc.write("### Notes\n")
+        plugin_doc.write('### Notes\n')
         for note_entry in note_entries:
-            plugin_doc.write(f"- {note_entry}\n")
+            plugin_doc.write(f'- {note_entry}\n')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     generate_plugin_doc()

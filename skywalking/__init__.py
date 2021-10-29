@@ -78,6 +78,6 @@ LogItem = namedtuple('LogItem', 'key val')
 
 class Log(object):
 
-    def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None):
+    def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None): # noqa
         self.timestamp = timestamp
         self.items = items or []

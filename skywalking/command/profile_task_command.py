@@ -23,12 +23,12 @@ from skywalking.utils.lang import tostring
 
 @tostring
 class ProfileTaskCommand(BaseCommand):
-    NAME = "ProfileTaskQuery"
+    NAME = 'ProfileTaskQuery'
 
     def __init__(self,
-                 serial_number: str = "",
-                 task_id: str = "",
-                 endpoint_name: str = "",
+                 serial_number: str = '',
+                 task_id: str = '',
+                 endpoint_name: str = '',
                  duration: int = -1,
                  min_duration_threshold: int = -1,
                  dump_period: int = -1,
@@ -60,23 +60,23 @@ class ProfileTaskCommand(BaseCommand):
         create_time = None
 
         for pair in command.args:
-            if pair.key == "SerialNumber":
+            if pair.key == 'SerialNumber':
                 serial_number = pair.value
-            elif pair.key == "EndpointName":
+            elif pair.key == 'EndpointName':
                 endpoint_name = pair.value
-            elif pair.key == "TaskId":
+            elif pair.key == 'TaskId':
                 task_id = pair.value
-            elif pair.key == "Duration":
+            elif pair.key == 'Duration':
                 duration = pair.value
-            elif pair.key == "MinDurationThreshold":
+            elif pair.key == 'MinDurationThreshold':
                 min_duration_threshold = pair.value
-            elif pair.key == "DumpPeriod":
+            elif pair.key == 'DumpPeriod':
                 dump_period = pair.value
-            elif pair.key == "MaxSamplingCount":
+            elif pair.key == 'MaxSamplingCount':
                 max_sampling_count = pair.value
-            elif pair.key == "StartTime":
+            elif pair.key == 'StartTime':
                 start_time = pair.value
-            elif pair.key == "CreateTime":
+            elif pair.key == 'CreateTime':
                 create_time = pair.value
 
         return ProfileTaskCommand(serial_number=serial_number, task_id=task_id,

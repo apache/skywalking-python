@@ -51,18 +51,18 @@ def _get_sw_loader_logger():
 
 
 _sw_loader_logger = _get_sw_loader_logger()
-
+_sw_loader_logger_debug_enabled = _sw_loader_logger.isEnabledFor(logging.DEBUG)
 # DEBUG messages in case execution goes wrong
-_sw_loader_logger.debug('---------------sitecustomize.py---------------')
-_sw_loader_logger.debug("Successfully imported sitecustomize.py from `{}`".format(__file__))
-_sw_loader_logger.debug('You are inside working dir - {}'.format(os.getcwd()))
-_sw_loader_logger.debug('Using Python version - {} '.format(sys.version))
-_sw_loader_logger.debug('Using executable at - {}'.format(sys.executable))
-_sw_loader_logger.debug('System Base Python executable location {}'.format(sys.base_prefix))
+if _sw_loader_logger_debug_enabled:
+    _sw_loader_logger.debug('---------------sitecustomize.py---------------')
+    _sw_loader_logger.debug(f'Successfully imported sitecustomize.py from `{__file__}`')
+    _sw_loader_logger.debug(f'You are inside working dir - {os.getcwd()}')
+    _sw_loader_logger.debug(f'Using Python version - {sys.version} ')
+    _sw_loader_logger.debug(f'Using executable at - {sys.executable}')
+    _sw_loader_logger.debug(f'System Base Python executable location {sys.base_prefix}')
 
 if sys.prefix != sys.base_prefix:
-    _sw_loader_logger.debug("[The SkyWalking agent bootstrapper is running inside a virtual environment]")
-
+    _sw_loader_logger.debug('[The SkyWalking agent bootstrapper is running inside a virtual environment]')
 
 # It is possible that someone else also has a sitecustomize.py
 # in sys.path either set by .pth files or manually, we need to run them as well
@@ -76,12 +76,11 @@ loaded = sys.modules.pop('sitecustomize', None)  # pop sitecustomize from loaded
 # now try to find the original sitecustomize provided in user env
 try:
     loaded = importlib.import_module('sitecustomie')
-    _sw_loader_logger.debug("Found user sitecustomize file {}, imported".format(loaded))
+    _sw_loader_logger.debug(f'Found user sitecustomize file {loaded}, imported')
 except ImportError:  # ModuleNotFoundError
-    _sw_loader_logger.debug("Original sitecustomize module not found, skipping.")
+    _sw_loader_logger.debug('Original sitecustomize module not found, skipping.')
 finally:  # surprise the import error by adding loaded back
     sys.modules['sitecustomize'] = loaded
-
 
 # This sitecustomize by default doesn't remove the loader dir from PYTHONPATH,
 # Thus, subprocesses and multiprocessing also inherits this sitecustomize.py
@@ -94,9 +93,8 @@ if os.environ.get('SW_PYTHON_BOOTSTRAP_PROPAGATE') == 'False':
         loader_path = os.path.dirname(__file__)
         if loader_path in partitioned:  # check if we are already removed by a third-party
             partitioned.remove(loader_path)
-            os.environ["PYTHONPATH"] = os.path.pathsep.join(partitioned)
-            _sw_loader_logger.debug("Removed loader from PYTHONPATH, spawned process will not have agent enabled")
-
+            os.environ['PYTHONPATH'] = os.path.pathsep.join(partitioned)
+            _sw_loader_logger.debug('Removed loader from PYTHONPATH, spawned process will not have agent enabled')
 
 # Note that users could be misusing the CLI to call a Python program that
 # their Python env doesn't have SkyWalking installed. Or even call another
@@ -115,19 +113,17 @@ prefix_match = cli_python_prefix.lower() == os.path.realpath(os.path.normpath(sy
 if not (version_match and prefix_match):
 
     _sw_loader_logger.error(
-        "\nPython used by sw-python CLI - v{} at {}\n"
-        "Python used by your actual program - v{} at {}".format(
-            cli_python_version, cli_python_prefix, platform.python_version(),
-            os.path.realpath(os.path.normpath(sys.prefix))
-        )
+        f'\nPython used by sw-python CLI - v{cli_python_version} at {cli_python_prefix}\n'
+        f'Python used by your actual program - v{platform.python_version()} '
+        f'at {os.path.realpath(os.path.normpath(sys.prefix))}'
     )
-    _sw_loader_logger.error("The sw-python CLI was instructed to run a program "
-                            "using an different Python installation "
-                            "this is not safe and loader will not proceed. "
-                            "Please make sure that sw-python cli, skywalking agent and your "
-                            "application are using the same Python installation, "
-                            "Rerun with debug flag, `sw-python -d run yourapp` for some troubleshooting information."
-                            "use `which sw-python` to find out the invoked CLI location")
+    _sw_loader_logger.error('The sw-python CLI was instructed to run a program '
+                            'using an different Python installation '
+                            'this is not safe and loader will not proceed. '
+                            'Please make sure that sw-python cli, skywalking agent and your '
+                            'application are using the same Python installation, '
+                            'Rerun with debug flag, `sw-python -d run yourapp` for some troubleshooting information.'
+                            'use `which sw-python` to find out the invoked CLI location')
     os._exit(1)  # do not go further
 
 else:
@@ -147,7 +143,7 @@ else:
 
     # noinspection PyBroadException
     try:
-        _sw_loader_logger.debug("SkyWalking Python Agent starting, loader finished.")
+        _sw_loader_logger.debug('SkyWalking Python Agent starting, loader finished.')
         agent.start()
     except Exception:
-        _sw_loader_logger.error("SkyWalking Python Agent failed to start, please inspect your package installation")
+        _sw_loader_logger.error('SkyWalking Python Agent failed to start, please inspect your package installation')
