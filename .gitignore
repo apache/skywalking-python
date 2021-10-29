@@ -29,3 +29,4 @@ dist/
 **/venv/
 tests/**/requirements.txt
 skywalking/protocol
+.vscode/

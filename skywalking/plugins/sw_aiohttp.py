@@ -47,7 +47,7 @@ def install():
         with span:
             span.layer = Layer.Http
             span.tag(TagHttpMethod(method.upper()))  # pyre-ignore
-            span.tag(TagHttpURL(url))  # pyre-ignore
+            span.tag(TagHttpURL(str(url.with_password(None))))  # pyre-ignore
 
             carrier = span.inject()
             headers = kwargs.get('headers')
