@@ -56,7 +56,7 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.Flask
-            if all(environ_key in req.environ for environ_key in ("REMOTE_ADDR", "REMOTE_PORT")):
+            if all(environ_key in req.environ for environ_key in ('REMOTE_ADDR', 'REMOTE_PORT')):
                 span.peer = f"{req.environ['REMOTE_ADDR']}:{req.environ['REMOTE_PORT']}"
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split('?')[0]))
