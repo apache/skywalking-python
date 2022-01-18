@@ -46,7 +46,7 @@ Finally, if you want to use Kafka protocol to report data, configure `kafka_boot
 (or environment variable `SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS`) to `kafka-brokers`,
 such as `127.0.0.1:9200`:
 
-> Remember you should install `skywalking-python` with extra requires `kafka`, `pip install "apache-skywalking[kafka]`.
+> Remember you should install `skywalking-python` with extra requires `kafka`, `pip install "apache-skywalking[kafka]"`.
 
 ```python
 from skywalking import agent, config
