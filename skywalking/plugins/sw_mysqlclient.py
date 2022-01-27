@@ -35,8 +35,8 @@ def install():
 
     def _sw_connect(*args, **kwargs):
         con = _connect(*args, **kwargs)
-        con.host = kwargs["host"]
-        con.db = kwargs["db"]
+        con.host = kwargs['host']
+        con.db = kwargs['db']
         return ProxyConnection(con)
 
     class ProxyCursor(wrapt.ObjectProxy):
@@ -53,7 +53,6 @@ def install():
             with get_context().new_exit_span(op='Mysql/MysqlClient/execute', peer=peer,
                                              component=Component.MysqlClient) as span:
                 span.layer = Layer.Database
-
                 span.tag(TagDbType('mysql'))
                 span.tag(TagDbInstance((self.connection.db or b'')))
                 span.tag(TagDbStatement(query))
