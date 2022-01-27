@@ -27,32 +27,55 @@ support_matrix = {
 }
 note = """"""
 
-
 def install():
+    import wrapt
+    import MySQLdb
 
-    from MySQLdb.cursors import Cursor
+    _connect = MySQLdb.connect
 
-    _execute = Cursor.execute
+    def _sw_connect(*args, **kwargs):
+        con = _connect(*args, **kwargs)
+        con.host = kwargs["host"]
+        con.db = kwargs["db"]
+        return ProxyConnection(con)
 
-    def _sw_execute(this: Cursor, query, args=None):
-        peer = f'{this.connection.get_host_info().split()[0]}:{this.connection.port}'
-        context = get_context()
-        with context.new_exit_span(op='Mysql/MysqlClient/execute', peer=peer, component=Component.MysqlClient) as span:
-            span.layer = Layer.Database
-            _execute(this, 'select database()')
-            db = this.fetchone()[0]
-            res = _execute(this, query, args)
-            span.tag(TagDbType('mysql'))
-            span.tag(TagDbInstance(( db or b'')))
-            span.tag(TagDbStatement(query))
+    class ProxyCursor(wrapt.ObjectProxy):
+        def __init__(self, cur):
+            wrapt.ObjectProxy.__init__(self, cur)
 
-            if config.sql_parameters_length and args:
-                parameter = ','.join([str(arg) for arg in args])
-                max_len = config.sql_parameters_length
-                parameter = f'{parameter[0:max_len]}...' if len(parameter) > max_len else parameter
-                span.tag(TagDbSqlParameters(f'[{parameter}]'))
+            self._self_cur = cur
 
-            return res
+        def __enter__(self):
+            return ProxyCursor(wrapt.ObjectProxy.__enter__(self))
 
+        def execute(self, query, args=None):
+            peer = f'{self.connection.host}:{self.connection.port}'
+            with get_context().new_exit_span(op='Mysql/MysqlClient/execute', peer=peer,
+                                             component=Component.MysqlClient) as span:
+                span.layer = Layer.Database
 
-    Cursor.execute = _sw_execute
+                span.tag(TagDbType('mysql'))
+                span.tag(TagDbInstance((self.connection.db or b'')))
+                span.tag(TagDbStatement(query))
+
+                if config.sql_parameters_length and args:
+                    parameter = ','.join([str(arg) for arg in args])
+                    max_len = config.sql_parameters_length
+                    parameter = f'{parameter[0:max_len]}...' if len(parameter) > max_len else parameter
+                    span.tag(TagDbSqlParameters(f'[{parameter}]'))
+
+                return self._self_cur.execute(query, args)
+
+    class ProxyConnection(wrapt.ObjectProxy):
+        def __init__(self, conn):
+            wrapt.ObjectProxy.__init__(self, conn)
+
+            self._self_conn = conn
+
+        def __enter__(self):
+            return ProxyConnection(wrapt.ObjectProxy.__enter__(self))
+
+        def cursor(self, cursorclass=None):
+            return ProxyCursor(self._self_conn.cursor(cursorclass))
+
+    MySQLdb.connect = _sw_connect
