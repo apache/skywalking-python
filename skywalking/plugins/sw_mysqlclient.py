@@ -33,16 +33,17 @@ def install():
     from MySQLdb.cursors import Cursor
 
     _execute = Cursor.execute
-    def _sw_execute(this: Cursor, query, args=None):
 
-        peer = f'{config.mysqlclient_host}:{config.mysqlclient_port}'
+    def _sw_execute(this: Cursor, query, args=None):
+        peer = f'{this.connection.get_host_info().split()[0]}:{this.connection.port}'
         context = get_context()
         with context.new_exit_span(op='Mysql/MysqlClient/execute', peer=peer, component=Component.MysqlClient) as span:
             span.layer = Layer.Database
+            _execute(this, 'select database()')
+            db = this.fetchone()[0]
             res = _execute(this, query, args)
-
             span.tag(TagDbType('mysql'))
-            span.tag(TagDbInstance((config.mysqlclient_db or b'').decode('utf-8')))
+            span.tag(TagDbInstance(( db or b'')))
             span.tag(TagDbStatement(query))
 
             if config.sql_parameters_length and args:
@@ -52,5 +53,6 @@ def install():
                 span.tag(TagDbSqlParameters(f'[{parameter}]'))
 
             return res
+
 
     Cursor.execute = _sw_execute
