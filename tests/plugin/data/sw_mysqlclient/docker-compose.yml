@@ -25,7 +25,7 @@ services:
 
   mysql:
     image:  mysql:5.7
-    hostname: http://127.0.0.1
+    hostname: mysql
     ports:
       - 3306:3306
       - 33060:33060
