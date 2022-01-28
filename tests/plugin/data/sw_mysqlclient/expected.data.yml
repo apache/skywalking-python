@@ -36,7 +36,7 @@ segmentItems:
                 value: '[root]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7003
+            componentId: 7013
             spanType: Exit
             peer: mysql:3306
             skipAnalysis: false
@@ -63,7 +63,7 @@ segmentItems:
                 traceId: not null
             startTime: gt 0
             endTime: gt 0
-            componentId: 7013
+            componentId: 7001
             spanType: Entry
             peer: not null
             skipAnalysis: false
@@ -103,7 +103,7 @@ segmentItems:
                 value: '200'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7013
+            componentId: 7001
             spanType: Entry
             peer: not null
             skipAnalysis: false
