@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagD
 link_vector = ['https://mysqlclient.readthedocs.io/']
 support_matrix = {
     'mysqlclient': {
-        '>=2.0.0': ['1.0']
+        '>=2.1.0': ['1.0']
     }
 }
 note = """"""
