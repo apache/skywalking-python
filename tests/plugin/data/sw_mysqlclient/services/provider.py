@@ -26,7 +26,7 @@ if __name__ == '__main__':
     @app.route('/users', methods=['POST', 'GET'])
     def application():
         time.sleep(0.5)
-        connection = MySQLdb.connect(host='127.0.0.1', user='root', passwd='root', db='mysql', charset='utf8mb4')
+        connection = MySQLdb.connect(host='mysql', user='root', passwd='root', db='mysql', charset='utf8mb4')
         with connection.cursor() as cursor:
             sql = 'select * from user where user = %s'
             cursor.execute(sql, ('root',))
