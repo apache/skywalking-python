@@ -16,4 +16,4 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-ignore = [ "Unused ignore", "Invalid decoration", "blacklist", "Missing argument" ]
+ignoreRules = [ "Unused ignore", "Invalid decoration", "blacklist", "Missing argument" ]
