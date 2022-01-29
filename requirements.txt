@@ -28,3 +28,4 @@ sanic==21.9.1
 tornado==6.1
 Werkzeug==2.0.2
 yarl==1.7.0
+mysqlclient==2.1.0

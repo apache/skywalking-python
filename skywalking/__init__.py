@@ -44,6 +44,7 @@ class Component(Enum):
     Psycopg = 7010
     Celery = 7011
     Falcon = 7012
+    MysqlClient = 7013
 
 
 class Layer(Enum):

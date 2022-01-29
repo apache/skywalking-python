@@ -86,6 +86,7 @@ log_reporter_layout = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
                       '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'  # type: str
 cause_exception_depth = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '5')  # type: int
 
+
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 
 
