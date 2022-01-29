@@ -55,7 +55,7 @@ def install():
                                              component=Component.MysqlClient) as span:
                 span.layer = Layer.Database
                 span.tag(TagDbType('mysql'))
-                span.tag(TagDbInstance((self.connection.db or b'')))
+                span.tag(TagDbInstance((self.connection.db or '')))
                 span.tag(TagDbStatement(query))
 
                 if config.sql_parameters_length and args:
