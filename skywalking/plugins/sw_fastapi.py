@@ -22,7 +22,6 @@ from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, TagHttpParams
 
-
 link_vector = ['https://flask.palletsprojects.com']
 support_matrix = {
     'flask': {
@@ -31,8 +30,8 @@ support_matrix = {
 }
 note = """"""
 
-def install():
 
+def install():
     from fastapi import routing
     from fastapi.routing import APIRoute
 
@@ -44,18 +43,15 @@ def install():
     async def _sw_handle(self, scope: Scope, receive: Receive, send: Send):
         from starlette.requests import Request
         req = Request(scope, receive=receive, send=send)
-        print(req.method)
         carrier = Carrier()
         method = req.method
-        print(dict(scope)["path"])
-        print(req.base_url)
 
         for item in carrier:
             if item.key.capitalize() in req.headers:
                 item.val = req.headers[item.key.capitalize()]
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-             else get_context().new_entry_span(op=dict(scope)["path"], carrier=carrier, inherit=Component.General)
+            else get_context().new_entry_span(op=dict(scope)["path"], carrier=carrier, inherit=Component.General)
 
         with span:
             span.layer = Layer.Http
@@ -71,8 +67,7 @@ def install():
             # if resp.status_code >= 400:
             #     span.error_occurred = True
 
-            #span.tag(TagHttpStatusCode(resp.status_code))
+            # span.tag(TagHttpStatusCode(resp.status_code))
         return res
 
     APIRoute.handle = _sw_handle
-
