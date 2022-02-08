@@ -80,8 +80,11 @@ def _sw__on_deliver_func(__on_deliver):
         routing_key = method_frame.method.routing_key
         carrier = Carrier()
         for item in carrier:
-            if item.key in header_frame.properties.headers:
-                item.val = header_frame.properties.headers[item.key]
+            try:
+                if item.key in header_frame.properties.headers:
+                    item.val = header_frame.properties.headers[item.key]
+            except TypeError:
+                pass
 
         with context.new_entry_span(op='RabbitMQ/Topic/' + exchange + '/Queue/' + routing_key
                                        + '/Consumer' or '', carrier=carrier) as span:
