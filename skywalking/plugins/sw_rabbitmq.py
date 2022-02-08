@@ -83,7 +83,7 @@ def _sw__on_deliver_func(__on_deliver):
             try:
                 if item.key in header_frame.properties.headers:
                     item.val = header_frame.properties.headers[item.key]
-            except TypeError as te:
+            except TypeError:
                 pass
 
         with context.new_entry_span(op='RabbitMQ/Topic/' + exchange + '/Queue/' + routing_key
