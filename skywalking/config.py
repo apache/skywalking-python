@@ -64,6 +64,8 @@ kafka_topic_management = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or 'sky
 kafka_topic_segment = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or 'skywalking-segments'  # type: str
 kafka_topic_log = os.getenv('SW_KAFKA_REPORTER_TOPIC_LOG') or 'skywalking-logs'  # type: str
 celery_parameters_length = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
+fastapi_collect_http_params = True if os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') and \
+                                      os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True' else False  # type: bool
 
 # profile configs
 get_profile_task_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')  # type: int
