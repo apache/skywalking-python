@@ -29,21 +29,7 @@ if __name__ == '__main__':
 
     @app.get('/users')
     async def application():
-        from skywalking.trace.context import get_context
-        get_context().put_correlation('correlation', 'correlation')
-
-        @runnable(op='/test')
-        def get():
-            requests.get('http://provider:9091/users')
-
-        from threading import Thread
-        t = Thread(target=get)
-        t.start()
-
         res = requests.get('http://provider:9091/users')
-
-        t.join()
-
         return res.json()
 
     uvicorn.run(app, host='0.0.0.0', port=9090)
