@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from starlette.types import Receive, Scope, Send, Message
 from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
@@ -32,6 +31,7 @@ note = """"""
 
 
 def install():
+    from starlette.types import Receive, Scope, Send, Message
     from starlette.exceptions import ExceptionMiddleware
 
     _original_fast_api = ExceptionMiddleware.__call__
