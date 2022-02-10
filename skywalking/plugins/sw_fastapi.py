@@ -56,7 +56,7 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.FastApi
-            span.peer = f"{req.client.host}:{req.client.port}"
+            span.peer = f'{req.client.host}:{req.client.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url._url.split('?')[0]))
             if config.fastapi_collect_http_params and req.values:
