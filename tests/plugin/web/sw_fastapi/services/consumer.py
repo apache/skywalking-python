@@ -19,13 +19,10 @@ import requests
 
 import uvicorn
 
-from skywalking.decorators import runnable
-
 if __name__ == '__main__':
     from fastapi import FastAPI
 
     app = FastAPI()
-
 
     @app.get('/users')
     async def application():

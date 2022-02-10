@@ -24,10 +24,13 @@ if __name__ == '__main__':
 
     app = FastAPI()
 
+
     @app.get('/users')
     async def application():
-        from skywalking.trace.context import get_context
-        time.sleep(0.5)
-        return {'correlation': get_context().get_correlation('correlation')}
+        return {'haha': 'dd'}
+        # from skywalking.trace.context import get_context
+        # time.sleep(0.5)
+        # return {'correlation': get_context().get_correlation('correlation')}
 
-    uvicorn.run(app, host='0.0.0.0', port=9091)
+
+    uvicorn.run(app, host='0.0.0.0', port=9092)

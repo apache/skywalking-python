@@ -70,7 +70,6 @@ def install():
                     status_code = message['status']
                 await send(message)
 
-            print(status_code)
             try:
                 resp = await _original_fast_api(self, scope, receive, wrapped_send)
             finally:
