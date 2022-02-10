@@ -51,7 +51,7 @@ def install():
                 item.val = req.headers[item.key.capitalize()]
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_entry_span(op=dict(scope)["path"], carrier=carrier, inherit=Component.General)
+            else get_context().new_entry_span(op=dict(scope)['path'], carrier=carrier, inherit=Component.General)
 
         with span:
             span.layer = Layer.Http
