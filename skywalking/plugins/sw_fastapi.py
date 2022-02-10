@@ -14,8 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from asyncio import coroutine
+from inspect import iscoroutinefunction, isawaitable
 
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.types import ASGIApp, Receive, Scope, Send, Message
 from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
@@ -35,39 +37,31 @@ def install():
     from fastapi import routing
     from fastapi.routing import APIRoute
 
-    _handle = APIRoute.handle
+    from starlette.responses import Response
 
-    def params_tostring(params):
-        return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
+    old_execute = APIRoute.handle
+    APIRoute.handle = _gen_sw_get_response_func(old_execute)
 
-    async def _sw_handle(self, scope: Scope, receive: Receive, send: Send):
-        from starlette.requests import Request
-        req = Request(scope, receive=receive, send=send)
-        carrier = Carrier()
-        method = req.method
+def _gen_sw_get_response_func(old_execute):
+    from fastapi import routing
+    print(123)
+    is_coroutine = routing.iscoroutinefunction_or_partial(old_execute)
+    if is_coroutine:
+        async def _sw_get_response(self, scope: Scope, receive: Receive, send: Send):
+            from starlette.requests import Request
+            req = Request(scope, receive=receive, send=send)
+            result = old_execute(self, scope, receive, send)
+            print(result)
+            if isawaitable(result):
+                result = await result
+                print(result)
+            return result
+    else:
+        @coroutine
+        def _sw_get_response(self, scope: Scope, receive: Receive, send: Send):
+            result = yield from old_execute(self, scope, receive, send)
+            print(result)
+            return result
+    return _sw_get_response
 
-        for item in carrier:
-            if item.key.capitalize() in req.headers:
-                item.val = req.headers[item.key.capitalize()]
 
-        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_entry_span(op=dict(scope)["path"], carrier=carrier, inherit=Component.General)
-
-        with span:
-            span.layer = Layer.Http
-            span.component = Component.Flask
-            span.peer = f"{req.client.host}:{req.client.port}"
-            span.tag(TagHttpMethod(method))
-            span.tag(TagHttpURL(req.url._url.split('?')[0]))
-            if config.fastapi_collect_http_params and req.values:
-                span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
-            res = await _handle(self, scope, receive, send)
-            # if isawaitable(resp):
-            #     result = await resp
-            # if resp.status_code >= 400:
-            #     span.error_occurred = True
-
-            # span.tag(TagHttpStatusCode(resp.status_code))
-        return res
-
-    APIRoute.handle = _sw_handle
