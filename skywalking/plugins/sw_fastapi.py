@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from starlette.exceptions import HTTPException
-from starlette.requests import Request
+
 from starlette.types import Receive, Scope, Send, Message
 from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier

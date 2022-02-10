@@ -30,4 +30,4 @@ if __name__ == '__main__':
         time.sleep(0.5)
         return {'correlation': get_context().get_correlation('correlation')}
 
-    uvicorn.run(app, host="0.0.0.0", port=9091)
+    uvicorn.run(app, host='0.0.0.0', port=9091)
