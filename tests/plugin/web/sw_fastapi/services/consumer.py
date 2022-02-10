@@ -33,14 +33,14 @@ if __name__ == '__main__':
         get_context().put_correlation('correlation', 'correlation')
 
         @runnable(op='/test')
-        def post():
-            requests.post('http://provider:9091/users')
+        def get():
+            requests.get('http://provider:9091/users')
 
         from threading import Thread
-        t = Thread(target=post)
+        t = Thread(target=get)
         t.start()
 
-        res = requests.post('http://provider:9091/users')
+        res = requests.get('http://provider:9091/users')
 
         t.join()
 
