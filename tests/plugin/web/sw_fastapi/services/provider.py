@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-import time
-
 import uvicorn
 
 if __name__ == '__main__':
@@ -28,9 +26,5 @@ if __name__ == '__main__':
     @app.get('/users')
     async def application():
         return {'haha': 'dd'}
-        # from skywalking.trace.context import get_context
-        # time.sleep(0.5)
-        # return {'correlation': get_context().get_correlation('correlation')}
-
 
     uvicorn.run(app, host='0.0.0.0', port=9092)
