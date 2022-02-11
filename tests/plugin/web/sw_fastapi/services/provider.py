@@ -27,4 +27,4 @@ if __name__ == '__main__':
     async def application():
         return {'haha': 'dd'}
 
-    uvicorn.run(app, host='0.0.0.0', port=9092)
+    uvicorn.run(app, host='0.0.0.0', port=9091)
