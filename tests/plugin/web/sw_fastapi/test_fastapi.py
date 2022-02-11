@@ -14,8 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
 import pytest
+import requests
 
 from skywalking.plugins.sw_fastapi import support_matrix
 from tests.orchestrator import get_test_vector
@@ -24,8 +26,8 @@ from tests.plugin.base import TestPluginBase
 
 @pytest.fixture
 def prepare():
-
-    return 'aa'
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9091/users')
 
 
 class TestPlugin(TestPluginBase):
