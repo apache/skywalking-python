@@ -25,6 +25,6 @@ if __name__ == '__main__':
 
     @app.get('/users')
     async def application():
-        return {'haha': 'dd'}
+        return {'song': 'Despacito', 'artist': 'Luis Fonsi'}
 
     uvicorn.run(app, host='0.0.0.0', port=9091)
