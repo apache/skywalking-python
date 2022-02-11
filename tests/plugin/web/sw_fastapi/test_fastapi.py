@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from typing import Callable
 
 import pytest
 
@@ -25,7 +24,7 @@ from tests.plugin.base import TestPluginBase
 
 @pytest.fixture
 def prepare():
-    # type: () -> Callable
+
     return 'aa'
 
 
