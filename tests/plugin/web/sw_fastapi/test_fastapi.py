@@ -27,7 +27,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9090/users')
+    return "aa"
 
 
 class TestPlugin(TestPluginBase):
