@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     @app.get('/users')
     async def application():
-        res = requests.get('http://provider:9091/users')
+        res = requests.get('http://0.0.0.0:9091/users')
         return res.json()
 
     uvicorn.run(app, host='0.0.0.0', port=9090)
