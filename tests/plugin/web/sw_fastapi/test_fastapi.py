@@ -17,7 +17,6 @@
 from typing import Callable
 
 import pytest
-import requests
 
 from skywalking.plugins.sw_fastapi import support_matrix
 from tests.orchestrator import get_test_vector
@@ -27,7 +26,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return "aa"
+    return 'aa'
 
 
 class TestPlugin(TestPluginBase):
