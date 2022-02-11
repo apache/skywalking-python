@@ -17,10 +17,9 @@
 
 import requests
 
-import uvicorn
-
 if __name__ == '__main__':
     from fastapi import FastAPI
+    import uvicorn
 
     app = FastAPI()
 

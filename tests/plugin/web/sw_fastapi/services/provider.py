@@ -15,16 +15,19 @@
 # limitations under the License.
 #
 
-import uvicorn
+
+import time
 
 if __name__ == '__main__':
     from fastapi import FastAPI
+    import uvicorn
 
     app = FastAPI()
 
 
     @app.get('/users')
     async def application():
+        time.sleep(0.5)
         return {'song': 'Despacito', 'artist': 'Luis Fonsi'}
 
     uvicorn.run(app, host='0.0.0.0', port=9091)
