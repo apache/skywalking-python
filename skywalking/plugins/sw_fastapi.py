@@ -24,7 +24,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 link_vector = ['https://fastapi.tiangolo.com']
 support_matrix = {
     'fastapi': {
-        '>=3.6': ['1.0']
+        '>=3.6': ['0.70.1']
     }
 }
 note = """"""
