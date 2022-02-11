@@ -17,7 +17,7 @@
 from typing import Callable
 
 import pytest
-import requests
+
 
 from skywalking.plugins.sw_fastapi import support_matrix
 from tests.orchestrator import get_test_vector
@@ -27,7 +27,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9091/users')
+    return lambda *_: None
 
 
 class TestPlugin(TestPluginBase):
