@@ -30,4 +30,4 @@ if __name__ == '__main__':
         time.sleep(0.5)
         return {'song': 'Despacito', 'artist': 'Luis Fonsi'}
 
-    uvicorn.run(app, host='0.0.0.0', port=9092)
+    uvicorn.run(app, host='0.0.0.0', port=9091)
