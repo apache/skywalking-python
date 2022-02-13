@@ -67,7 +67,7 @@ segmentItems:
               - key: http.method
                 value: GET
               - key: http.url
-                value: 'http://provider:9091/users'
+                value: 'http://0.0.0.0:9090/users'
               - key: http.status.code
                 value: '200'
 
