@@ -37,7 +37,8 @@ def install():
     _original_fast_api = ExceptionMiddleware.__call__
 
     def params_tostring(params):
-        return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
+        arr = params.split("&")
+        return f'{arr}'
 
     async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
         from starlette.requests import Request
@@ -59,8 +60,9 @@ def install():
             span.peer = f'{req.client.host}:{req.client.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url._url.split('?')[0]))
-            if config.fastapi_collect_http_params and req.values:
-                span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
+            if True and req.qurey_params:
+                print(req.qurey_params)
+                span.tag(TagHttpParams(params_tostring(req.qurey_params)[0:config.http_params_length_threshold]))
 
             status_code = 500
 
