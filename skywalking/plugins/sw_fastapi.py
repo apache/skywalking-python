@@ -37,7 +37,7 @@ def install():
     _original_fast_api = ExceptionMiddleware.__call__
 
     def params_tostring(params):
-        arr = params.split("&")
+        arr = params.split('&')
         return f'{arr}'
 
     async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
