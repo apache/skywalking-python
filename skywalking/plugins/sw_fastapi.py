@@ -37,8 +37,7 @@ def install():
     _original_fast_api = ExceptionMiddleware.__call__
 
     def params_tostring(params):
-        arr = params.split('&')
-        return f'{arr}'
+        return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
     async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
         from starlette.requests import Request
