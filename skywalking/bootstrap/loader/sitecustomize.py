@@ -146,4 +146,4 @@ else:
         _sw_loader_logger.debug('SkyWalking Python Agent starting, loader finished.')
         agent.start()
     except Exception:
-        _sw_loader_logger.error('SkyWalking Python Agent failed to start, please inspect your package installation')
+        _sw_loader_logger.exception('SkyWalking Python Agent failed to start, please inspect your package installation')
