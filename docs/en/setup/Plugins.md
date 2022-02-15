@@ -35,6 +35,7 @@ Library | Python Version - Lib Version | Plugin Name
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.6 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib_request](https://docs.python.org/3/library/urllib.request.html) | Python >=3.6 - ['*'];  | `sw_urllib_request` |
 | [mysqlclient](https://mysqlclient.readthedocs.io) | Python >=3.6 - ['2.1.0'];  | `sw_mysqlclient` |
+| [fastapi](https://fastapi.tiangolo.com) | Python >=3.6 - ['0.70.1'];  | `sw_fastapi` |
 ### Notes
 - The celery server running with "celery -A ..." should be run with the HTTP protocol
 as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation 

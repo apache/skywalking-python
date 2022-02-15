@@ -48,3 +48,4 @@ Environment Variable | Description | Default
 | `SW_AGENT_LOG_REPORTER_LAYOUT` | The log reporter formats the logRecord message based on the layout given. | `%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s` |
 | `SW_AGENT_CAUSE_EXCEPTION_DEPTH` | This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback](https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations. | `5` | 
 | `SW_PYTHON_BOOTSTRAP_PROPAGATE`| This config controls the child process agent bootstrap behavior in `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the [CLI Guide](CLI.md) for details. | unset |
+| `SW_FASTAPI_COLLECT_HTTP_PARAMS`| This config item controls that whether the FastApi plugin should collect the parameters of the request.| `false` |
