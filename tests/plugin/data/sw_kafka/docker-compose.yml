@@ -1,0 +1,109 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '2.1'
+
+services:
+  collector:
+    extends:
+      service: collector
+      file: ../../docker-compose.base.yml
+
+  zookeeper-server:
+    image: zookeeper:3.4
+    hostname: zookeeper-server
+    ports:
+      - 2181:2181
+    networks:
+      - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/2181"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+
+  kafka-server:
+    image: bitnami/kafka:2.1.1
+    hostname: kafka-server
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper-server:2181
+      - KAFKA_BROKER_ID=1
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+    networks:
+      - beyond
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9092"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    depends_on:
+      zookeeper-server:
+        condition: service_healthy
+
+  producer:
+    extends:
+      service: agent
+      file: ../../docker-compose.base.yml
+    ports:
+      - 9090:9090
+    volumes:
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && sw-python run python3 /app/services/producer.py']
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    depends_on:
+      collector:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+      consumer:
+        condition: service_healthy
+    environment:
+      SW_AGENT_NAME: producer
+      SW_AGENT_LOGGING_LEVEL: INFO
+
+  consumer:
+    extends:
+      service: agent
+      file: ../../docker-compose.base.yml
+    ports:
+      - 9091:9091
+    volumes:
+      - .:/app
+    command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && sw-python run python3 /app/services/consumer.py']
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ps -ef | grep /app/services/consumer | grep -v grep"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    depends_on:
+      collector:
+        condition: service_healthy
+      kafka-server:
+        condition: service_healthy
+    environment:
+      SW_AGENT_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: INFO
+
+networks:
+  beyond:
