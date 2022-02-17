@@ -53,8 +53,8 @@ def docker_compose(request, prepare, version):
     with DockerCompose(filepath=cwd) as compose:
         exception = None
         exception_delay = 0
-        # stdout_dignose, stderr_dignose = None
-        for _ in range(10):
+        stdout, stderr = None
+        for i in range(10):
             try:
                 prepare()
                 exception = None
@@ -63,12 +63,13 @@ def docker_compose(request, prepare, version):
                 time.sleep(10)
                 exception_delay += 10
                 exception = e
+                print(f'failed time {i} for test ==================')
                 stdout, stderr = compose.get_logs()
 
         if exception:
             compose.stop()
             print(f'STDOUT:\n{stdout.decode("utf-8")}')
-            print('====================================')
+            print('==================================')
             print(f'STDERR:\n{stderr.decode("utf-8")}')
 
             raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
@@ -76,4 +77,4 @@ def docker_compose(request, prepare, version):
         yield compose
 
 
-    compose.stop()
+    # compose.stop()
