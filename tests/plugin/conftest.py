@@ -52,7 +52,7 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
         exception = None
         exception_delay = 0
         stdout, stderr = None, None
-        for i in range(10):
+        for _ in range(10):
             try:
                 time.sleep(10)
                 prepare()
