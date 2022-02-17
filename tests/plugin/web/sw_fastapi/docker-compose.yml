@@ -1,0 +1,68 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '2.1'
+
+services:
+  collector:
+    extends:
+      service: collector
+      file: ../../docker-compose.base.yml
+
+  provider:
+    extends:
+      service: agent
+      file: ../../docker-compose.base.yml
+    ports:
+      - 9091:9091
+    volumes:
+      - .:/app
+    command: ['bash', '-c', 'pip3 install fastapi && pip3 install uvicorn && pip3 install -r /app/requirements.txt && sw-python run python3 /app/services/provider.py']
+    depends_on:
+      collector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    environment:
+      SW_AGENT_NAME: provider
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+
+  consumer:
+    extends:
+      service: agent
+      file: ../../docker-compose.base.yml
+    ports:
+      - 9090:9090
+    volumes:
+      - .:/app
+    command: ['bash', '-c', 'pip3 install fastapi && pip3 install uvicorn && pip3 install -r /app/requirements.txt && sw-python run python3 /app/services/consumer.py']
+    depends_on:
+      collector:
+        condition: service_healthy
+      provider:
+        condition: service_healthy
+    environment:
+      SW_AGENT_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_FASTAPI_COLLECT_HTTP_PARAMS: 'True'
+
+
+networks:
+  beyond:

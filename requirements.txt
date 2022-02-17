@@ -29,3 +29,6 @@ tornado==6.1
 Werkzeug==2.0.2
 yarl==1.7.0
 mysqlclient==2.1.0
+fastapi==0.70.1
+uvicorn==0.16.0
+gunicorn==20.1.0
