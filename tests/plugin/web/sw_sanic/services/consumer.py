@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     @app.route('/users', methods=['GET'])
     async def application(req):
-        res = requests.get('http://provider:9091/users')
+        res = requests.get('http://provider:9091/users', timeout=5)
         return response.json(res.json())
 
     PORT = 9090

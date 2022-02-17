@@ -27,7 +27,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9090/pyramid')
+    return lambda *_: requests.get('http://0.0.0.0:9090/pyramid', timeout=5)
 
 
 class TestPlugin(TestPluginBase):

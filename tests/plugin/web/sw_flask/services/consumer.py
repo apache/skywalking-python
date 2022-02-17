@@ -31,13 +31,13 @@ if __name__ == '__main__':
 
         @runnable(op='/test')
         def post():
-            requests.post('http://provider:9091/users')
+            requests.post('http://provider:9091/users', timeout=5)
 
         from threading import Thread
         t = Thread(target=post)
         t.start()
 
-        res = requests.post('http://provider:9091/users')
+        res = requests.post('http://provider:9091/users', timeout=5)
 
         t.join()
 

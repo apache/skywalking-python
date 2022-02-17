@@ -20,7 +20,7 @@ import requests
 
 @hug.get('/users')
 def get():
-    res = requests.get('http://provider:9091/users')
+    res = requests.get('http://provider:9091/users', timeout=5)
     return res.json()
 
 

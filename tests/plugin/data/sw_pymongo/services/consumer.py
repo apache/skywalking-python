@@ -25,9 +25,9 @@ if __name__ == '__main__':
 
     @app.route('/users', methods=['POST', 'GET'])
     def application():
-        requests.get('http://provider:9091/insert_many')
-        requests.get('http://provider:9091/find_one')
-        res = requests.get('http://provider:9091/delete_one')
+        requests.get('http://provider:9091/insert_many', timeout=5)
+        requests.get('http://provider:9091/find_one', timeout=5)
+        res = requests.get('http://provider:9091/delete_one', timeout=5)
         return jsonify(res.json())
 
     PORT = 9090
