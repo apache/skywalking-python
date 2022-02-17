@@ -50,25 +50,30 @@ def docker_compose(request, prepare, version):
         with open(os.path.join(cwd, 'requirements.txt'), mode='w') as req:
             req.write(version)
 
-    compose = DockerCompose(filepath=cwd)
+    with DockerCompose(filepath=cwd) as compose:
+        exception = None
+        exception_delay = 0
+        # stdout_dignose, stderr_dignose = None
+        for _ in range(1):
+            try:
+                prepare()
+                exception = None
+                break
+            except Exception as e:
+                time.sleep(10)
+                exception_delay += 10
+                exception = e
+                stdout, stderr = compose.get_logs()
 
-    compose.start()
+        if exception:
+            compose.stop()
+            print(f'STDOUT:\\n{stdout}')
+            print('====================================')
+            print(f'STDERR:\\n{stderr}')
 
-    exception = None
-    exception_delay = 100
-    for _ in range(0, 10):
-        try:
-            prepare()
-            exception = None
-            break
-        except Exception as e:
-            time.sleep(10)
-            exception = e
-    if exception:
-        time.sleep(exception_delay)
-        compose.stop()
-        raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
+            raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
 
-    yield compose
+        yield compose
+
 
     compose.stop()
