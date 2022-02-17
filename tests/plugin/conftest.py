@@ -59,7 +59,6 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
                 exception = None
                 break
             except Exception as e:
-                time.sleep(10)
                 exception_delay += 10
                 exception = e
                 print(f'failed time {i} for test ==================')
@@ -71,6 +70,5 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
             print(f'STDERR:\n{stderr.decode("utf-8")}')
 
             raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
-        else:
-            raise Exception('just some random exception to see time delays')
+
         yield compose
