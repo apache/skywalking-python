@@ -65,14 +65,11 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
                 stdout, stderr = compose.get_logs()
 
         if exception:
-            # compose.stop()
             print(f'STDOUT:\n{stdout.decode("utf-8")}')
             print('==================================')
             print(f'STDERR:\n{stderr.decode("utf-8")}')
 
             raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
-
+        else:
+            raise Exception('just some random exception to see time delays')
         yield compose
-
-
-    # compose.stop()
