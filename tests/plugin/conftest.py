@@ -54,22 +54,22 @@ def docker_compose(request, prepare, version):
         exception = None
         exception_delay = 0
         # stdout_dignose, stderr_dignose = None
-        for _ in range(10):
+        for _ in range(1):
             try:
                 prepare()
                 exception = None
                 break
             except Exception as e:
-                time.sleep(10)
+                time.sleep(20)
                 exception_delay += 10
                 exception = e
                 stdout, stderr = compose.get_logs()
 
         if exception:
             compose.stop()
-            print(f'STDOUT:\\n{stdout}')
+            print(f'STDOUT:\n{stdout.decode("utf-8")}')
             print('====================================')
-            print(f'STDERR:\\n{stderr}')
+            print(f'STDERR:\n{stderr.decode("utf-8")}')
 
             raise Exception(f"""Wait time exceeded {exception_delay} secs. Exception {exception}""")
 
