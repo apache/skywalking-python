@@ -61,7 +61,6 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
             except Exception as e:
                 exception_delay += 10
                 exception = e
-                print(f'failed time {i} for test ==================')
                 stdout, stderr = compose.get_logs()
 
         if exception:
