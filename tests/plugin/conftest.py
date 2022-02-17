@@ -53,7 +53,7 @@ def docker_compose(request, prepare, version):
     with DockerCompose(filepath=cwd) as compose:
         exception = None
         exception_delay = 0
-        stdout, stderr = None
+        stdout, stderr = None, None
         for i in range(10):
             try:
                 prepare()
