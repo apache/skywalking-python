@@ -69,8 +69,9 @@ fastapi_collect_http_params = True if os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS'
 
 # profile configs
 get_profile_task_interval = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')  # type: int
-profile_active = False if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
-                          os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True  # type: bool
+# profile_active = False if os.getenv('SW_AGENT_PROFILE_ACTIVE') and \
+#                           os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True  # type: bool
+profile_active = False
 profile_max_parallel = int(os.getenv('SW_AGENT_PROFILE_MAX_PARALLEL') or '5')  # type: int
 profile_duration = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')  # type: int
 profile_dump_max_stack_depth = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')  # type: int
