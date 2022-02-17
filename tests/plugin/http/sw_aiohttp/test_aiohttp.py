@@ -27,7 +27,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture  # pyre-ignore
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9090/skywalking')
+    return lambda *_: requests.get('http://0.0.0.0:9090/skywalking', timeout=5)
 
 
 class TestPlugin(TestPluginBase):

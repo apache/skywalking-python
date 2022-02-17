@@ -28,7 +28,7 @@ if __name__ == '__main__':
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
 
-            res = requests.post('http://provider:9091/users')
+            res = requests.post('http://provider:9091/users', timeout=5)
             self.wfile.write(str(res.json()).encode('utf8'))
 
     PORT = 9090

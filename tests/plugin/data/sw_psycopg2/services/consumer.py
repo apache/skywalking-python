@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     @app.route('/users', methods=['POST', 'GET'])
     def application():
-        res = requests.post('http://provider:9091/users')
+        res = requests.post('http://provider:9091/users', timeout=5)
         return jsonify(res.json())
 
     PORT = 9090
