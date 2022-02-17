@@ -54,7 +54,7 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
         stdout, stderr = None, None
         for i in range(10):
             try:
-                compose.wait_for('0.0.11.0:9090')
+                compose.wait_for('0.0.0.0:9090')
                 # time.sleep(10) # time for container setup
                 prepare()
                 exception = None
