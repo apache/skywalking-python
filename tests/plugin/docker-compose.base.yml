@@ -40,7 +40,8 @@ services:
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_AGENT_PROFILE_ACTIVE: 'False' # agent test tool does not support profiling
+      # Agent test tool does not support profiling, TODO: address in e2e ref: #155
+      SW_AGENT_PROFILE_ACTIVE: 'False'
     networks:
       - beyond
     command: ['python3', '/entrypoint.py']

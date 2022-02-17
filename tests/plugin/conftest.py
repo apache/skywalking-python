@@ -40,9 +40,7 @@ def prepare():
 
 
 @pytest.fixture
-def docker_compose(request, prepare, version):
-    # type: (FixtureRequest, Callable, str) -> None
-
+def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> None:
     module = request.module
     cwd = dirname(inspect.getfile(module))
 
@@ -67,7 +65,7 @@ def docker_compose(request, prepare, version):
                 stdout, stderr = compose.get_logs()
 
         if exception:
-            compose.stop()
+            # compose.stop()
             print(f'STDOUT:\n{stdout.decode("utf-8")}')
             print('==================================')
             print(f'STDERR:\n{stderr.decode("utf-8")}')
