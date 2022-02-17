@@ -54,7 +54,7 @@ def docker_compose(request, prepare, version):
         exception = None
         exception_delay = 0
         # stdout_dignose, stderr_dignose = None
-        for _ in range(1):
+        for _ in range(10):
             try:
                 prepare()
                 exception = None
