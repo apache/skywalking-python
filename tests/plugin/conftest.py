@@ -24,7 +24,6 @@ from typing import Callable
 import pytest
 from _pytest.fixtures import FixtureRequest
 from testcontainers.compose import DockerCompose
-from testcontainers.core.waiting_utils import wait_container_is_ready
 
 
 @pytest.fixture
@@ -55,10 +54,8 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
         stdout, stderr = None, None
         for i in range(10):
             try:
-                # compose.wait_for('0.0.0.0:9090')
-                wait_container_is_ready(prepare)
-                # time.sleep(10) # time for container setup
-                # prepare()
+                time.sleep(10)
+                prepare()
                 exception = None
                 break
             except Exception as e:
