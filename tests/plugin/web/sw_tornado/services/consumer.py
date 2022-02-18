@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     class MainHandler(tornado.web.RequestHandler):
         def get(self):
-            res = requests.get('http://provider:9091/users')
+            res = requests.get('http://provider:9091/users', timeout=5)
             self.write(res.text)
 
     def make_app():

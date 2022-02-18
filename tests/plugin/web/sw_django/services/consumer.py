@@ -30,7 +30,7 @@ settings.configure(
 
 
 def index(request):
-    res = requests.post('http://provider:9091/users')
+    res = requests.post('http://provider:9091/users', timeout=5)
     return JsonResponse(res.json())
 
 

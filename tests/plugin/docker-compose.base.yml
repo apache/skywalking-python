@@ -19,7 +19,7 @@ version: '2.1'
 
 services:
   collector:
-    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:5acb890f225ca37ee60675ce3e330545e23e3cbc
+    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:092c6a3c753684b5a301baf5bcb1965f2dfaf79d
     ports:
       - 19876:19876
       - 12800:12800
@@ -40,6 +40,8 @@ services:
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
       SW_AGENT_LOGGING_LEVEL: DEBUG
+      # Agent test tool does not support profiling, TODO: address in e2e ref: #155
+      SW_AGENT_PROFILE_ACTIVE: 'False'
     networks:
       - beyond
     command: ['python3', '/entrypoint.py']
