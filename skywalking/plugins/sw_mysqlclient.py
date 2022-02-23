@@ -39,7 +39,7 @@ def install():
         con.host = kwargs['host']
         if 'db' in kwargs:
             con.db = kwargs['db']
-        else
+        else:
             con.db = kwargs['database']
         return ProxyConnection(con)
 
