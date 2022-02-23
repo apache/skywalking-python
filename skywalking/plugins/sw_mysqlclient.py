@@ -37,7 +37,7 @@ def install():
     def _sw_connect(*args, **kwargs):
         con = _connect(*args, **kwargs)
         con.host = kwargs['host']
-        if "db" in kwargs:
+        if 'db' in kwargs:
             con.db = kwargs['db']
         con.db = kwargs['database']
         return ProxyConnection(con)
