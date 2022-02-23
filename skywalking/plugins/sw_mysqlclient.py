@@ -39,7 +39,8 @@ def install():
         con.host = kwargs['host']
         if 'db' in kwargs:
             con.db = kwargs['db']
-        con.db = kwargs['database']
+        else
+            con.db = kwargs['database']
         return ProxyConnection(con)
 
     class ProxyCursor(wrapt.ObjectProxy):
