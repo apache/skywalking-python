@@ -37,7 +37,10 @@ def install():
     def _sw_connect(*args, **kwargs):
         con = _connect(*args, **kwargs)
         con.host = kwargs['host']
-        con.db = kwargs['db']
+        if 'db' in kwargs:
+            con.db = kwargs['db']
+        else:
+            con.db = kwargs['database']
         return ProxyConnection(con)
 
     class ProxyCursor(wrapt.ObjectProxy):
