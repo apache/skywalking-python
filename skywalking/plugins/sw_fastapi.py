@@ -74,6 +74,8 @@ def install():
                 resp = await _original_fast_api(self, scope, receive, wrapped_send)
             finally:
                 span.tag(TagHttpStatusCode(status_code))
+                if status_code >= 400:
+                    span.error_occurred = True
         return resp
 
     ExceptionMiddleware.__call__ = _sw_fast_api
