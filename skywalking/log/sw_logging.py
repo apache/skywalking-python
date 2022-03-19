@@ -69,8 +69,6 @@ def install():
 
         context = get_context()
 
-        _handle(self=self, record=record)
-
         log_data = LogData(
             timestamp=round(record.created * 1000),
             service=config.service_name,
@@ -88,7 +86,7 @@ def install():
             ),
             tags=build_log_tags(),
         )
-
+        _handle(self=self, record=record)
 
         agent.archive_log(log_data)
 
