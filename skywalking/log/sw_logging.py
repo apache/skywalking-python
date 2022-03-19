@@ -17,10 +17,9 @@
 
 import logging
 
+from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
-
-from skywalking import config, agent
 from skywalking.trace.context import get_context
 from skywalking.utils.filter import sw_traceback, sw_filter
 
@@ -31,7 +30,7 @@ def install():
     layout = config.log_reporter_layout  # type: str
     if layout:
         from skywalking.log.formatter import SWFormatter
-        formatter = SWFormatter(fmt=layout, tb_limit=config.cause_exception_depth)
+        sw_formatter = SWFormatter(fmt=layout, tb_limit=config.cause_exception_depth)
 
     _handle = Logger.handle
     log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
@@ -89,7 +88,6 @@ def install():
             tags=build_log_tags(),
         )
 
-
         agent.archive_log(log_data)
 
     Logger.handle = _sw_handle
@@ -97,7 +95,7 @@ def install():
     def transform(record) -> str:
         if config.log_reporter_formatted:
             if layout:
-                return formatter.format(record=record)
+                return sw_formatter.format(record=record)
             newline = '\n'
             return f"{record.getMessage()}{f'{newline}{sw_traceback()}' if record.exc_info else ''}"
         return str(record.msg)  # convert possible exception to str
