@@ -16,7 +16,7 @@
 #
 
 """ This version of sitecustomize will
-1. initializes the SkyWalking Python Agent.
+1. initialize the SkyWalking Python Agent.
 2. invoke an existing sitecustomize.py.
 Not compatible with Python <= 3.3
 
@@ -75,7 +75,7 @@ loaded = sys.modules.pop('sitecustomize', None)  # pop sitecustomize from loaded
 
 # now try to find the original sitecustomize provided in user env
 try:
-    loaded = importlib.import_module('sitecustomie')
+    loaded = importlib.import_module('sitecustomize')
     _sw_loader_logger.debug(f'Found user sitecustomize file {loaded}, imported')
 except ImportError:  # ModuleNotFoundError
     _sw_loader_logger.debug('Original sitecustomize module not found, skipping.')
