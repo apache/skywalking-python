@@ -41,7 +41,7 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         self.service_stub.reportInstanceProperties(InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=[KeyStringValuePair(key='language', value='Python')],
+            properties=[KeyStringValuePair(key='language', value='python')],
         ))
 
     def send_heart_beat(self):
