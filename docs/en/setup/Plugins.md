@@ -19,7 +19,7 @@ Library | Python Version - Lib Version | Plugin Name
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.6 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.10 - ['2.5', '2.6']; Python >=3.6 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.6 - ['0.70.1'];  | `sw_fastapi` |
-| [flask](https://flask.palletsprojects.com) | Python >=3.6 - ['1.1', '2.0'];  | `sw_flask` |
+| [flask](https://flask.palletsprojects.com) | Python >=3.6 - ['2.0'];  | `sw_flask` |
 | [http_server](https://docs.python.org/3/library/http.server.html) | Python >=3.6 - ['*'];  | `sw_http_server` |
 | [werkzeug](https://werkzeug.palletsprojects.com/) | Python >=3.6 - ['1.0.1', '2.0'];  | `sw_http_server` |
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.6 - ['2.0'];  | `sw_kafka` |
