@@ -17,6 +17,7 @@
   - Fix agent bootstrap traceback not shown in sw-python CLI (#183)
   - Fix local log stack depth overridden by agent log formatter (#192)
   - Fix typo that cause user sitecustomize.py not loaded (#193)
+  - Fix instance property wrongly shown as UNKNOWN in OAP (#194)
   - Fix multiple components inconsistently named on SkyWalking UI (#TBD)
   - Fix SW_AGENT_LOGGING_LEVEL not properly set during startup (#196)
 
