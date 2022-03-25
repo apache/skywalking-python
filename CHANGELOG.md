@@ -4,12 +4,29 @@
 - Feature:
 
 - Plugins:
-  - Add Psycopg(3.x) support (In-progress)
+  - Add Psycopg(3.x) support (#168)
+  - Add MySQL support (#178)
+  - Add FastAPI support (#181)
+  - Drop support for flask 1.x due to dependency issue in Jinja2 and EOL (#195)
 
 - Fixes:
+  - Spans now correctly reference finished parents (#161)
+  - Remove potential password leak from Aiohttp outgoing url (#175)
+  - Handle error when REMOTE_PORT is missing in Flask (#176)
+  - Fix sw-rabbitmq TypeError when there are no headers (#182)
+  - Fix agent bootstrap traceback not shown in sw-python CLI (#183)
+  - Fix local log stack depth overridden by agent log formatter (#192)
+  - Fix typo that cause user sitecustomize.py not loaded (#193)
+  - Fix instance property wrongly shown as UNKNOWN in OAP (#194)
+  - Fix multiple components inconsistently named on SkyWalking UI (#TBD)
+  - Fix SW_AGENT_LOGGING_LEVEL not properly set during startup (#196)
+
+- Docs:
+  - Add a FAQ doc on `how to use with uwsgi` (#188)
 
 - Others:
-  - Add support for Python 3.10
+  - Add support for Python 3.10 (#167)
+  - Add E2E test coverage (#TBD)
 
 ### 0.7.0
 
