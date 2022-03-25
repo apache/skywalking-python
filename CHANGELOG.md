@@ -5,9 +5,9 @@
 
 - Plugins:
   - Add Psycopg(3.x) support (#168)
-  - Dropped support for flask 1.x due to dependency issue in Jinja2 and EOL (#195)
   - Add MySQL support (#178)
   - Add FastAPI support (#181)
+  - Drop support for flask 1.x due to dependency issue in Jinja2 and EOL (#195)
 
 - Fixes:
   - Spans now correctly reference finished parents (#161)
