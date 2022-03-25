@@ -24,7 +24,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 link_vector = ['https://flask.palletsprojects.com']
 support_matrix = {
     'flask': {
-        '>=3.6': ['1.1.4', '2.0.3']  # 1.1.4 is the last supported version, should be removed in near future
+        '>=3.6': ['2.0.3'] # 1.x removed due to EOL
     }
 }
 note = """"""
