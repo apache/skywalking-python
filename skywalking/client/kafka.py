@@ -69,7 +69,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         instance = InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=[KeyStringValuePair(key='language', value='Python')],
+            properties=[KeyStringValuePair(key='language', value='python')],
         )
 
         key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
