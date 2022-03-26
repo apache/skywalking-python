@@ -39,9 +39,9 @@ class HttpServiceManagementClient(ServiceManagementClient):
         res = self.session.post(self.url_instance_props, json={
             'service': config.service_name,
             'serviceInstance': config.service_instance,
-            'properties': [{
-                'language': 'python',
-            }]
+            'properties': [
+                {'key': 'language', 'value': 'Python'},
+            ]
         })
         if logger_debug_enabled:
             logger.debug('heartbeat response: %s', res)
