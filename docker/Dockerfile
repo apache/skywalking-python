@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG BASE_IMAGE
+ARG BASE_PYTHON_VERSION
 
-FROM ${BASE_IMAGE}
+FROM ${BASE_PYTHON_VERSION}
 
 ARG SW_PYTHON_AGENT_PROTOCOL
 ARG SW_PYTHON_AGENT_VERSION
 
 RUN pip install --no-cache-dir "apache-skywalking[${SW_PYTHON_AGENT_PROTOCOL}]==${SW_PYTHON_AGENT_VERSION}"
 
+# So that the agent can be auto-started when container is started
 ENTRYPOINT ["sw-python", "run"]

@@ -51,7 +51,7 @@ setup(
             'requests>=2.26.0',
         ],
         'kafka': [
-            'kafka',
+            'kafka-python',
         ],
     },
     classifiers=[

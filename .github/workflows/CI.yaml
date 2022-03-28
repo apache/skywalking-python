@@ -22,8 +22,17 @@ on:
     branches:
       - master
   pull_request:
-#  schedule: TODO: unpin minor lib versions and check weekly
-#    - 0 0 0 ? * FRI *
+    paths-ignore:
+      - "*.md"
+      - "*.txt"
+      - ".asf.yaml"
+      - ".dlc.json"
+      - ".licenserc.yaml"
+      - "docs/*"
+      - ".github/workflows/*"
+  schedule: #TODO: unpin minor lib versions and check weekly with automation
+    - cron: '0 18 * * *'
+
 concurrency:
   group: ci-it-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -34,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Check License
@@ -45,39 +54,68 @@ jobs:
         run: make lint
   prep-plugin-and-unit-tests:
     name: Prepare Plugin and Unit Tests
-    needs: license-and-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: set-matrix
         run: |
           sudo apt-get install jq
           echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:  # may support pypy in the future
+        python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
+      fail-fast: false
+    env:
+      BASE_PYTHON_VERSION: ${{ matrix.python-version }}
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build SkyWalking Python agent base plugin image
+        run: | 
+          docker build --build-arg BASE_PYTHON_VERSION -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
+          docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
+      - name: Upload docker image with specific python version
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
+          path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
+
   plugin-and-unit-tests:
     name: Plugin and Unit Tests
-    needs: prep-plugin-and-unit-tests
+    needs: [ prep-plugin-and-unit-tests, docker ]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
-      SW_PYTHON_VERSION: ${{ matrix.python-version }}
+      BASE_PYTHON_VERSION: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Pull SkyWalking Python agent base image
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
+          path: docker-images
+      - name: Load docker images
+        run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        # This step is crucial for correct plugin matrix in test orchestration
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Set up dependencies
-        run: make setup install
       - name: Run unit tests
         run: |
           make test-parallel-setup
@@ -85,7 +123,7 @@ jobs:
   CheckStatus:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [plugin-and-unit-tests]
+    needs: [ license-and-lint, plugin-and-unit-tests ]
     steps:
       - name: Nothing
         run: echo "Just to make the GitHub merge button green"

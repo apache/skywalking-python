@@ -21,8 +21,6 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
 
-from skywalking.protocol.logging.Logging_pb2 import LogData
-
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking import profile
@@ -31,6 +29,7 @@ from skywalking.command import command_service
 from skywalking.loggings import logger
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.protocol.logging.Logging_pb2 import LogData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
