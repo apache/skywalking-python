@@ -24,7 +24,6 @@ on:
       - ".dlc.json"
       - ".licenserc.yaml"
       - "docs/*"
-      - ".github/workflows/*"
   push:
     branches:
       - master
@@ -47,15 +46,16 @@ jobs:
           submodules: true
       - name: Build SkyWalking Python agent base e2e image
         run: | 
-          docker build --build-arg BASE_PYTHON_VERSION -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
+          docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
           docker save -o docker-images-skywalking-python-e2e.tar apache/skywalking-python-agent:latest-e2e
         env:  # may support pypy in the future
-          BASE_PYTHON_VERSION: 3.7
+          BASE_PYTHON_IMAGE: 3.7
       - name: Upload docker image
         uses: actions/upload-artifact@v3
         with:
           name: docker-images-skywalking-python-e2e
           path: docker-images-skywalking-python-e2e.tar
+          retention-days: 1
   E2E:
     name: Basic function + ${{ matrix.case.name }} transport (Python3.7)
     needs: Docker

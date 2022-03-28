@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG BASE_PYTHON_VERSION
+ARG BASE_PYTHON_IMAGE
 
-FROM python:${BASE_PYTHON_VERSION}
+FROM python:${BASE_PYTHON_IMAGE}
 
 ARG ROOT=.
 

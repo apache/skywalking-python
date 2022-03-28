@@ -14,9 +14,9 @@
 # limitations under the License.
 
 # Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_VERSION
+ARG BASE_PYTHON_IMAGE
 
-FROM python:${BASE_PYTHON_VERSION}
+FROM python:${BASE_PYTHON_IMAGE}
 
 VOLUME /services
 

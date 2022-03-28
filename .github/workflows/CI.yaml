@@ -29,7 +29,6 @@ on:
       - ".dlc.json"
       - ".licenserc.yaml"
       - "docs/*"
-      - ".github/workflows/*"
   schedule: #TODO: unpin minor lib versions and check weekly with automation
     - cron: '0 18 * * *'
 
@@ -71,7 +70,7 @@ jobs:
         python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
       fail-fast: false
     env:
-      BASE_PYTHON_VERSION: ${{ matrix.python-version }}
+      BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
         uses: actions/checkout@v3
@@ -79,14 +78,14 @@ jobs:
           submodules: true
       - name: Build SkyWalking Python agent base plugin image
         run: | 
-          docker build --build-arg BASE_PYTHON_VERSION -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
+          docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
           docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
       - name: Upload docker image with specific python version
         uses: actions/upload-artifact@v3
         with:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
           path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
-
+          retention-days: 1
   plugin-and-unit-tests:
     name: Plugin and Unit Tests
     needs: [ prep-plugin-and-unit-tests, docker ]
@@ -98,7 +97,7 @@ jobs:
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
-      BASE_PYTHON_VERSION: ${{ matrix.python-version }}
+      BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
         uses: actions/checkout@v3
