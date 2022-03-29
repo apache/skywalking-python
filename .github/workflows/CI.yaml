@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: set-matrix
         run: |
-          sudo12345 apt-get install jq
+          sudo apt-get install jq
           echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
