@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
-      agent: 'true'  # ${{ steps.filter.outputs.agent }}
+      agent: 'not true'  # ${{ steps.filter.outputs.agent }}
     steps:
       - name: Check for file changes
         uses: getsentry/paths-filter@v2
