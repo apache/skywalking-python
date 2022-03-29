@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
-      agent: 'not true'  # ${{ steps.filter.outputs.agent }}
+      agent: ${{ steps.filter.outputs.agent }}
     steps:
       - name: Check for file changes
         uses: getsentry/paths-filter@v2
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@v3
       - id: set-matrix
         run: |
-          sudo apt-get install jq
+          sudo12345 apt-get install jq
           echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -93,7 +93,7 @@ jobs:
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
-    needs: changes
+    needs: [changes, prep-plugin-and-unit-tests]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     strategy:
@@ -122,7 +122,7 @@ jobs:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
-    needs: [ changes, prep-plugin-and-unit-tests, docker-plugin ]
+    needs: [ changes, docker-plugin ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -234,11 +234,13 @@ jobs:
     needs: [ changes, license-and-lint, plugin-and-unit-tests, e2e-tests]
     steps:
       - name: Merge Requirement
+        # check license, lint, plugin and e2e tests, then echo success to get exit 0
         run: |
-          echo ${{ needs.license-and-lint.result }};
-          echo ${{ needs.plugin-and-unit-tests.result }};
-          echo ${{ needs.e2e-tests.result }};
-          [[ ${{ needs.license-and-lint.result }} != 'success' ]] && exit -1;
-          passStatus=('success' 'skipped');
-          ! [[ " ${passStatus[@]} " =~ " ${{ needs.plugin-and-unit-tests.result }} " ]]  && exit -1;
-          ! [[ " ${passStatus[@]} " =~ " ${{ needs.e2e-tests.result }} " ]]  && exit -1;
+          execute=${{ needs.changes.outputs.agent }}
+          lintResults=${{ needs.license-and-lint.result }}
+          pluginResults=${{ needs.plugin-and-unit-tests.result }};
+          e2eResults=${{ needs.e2e-tests.result }};
+          [[ ${lintResults} == 'success' ]] || exit 2;
+          [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 3;
+          [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 4;
+          exit 0;
