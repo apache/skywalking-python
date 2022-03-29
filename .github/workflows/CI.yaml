@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: E2E
+name: CI
 
 on:
   pull_request:
@@ -57,7 +57,19 @@ jobs:
         id: filter
         with:
           token: ${{ github.token }}
-          filters: .github/file-filters.yml
+          filters: |       
+            agent:
+              - '.github/**/*.yaml'
+              - '**/*.py'
+              - '**/Dockerfile*'
+              - '**/Makefile'
+              - 'protocol/**'
+              - 'tests/**'
+              - '**/*.bat'
+              - '**/*.sh'
+              - '**/*.ps1'
+              - '**/requirements*.text'
+              - '**/*.cfg'
           list-files: json  # logs matched files
 
   # Only run the Plugin and E2E jobs if there are essential changes as stated above

@@ -18,15 +18,3 @@
 # changes behavior of the CI itself, thus should trigger Plugin and E2E tests.
 # entirely ignores docs/
 
-agent:
-  - '.github/**/*.yaml'  # CI related
-  - '**/*.py'  # All Python files
-  - '**/Dockerfile*'
-  - '**/Makefile'
-  - 'protocol/**'
-  - 'tests/**'  # anything in tests is critical
-  - '**/*.bat'
-  - '**/*.sh'
-  - '**/*.ps1'
-  - '**/requirements*.text'
-  - '**/*.cfg'
