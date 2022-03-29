@@ -1,10 +1,10 @@
-#
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -13,31 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
-name: CI
+name: E2E
 
 on:
+  pull_request:
   push:
     branches:
       - master
-  pull_request:
-    paths-ignore:
-      - "*.md"
-      - "*.txt"
-      - ".asf.yaml"
-      - ".dlc.json"
-      - ".licenserc.yaml"
-      - "docs/*"
-  schedule: #TODO: unpin minor lib versions and check weekly with automation
+  schedule:
     - cron: '0 18 * * *'
 
 concurrency:
-  group: ci-it-${{ github.event.pull_request.number || github.ref }}
+  group: CI-plugin-e2e-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  license-and-lint:
+  License-and-lint:
+    # Always check license-and-lint!
     name: License and Lint
     runs-on: ubuntu-latest
     steps:
@@ -51,8 +43,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint codes
         run: make lint
-  prep-plugin-and-unit-tests:
+
+  Changes:
+    # Check if any file related to Agent/ CI behavior is changed
+    # set outputs for other jobs to access for if conditions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      agent: ${{ steps.filter.outputs.agent }}
+    steps:
+      - name: Check for file changes
+        uses: getsentry/paths-filter@v2
+        id: filter
+        with:
+          token: ${{ github.token }}
+          filters: .github/file-filters.yml
+          list-files: json  # logs matched files
+
+  # Only run the Plugin and E2E jobs if there are essential changes as stated above
+  Prep-plugin-and-unit-tests:
+    # prep step for plugin and unit test
     name: Prepare Plugin and Unit Tests
+    needs: Changes
+    if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -62,11 +75,15 @@ jobs:
           echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-  docker:
+
+  Docker-plugin:
+    # build docker image for plugin tests, with matrix of Python versions
     name: Build Docker Image
+    needs: Changes
+    if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix:  # may support pypy in the future
+      matrix: # may support pypy in the future
         python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
       fail-fast: false
     env:
@@ -77,7 +94,7 @@ jobs:
         with:
           submodules: true
       - name: Build SkyWalking Python agent base plugin image
-        run: | 
+        run: |
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
           docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
       - name: Upload docker image with specific python version
@@ -86,9 +103,13 @@ jobs:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
           path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
           retention-days: 1
-  plugin-and-unit-tests:
+
+  Plugin-and-unit-tests:
+    # Execute plugin tests with matrix of Python versions and matrix of cases
+    # this step is only run after passing building images + prep matrix + changes
     name: Plugin and Unit Tests
-    needs: [ prep-plugin-and-unit-tests, docker ]
+    needs: [ Changes, Prep-plugin-and-unit-tests, Docker-plugin ]
+    if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -119,10 +140,82 @@ jobs:
         run: |
           make test-parallel-setup
           python3 -m pytest -v ${{ matrix.test-path }}
+
+  Docker-E2E:
+    # build docker image for E2E tests, single Python version for now.
+    name: Construct agent image
+    needs: Changes
+    if: ${{ needs.changes.outputs.agent == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build SkyWalking Python agent base e2e image
+        run: | 
+          docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
+          docker save -o docker-images-skywalking-python-e2e.tar apache/skywalking-python-agent:latest-e2e
+        env:  # may support pypy in the future
+          BASE_PYTHON_IMAGE: 3.7
+      - name: Upload docker image
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images-skywalking-python-e2e
+          path: docker-images-skywalking-python-e2e.tar
+          retention-days: 1
+
+  E2E:
+    # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
+    name: Basic function + ${{ matrix.case.name }} transport (Python3.7)
+    needs: [Changes, Docker-E2E]
+    if: ${{ needs.changes.outputs.agent == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        case:
+          - name: gRPC
+            path: tests/e2e/case/grpc/e2e.yaml
+          - name: HTTP
+            path: tests/e2e/case/http/e2e.yaml
+          - name: Kafka
+            path: tests/e2e/case/kafka/e2e.yaml
+      fail-fast: false
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Pull SkyWalking Python agent base image
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-images-skywalking-python-e2e
+          path: docker-images
+      - name: Load docker images
+        run: find docker-images -name "*.tar" -exec docker load -i {} \;
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Run E2E Tests
+        uses: apache/skywalking-infra-e2e@main
+        with:
+          log-dir: /tmp/e2e-logs
+          e2e-file: ${{ matrix.case.path }}
+      - name: Upload Logs
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: e2e_logs
+          path: "${{ env.SW_INFRA_E2E_LOG_DIR }}"
+
   CheckStatus:
+    # a required check that must pass before merging a PR
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [ license-and-lint, plugin-and-unit-tests ]
+    needs: [ License-and-lint ]
     steps:
       - name: Nothing
         run: echo "Just to make the GitHub merge button green"

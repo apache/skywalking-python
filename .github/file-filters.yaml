@@ -14,29 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Dead link checker is always run on all files
-name: Dead Link Checker
+# A list of filters that DOES indicate changes to the project behavior or
+# changes behavior of the CI itself, thus should trigger Plugin and E2E tests.
+# entirely ignores docs/
 
-on:
-  pull_request:
-  push:
-    branches:
-      - master
-  schedule:
-    - cron: '0 18 * * *'
-
-concurrency:
-  group: dlc-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  CheckDeadLinks:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo npm install -g markdown-link-check
-      - run: |
-          for file in $(find . -name "*.md"); do
-            markdown-link-check -c .dlc.json -q "$file"
-          done
+agent:
+  - '.github/**/*.yaml'  # CI related
+  - '**/*.py'  # All Python files
+  - '**/Dockerfile*'
+  - '**/Makefile'
+  - 'protocol/**'
+  - 'tests/**'  # anything in tests is critical
+  - '**/*.bat'
+  - '**/*.sh'
+  - '**/*.ps1'
+  - '**/requirements*.text'
+  - '**/*.cfg'
