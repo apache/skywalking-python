@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
-      agent: ${{ steps.filter.outputs.agent }}
+      agent: 'true'  # ${{ steps.filter.outputs.agent }}
     steps:
       - name: Check for file changes
         uses: getsentry/paths-filter@v2
@@ -233,11 +233,12 @@ jobs:
     if: ${{ always() }}
     needs: [ changes, license-and-lint, plugin-and-unit-tests, e2e-tests]
     steps:
-      - name: Nothing
-        run: echo "Just to make the GitHub merge button green"
       - name: Merge Requirement
         run: |
+          echo ${{ needs.license-and-lint.result }};
+          echo ${{ needs.plugin-and-unit-tests.result }};
+          echo ${{ needs.e2e-tests.result }};
           [[ ${{ needs.license-and-lint.result }} != 'success' ]] && exit -1;
-          passStatus=('success' 'skipped')  
-          [[ " ${passStatus[@]} " !=~ " ${{ needs.plugin-and-unit-tests.result }} " ]]  && exit -1;
-          [[ " ${passStatus[@]} " !=~ " ${{ needs.e2e-tests.result }} " ]]  && exit -1;
+          passStatus=('success' 'skipped');
+          ! [[ " ${passStatus[@]} " =~ " ${{ needs.plugin-and-unit-tests.result }} " ]]  && exit -1;
+          ! [[ " ${passStatus[@]} " =~ " ${{ needs.e2e-tests.result }} " ]]  && exit -1;
