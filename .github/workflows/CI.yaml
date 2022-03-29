@@ -122,7 +122,7 @@ jobs:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
-    needs: [ changes, docker-plugin ]
+    needs: [ changes, docker-plugin, prep-plugin-and-unit-tests ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
