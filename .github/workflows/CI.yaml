@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  License-and-lint:
+  license-and-lint:
     # Always check license-and-lint!
     name: License and Lint
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
       - name: Lint codes
         run: make lint
 
-  Changes:
+  changes:
     # Check if any file related to Agent/ CI behavior is changed
     # set outputs for other jobs to access for if conditions
     runs-on: ubuntu-latest
@@ -75,10 +75,10 @@ jobs:
           list-files: json  # logs matched files
 
   # Only run the Plugin and E2E jobs if there are essential changes as stated above
-  Prep-plugin-and-unit-tests:
+  prep-plugin-and-unit-tests:
     # prep step for plugin and unit test
     name: Prepare Plugin and UT Matrix
-    needs: Changes
+    needs: changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     steps:
@@ -90,10 +90,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
-  Docker-plugin:
+  docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
-    needs: Changes
+    needs: changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     strategy:
@@ -118,11 +118,11 @@ jobs:
           path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
           retention-days: 1
 
-  Plugin-and-unit-tests:
+  plugin-and-unit-tests:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
-    needs: [ Changes, Prep-plugin-and-unit-tests, Docker-plugin ]
+    needs: [ changes, prep-plugin-and-unit-tests, docker-plugin ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -155,10 +155,10 @@ jobs:
           make test-parallel-setup
           python3 -m pytest -v ${{ matrix.test-path }}
 
-  Docker-E2E:
+  docker-e2e:
     # build docker image for E2E tests, single Python version for now.
     name: Construct Agent E2E Test Images
-    needs: Changes
+    needs: changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -180,10 +180,10 @@ jobs:
           path: docker-images-skywalking-python-e2e.tar
           retention-days: 1
 
-  E2E:
+  e2e-tests:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
     name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
-    needs: [Changes, Docker-E2E]
+    needs: [changes, docker-e2e]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -229,7 +229,15 @@ jobs:
     # a required check that must pass before merging a PR
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [ License-and-lint ]
+    # wait upon them regardless of success or skipped or failure
+    if: ${{ always() }}
+    needs: [ changes, license-and-lint, plugin-and-unit-tests, e2e-tests]
     steps:
       - name: Nothing
         run: echo "Just to make the GitHub merge button green"
+      - name: Merge Requirement
+        run: |
+          [[ ${{ needs.license-and-lint.result }} != 'success' ]] && exit -1;
+          passStatus=('success' 'skipped')  
+          [[ " ${passStatus[@]} " !=~ " ${{ needs.plugin-and-unit-tests.result }} " ]]  && exit -1;
+          [[ " ${passStatus[@]} " !=~ " ${{ needs.e2e-tests.result }} " ]]  && exit -1;
