@@ -38,7 +38,7 @@ jobs:
         with:
           submodules: true
       - name: Check License
-        uses: apache/skywalking-eyes@49d536241d6fe8f92400702b08710514dc298cd4
+        uses: apache/skywalking-eyes@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint codes
@@ -57,6 +57,8 @@ jobs:
         id: filter
         with:
           token: ${{ github.token }}
+          # The following filters indicate a category along with
+          # the files that should not be ignored by CI when modified.
           filters: |       
             agent:
               - '.github/**/*.yaml'
@@ -75,7 +77,7 @@ jobs:
   # Only run the Plugin and E2E jobs if there are essential changes as stated above
   Prep-plugin-and-unit-tests:
     # prep step for plugin and unit test
-    name: Prepare Plugin and Unit Tests
+    name: Prepare Plugin and UT Matrix
     needs: Changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
@@ -90,7 +92,7 @@ jobs:
 
   Docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
-    name: Build Docker Image
+    name: Construct Agent Plugin Test Images
     needs: Changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
@@ -119,7 +121,7 @@ jobs:
   Plugin-and-unit-tests:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
-    name: Plugin and Unit Tests
+    name: Execute Agent Plugin and Unit Tests
     needs: [ Changes, Prep-plugin-and-unit-tests, Docker-plugin ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
@@ -155,7 +157,7 @@ jobs:
 
   Docker-E2E:
     # build docker image for E2E tests, single Python version for now.
-    name: Construct agent image
+    name: Construct Agent E2E Test Images
     needs: Changes
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
@@ -180,7 +182,7 @@ jobs:
 
   E2E:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
-    name: Basic function + ${{ matrix.case.name }} transport (Python3.7)
+    name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
     needs: [Changes, Docker-E2E]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
