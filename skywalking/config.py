@@ -19,12 +19,12 @@ import re
 import uuid
 
 # Change to future after Python3.6 support ends
-from typing import List
+from typing import List, Pattern
 
 QUEUE_TIMEOUT: int = 1
 
-RE_IGNORE_PATH: re.Pattern = re.compile('^$')
-RE_HTTP_IGNORE_METHOD: re.Pattern = RE_IGNORE_PATH
+RE_IGNORE_PATH: Pattern = re.compile('^$')
+RE_HTTP_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
 
 options = None  # here to include 'options' in globals
 options = globals().copy()  # THIS MUST PRECEDE DIRECTLY BEFORE LIST OF CONFIG OPTIONS!
