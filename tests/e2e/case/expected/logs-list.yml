@@ -74,4 +74,4 @@ logs:
       value: {{ notEmpty .value }}
     {{- end }}
   {{- end }}
-total: 2
+total: 3
