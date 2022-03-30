@@ -1,4 +1,3 @@
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,31 +12,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-version: '2.1'
-
-services:
-  collector:
-    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:092c6a3c753684b5a301baf5bcb1965f2dfaf79d
-    ports:
-      - 19876:19876
-      - 12800:12800
-    networks:
-      - beyond
-    healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/12800"]
-      interval: 5s
-      timeout: 60s
-      retries: 120
-
-  agent:
-    image: apache/skywalking-python-agent:latest-plugin
-    environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
-      SW_AGENT_LOGGING_LEVEL: DEBUG
-      # Agent test tool does not support profiling, TODO: address in e2e ref: #155
-      SW_AGENT_PROFILE_ACTIVE: 'False'
-    networks:
-      - beyond
-    command: ['python3', '/entrypoint.py']
+traces:
+  {{- contains .traces }}
+  - segmentid: {{ notEmpty .segmentid }}
+    endpointnames:
+    {{- contains .endpointnames }}
+      - /artist
+    {{- end }}
+    duration: {{ ge .duration 0 }}
+    start: {{ notEmpty .start}}
+    iserror: false
+    traceids:
+      - {{ (index .traceids 0) }}
+  {{- end }}
+total: {{ gt .total 0 }}

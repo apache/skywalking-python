@@ -14,10 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Dead link checker is always run on all files
 name: Dead Link Checker
 
 on:
   pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 18 * * *'
 
 concurrency:
   group: dlc-${{ github.event.pull_request.number || github.ref }}
@@ -28,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: sudo npm install -g markdown-link-check
       - run: |
           for file in $(find . -name "*.md"); do

@@ -1,4 +1,4 @@
-
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,29 +15,30 @@
 # limitations under the License.
 #
 
-version: '2.1'
+"""
+This module contains the Consumer part of the e2e tests.
+consumer (FastAPI) -> consumer (AIOHTTP) -> provider (FastAPI + logging_with_exception)
+"""
+import aiohttp
+import uvicorn
+from fastapi import FastAPI
+from fastapi import Request
 
-services:
-  collector:
-    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:092c6a3c753684b5a301baf5bcb1965f2dfaf79d
-    ports:
-      - 19876:19876
-      - 12800:12800
-    networks:
-      - beyond
-    healthcheck:
-      test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/12800"]
-      interval: 5s
-      timeout: 60s
-      retries: 120
+app = FastAPI()
 
-  agent:
-    image: apache/skywalking-python-agent:latest-plugin
-    environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
-      SW_AGENT_LOGGING_LEVEL: DEBUG
-      # Agent test tool does not support profiling, TODO: address in e2e ref: #155
-      SW_AGENT_PROFILE_ACTIVE: 'False'
-    networks:
-      - beyond
-    command: ['python3', '/entrypoint.py']
+
+@app.get('/artist')
+@app.post('/artist')
+async def application(request: Request):
+    try:
+        payload = await request.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.post('http://provider:9090/artist', data=payload) as response:
+                return await response.json()
+    except Exception:  # noqa
+        return {'message': 'Error'}
+
+
+if __name__ == '__main__':
+    # noinspection PyTypeChecker
+    uvicorn.run(app, host='0.0.0.0', port=9090)

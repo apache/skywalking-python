@@ -40,7 +40,7 @@ class HttpServiceManagementClient(ServiceManagementClient):
             'service': config.service_name,
             'serviceInstance': config.service_instance,
             'properties': [
-                {'key': 'language', 'value': 'Python'},
+                {'key': 'language', 'value': 'python'},
             ]
         })
         if logger_debug_enabled:

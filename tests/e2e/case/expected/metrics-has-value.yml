@@ -13,14 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG SW_PYTHON_VERSION
-
-FROM python:${SW_PYTHON_VERSION}
-
-ARG ROOT=.
-
-WORKDIR /agent
-
-ADD $ROOT /agent
-
-RUN make setup-test install
+{{- contains . }}
+- key: {{ notEmpty .key }}
+  value: {{ ge .value 0 }}
+- key: {{ notEmpty .key }}
+  value: {{ ge .value 1 }}
+{{- end }}

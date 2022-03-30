@@ -29,7 +29,7 @@ setup:
 	python3 -m pip install --upgrade pip
 	python3 -m pip install grpcio --ignore-installed
 
-setup-test: setup
+setup-test: setup gen
 	pip3 install -e .[test]
 
 gen:

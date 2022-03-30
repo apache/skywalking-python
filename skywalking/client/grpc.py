@@ -38,6 +38,7 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         self.service_stub = ManagementServiceStub(channel)
 
     def send_instance_props(self):
+        # TODO: other properties periodically | matching behavior of java agent
         self.service_stub.reportInstanceProperties(InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,

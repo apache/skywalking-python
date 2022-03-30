@@ -45,7 +45,7 @@ class Component(Enum):
     Celery = 7011
     Falcon = 7012
     MysqlClient = 7013
-    FastApi = 7014
+    FastAPI = 7014
 
 
 class Layer(Enum):
