@@ -24,7 +24,8 @@ logs:
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
-    content: 'Leak basic auth info at https://example.com'
+    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+"}}
+
     tags:
     {{- contains .tags }}
     - key: level
