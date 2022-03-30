@@ -18,7 +18,7 @@
   - Fix local log stack depth overridden by agent log formatter (#192)
   - Fix typo that cause user sitecustomize.py not loaded (#193)
   - Fix instance property wrongly shown as UNKNOWN in OAP (#194)
-  - Fix multiple components inconsistently named on SkyWalking UI (#TBD)
+  - Fix multiple components inconsistently named on SkyWalking UI (#199)
   - Fix SW_AGENT_LOGGING_LEVEL not properly set during startup (#196)
 
 - Docs:
@@ -26,7 +26,8 @@
 
 - Others:
   - Add support for Python 3.10 (#167)
-  - Add E2E test coverage (#TBD)
+  - Add E2E test coverage for trace and logging (#199)
+  - Add a `SW_AGENT_LOG_REPORTER_SAFE_MODE` option to control the HTTP basic auth credential filter (#TBD)
 
 ### 0.7.0
 

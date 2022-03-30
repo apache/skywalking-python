@@ -82,6 +82,9 @@ async def application():
     time.sleep(0.5)
     # Warning is reported
     e2e_provider_logger.warning('E2E Provider Warning, this is reported!')
+    time.sleep(0.5)
+    # The user:password part will be removed
+    e2e_provider_logger.warning('Leak basic auth info at https://user:password@example.com')
     # Debug is not reported according to default agent setting
     e2e_provider_logger.debug('E2E Provider Debug, this is not reported!')
 
