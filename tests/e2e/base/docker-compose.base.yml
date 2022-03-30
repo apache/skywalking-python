@@ -43,6 +43,9 @@ services:
       SW_AGENT_NAME: e2e-service-provider
       SW_AGENT_INSTANCE: provider1
       SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_LOG_REPORTER_ACTIVE: "True"
+      SW_AGENT_LOG_REPORTER_LEVEL: WARNING
+      SW_AGENT_LOG_REPORTER_SAFE_MODE: "True"
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
       interval: 5s
@@ -61,9 +64,6 @@ services:
       SW_AGENT_NAME: e2e-service-consumer
       SW_AGENT_INSTANCE: consumer1
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_AGENT_LOG_REPORTER_ACTIVE: "True"
-      SW_AGENT_LOG_REPORTER_LEVEL: WARNING
-      SW_AGENT_LOG_REPORTER_SAFE_MODE: "True"
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
       interval: 5s
