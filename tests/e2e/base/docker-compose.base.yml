@@ -17,15 +17,14 @@ version: '2.1'
 
 services:
   # The following services are inherited by three protocols for testing
-  oap: # TODO: bump up OAP version from time to time | 2022-03-25
-    image: ghcr.io/apache/skywalking/oap:547f1ede2d1665601cb9d9a3853ed205620d6c83
+  oap:
+    image: ghcr.io/apache/skywalking/oap:${SW_OAP_COMMIT}
     # Python agent supports gRPC/ HTTP/ Kafka reporting
     expose:
       - 11800 # gRPC
       - 12800 # HTTP
     networks:
       - e2e
-    restart: on-failure
     healthcheck: # python base image has no nc command
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/11800" ]
       interval: 5s

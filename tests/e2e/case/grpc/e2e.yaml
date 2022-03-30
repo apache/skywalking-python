@@ -26,10 +26,6 @@ setup:
     - name: install swctl
       command: bash tests/e2e/script/prepare/install.sh swctl
 
-cleanup:
-  # change to success if debugging.
-  on: always
-
 trigger:
   action: http      # The action of the trigger. support HTTP invoke.
   interval: 3s      # Trigger the action every 3 seconds.
