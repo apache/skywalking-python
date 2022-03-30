@@ -59,7 +59,7 @@ jobs:
           token: ${{ github.token }}
           # The following filters indicate a category along with
           # the files that should not be ignored by CI when modified.
-          filters: |       
+          filters: |
             agent:
               - '.github/**/*.yaml'
               - '**/*.py'
@@ -93,7 +93,7 @@ jobs:
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
-    needs: [changes, prep-plugin-and-unit-tests]
+    needs: [ changes, prep-plugin-and-unit-tests ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     strategy:
@@ -168,10 +168,10 @@ jobs:
         with:
           submodules: true
       - name: Build SkyWalking Python agent base e2e image
-        run: | 
+        run: |
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
           docker save -o docker-images-skywalking-python-e2e.tar apache/skywalking-python-agent:latest-e2e
-        env:  # may support pypy in the future
+        env: # may support pypy in the future
           BASE_PYTHON_IMAGE: 3.7
       - name: Upload docker image
         uses: actions/upload-artifact@v3
@@ -183,7 +183,7 @@ jobs:
   e2e-tests:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
     name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
-    needs: [changes, docker-e2e]
+    needs: [ changes, docker-e2e ]
     if: ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -231,10 +231,10 @@ jobs:
     timeout-minutes: 60
     # wait upon them regardless of success or skipped or failure
     if: ${{ always() }}
-    needs: [ changes, license-and-lint, plugin-and-unit-tests, e2e-tests]
+    needs: [ changes, license-and-lint, plugin-and-unit-tests, e2e-tests ]
     steps:
       - name: Merge Requirement
-        # check license, lint, plugin and e2e tests, then echo success to get exit 0
+        # check license, lint, plugin and e2e tests, then naturally exits 0
         run: |
           execute=${{ needs.changes.outputs.agent }}
           lintResults=${{ needs.license-and-lint.result }}
