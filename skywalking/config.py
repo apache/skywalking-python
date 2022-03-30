@@ -52,34 +52,34 @@ correlation_value_max_length: int = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENG
 
 # Plugin configurations
 sql_parameters_length: int = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')
-pymongo_trace_parameters: bool = True if os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True' else False
+pymongo_trace_parameters: bool = os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True'
 pymongo_parameters_max_length: int = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')
-elasticsearch_trace_dsl: bool = True if os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True' else False
+elasticsearch_trace_dsl: bool = os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True'
 
 http_params_length_threshold: int = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')
 http_ignore_method: str = os.getenv('SW_HTTP_IGNORE_METHOD', '').upper()
-flask_collect_http_params: bool = True if os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True' else False
-sanic_collect_http_params: bool = True if os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True' else False
-django_collect_http_params: bool = True if os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True' else False
-fastapi_collect_http_params: bool = True if os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True' else False
+flask_collect_http_params: bool = os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True'
+sanic_collect_http_params: bool = os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True'
+django_collect_http_params: bool = os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True'
+fastapi_collect_http_params: bool = os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True'
 
 celery_parameters_length: int = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
 
 # profiling configurations
 get_profile_task_interval: int = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
-profile_active: bool = False if os.getenv('SW_AGENT_PROFILE_ACTIVE') == 'False' else True
+profile_active: bool = os.getenv('SW_AGENT_PROFILE_ACTIVE') != 'False'
 profile_max_parallel: int = int(os.getenv('SW_AGENT_PROFILE_MAX_PARALLEL') or '5')
 profile_duration: int = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')
 profile_dump_max_stack_depth: int = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')
 profile_snapshot_transport_buffer_size: int = int(os.getenv('SW_AGENT_PROFILE_SNAPSHOT_TRANSPORT_BUFFER_SIZE') or '50')
 
 # log reporter configurations
-log_reporter_active: bool = True if os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True' else False
-log_reporter_safe_mode: bool = True if os.getenv('SW_AGENT_LOG_REPORTER_SAFE_MODE') == 'True' else False
+log_reporter_active: bool = os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True'
+log_reporter_safe_mode: bool = os.getenv('SW_AGENT_LOG_REPORTER_SAFE_MODE') == 'True'
 log_reporter_max_buffer_size: int = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')
 log_reporter_level: str = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'
-log_reporter_ignore_filter: bool = True if os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True' else False
-log_reporter_formatted: bool = False if os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') == 'False' else True
+log_reporter_ignore_filter: bool = os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER') == 'True'
+log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') != 'False'
 log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
                            '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'
 # This configuration is shared by log reporter and tracer
