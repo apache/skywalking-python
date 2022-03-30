@@ -24,6 +24,26 @@ logs:
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
+    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+"}}
+
+    tags:
+    {{- contains .tags }}
+    - key: level
+      value: WARNING
+    - key: logger
+      value: {{ notEmpty .value }}
+    - key: thread
+      value: {{ notEmpty .value }}
+    {{- end }}
+  - servicename: e2e-service-provider
+    serviceid: {{ b64enc "e2e-service-provider" }}.1
+    serviceinstancename: provider1
+    serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
+    endpointname: null
+    endpointid: null
+    traceid: {{ notEmpty .traceid }}
+    timestamp: {{ gt .timestamp 0 }}
+    contenttype: TEXT
     content: {{ regexp .content "(?s).+E2E Provider Warning.+"}}
     tags:
     {{- contains .tags }}
@@ -54,4 +74,4 @@ logs:
       value: {{ notEmpty .value }}
     {{- end }}
   {{- end }}
-total: 2
+total: 3
