@@ -22,7 +22,8 @@ on:
     branches:
       - master
   schedule:
-    - cron: '0 18 * * *'
+    #- cron: '0 18 * * *'
+    - cron: '*/5 * * * *'
 
 concurrency:
   group: CI-plugin-e2e-${{ github.event.pull_request.number || github.ref }}
@@ -84,7 +85,7 @@ jobs:
     # prep step for plugin and unit test
     name: Prepare Plugin and UT Matrix
     needs: [ license-and-lint, changes ]
-    if: github.event_name == 'schedule' || ${{ needs.changes.outputs.agent == 'true' }}
+    if: (always() && github.event_name == 'schedule') || ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -99,7 +100,7 @@ jobs:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
     needs: [ license-and-lint, changes, prep-plugin-and-unit-tests ]
-    if: github.event_name == 'schedule' || ${{ needs.changes.outputs.agent == 'true' }}
+    if: (always() && github.event_name == 'schedule') || ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
@@ -128,7 +129,7 @@ jobs:
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
     needs: [ license-and-lint, changes, docker-plugin, prep-plugin-and-unit-tests ]
-    if: github.event_name == 'schedule' || ${{ needs.changes.outputs.agent == 'true' }}
+    if: (always() && github.event_name == 'schedule') || ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -164,7 +165,7 @@ jobs:
     # build docker image for E2E tests, single Python version for now.
     name: Construct Agent E2E Test Images
     needs: [ license-and-lint, changes ]
-    if: github.event_name == 'schedule' || ${{ needs.changes.outputs.agent == 'true' }}
+    if: (always() && github.event_name == 'schedule') || ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -189,7 +190,7 @@ jobs:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
     name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
     needs: [ license-and-lint, changes, docker-e2e ]
-    if: github.event_name == 'schedule' || ${{ needs.changes.outputs.agent == 'true' }}
+    if: (always() && github.event_name == 'schedule') || ${{ needs.changes.outputs.agent == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
