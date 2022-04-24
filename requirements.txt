@@ -6,7 +6,7 @@ urllib3==1.26.7
 testcontainers==3.4.2
 packaging==21.0
 aiohttp==3.7.4
-celery==5.1.2
+celery==5.2.2
 contextvars==2.4
 Django==3.2.8
 elasticsearch==7.15.1
