@@ -23,8 +23,8 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
-    contenttype: "TEXT"
-    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+" }}
+    contenttype: TEXT
+    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+"}}
     tags:
     {{- contains .tags }}
     - key: level
@@ -42,12 +42,16 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
-    contenttype: "TEXT"
-    content: {{ regexp .content "(?s).+E2E Provider Warning.+" }}
+    contenttype: TEXT
+    content: "abcabc"
     tags:
     {{- contains .tags }}
     - key: level
       value: WARNING
+    - key: logger
+      value: {{ notEmpty .value }}
+    - key: thread
+      value: {{ notEmpty .value }}
     {{- end }}
   - servicename: e2e-service-provider
     serviceid: {{ b64enc "e2e-service-provider" }}.1
@@ -57,5 +61,16 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
+    contenttype: TEXT
+    content: "abcabc"
+    tags:
+    {{- contains .tags }}
+    - key: level
+      value: ERROR
+    - key: logger
+      value: {{ notEmpty .value }}
+    - key: thread
+      value: {{ notEmpty .value }}
+    {{- end }}
   {{- end }}
 total: 3
