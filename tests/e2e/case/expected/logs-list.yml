@@ -25,7 +25,6 @@ logs:
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
     content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+"}}
-
     tags:
     {{- contains .tags }}
     - key: level
