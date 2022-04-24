@@ -220,7 +220,7 @@ jobs:
         with:
           go-version: '1.16'
       - name: Run E2E Tests
-        uses: apache/skywalking-infra-e2e@ccb8dd74a8f75d5ee3e59992c219f36aaf0c3944
+        uses: apache/skywalking-infra-e2e@6c711177fdc483b281a5c347881317c4718776e3
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
