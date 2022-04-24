@@ -33,7 +33,7 @@ jobs:
   CheckDeadLinks:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event_name == 'schedule' && github.repository == 'apache/skywalking-python'
+    if: (github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || (github.event_name != 'schedule')
     steps:
       - uses: actions/checkout@v3
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
