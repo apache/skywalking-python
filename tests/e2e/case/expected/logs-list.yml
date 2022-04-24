@@ -23,8 +23,8 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
-    contenttype: TEXT
-    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+"}}
+    contenttype: "TEXT"
+    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com.+" }}
     tags:
     {{- contains .tags }}
     - key: level
@@ -42,8 +42,8 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
-    contenttype: TEXT
-    content: {{ regexp .content "(?s).+E2E Provider Warning.+"}}
+    contenttype: "TEXT"
+    content: {{ regexp .content "(?s).+E2E Provider Warning.+" }}
     tags:
     {{- contains .tags }}
     - key: level
@@ -61,12 +61,12 @@ logs:
     endpointid: null
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
-    contenttype: TEXT
+    contenttype: "TEXT"
     content: {{ regexp .content "(?s).+E2E Provider Exception.+Traceback(most recent call last).+" }}
     tags:
     {{- contains .tags }}
     - key: level
-      value: ERROR
+      value: "ERROR"
     - key: logger
       value: {{ notEmpty .value }}
     - key: thread
