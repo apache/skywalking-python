@@ -17,7 +17,7 @@ This documentation covers a number of ways to set up the Python agent for variou
 * Mail list: **dev@skywalking.apache.org**. 
 Mail to **dev-subscribe@skywalking.apache.org**, follow the reply to subscribe the mail list.
 * Join `skywalking` channel by sending a request to the mail list - dev@skywalking.apache.org, we will invite you in.
-* Twitter - [ASFSkyWalking](https://twitter.com/ASFSkyWalking)
+* Twitter - [ASFSkyWalking](https://twitter.com/AsfSkyWalking)
 
 ## Contributing
 

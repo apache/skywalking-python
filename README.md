@@ -31,7 +31,7 @@ Before submitting a pull request or pushing a commit, please read our [contribut
 * Submit an [GitHub Issue](https://github.com/apache/skywalking/issues/new) by using [Python] as title prefix.
 * Mail list: **dev@skywalking.apache.org**. Mail to `dev-subscribe@skywalking.apache.org`, follow the reply to subscribe the mail list.
 * Join `skywalking` channel at [Apache Slack](http://s.apache.org/slack-invite). If the link is not working, find the latest one at [Apache INFRA WIKI](https://cwiki.apache.org/confluence/display/INFRA/Slack+Guest+Invites).
-* Twitter, [ASFSkyWalking](https://twitter.com/ASFSkyWalking)
+* Twitter, [ASFSkyWalking](https://twitter.com/AsfSkyWalking)
 
 ## License
 Apache 2.0
