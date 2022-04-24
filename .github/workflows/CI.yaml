@@ -22,8 +22,7 @@ on:
     branches:
       - master
   schedule:
-    #- cron: '0 18 * * *'
-    - cron: '*/5 * * * *' # change this back before PR!!!!
+    - cron: '0 18 * * *'
 
 concurrency:
   group: CI-plugin-e2e-${{ github.event.pull_request.number || github.ref }}
