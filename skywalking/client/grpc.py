@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import os
 import grpc
 
 from skywalking import config
@@ -39,10 +40,16 @@ class GrpcServiceManagementClient(ServiceManagementClient):
 
     def send_instance_props(self):
         # TODO: other properties periodically | matching behavior of java agent
+        properties = [
+            KeyStringValuePair(key='language', value='python'),
+            KeyStringValuePair(key='Process No.', value=str(os.getpid())),
+        ]
+        if config.agent_namespace:
+            properties.append(KeyStringValuePair(key='namespace', value=config.agent_namespace))
         self.service_stub.reportInstanceProperties(InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=[KeyStringValuePair(key='language', value='python')],
+            properties=properties,
         ))
 
     def send_heart_beat(self):
