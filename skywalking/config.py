@@ -83,7 +83,7 @@ log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED') != '
 log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
                            '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s'
 # This configuration is shared by log reporter and tracer
-cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '5')
+cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '10')
 
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 

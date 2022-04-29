@@ -28,7 +28,7 @@
   - Add support for Python 3.10 (#167)
   - Add E2E test coverage for trace and logging (#199)
   - Add a `SW_AGENT_LOG_REPORTER_SAFE_MODE` option to control the HTTP basic auth credential filter (#TBD)
-
+  - Now Log reporter `cause_exception_depth` traceback limit defaults to 10
 ### 0.7.0
 
 - Feature:

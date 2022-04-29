@@ -61,7 +61,7 @@ Note that regardless of the formatting, Python agent will always report the foll
 `thread` - the thread name
 
 ### Limit stacktrace depth
-You can set the `cause_exception_depth` config entry to a desired level(defaults to 5), which limits the output depth of exception stacktrace in reporting.
+You can set the `cause_exception_depth` config entry to a desired level(defaults to 10), which limits the output depth of exception stacktrace in reporting.
 
 This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback](https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations.
 
