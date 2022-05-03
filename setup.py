@@ -23,7 +23,7 @@ HERE = pathlib.Path(__file__).parent
 
 README = (HERE / 'README.md').read_text()
 
-setup(
+setup(add
     name='apache-skywalking',
     version='0.7.0',
     description='Python Agent for Apache SkyWalking',
