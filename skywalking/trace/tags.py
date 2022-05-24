@@ -31,11 +31,11 @@ class TagHttpURL(Tag):
 
 
 class TagHttpStatusCode(Tag):
-    key = 'http.status.code'
+    key = 'http.status_code'
 
 
 class TagHttpStatusMsg(Tag):
-    key = 'http.status.msg'
+    key = 'http.status_msg'
 
 
 class TagHttpParams(Tag):

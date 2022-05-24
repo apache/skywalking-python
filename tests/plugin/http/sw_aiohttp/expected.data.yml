@@ -30,7 +30,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/skywalking
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /skywalking
@@ -61,7 +61,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/skywalking
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             startTime: gt 0
             endTime: gt 0
@@ -78,7 +78,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://0.0.0.0:9090/skywalking
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             startTime: gt 0
             endTime: gt 0
@@ -86,4 +86,3 @@ segmentItems:
             spanType: Entry
             peer: not null
             skipAnalysis: false
-

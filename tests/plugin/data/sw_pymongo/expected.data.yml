@@ -54,7 +54,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/insert_many
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /insert_many
@@ -100,7 +100,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/find_one
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /find_one
@@ -146,7 +146,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/delete_one
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /delete_one
@@ -177,7 +177,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/insert_many
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
           - operationName: /find_one
             parentSpanId: 0
@@ -194,7 +194,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/find_one
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
           - operationName: /delete_one
             parentSpanId: 0
@@ -211,7 +211,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/delete_one
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
           - operationName: /users
             operationId: 0
@@ -229,5 +229,5 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://0.0.0.0:9090/users
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'

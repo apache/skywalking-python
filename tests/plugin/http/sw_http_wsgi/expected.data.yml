@@ -31,7 +31,7 @@ segmentItems:
                 value: POST
               - key: http.url
                 value: http://provider:9091/users
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /users
@@ -62,7 +62,7 @@ segmentItems:
                 value: POST
               - key: http.url
                 value: http://provider:9091/users
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             startTime: gt 0
             endTime: gt 0
@@ -80,7 +80,7 @@ segmentItems:
                 value: POST
               - key: http.url
                 value: http://0.0.0.0:9090/
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             startTime: gt 0
             endTime: gt 0
@@ -88,4 +88,3 @@ segmentItems:
             spanType: Entry
             peer: not null
             skipAnalysis: false
-

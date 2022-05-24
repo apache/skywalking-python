@@ -35,9 +35,9 @@ segmentItems:
         value: GET
       - key: http.url
         value: http://provider:9091/users
-      - key: http.status.code
+      - key: http.status_code
         value: '200'
-      - key: http.status.msg
+      - key: http.status_msg
         value: OK
   serviceName: provider
 - segmentSize: 1
@@ -60,7 +60,7 @@ segmentItems:
         value: GET
       - key: http.url
         value: http://provider:9091/users
-      - key: http.status.code
+      - key: http.status_code
         value: '200'
     - componentId: 7012
       endTime: gt 0
@@ -78,8 +78,8 @@ segmentItems:
         value: GET
       - key: http.url
         value: http://0.0.0.0:9090/users
-      - key: http.status.code
+      - key: http.status_code
         value: '200'
-      - key: http.status.msg
+      - key: http.status_msg
         value: OK
   serviceName: consumer
