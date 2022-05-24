@@ -36,7 +36,7 @@ spans:
       value: POST
     - key: http.url
       value: {{ notEmpty .value }}
-    - key: http.status.code
+    - key: http.status_code
       value: "200"
     {{- end }}
   logs: []
@@ -61,7 +61,7 @@ spans:
       value: POST
     - key: http.url
       value: http://provider:9090/artist
-    - key: http.status.code
+    - key: http.status_code
       value: "200"
     {{- end }}
   logs: []
@@ -93,8 +93,8 @@ spans:
     - key: http.url
       # Change OAP side e2e from url -> http.url # why is oap e2e passing?? todo check with custom e2e build
       value: http://provider:9090/artist
-    - key: http.status.code
-      # Change OAP side e2e from status.code -> http.status.code
+    - key: http.status_code
+      # Change OAP side e2e from status.code -> http.status_code
       value: "200"
     {{- end }}
   logs: []

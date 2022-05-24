@@ -36,7 +36,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/users
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
             refs:
               - parentEndpoint: /users
@@ -67,7 +67,7 @@ segmentItems:
                 value: GET
               - key: http.url
                 value: http://provider:9091/users
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
           - operationName: /users
             parentSpanId: -1
@@ -86,5 +86,5 @@ segmentItems:
                 value: http://0.0.0.0:9090/users
               - key: http.params
                 value: "test=[test1,test2]\ntest2=[test2]"
-              - key: http.status.code
+              - key: http.status_code
                 value: '200'
