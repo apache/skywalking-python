@@ -10,6 +10,7 @@
   - Drop support for flask 1.x due to dependency issue in Jinja2 and EOL (#195)
 
 - Fixes:
+  - Fix the problem of multiple requests for the same traceId in Tornado framework (#9133)
   - Spans now correctly reference finished parents (#161)
   - Remove potential password leak from Aiohttp outgoing url (#175)
   - Handle error when REMOTE_PORT is missing in Flask (#176)
