@@ -104,12 +104,14 @@ def finalize():
     method = r'^' + '|'.join(s.strip() for s in http_ignore_method.split(',')) + '$'
     path = '^(?:' + \
            '|'.join(  # replaces ","
-               '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
-                   '[^/]*'.join(  # replaces "*"
-                       '[^/]'.join(  # replaces "?"
-                           reesc.sub(r'\\\1', s) for s in p2.split('?')
-                       ) for p2 in p1.split('*')
-                   ) for p1 in p0.strip().split('**')
+               '/(?:[^/]*/)*'.join(  # replaces "/**/"
+                   '(?:(?:[^/]+/)*[^/]+)?'.join(  # replaces "**"
+                       '[^/]*'.join(  # replaces "*"
+                           '[^/]'.join(  # replaces "?"
+                               reesc.sub(r'\\\1', s) for s in p3.split('?')
+                           ) for p3 in p2.split('*')
+                       ) for p2 in p1.strip().split('**')
+                   ) for p1 in p0.split('/**/')
                ) for p0 in trace_ignore_path.split(',')
            ) + ')$'
 
