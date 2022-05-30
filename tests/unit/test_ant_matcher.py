@@ -81,6 +81,10 @@ class TestFastPathMatch(unittest.TestCase):
         path = 'eureka/apps/test/list'
         self.assertTrue(fast_path_match(pattern, path))
         path = 'eureka/test/list'
+        self.assertTrue(fast_path_match(pattern, path))
+
+        pattern = 'eureka/*/**/test/**'
+        path = 'eureka/test/list'
         self.assertFalse(fast_path_match(pattern, path))
 
         pattern = '/eureka/**/b/**/*.txt'
