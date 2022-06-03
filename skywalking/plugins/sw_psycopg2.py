@@ -128,3 +128,53 @@ def install():
 
     _connect = psycopg2.connect
     psycopg2.connect = connect
+
+    try:  # try to instrument register_type which will fail if it gets a wrapped cursor or connection
+        from psycopg2._psycopg import register_type as _register_type
+
+        def register_type(c, conn_or_curs):
+            if isinstance(conn_or_curs, ProxyConnection):
+                conn_or_curs = conn_or_curs._self_conn
+            elif isinstance(conn_or_curs, ProxyCursor):
+                conn_or_curs = conn_or_curs._self_cur
+
+            return _register_type(c, conn_or_curs)
+
+        try:
+            import psycopg2._ipaddress
+
+            if psycopg2._ipaddress.register_type is _register_type:
+                psycopg2._ipaddress.register_type = register_type
+
+        except Exception:
+            pass
+
+        try:
+            import psycopg2._ipaddress
+
+            if psycopg2._json.register_type is _register_type:
+                psycopg2._json.register_type = register_type
+
+        except Exception:
+            pass
+
+        try:
+            import psycopg2._ipaddress
+
+            if psycopg2._range.register_type is _register_type:
+                psycopg2._range.register_type = register_type
+
+        except Exception:
+            pass
+
+        try:
+            import psycopg2._ipaddress
+
+            if psycopg2.extensions.register_type is _register_type:
+                psycopg2.extensions.register_type = register_type
+
+        except Exception:
+            pass
+
+    except Exception:
+        pass
