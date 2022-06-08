@@ -132,7 +132,7 @@ def install():
     try:  # try to instrument register_type which will fail if it gets a wrapped cursor or connection
         from psycopg2._psycopg import register_type as _register_type
 
-        def register_type(c, conn_or_curs):
+        def register_type(c, conn_or_curs=None):
             if isinstance(conn_or_curs, ProxyConnection):
                 conn_or_curs = conn_or_curs._self_conn
             elif isinstance(conn_or_curs, ProxyCursor):
