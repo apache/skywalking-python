@@ -98,6 +98,19 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
+  # Check if the plugin doc is generated correctly 
+  plugin-doc-check:
+    name: Check Plugin Doc
+    needs: [license-and-lint, changes]
+    if: |
+      always() && 
+      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check plugin doc
+        run: |
+          make check-doc-gen
+
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
@@ -247,7 +260,7 @@ jobs:
     timeout-minutes: 60
     # wait upon them regardless of success or skipped or failure
     if: ${{ always() }}
-    needs: [ license-and-lint, changes, plugin-and-unit-tests, e2e-tests ]
+    needs: [ license-and-lint, changes, plugin-and-unit-tests, e2e-tests, plugin-doc-check ]
     steps:
       - name: Merge Requirement
         # check license, lint, plugin and e2e tests, then naturally exits 0
@@ -256,7 +269,9 @@ jobs:
           lintResults=${{ needs.license-and-lint.result }}
           pluginResults=${{ needs.plugin-and-unit-tests.result }};
           e2eResults=${{ needs.e2e-tests.result }};
+          docCheckResults=${{ needs.plugin-doc-check.result }};
           [[ ${lintResults} == 'success' ]] || exit 2;
           [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 3;
           [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 4;
+          [[ ${docCheckResults} == 'success' ]] || [[ ${execute} != 'true' && ${docCheckResults} == 'skipped' ]] || exit 5;
           exit 0;

@@ -57,6 +57,15 @@ dev-fix: dev-setup
 doc-gen:
 	$(VENV)/python tools/doc/plugin_doc_gen.py
 
+check-doc-gen:
+	$(MAKE) clean
+	$(VENV)/python tools/doc/plugin_doc_gen.py
+	@if [ ! -z "`git status -s`" ]; then \
+		echo "Plugin doc is not consisitent with CI:"; \
+		git status -s; \
+		exit 1; \
+	fi
+
 license: clean
 	python3 tools/check-license-header.py skywalking tests tools
 
