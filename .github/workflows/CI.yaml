@@ -181,7 +181,7 @@ jobs:
       - name: Run unit tests
         run: |
           make test
-          /venv/bin/python -m pytest -v ${{ matrix.test-path }}
+          ./venv/bin/python -m pytest -v ${{ matrix.test-path }}
 
   docker-e2e:
     # build docker image for E2E tests, single Python version for now.

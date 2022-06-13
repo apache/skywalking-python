@@ -27,9 +27,9 @@ COPY tests/e2e/base/provider/provider.py /services/
 COPY . /skywalking-python/
 RUN cd /skywalking-python && make install
 
-RUN pip install requests kafka-python
+RUN ./venv/bin/pip install requests kafka-python
 # Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp
+RUN ./venv/bin/pip install fastapi uvicorn aiohttp
 
 # Entrypoint with agent attached
 Entrypoint ["sw-python", "run"]
