@@ -45,8 +45,7 @@ lint: clean
 	flake8 .
 
 # used in development
-dev-setup:
-	$(VENV)
+dev-setup: $(VENV)
 	$(VENV)/python -m pip install -r requirements-style.txt
 
 dev-check: dev-setup
@@ -61,8 +60,7 @@ dev-fix: dev-setup
 doc-gen:
 	$(VENV)/python tools/doc/plugin_doc_gen.py
 
-check-doc-gen:
-	$(VENV)
+check-doc-gen: $(VENV)
 	$(MAKE) setup-test
 	$(MAKE) doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
