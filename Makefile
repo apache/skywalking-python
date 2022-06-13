@@ -61,7 +61,7 @@ doc-gen:
 	$(VENV)/python tools/doc/plugin_doc_gen.py
 
 check-doc-gen: $(VENV)
-	$(MAKE) setup-test
+	$(MAKE) dev-setup
 	$(MAKE) doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Plugin doc is not consisitent with CI:"; \
