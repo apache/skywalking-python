@@ -55,9 +55,11 @@ dev-fix: dev-setup
 	$(VENV)/flynt -tc -v .
 
 doc-gen:
-	python3 tools/doc/plugin_doc_gen.py skywalking
+	python3 -m tools.doc.plugin_doc_gen
 
-check-doc-gen: doc-gen
+check-doc-gen:
+	$(MAKE) install
+	$(MAKE) doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Plugin doc is not consisitent with CI:"; \
 		git status -s; \
