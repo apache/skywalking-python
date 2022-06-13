@@ -25,6 +25,9 @@ endif
 
 .PHONY: license
 
+$(VENV):
+	python3 -m venv $(VENV_DIR)
+
 setup:
 	python3 -m pip install --upgrade pip
 	python3 -m pip install grpcio --ignore-installed
@@ -43,6 +46,7 @@ lint: clean
 
 # used in development
 dev-setup:
+	$(VENV)
 	$(VENV)/python -m pip install -r requirements-style.txt
 
 dev-check: dev-setup
@@ -55,9 +59,10 @@ dev-fix: dev-setup
 	$(VENV)/flynt -tc -v .
 
 doc-gen:
-	python3 -m tools.doc.plugin_doc_gen
+	$(VENV)/python tools/doc/plugin_doc_gen.py
 
 check-doc-gen:
+	$(VENV)
 	$(MAKE) setup-test
 	$(MAKE) doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
