@@ -58,7 +58,7 @@ doc-gen:
 	python3 -m tools.doc.plugin_doc_gen
 
 check-doc-gen:
-	$(MAKE) install
+	$(MAKE) setup-test
 	$(MAKE) doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Plugin doc is not consisitent with CI:"; \
