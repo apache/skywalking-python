@@ -18,7 +18,7 @@ Log reporter supports all three protocols including `grpc`, `http` and `kafka`, 
 If chosen `http` protocol, the logs will be batch-reported to the collector REST endpoint `oap/v3/logs`.
 
 If chosen `kafka` protocol, please make sure to config 
-[kafka-fetcher](https://skywalking.apache.org/docs/main/v8.7.0/en/setup/backend/backend-fetcher/#kafka-fetcher) 
+[kafka-fetcher](https://skywalking.apache.org/docs/main/v9.1.0/en/setup/backend/kafka-fetcher/) 
 on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` points to your Kafka brokers.
 
 `log_reporter_active=True` - Enables the log reporter.
