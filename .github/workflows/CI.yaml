@@ -108,8 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check plugin doc
-        run: |
-          make check-doc-gen
+        run: make check-doc-gen
 
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
