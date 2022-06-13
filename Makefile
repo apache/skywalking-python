@@ -27,22 +27,22 @@ endif
 
 $(VENV):
 	python3 -m venv $(VENV_DIR)
+	$(VENV)/python -m pip install --upgrade pip
 
-setup:
-	python3 -m pip install --upgrade pip
-	python3 -m pip install grpcio --ignore-installed
+setup: $(VENV)
+	$(VENV)/python -m pip install grpcio --ignore-installed
 
 setup-test: setup gen
-	pip3 install -e .[test]
+	$(VENV)/pip install -e .[test]
 
-gen:
-	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
-	python3 tools/codegen.py
+gen: $(VENV)
+	$(VENV)/python -m grpc_tools.protoc --version || $(VENV)/python -m pip install grpcio-tools
+	$(VENV)/python tools/codegen.py
 
 # flake8 configurations should go to the file setup.cfg
-lint: clean
-	python3 -m pip install -r requirements-style.txt
-	flake8 .
+lint: clean $(VENV)
+	$(VENV)/python -m pip install -r requirements-style.txt
+	$(VENV)/flake8 .
 
 # used in development
 dev-setup: $(VENV)
@@ -57,12 +57,10 @@ dev-fix: dev-setup
 	$(VENV)/unify -r --in-place .
 	$(VENV)/flynt -tc -v .
 
-doc-gen:
+doc-gen: $(VENV) install
 	$(VENV)/python tools/doc/plugin_doc_gen.py
 
-check-doc-gen: $(VENV)
-	$(MAKE) dev-setup
-	$(MAKE) doc-gen
+check-doc-gen: dev-setup doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Plugin doc is not consisitent with CI:"; \
 		git status -s; \
@@ -70,25 +68,25 @@ check-doc-gen: $(VENV)
 	fi
 
 license: clean
-	python3 tools/check-license-header.py skywalking tests tools
+	$(VENV)/python tools/check-license-header.py skywalking tests tools
 
 test: gen setup-test
-	python3 -m pytest -v tests
+	$(VENV)/python -m pytest -v tests
 
 # This is intended for GitHub CI only
 test-parallel-setup: gen setup-test
 
 install: gen
-	python3 setup.py install --force
+	$(VENV)/python setup.py install --force
 
 package: clean gen
-	python3 setup.py sdist bdist_wheel
+	$(VENV)/python setup.py sdist bdist_wheel
 
 upload-test: package
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	$(VENV)/twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 upload: package
-	twine upload dist/*
+	$(VENV)/twine upload dist/*
 
 build-image:
 	$(MAKE) -C docker build
