@@ -32,4 +32,4 @@ RUN /skywalking-python/venv/bin/pip install requests kafka-python
 RUN /skywalking-python/venv/bin/pip install fastapi uvicorn aiohttp
 
 # Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+Entrypoint ["/skywalking-python/venv/bin/sw-python", "run"]
