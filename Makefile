@@ -55,7 +55,7 @@ dev-fix: dev-setup
 	$(VENV)/flynt -tc -v .
 
 doc-gen:
-	python3 tools/doc/plugin_doc_gen.py
+	python3 tools/doc/plugin_doc_gen.py skywalking
 
 check-doc-gen: doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
