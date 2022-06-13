@@ -55,10 +55,9 @@ dev-fix: dev-setup
 	$(VENV)/flynt -tc -v .
 
 doc-gen:
-	$(VENV)/python tools/doc/plugin_doc_gen.py
+	python3 tools/doc/plugin_doc_gen.py
 
-check-doc-gen:
-	$(VENV)/python tools/doc/plugin_doc_gen.py
+check-doc-gen: doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
 		echo "Plugin doc is not consisitent with CI:"; \
 		git status -s; \
