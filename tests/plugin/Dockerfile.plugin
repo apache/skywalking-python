@@ -24,3 +24,5 @@ WORKDIR /agent
 ADD $ROOT /agent
 
 RUN cd /agent && make setup-test
+
+ENV PATH="/agent/venv/bin:$PATH"

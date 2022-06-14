@@ -5,5 +5,5 @@
 - [ ] Add a component id in [the main repo](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/component-libraries.yml#L415)
 - [ ] Add a logo in [the UI repo](https://github.com/apache/skywalking-rocketbot-ui/tree/master/src/views/components/topology/assets)
 - [ ] Rebuild the `requirements.txt` by running `tools/env/build_requirements_(linux|windows).sh`
-- [ ] Rebuild the `Plugins.md` documentation by running `tools/doc/plugin_doc_gen.py`
+- [ ] Rebuild the `Plugins.md` documentation by running `make doc-gen`
 -->
