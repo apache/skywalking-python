@@ -46,11 +46,27 @@ jobs:
       - name: Lint codes
         run: make lint
 
+  # Check if the plugin doc is generated correctly 
+  plugin-doc-check:
+    name: Check Plugin Doc
+    needs: license-and-lint
+    if: |
+      always() && 
+      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Check plugin doc
+        run: make check-doc-gen
+
   changes:
     # Check if any file related to Agent/ CI behavior is changed
     # set outputs for other jobs to access for if conditions
     runs-on: ubuntu-latest
-    needs: license-and-lint
+    needs: [ license-and-lint, plugin-doc-check ]
     # To prevent error when there's no base branch
     if: github.event_name != 'schedule'
     timeout-minutes: 10
@@ -79,22 +95,6 @@ jobs:
               - '**/requirements*.text'
               - '**/*.cfg'
           list-files: json  # logs matched files
-
-  # Check if the plugin doc is generated correctly 
-  plugin-doc-check:
-    name: Check Plugin Doc
-    needs: [license-and-lint, changes]
-    if: |
-      always() && 
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source codes
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Check plugin doc
-        run: make check-doc-gen
 
   # Only run the Plugin and E2E jobs if there are essential changes as stated above
   prep-plugin-and-unit-tests:
@@ -274,7 +274,7 @@ jobs:
           e2eResults=${{ needs.e2e-tests.result }};
           docCheckResults=${{ needs.plugin-doc-check.result }};
           [[ ${lintResults} == 'success' ]] || exit 2;
-          [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 3;
-          [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 4;
-          [[ ${docCheckResults} == 'success' ]] || [[ ${execute} != 'true' && ${docCheckResults} == 'skipped' ]] || exit 5;
+          [[ ${docCheckResults} == 'success' ]] || exit 3;
+          [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 4;
+          [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 5;
           exit 0;
