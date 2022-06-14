@@ -50,7 +50,9 @@ jobs:
   plugin-doc-check:
     name: Check Plugin Doc
     needs: license-and-lint
-    if: always()
+    if: |
+      always() && 
+      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
