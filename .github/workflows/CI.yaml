@@ -80,24 +80,6 @@ jobs:
               - '**/*.cfg'
           list-files: json  # logs matched files
 
-  # Only run the Plugin and E2E jobs if there are essential changes as stated above
-  prep-plugin-and-unit-tests:
-    # prep step for plugin and unit test
-    name: Prepare Plugin and UT Matrix
-    needs: [ license-and-lint, changes ]
-    if: |
-      always() && 
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - id: set-matrix
-        run: |
-          sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-
   # Check if the plugin doc is generated correctly 
   plugin-doc-check:
     name: Check Plugin Doc
@@ -114,10 +96,28 @@ jobs:
       - name: Check plugin doc
         run: make check-doc-gen
 
+  # Only run the Plugin and E2E jobs if there are essential changes as stated above
+  prep-plugin-and-unit-tests:
+    # prep step for plugin and unit test
+    name: Prepare Plugin and UT Matrix
+    needs: [ license-and-lint, changes, plugin-doc-check ]
+    if: |
+      always() && 
+      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
-    needs: [ license-and-lint, changes, prep-plugin-and-unit-tests ]
+    needs: [ license-and-lint, changes, plugin-doc-check, prep-plugin-and-unit-tests ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -148,7 +148,7 @@ jobs:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
-    needs: [ license-and-lint, changes, docker-plugin, prep-plugin-and-unit-tests ]
+    needs: [ license-and-lint, changes, plugin-doc-check, docker-plugin, prep-plugin-and-unit-tests ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -186,7 +186,7 @@ jobs:
   docker-e2e:
     # build docker image for E2E tests, single Python version for now.
     name: Construct Agent E2E Test Images
-    needs: [ license-and-lint, changes ]
+    needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -213,7 +213,7 @@ jobs:
   e2e-tests:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
     name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
-    needs: [ license-and-lint, changes, docker-e2e ]
+    needs: [ license-and-lint, changes, plugin-doc-check, docker-e2e ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
