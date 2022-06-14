@@ -52,7 +52,7 @@ jobs:
     needs: license-and-lint
     if: |
       always() && 
-      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python')
+      (github.event_name == 'schedule' && github.repository == 'apache/skywalking-python')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
