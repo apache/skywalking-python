@@ -31,10 +31,10 @@ support_matrix = {
 }
 note = """"""
 
+
 def install():
     _get_environ = WSGIRequestHandler.get_environ
     _match = Router.match
-
 
     def sw_get_environ(self):
         env = _get_environ(self)
