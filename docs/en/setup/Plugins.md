@@ -14,6 +14,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 Library | Python Version - Lib Version | Plugin Name
 | :--- | :--- | :--- |
 | [aiohttp](https://docs.aiohttp.org) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.6 - ['3.7.4'];  | `sw_aiohttp` |
+| [bottle](http://bottlepy.org/docs/dev/) | Python >=0.12 - ['*'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.6 - ['5.1'];  | `sw_celery` |
 | [django](https://www.djangoproject.com/) | Python >=3.6 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.6 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
