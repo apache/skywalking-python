@@ -19,40 +19,49 @@ from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
+from skywalking.trace.tags import TagHttpMethod, TagHttpURL
 from bottle import Router
+from wsgiref.simple_server import WSGIRequestHandler
 
 link_vector = ['http://bottlepy.org/docs/dev/']
+support_matrix = {
+    'bottle': {
+        '>=0.12': ['*']
+    }
+}
 
-def do(environ):
-    carrier = Carrier()
-    path = environ.get('PATH_INFO')
-    query = environ.get('QUERY_STRING')
-    if query and query != '':
-        path = path + '?' + query
-
-    method = environ['REQUEST_METHOD'].upper()
-
-    span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-        else get_context().new_entry_span(op=path.split('?')[0], carrier=carrier)
-
-    with span:
-        url = f"http://{environ.get('HTTP_HOST')}{path}"
-        span.layer = Layer.Http
-        span.component = Component.General
-        span.peer = f'{environ.get("REMOTE_ADDR")}:{environ.get("REMOTE_PORT")}'
-        span.tag(TagHttpMethod(method))
-        span.tag(TagHttpURL(url))
 
 def install():
+    _get_environ = WSGIRequestHandler.get_environ
     _match = Router.match
 
+
+    def sw_get_environ(self):
+        env = _get_environ(self)
+        env['REMOTE_PORT'] = self.client_address[1]
+        return env
+
     def sw_match(self, environ):
+        carrier = Carrier()
+        path = environ.get('PATH_INFO')
+        query = environ.get('QUERY_STRING')
+        if query and query != '':
+            path = path + '?' + query
+
         method = environ['REQUEST_METHOD'].upper()
-        path = environ['PATH_INFO'] or '/'
-        
-        do(environ)
+
+        span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
+            else get_context().new_entry_span(op=path.split('?')[0], carrier=carrier)
+
+        with span:
+            url = f"http://{environ.get('HTTP_HOST')}{path}"
+            span.layer = Layer.Http
+            span.component = Component.General
+            span.peer = f'{environ.get("REMOTE_ADDR")}:{environ.get("REMOTE_PORT")}'
+            span.tag(TagHttpMethod(method))
+            span.tag(TagHttpURL(url))
 
         return _match(self, environ)
 
+    WSGIRequestHandler.get_environ = sw_get_environ
     Router.match = sw_match

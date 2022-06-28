@@ -18,6 +18,7 @@
 from urllib import request
 from bottle import route, run
 
+
 @route('/users', method='POST')
 def hello():
     data = '{"name": "whatever"}'.encode('utf8')
@@ -29,5 +30,6 @@ def hello():
     request.urlopen(req, data)
 
     return data
+
 
 run(host='localhost', port=9090, debug=True)
