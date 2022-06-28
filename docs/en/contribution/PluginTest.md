@@ -4,7 +4,7 @@ Plugin tests are required and should pass before a new plugin is able to merge i
 Specify a support matrix in each plugin in the `skywalking/plugins` folder, along with their website links,
 the matrix and links will be used for plugin support table documentation generation for this doc [Plugins.md](../setup/Plugins.md).
 
-Use `tools/plugin_doc_gen.py` to generate a table and paste into `Plugins.md` after all test passes.
+Use `make doc-gen` to generate a table and paste into `Plugins.md` after all test passes.
 
 ## Mock Collector
 

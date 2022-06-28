@@ -75,7 +75,7 @@ def generate_plugin_doc():
             table_entry = f'| [{lib_entry}]({lib_link}) | {pretty_vector} | `{modname}` |'
             table_entries.append(table_entry)
 
-    with open('../../docs/en/setup/Plugins.md', 'w') as plugin_doc:
+    with open('docs/en/setup/Plugins.md', 'w') as plugin_doc:
         plugin_doc.write(doc_head)
 
         plugin_doc.write(table_head)
