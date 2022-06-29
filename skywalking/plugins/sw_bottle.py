@@ -20,8 +20,6 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
 from skywalking.trace.tags import TagHttpMethod, TagHttpURL
-from bottle import Router
-from wsgiref.simple_server import WSGIRequestHandler
 
 link_vector = ['http://bottlepy.org/docs/dev/']
 support_matrix = {
@@ -33,6 +31,9 @@ note = """"""
 
 
 def install():
+    from bottle import Router
+    from wsgiref.simple_server import WSGIRequestHandler
+
     _get_environ = WSGIRequestHandler.get_environ
     _match = Router.match
 
