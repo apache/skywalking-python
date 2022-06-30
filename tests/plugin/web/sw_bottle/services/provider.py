@@ -19,14 +19,14 @@ import time
 from bottle import route, run
 
 
-@route('/users', method='POST')
-def hello():
-    from skywalking.trace.context import get_context
-    time.sleep(0.5)
-    cor = get_context().get_correlation('correlation')
-    cor = cor if cor else 'null'
-    data = f"{{'correlation': {cor}}}"
-    return data
+if __name__ == '__main__':
+    @route('/users', method='POST')
+    def hello():
+        from skywalking.trace.context import get_context
+        time.sleep(0.5)
+        cor = get_context().get_correlation('correlation')
+        cor = cor if cor else 'null'
+        data = f"{{'correlation': {cor}}}"
+        return data
 
-
-run(host='localhost', port=9091, debug=True)
+    run(host='localhost', port=9091, debug=True)

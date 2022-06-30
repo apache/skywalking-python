@@ -19,17 +19,17 @@ from urllib import request
 from bottle import route, run
 
 
-@route('/users', method='POST')
-def hello():
-    data = '{"name": "whatever"}'.encode('utf8')
-    req = request.Request('http://provider:9091/users')
-    req.add_header('Content-Type', 'application/json; charset=utf-8')
-    req.add_header('Content-Length', str(len(data)))
+if __name__ == '__main__':
+    @route('/users', method='POST')
+    def hello():
+        data = '{"name": "whatever"}'.encode('utf8')
+        req = request.Request('http://provider:9091/users')
+        req.add_header('Content-Type', 'application/json; charset=utf-8')
+        req.add_header('Content-Length', str(len(data)))
 
-    data = '{"name": "whatever"}'.encode('utf8')
-    request.urlopen(req, data)
+        data = '{"name": "whatever"}'.encode('utf8')
+        request.urlopen(req, data)
 
-    return data
+        return data
 
-
-run(host='localhost', port=9090, debug=True)
+    run(host='localhost', port=9090, debug=True)
