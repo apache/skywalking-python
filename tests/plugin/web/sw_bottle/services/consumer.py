@@ -15,21 +15,15 @@
 # limitations under the License.
 #
 
-from urllib import request
+import requests
 from bottle import route, run
 
 
 if __name__ == '__main__':
+    @route('/users', method='GET')
     @route('/users', method='POST')
     def hello():
-        data = '{"name": "whatever"}'.encode('utf8')
-        req = request.Request('http://provider:9091/users')
-        req.add_header('Content-Type', 'application/json; charset=utf-8')
-        req.add_header('Content-Length', str(len(data)))
+        res = requests.post('http://provider:9091/users', timeout=5)
+        return res.json()
 
-        data = '{"name": "whatever"}'.encode('utf8')
-        request.urlopen(req, data)
-
-        return data
-
-    run(host='localhost', port=9090, debug=True)
+    run(host='0.0.0.0', port=9090, debug=True)

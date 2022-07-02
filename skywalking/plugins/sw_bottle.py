@@ -19,7 +19,7 @@ from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
 from skywalking.trace.span import NoopSpan
-from skywalking.trace.tags import TagHttpMethod, TagHttpURL
+from skywalking.trace.tags import TagHttpMethod, TagHttpParams, TagHttpStatusCode, TagHttpURL
 
 link_vector = ['http://bottlepy.org/docs/dev/']
 support_matrix = {
@@ -31,38 +31,54 @@ note = """"""
 
 
 def install():
-    from bottle import Router
+    from bottle import Bottle
     from wsgiref.simple_server import WSGIRequestHandler
 
+    _app_call = Bottle.__call__
     _get_environ = WSGIRequestHandler.get_environ
-    _match = Router.match
+
+    def params_tostring(params):
+        return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
     def sw_get_environ(self):
         env = _get_environ(self)
         env['REMOTE_PORT'] = self.client_address[1]
         return env
 
-    def sw_match(self, environ):
-        carrier = Carrier()
-        path = environ.get('PATH_INFO')
-        query = environ.get('QUERY_STRING')
-        if query and query != '':
-            path = path + '?' + query
 
-        method = environ['REQUEST_METHOD'].upper()
+    def sw_app_call(self, environ, start_response):
+        from bottle import request
+        from bottle import response
+
+        res = _app_call(self, environ, start_response)
+
+        carrier = Carrier()
+        method = request.method
+
+        for item in carrier:
+            if item.key.capitalize() in request.headers:
+                item.val = request.headers[item.key.capitalize()]
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
-            else get_context().new_entry_span(op=path.split('?')[0], carrier=carrier)
+            else get_context().new_entry_span(op=request.path, carrier=carrier, inherit=Component.General)
 
         with span:
-            url = f"http://{environ.get('HTTP_HOST')}{path}"
             span.layer = Layer.Http
-            span.component = Component.General
-            span.peer = f'{environ.get("REMOTE_ADDR")}:{environ.get("REMOTE_PORT")}'
+            span.component = Component.Bottle
+            if all(environ_key in request.environ for environ_key in ('REMOTE_ADDR', 'REMOTE_PORT')):
+                span.peer = f"{request.environ['REMOTE_ADDR']}:{request.environ['REMOTE_PORT']}"
             span.tag(TagHttpMethod(method))
-            span.tag(TagHttpURL(url))
+            span.tag(TagHttpURL(request.url.split('?')[0]))
 
-        return _match(self, environ)
+            if config.bottle_collect_http_params and request.query:
+                span.tag(TagHttpParams(params_tostring(request.query)[0:config.http_params_length_threshold]))
 
+            if response.status_code >= 400:
+                span.error_occurred = True
+
+            span.tag(TagHttpStatusCode(response.status_code))
+
+        return res
+
+    Bottle.__call__ = sw_app_call
     WSGIRequestHandler.get_environ = sw_get_environ
-    Router.match = sw_match

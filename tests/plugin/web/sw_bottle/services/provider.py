@@ -16,17 +16,15 @@
 #
 
 import time
+import json
 from bottle import route, run
 
 
 if __name__ == '__main__':
+    @route('/users', method='GET')
     @route('/users', method='POST')
     def hello():
-        from skywalking.trace.context import get_context
         time.sleep(0.5)
-        cor = get_context().get_correlation('correlation')
-        cor = cor if cor else 'null'
-        data = f"{{'correlation': {cor}}}"
-        return data
+        return json.dumps({'song': 'Despacito', 'artist': 'Luis Fonsi'})
 
-    run(host='localhost', port=9091, debug=True)
+    run(host='0.0.0.0', port=9091, debug=True)
