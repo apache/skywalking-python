@@ -20,8 +20,6 @@ P := grpc http kafka
 
 TARGETS := py3.6 py3.7 py3.8 py3.9 py3.10
 
-AGENT_VERSION := 0.7
-
 py3.6: BASE_PYTHON_IMAGE = python:3.6
 py3.7: BASE_PYTHON_IMAGE = python:3.7
 py3.8: BASE_PYTHON_IMAGE = python:3.8
