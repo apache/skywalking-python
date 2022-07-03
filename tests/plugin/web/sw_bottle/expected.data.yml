@@ -27,6 +27,7 @@ segmentItems:
             spanLayer: Http
             startTime: gt 0
             endTime: gt 0
+            isError: false
             componentId: 7015
             spanType: Entry
             peer: not null
@@ -58,6 +59,7 @@ segmentItems:
             spanLayer: Http
             startTime: gt 0
             endTime: gt 0
+            isError: false
             componentId: 7002
             spanType: Exit
             peer: provider:9091
@@ -75,7 +77,8 @@ segmentItems:
             spanLayer: Http
             startTime: gt 0
             endTime: gt 0
-            componentId: 70015
+            isError: false
+            componentId: 7015
             spanType: Entry
             peer: not null
             skipAnalysis: false

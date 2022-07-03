@@ -45,13 +45,12 @@ def install():
         env['REMOTE_PORT'] = self.client_address[1]
         return env
 
-
     def sw_app_call(self, environ, start_response):
-        from bottle import request
         from bottle import response
+        from bottle import LocalRequest
 
-        res = _app_call(self, environ, start_response)
-
+        request = LocalRequest()
+        request.bind(environ)
         carrier = Carrier()
         method = request.method
 
@@ -65,20 +64,21 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.Bottle
-            if all(environ_key in request.environ for environ_key in ('REMOTE_ADDR', 'REMOTE_PORT')):
-                span.peer = f"{request.environ['REMOTE_ADDR']}:{request.environ['REMOTE_PORT']}"
+            if all(environ_key in environ for environ_key in ('REMOTE_ADDR', 'REMOTE_PORT')):
+                span.peer = f"{environ['REMOTE_ADDR']}:{environ['REMOTE_PORT']}"
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(request.url.split('?')[0]))
 
             if config.bottle_collect_http_params and request.query:
                 span.tag(TagHttpParams(params_tostring(request.query)[0:config.http_params_length_threshold]))
 
+            res = _app_call(self, environ, start_response)
+
+            span.tag(TagHttpStatusCode(response.status_code))
             if response.status_code >= 400:
                 span.error_occurred = True
 
-            span.tag(TagHttpStatusCode(response.status_code))
-
-        return res
+            return res
 
     Bottle.__call__ = sw_app_call
     WSGIRequestHandler.get_environ = sw_get_environ
