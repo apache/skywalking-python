@@ -24,7 +24,7 @@ py3.6: BASE_PYTHON_IMAGE = python:3.6
 py3.7: BASE_PYTHON_IMAGE = python:3.7
 py3.8: BASE_PYTHON_IMAGE = python:3.8
 py3.9: BASE_PYTHON_IMAGE = python:3.9
-py3.9: BASE_PYTHON_IMAGE = python:3.10
+py3.10: BASE_PYTHON_IMAGE = python:3.10
 
 PUSH_TARGETS := $(TARGETS:%=push-%)
 
