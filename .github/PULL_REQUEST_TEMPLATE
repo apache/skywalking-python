@@ -2,7 +2,7 @@
 <!--
 - [ ] Add a test case for the new plugin
 - [ ] Add a CHANGELOG entry for the new plugin
-- [ ] Add a component id in [the main repo](https://github.com/apache/skywalking/blob/master/oap-server/server-bootstrap/src/main/resources/component-libraries.yml#L415)
+- [ ] Add a component id in [the main repo](https://github.com/apache/skywalking/blob/master/oap-server/server-starter/src/main/resources/component-libraries.yml)
 - [ ] Add a logo in [the UI repo](https://github.com/apache/skywalking-booster-ui/tree/main/src/assets/img/technologies)
 - [ ] Rebuild the `requirements.txt` by running `tools/env/build_requirements_(linux|windows).sh`
 - [ ] Rebuild the `Plugins.md` documentation by running `make doc-gen`
