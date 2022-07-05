@@ -46,6 +46,7 @@ class Component(Enum):
     Falcon = 7012
     MysqlClient = 7013
     FastAPI = 7014
+    Bottle = 7015
 
 
 class Layer(Enum):
