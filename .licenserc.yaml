@@ -30,5 +30,6 @@ header:
     - '.github/PULL_REQUEST_TEMPLATE'
     - '.gitignore'
     - '**/*.json'
+    - 'venv'
 
   comment: on-failure

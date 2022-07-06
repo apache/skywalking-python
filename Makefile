@@ -68,7 +68,7 @@ check-doc-gen: dev-setup doc-gen
 	fi
 
 license: clean
-	$(VENV)/python tools/check-license-header.py skywalking tests tools
+	docker run -it --rm -v $(shell pwd):/github/workspace ghcr.io/apache/skywalking-eyes/license-eye:f461a46e74e5fa22e9f9599a355ab4f0ac265469 header check
 
 test: gen setup-test
 	$(VENV)/python -m pytest -v tests
@@ -103,6 +103,6 @@ clean:
 	find . -name "*.pyc" -exec rm -r {} +
 
 release: clean lint license
-	-tar -zcvf skywalking-python-src-$(VERSION).tgz *
+	-tar -zcvf skywalking-python-src-$(VERSION).tgz --exclude venv *
 	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
 	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512
