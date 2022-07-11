@@ -56,6 +56,8 @@ catalog:
         path: "/en/contribution/CodingStyle"
       - name: "Plugin Testing Guidance"
         path: "/en/contribution/PluginTest"
+      - name: "Run Plugin Tests Locally"
+        path: "/en/contribution/How-to-test-locally"
       - name: "Release Guidance"
         path: "/en/contribution/How-to-release"
       - name: "Image Release Guidance"
