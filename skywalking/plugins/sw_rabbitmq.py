@@ -37,6 +37,7 @@ def install():
     Channel._on_deliver = _sw__on_deliver_func(Channel._on_deliver)
     BlockingChannel.basic_consume = _sw_blocking_basic_consume_func(BlockingChannel.basic_consume)
     BlockingChannel.basic_get = _sw_blocking_basic_get_func(BlockingChannel.basic_get)
+    BlockingChannel.consume = _sw_blocking_consume_func(BlockingChannel.consume)
 
 
 def _sw_basic_publish_func(_basic_publish):
@@ -168,3 +169,14 @@ def _sw_blocking_basic_get_func(func):
         return method, properties, body
 
     return _sw_basic_get
+
+
+def _sw_blocking_consume_func(func):
+    def _sw_consume(this, queue, *args, **kwargs):
+        for method, properties, body in func(this, queue, *args, **kwargs):
+            if method is not None:
+                _sw_callback_func(lambda *a: None)(this, method, properties, body)
+
+            yield method, properties, body
+
+    return _sw_consume
