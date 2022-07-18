@@ -62,6 +62,7 @@ flask_collect_http_params: bool = os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == '
 sanic_collect_http_params: bool = os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True'
 django_collect_http_params: bool = os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True'
 fastapi_collect_http_params: bool = os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True'
+bottle_collect_http_params: bool = os.getenv('SW_BOTTLE_COLLECT_HTTP_PARAMS') == 'True'
 
 celery_parameters_length: int = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
 

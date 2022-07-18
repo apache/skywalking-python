@@ -40,17 +40,28 @@ jobs:
         with:
           submodules: true
       - name: Check License
-        uses: apache/skywalking-eyes@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: apache/skywalking-eyes/header@501a28d2fb4a9b962661987e50cf0219631b32ff
       - name: Lint codes
         run: make lint
+
+  # Check if the plugin doc is generated correctly 
+  plugin-doc-check:
+    name: Check Plugin Doc
+    needs: license-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Check plugin doc
+        run: make check-doc-gen
 
   changes:
     # Check if any file related to Agent/ CI behavior is changed
     # set outputs for other jobs to access for if conditions
     runs-on: ubuntu-latest
-    needs: license-and-lint
+    needs: [ license-and-lint, plugin-doc-check ]
     # To prevent error when there's no base branch
     if: github.event_name != 'schedule'
     timeout-minutes: 10
@@ -84,7 +95,7 @@ jobs:
   prep-plugin-and-unit-tests:
     # prep step for plugin and unit test
     name: Prepare Plugin and UT Matrix
-    needs: [ license-and-lint, changes ]
+    needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -101,7 +112,7 @@ jobs:
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Construct Agent Plugin Test Images
-    needs: [ license-and-lint, changes, prep-plugin-and-unit-tests ]
+    needs: [ license-and-lint, changes, plugin-doc-check, prep-plugin-and-unit-tests ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -132,7 +143,7 @@ jobs:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
     name: Execute Agent Plugin and Unit Tests
-    needs: [ license-and-lint, changes, docker-plugin, prep-plugin-and-unit-tests ]
+    needs: [ license-and-lint, changes, plugin-doc-check, docker-plugin, prep-plugin-and-unit-tests ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -165,12 +176,12 @@ jobs:
       - name: Run unit tests
         run: |
           make test-parallel-setup
-          python3 -m pytest -v ${{ matrix.test-path }}
+          ./venv/bin/python -m pytest -v ${{ matrix.test-path }}
 
   docker-e2e:
     # build docker image for E2E tests, single Python version for now.
     name: Construct Agent E2E Test Images
-    needs: [ license-and-lint, changes ]
+    needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -197,7 +208,7 @@ jobs:
   e2e-tests:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
     name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
-    needs: [ license-and-lint, changes, docker-e2e ]
+    needs: [ license-and-lint, changes, plugin-doc-check, docker-e2e ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -247,7 +258,7 @@ jobs:
     timeout-minutes: 60
     # wait upon them regardless of success or skipped or failure
     if: ${{ always() }}
-    needs: [ license-and-lint, changes, plugin-and-unit-tests, e2e-tests ]
+    needs: [ license-and-lint, changes, plugin-and-unit-tests, e2e-tests, plugin-doc-check ]
     steps:
       - name: Merge Requirement
         # check license, lint, plugin and e2e tests, then naturally exits 0
@@ -256,7 +267,9 @@ jobs:
           lintResults=${{ needs.license-and-lint.result }}
           pluginResults=${{ needs.plugin-and-unit-tests.result }};
           e2eResults=${{ needs.e2e-tests.result }};
+          docCheckResults=${{ needs.plugin-doc-check.result }};
           [[ ${lintResults} == 'success' ]] || exit 2;
-          [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 3;
-          [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 4;
+          [[ ${docCheckResults} == 'success' ]] || exit 3;
+          [[ ${pluginResults} == 'success' ]] || [[ ${execute} != 'true' && ${pluginResults} == 'skipped' ]] || exit 4;
+          [[ ${e2eResults} == 'success' ]] || [[ ${execute} != 'true' && ${e2eResults} == 'skipped' ]] || exit 5;
           exit 0;

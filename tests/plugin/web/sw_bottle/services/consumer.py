@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,25 +13,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-# Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_IMAGE
+import requests
+from bottle import route, run
 
-FROM python:${BASE_PYTHON_IMAGE}
 
-VOLUME /services
+if __name__ == '__main__':
+    @route('/users', method='GET')
+    @route('/users', method='POST')
+    def hello():
+        res = requests.post('http://provider:9091/users', timeout=5)
+        return res.json()
 
-COPY tests/e2e/base/consumer/consumer.py /services/
-COPY tests/e2e/base/provider/provider.py /services/
-
-# Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && make install
-ENV PATH="/skywalking-python/venv/bin:$PATH"
-
-RUN pip install requests kafka-python
-# Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp
-
-# Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+    run(host='0.0.0.0', port=9090, debug=True)

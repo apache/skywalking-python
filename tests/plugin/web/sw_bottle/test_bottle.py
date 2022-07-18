@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,25 +13,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+from typing import Callable
 
-# Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_IMAGE
+import pytest
+import requests
 
-FROM python:${BASE_PYTHON_IMAGE}
+from skywalking.plugins.sw_bottle import support_matrix
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
-VOLUME /services
 
-COPY tests/e2e/base/consumer/consumer.py /services/
-COPY tests/e2e/base/provider/provider.py /services/
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users?test=test1&test=test2&test2=test2', timeout=5)
 
-# Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && make install
-ENV PATH="/skywalking-python/venv/bin:$PATH"
 
-RUN pip install requests kafka-python
-# Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp
-
-# Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='bottle', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        self.validate()
