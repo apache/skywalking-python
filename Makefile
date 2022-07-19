@@ -28,6 +28,7 @@ endif
 $(VENV):
 	python3 -m venv $(VENV_DIR)
 	$(VENV)/python -m pip install --upgrade pip
+	$(VENV)/python -m pip install wheel twine
 
 setup: $(VENV)
 	$(VENV)/python -m pip install grpcio --ignore-installed
