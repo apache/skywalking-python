@@ -126,7 +126,11 @@ def _sw__on_deliver_func(__on_deliver):
 
 def _sw_callback_func(callback):
     def _sw_callback(this, method, properties, body):
-        peer = method._sw_peer
+        peer = getattr(method, '_sw_peer', None)
+
+        if peer is None:  # this is not a callback caused by _on_deliver(), some other object like GetOk
+            return callback(this, method, properties, body)
+
         context = get_context()
         exchange = method.exchange
         routing_key = method.routing_key
