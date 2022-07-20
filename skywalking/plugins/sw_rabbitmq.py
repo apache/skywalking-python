@@ -128,8 +128,9 @@ def _sw_callback_func(callback):
     def _sw_callback(this, method, properties, body):
         peer = getattr(method, '_sw_peer', None)
 
-        if peer is None:  # this is not a callback caused by _on_deliver(), some other object like GetOk
-            return callback(this, method, properties, body)
+        if peer is None:
+            params = getattr(getattr(this.connection, '_impl', None), 'params', None)
+            peer = '<unavailable>' if params is None else f'{params.host}:{params.port}'
 
         context = get_context()
         exchange = method.exchange
