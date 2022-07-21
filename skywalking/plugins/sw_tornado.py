@@ -75,8 +75,14 @@ def _gen_sw_get_response_func(old_execute):
             with span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
-                peer = request.connection.stream.socket.getpeername()
-                span.peer = f'{peer[0]}:{peer[1]}'
+
+                socket = request.connection.stream.socket
+                if socket:
+                    peer = socket.getpeername()
+                    span.peer = f'{peer[0]}:{peer[1]}'
+                else:
+                    peer = '<unavailable>'
+
                 span.tag(TagHttpMethod(method))
                 span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = old_execute(self, *args, **kwargs)
@@ -103,8 +109,14 @@ def _gen_sw_get_response_func(old_execute):
             with span:
                 span.layer = Layer.Http
                 span.component = Component.Tornado
-                peer = request.connection.stream.socket.getpeername()
-                span.peer = f'{peer[0]}:{peer[1]}'
+
+                socket = request.connection.stream.socket
+                if socket:
+                    peer = socket.getpeername()
+                    span.peer = f'{peer[0]}:{peer[1]}'
+                else:
+                    peer = '<unavailable>'
+
                 span.tag(TagHttpMethod(method))
                 span.tag(TagHttpURL(f'{request.protocol}://{request.host}{request.path}'))
                 result = yield from old_execute(self, *args, **kwargs)
