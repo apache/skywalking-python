@@ -24,7 +24,7 @@ pymysql==1.0.2
 pyramid==2.0
 PyYAML==6.0
 redis==3.5.3
-sanic==21.9.1
+sanic==21.12.2
 tornado==6.1
 Werkzeug==2.0.2
 yarl==1.7.0
