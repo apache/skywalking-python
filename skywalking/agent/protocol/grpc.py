@@ -26,7 +26,7 @@ from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
-    GrpcProfileTaskChannelService, GrpcLogDataReportService
+    GrpcProfileTaskChannelService, GrpcLogDataReportService, GrpcMeterReportService
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
@@ -57,6 +57,7 @@ class GrpcProtocol(Protocol):
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
         self.profile_channel = GrpcProfileTaskChannelService(self.channel)
         self.log_reporter = GrpcLogDataReportService(self.channel)
+        self.meter_reporter = GrpcMeterReportService(self.channel)
 
     def _cb(self, state):
         if logger_debug_enabled:

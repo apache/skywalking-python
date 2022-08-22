@@ -86,6 +86,9 @@ log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
 # This configuration is shared by log reporter and tracer
 cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '10')
 
+# meter reporter configurations
+meter_reporter_activate: bool = os.getenv('SW_AGENT_METER_REPORTER_ACTIVE') == 'True'
+
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 
 

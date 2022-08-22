@@ -1,0 +1,85 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+import timeit
+from enum import Enum
+from skywalking.meter.meter import BaseMeter, MeterType
+from skywalking.protocol.language_agent.Meter_pb2 import MeterData, MeterSingleValue
+
+
+class CounterMode(Enum):
+     INCREMENT = 1
+     RATE = 2
+
+class Counter(BaseMeter):
+    def __init__(self, name: str, mode: CounterMode, tags=[]):
+        super().__init__(name, tags)
+        self.count = 0
+        self.previous = 0
+        self.mode = mode
+        
+    def increment(self, value):
+        self.count += value
+
+    def get(self):
+        return self.count
+    
+    def transform(self):
+        currentValue = self.get()
+        if self.mode == CounterMode.RATE:
+            self.previous = currentValue
+            count = currentValue - self.previous
+        else:
+            count = currentValue
+
+        meterdata = MeterData(singleValue=MeterSingleValue(name=self.getName(), labels=self.transformTags(), value=count))
+        return meterdata
+        
+    def mode(self, mode):
+        self.mode = mode
+        return self
+
+    def getType(self):
+        return MeterType.COUNTER
+
+    def createTimer(self):
+        return Counter.Timer(self)
+
+    class Timer():
+        def __init__(self, metrics):
+            self.metrics = metrics
+
+        def __enter__(self):
+            self.start = timeit.default_timer()
+            
+
+        def __exit__(self, exc_type, exc_value, exc_tb):
+            self.stop = timeit.default_timer()
+            duration = self.stop - self.start
+            self.metrics.increment(duration)
+
+    @staticmethod
+    def increase(name: str, num=1):
+        def Inner(func):
+            def wrapper(*args, **kwargs):
+                func(*args, **kwargs)
+                counter = Counter.meter_service.getMeterByName(name)
+                counter.increment(num)
+
+            return wrapper
+            
+        return Inner

@@ -27,6 +27,7 @@ from skywalking import profile
 from skywalking.agent.protocol import Protocol
 from skywalking.command import command_service
 from skywalking.loggings import logger
+from skywalking.meter.meter_service import MeterService
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
 from skywalking.protocol.logging.Logging_pb2 import LogData
@@ -37,8 +38,7 @@ if TYPE_CHECKING:
 __started = False
 __protocol = Protocol()  # type: Protocol
 __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
-    = __send_profile_thread = __queue = __log_queue = __snapshot_queue = __finished = None
-
+    = __send_profile_thread = meter_service_thread = __queue = __log_queue = __snapshot_queue = __finished = None
 
 def __heartbeat():
     wait = base = 30
@@ -117,7 +117,7 @@ def __command_dispatch():
 
 def __init_threading():
     global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
-        __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue, __finished
+        __command_dispatch_thread, __send_profile_thread, meter_service_thread, __queue, __log_queue, __snapshot_queue, __finished
 
     __queue = Queue(maxsize=config.max_buffer_size)
     __finished = Event()
@@ -128,6 +128,10 @@ def __init_threading():
     __heartbeat_thread.start()
     __report_thread.start()
     __command_dispatch_thread.start()
+
+    if config.meter_reporter_activate:
+        meter_service_thread = MeterService(__protocol.meter_reporter, __finished, logger)
+        meter_service_thread.start()
 
     if config.log_reporter_active:
         __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
