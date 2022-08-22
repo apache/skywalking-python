@@ -14,6 +14,10 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 Library | Python Version - Lib Version | Plugin Name
 | :--- | :--- | :--- |
 | [aiohttp](https://docs.aiohttp.org) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.6 - ['3.7.4'];  | `sw_aiohttp` |
+| [aioredis](https://aioredis.readthedocs.io/) | Python >=3.6 - ['2.0.1'];  | `sw_aioredis` |
+| [aiormq](https://pypi.org/project/aiormq/) | Python >=3.6 - ['3.3.1', '6.4.1'];  | `sw_aiormq` |
+| [amqp](https://pypi.org/project/amqp/) | Python >=3.6 - ['2.6.1'];  | `sw_amqp` |
+| [asyncpg](https://github.com/MagicStack/asyncpg) | Python >=3.6 - ['0.25.0'];  | `sw_asyncpg` |
 | [bottle](http://bottlepy.org/docs/dev/) | Python >=3.6 - ['0.12.21'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.6 - ['5.1'];  | `sw_celery` |
 | [django](https://www.djangoproject.com/) | Python >=3.6 - ['3.2'];  | `sw_django` |

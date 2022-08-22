@@ -47,6 +47,8 @@ class Component(Enum):
     MysqlClient = 7013
     FastAPI = 7014
     Bottle = 7015
+    AsyncPG = 7016
+    AIORedis = 7017
 
 
 class Layer(Enum):
