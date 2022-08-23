@@ -28,9 +28,11 @@ class TraceSegmentReportService(object):
     def report(self, generator):
         raise NotImplementedError()
 
+
 class MeterReportService(object):
     def report(self, generator):
         raise NotImplementedError()
+
 
 class LogDataReportService(object):
     def report(self, generator):

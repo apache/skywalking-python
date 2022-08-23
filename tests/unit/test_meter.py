@@ -24,77 +24,80 @@ from skywalking.meter.histogram import Histogram
 from skywalking.meter.gauge import Gauge
 from skywalking.meter.meter import BaseMeter
 
+
 class MockMeterService():
     def __init__(self):
         self.meterMap = {}
-        
-    def register(self, meter: BaseMeter):
-        self.meterMap[meter.getId().getName()] = meter
 
-    def getMeterByName(self, name: str):
+    def register(self, meter: BaseMeter):
+        self.meterMap[meter.get_id().get_name()] = meter
+
+    def get_meter(self, name: str):
         return self.meterMap.get(name)
-    
+
     def transform(self, meter):
         meterdata = meter.transform()
         meterdata.service = 'service_name'
         meterdata.serviceInstance = 'service_instance'
-        meterdata.timestamp=int(0)
+        meterdata.timestamp = int(0)
         return meterdata
+
 
 meter_service = MockMeterService()
 BaseMeter.meter_service = meter_service
 
+
 class TestMeter(unittest.TestCase):
     def test_counter(self):
-        c = Counter("c1", CounterMode.INCREMENT)
+        c = Counter('c1', CounterMode.INCREMENT)
         c.build()
 
-        @Counter.increase(name="c1")
+        @Counter.increase(name='c1')
         def increase_by_one():
             # do nothing
             pass
-        
+
         for i in range(1, 52):
             increase_by_one()
             self.assertEqual(i, c.count)
             meterdata = meter_service.transform(c)
             self.assertEqual(i, meterdata.singleValue.value)
-        
+
     def test_counter_with_satement(self):
-        c = Counter("c2", CounterMode.INCREMENT)
+        c = Counter('c2', CounterMode.INCREMENT)
         c.build()
 
-        ls = [i / 10 for i in range(10)]         
+        ls = [i / 10 for i in range(10)]
         random.shuffle(ls)
-        
+
         pre = 0
         for i in ls:
-            with c.createTimer():
+            with c.create_timer():
                 time.sleep(i)
-            
+
             meterdata = meter_service.transform(c)
             a = int(i * 10)
             b = int((meterdata.singleValue.value - pre) * 10)
             pre = meterdata.singleValue.value
             self.assertEqual(meterdata.singleValue.value, c.count)
             self.assertAlmostEqual(a, b)
-            
+
     def test_counter_decarator(self):
-        c = Counter("c3", CounterMode.INCREMENT)
+        c = Counter('c3', CounterMode.INCREMENT)
         c.build()
-        
-        @Counter.increase(name="c3", num=2)
+
+        @Counter.increase(name='c3', num=2)
         def counter_decorator_test():
             # do nothing
             pass
-        
+
         for i in range(1, 10):
             counter_decorator_test()
             meterdata = meter_service.transform(c)
             self.assertEqual(i * 2, meterdata.singleValue.value)
 
     def test_histogram(self):
-        h = Histogram("h1", [i for i in range(10)])
+        h = Histogram('h1', list(range(0, 10)))
         h.build()
 
         for repeat in range(1, 10):
@@ -102,21 +105,21 @@ class TestMeter(unittest.TestCase):
             random.shuffle(ls)
 
             for i in ls:
-                h.addValue(i)
-                self.assertEqual(repeat, h.findBucket(i).count)
+                h.add_value(i)
+                self.assertEqual(repeat, h.find_bucket(i).count)
                 meterdata = meter_service.transform(h)
                 self.assertEqual(repeat, meterdata.histogram.values[i - 1].count)
 
     def test_histogram_timer_decarator(self):
-        h = Histogram("h2", [i / 10 for i in range(10)])
+        h = Histogram('h2', [i / 10 for i in range(10)])
         h.build()
 
         ls = [i / 10 for i in range(10)]
-        
-        @Histogram.timer(name="h2")
+
+        @Histogram.timer(name='h2')
         def histogram_decorator_test(s):
             time.sleep(s)
-        
+
         for repeat in range(1, 5):
             random.shuffle(ls)
             for i in ls:
@@ -126,7 +129,7 @@ class TestMeter(unittest.TestCase):
                 self.assertEqual(repeat, meterdata.histogram.values[idx].count)
 
     def test_histogram_with_satement(self):
-        h = Histogram("h3", [i / 10 for i in range(10)])
+        h = Histogram('h3', [i / 10 for i in range(10)])
         h.build()
 
         ls = [i / 10 for i in range(10)]
@@ -134,7 +137,7 @@ class TestMeter(unittest.TestCase):
         for repeat in range(1, 5):
             random.shuffle(ls)
             for i in ls:
-                with h.createTimer():
+                with h.create_timer():
                     time.sleep(i)
                 idx = int(i * 10)
                 meterdata = meter_service.transform(h)
@@ -144,7 +147,7 @@ class TestMeter(unittest.TestCase):
     def test_gauge(self):
         ls = list(range(1, 10))
         random.shuffle(ls)
-        g = Gauge("g1", iter(ls))
+        g = Gauge('g1', iter(ls))
         g.build()
 
         for i in ls:

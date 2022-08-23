@@ -73,13 +73,14 @@ class GrpcTraceSegmentReportService(TraceSegmentReportService):
     def report(self, generator):
         self.report_stub.collect(generator)
 
+
 class GrpcMeterReportService(MeterReportService):
     def __init__(self, channel: grpc.Channel):
         self.report_stub = MeterReportServiceStub(channel)
 
     def report_batch(self, generator):
         self.report_stub.collectBatch(generator)
-    
+
     def report(self, generator):
         self.report_stub.collect(generator)
 

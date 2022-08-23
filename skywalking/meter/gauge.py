@@ -20,19 +20,18 @@ from skywalking.protocol.language_agent.Meter_pb2 import MeterData, MeterSingleV
 
 
 class Gauge(BaseMeter):
-    def __init__(self, name: str, generator, tags=[]):
+    def __init__(self, name: str, generator, tags=None):
         super().__init__(name, tags)
         self.generator = generator
-    
+
     def get(self):
         data = next(self.generator, None)
         return data if data else 0
-    
+
     def transform(self):
         count = self.get()
-        meterdata = MeterData(singleValue=MeterSingleValue(name=self.getName(), labels=self.transformTags(), value=count))
+        meterdata = MeterData(singleValue=MeterSingleValue(name=self.get_name(), labels=self.transform_tags(), value=count))
         return meterdata
-        
-    def getType(self):
+
+    def get_type(self):
         return MeterType.GAUGE
-    

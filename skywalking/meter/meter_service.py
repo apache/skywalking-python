@@ -20,6 +20,7 @@ from threading import Thread
 from skywalking import config
 from skywalking.meter.meter import BaseMeter
 
+
 class MeterService(Thread):
     __finished = None
     logger = None
@@ -32,11 +33,11 @@ class MeterService(Thread):
 
         self.meterMap = {}
         self.reporter = reporter
-        
+
     def register(self, meter: BaseMeter):
-        self.meterMap[meter.getId().getName()] = meter
-    
-    def getMeterByName(self, name: str):
+        self.meterMap[meter.get_id().get_name()] = meter
+
+    def get_meter(self, name: str):
         return self.meterMap.get(name)
 
     def send(self):
@@ -44,10 +45,10 @@ class MeterService(Thread):
         def transform(adapter):
             meterdata = adapter.transform()
             meterdata.service = config.service_name
-            meterdata.serviceInstance=config.service_instance
-            meterdata.timestamp=int(time()*1000)
+            meterdata.serviceInstance = config.service_instance
+            meterdata.timestamp = int(time()*1000)
             return meterdata
-        
+
         wait = base = 1
 
         while not MeterService.__finished.is_set():
@@ -64,7 +65,5 @@ class MeterService(Thread):
 
 
     def run(self):
-        while(True):
+        while True:
             self.send()
-
-    

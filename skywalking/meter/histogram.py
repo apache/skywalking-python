@@ -17,79 +17,77 @@
 
 import timeit
 from skywalking.meter.meter import BaseMeter, MeterType
-from skywalking.protocol.language_agent.Meter_pb2 import MeterBucketValue, MeterData, MeterHistogram, MeterSingleValue
+from skywalking.protocol.language_agent.Meter_pb2 import MeterBucketValue, MeterData, MeterHistogram
 
 
 class Histogram(BaseMeter):
-    def __init__(self, name: str, steps, minValue=0, tags=[]):
+    def __init__(self, name: str, steps, min_value=0, tags=None):
         super().__init__(name, tags)
-        self.minValue = minValue
+        self.min_value = min_value
 
         # https://stackoverflow.com/a/53522/9845190
         if not steps:
-            # raise error
-            pass
+            raise Exception('steps must not be empty')
 
         # https://stackoverflow.com/a/2931683/9845190
         steps = sorted(set(steps))
 
-        if steps[0] < self.minValue:
-            # raise error
-            pass
-        elif steps[0] != self.minValue:
-            steps.insert(0, self.minValue)
-        self.initBucks(steps)
+        if steps[0] < self.min_value:
+            raise Exception('steps are invalid')
+        elif steps[0] != self.min_value:
+            steps.insert(0, self.min_value)
+        self.init_bucks(steps)
 
 
-    def addValue(self, value):
-        bucket = self.findBucket(value)
-        if bucket == None:
-            return 
-        
+    def add_value(self, value):
+        bucket = self.find_bucket(value)
+        if bucket is None:
+            return
+
         bucket.increment(1)
 
-    def findBucket(self, value):
-        l = 0
-        r = len(self.buckets)
-        
+    def find_bucket(self, value):
+        left = 0
+        right = len(self.buckets)
+
         # find the first bucket greater than or equal the value
-        while(l < r):
-            mid = (l + r) // 2
-            if(self.buckets[mid].bucket < value):
-                l = mid + 1
+        while left < right:
+            mid = (left + right) // 2
+            if self.buckets[mid].bucket < value:
+                left = mid + 1
             else:
-                r = mid
-        
-        l -= 1
+                right = mid
 
-        return self.buckets[l] if l < len(self.buckets) and l >= 0 else None
+        left -= 1
+
+        return self.buckets[left] if left < len(self.buckets) and left >= 0 else None
 
 
-    def initBucks(self, steps):
+    def init_bucks(self, steps):
         self.buckets = [Histogram.Bucket(step) for step in steps]
 
     def transform(self):
         values = [bucket.transform() for bucket in self.buckets]
-        return MeterData(histogram=MeterHistogram(name=self.getName(), labels=self.transformTags(), values=values))
-    
-    def getType(self):
+        return MeterData(histogram=MeterHistogram(name=self.get_name(), labels=self.transform_tags(), values=values))
+
+    def get_type(self):
         return MeterType.HISTOGRAM
 
-    def createTimer(self):
+    def create_timer(self):
         return Histogram.Timer(self)
 
     class Bucket():
-        
+
         def __init__(self, bucket):
             self.bucket = bucket
             self.count = 0
-        
+
         def increment(self, count):
             self.count += count
 
         def transform(self):
             return MeterBucketValue(bucket=self.bucket, count=self.count)
-        
+
         def __hash__(self) -> int:
             return hash((self.bucket, self.count))
 
@@ -99,37 +97,24 @@ class Histogram(BaseMeter):
 
         def __enter__(self):
             self.start = timeit.default_timer()
-            
+
 
         def __exit__(self, exc_type, exc_value, exc_tb):
             self.stop = timeit.default_timer()
             duration = self.stop - self.start
-            self.metrics.addValue(duration)
-    
+            self.metrics.add_value(duration)
+
     @staticmethod
     def timer(name: str):
-        def Inner(func):
+        def inner(func):
             def wrapper(*args, **kwargs):
                 start = timeit.default_timer()
                 func(*args, **kwargs)
                 stop = timeit.default_timer()
                 duration = stop - start
-                histogram = Histogram.meter_service.getMeterByName(name)
-                histogram.addValue(duration)
+                histogram = Histogram.meter_service.get_meter(name)
+                histogram.add_value(duration)
 
             return wrapper
-            
-        return Inner
 
-    @staticmethod
-    def addValtu(name: str, num):
-        def Inner(func):
-            def wrapper(*args, **kwargs):
-                func(*args, **kwargs)
-                histogram = Histogram.meter_service.getMeterByName(name)
-                histogram.addValue(num)
-
-            return wrapper
-            
-        return Inner
-
+        return inner

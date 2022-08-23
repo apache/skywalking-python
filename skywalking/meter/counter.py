@@ -22,41 +22,42 @@ from skywalking.protocol.language_agent.Meter_pb2 import MeterData, MeterSingleV
 
 
 class CounterMode(Enum):
-     INCREMENT = 1
-     RATE = 2
+    INCREMENT = 1
+    RATE = 2
+
 
 class Counter(BaseMeter):
-    def __init__(self, name: str, mode: CounterMode, tags=[]):
+    def __init__(self, name: str, mode: CounterMode, tags=None):
         super().__init__(name, tags)
         self.count = 0
         self.previous = 0
         self.mode = mode
-        
+
     def increment(self, value):
         self.count += value
 
     def get(self):
         return self.count
-    
-    def transform(self):
-        currentValue = self.get()
-        if self.mode == CounterMode.RATE:
-            self.previous = currentValue
-            count = currentValue - self.previous
-        else:
-            count = currentValue
 
-        meterdata = MeterData(singleValue=MeterSingleValue(name=self.getName(), labels=self.transformTags(), value=count))
+    def transform(self):
+        current_value = self.get()
+        if self.mode == CounterMode.RATE:
+            self.previous = current_value
+            count = current_value - self.previous
+        else:
+            count = current_value
+
+        meterdata = MeterData(singleValue=MeterSingleValue(name=self.get_name(), labels=self.transform_tags(), value=count))
         return meterdata
-        
+
     def mode(self, mode):
         self.mode = mode
         return self
 
-    def getType(self):
+    def get_type(self):
         return MeterType.COUNTER
 
-    def createTimer(self):
+    def create_timer(self):
         return Counter.Timer(self)
 
     class Timer():
@@ -65,7 +66,6 @@ class Counter(BaseMeter):
 
         def __enter__(self):
             self.start = timeit.default_timer()
-            
 
         def __exit__(self, exc_type, exc_value, exc_tb):
             self.stop = timeit.default_timer()
@@ -74,12 +74,12 @@ class Counter(BaseMeter):
 
     @staticmethod
     def increase(name: str, num=1):
-        def Inner(func):
+        def inner(func):
             def wrapper(*args, **kwargs):
                 func(*args, **kwargs)
-                counter = Counter.meter_service.getMeterByName(name)
+                counter = Counter.meter_service.get_meter(name)
                 counter.increment(num)
 
             return wrapper
-            
-        return Inner
+
+        return inner

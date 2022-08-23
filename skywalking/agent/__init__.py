@@ -40,6 +40,7 @@ __protocol = Protocol()  # type: Protocol
 __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
     = __send_profile_thread = meter_service_thread = __queue = __log_queue = __snapshot_queue = __finished = None
 
+
 def __heartbeat():
     wait = base = 30
 

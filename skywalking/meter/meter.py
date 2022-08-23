@@ -19,97 +19,96 @@ from abc import ABC, abstractmethod
 from skywalking.protocol.language_agent.Meter_pb2 import Label
 
 from enum import Enum
+
+
 class MeterType(Enum):
-     GAUGE = 1
-     COUNTER = 2
-     HISTOGRAM = 3
+    GAUGE = 1
+    COUNTER = 2
+    HISTOGRAM = 3
+
 
 class MeterTag():
     def __init__(self, key: str, value: str):
         self.key = key
         self.value = value
-    
+
     def __lt__(self, other):
         if self.key != other.key:
             return self.key < other.key
         else:
             return self.value < other.value
-    
-    def getKey(self):
+
+    def get_key(self):
         return self.key
-    
-    def getValue(self):
+
+    def get_value(self):
         return self.value
 
     def __hash__(self) -> int:
         return hash((self.key, self.value))
 
+
 class MeterId():
     def __init__(self, name: str, type, tags: list) -> None:
+        if tags is None:
+            tags = []
+
         self.name = name
         self.type = type
         self.tags = tags
         self.labels = None
-    
-    def transformTags(self):
-        if self.labels != None:
+
+    def transform_tags(self):
+        if self.labels is not None:
             return self.labels
 
-        self.labels = list(map(lambda tag: Label(name=tag.key, value=tag.value), self.tags))
+        self.labels = [Label(tag.key, tag.value) for tag in self.tags]
         return self.labels
-    
-    def getName(self):
+
+    def get_name(self):
         return self.name
-    
-    def getTags(self):
+
+    def get_tags(self):
         return self.tags
-    
-    def getType(self):
+
+    def get_type(self):
         return self.type
-    
+
     def __hash__(self):
         return hash((self.name, self.type, tuple(self.tags)))
 
 
-class BaseMeter():
+class BaseMeter(ABC):
     meter_service = None
-    def __init__(self, name: str, tags=[]):
-        self.meterId = MeterId(name, self.getType(), tags)
+
+    def __init__(self, name: str, tags=None):
+        self.meterId = MeterId(name, self.get_type(), tags)
         if not BaseMeter.meter_service:
             from skywalking.agent import meter_service_thread
             BaseMeter.meter_service = meter_service_thread
 
-    def getName(self):
-        return self.meterId.getName()
+    def get_name(self):
+        return self.meterId.get_name()
 
-    def getTag(self, tagKey):
-        for tag in self.meterId.getTags():
-            if tag.getKey() == tagKey:
-                return tag.getValue()
+    def get_tag(self, tag_key):
+        for tag in self.meterId.get_tags():
+            if tag.get_key() == tag_key:
+                return tag.get_value()
 
-    def getId(self):
+    def get_id(self):
         return self.meterId
 
-    def transformTags(self):
-        return self.getId().transformTags()
-    
+    def transform_tags(self):
+        return self.get_id().transform_tags()
+
     def tag(self, name: str, value):
-        self.meterId.getTags().append(MeterTag(name, value))
+        self.meterId.get_tags().append(MeterTag(name, value))
         return self
 
     def build(self):
-        self.meterId.getTags().sort()
+        self.meterId.get_tags().sort()
         BaseMeter.meter_service.register(self)
-    
-    @abstractmethod
-    def getType(self):
-        pass
-
-    
-    @abstractmethod
-    def __enter__(self):
-        pass
 
     @abstractmethod
-    def __exit__(self):
+    def get_type(self):
         pass
