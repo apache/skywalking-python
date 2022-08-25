@@ -27,13 +27,13 @@ from skywalking.meter.meter import BaseMeter
 
 class MockMeterService():
     def __init__(self):
-        self.meterMap = {}
+        self.meter_map = {}
 
     def register(self, meter: BaseMeter):
-        self.meterMap[meter.get_id().get_name()] = meter
+        self.meter_map[meter.get_id().get_name()] = meter
 
     def get_meter(self, name: str):
-        return self.meterMap.get(name)
+        return self.meter_map.get(name)
 
     def transform(self, meter):
         meterdata = meter.transform()

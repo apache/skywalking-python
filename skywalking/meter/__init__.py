@@ -14,3 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+_meter_service = None
+
+
+def init():
+    from skywalking.meter.meter_service import MeterService
+
+    global _meter_service
+    if _meter_service:
+        return
+
+    _meter_service = MeterService()
+    _meter_service.start()

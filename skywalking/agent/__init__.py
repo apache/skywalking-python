@@ -24,13 +24,14 @@ from typing import TYPE_CHECKING
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking import profile
+from skywalking import meter
 from skywalking.agent.protocol import Protocol
 from skywalking.command import command_service
 from skywalking.loggings import logger
-from skywalking.meter.meter_service import MeterService
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
 from skywalking.protocol.logging.Logging_pb2 import LogData
+from skywalking.protocol.language_agent.Meter_pb2 import MeterData
 
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
 __started = False
 __protocol = Protocol()  # type: Protocol
 __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
-    = __send_profile_thread = meter_service_thread = __queue = __log_queue = __snapshot_queue = __finished = None
+    = __send_profile_thread = __queue = __log_queue = __snapshot_queue = __meter_queue = __finished = None
 
 
 def __heartbeat():
@@ -111,6 +112,20 @@ def __query_profile_command():
         __finished.wait(wait)
 
 
+def __report_meter():
+    wait = base = 1
+
+    while not __finished.is_set():
+        try:
+            __protocol.report_meter(__meter_queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+            wait = base
+        except Exception as exc:
+            logger.error(str(exc))
+            wait = min(60, wait * 2 or 1)
+
+        __finished.wait(wait)
+
+
 def __command_dispatch():
     # command dispatch will stuck when there are no commands
     command_service.dispatch()
@@ -118,7 +133,7 @@ def __command_dispatch():
 
 def __init_threading():
     global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
-        __command_dispatch_thread, __send_profile_thread, meter_service_thread, __queue, __log_queue, __snapshot_queue, __finished
+        __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue, __meter_queue, __finished
 
     __queue = Queue(maxsize=config.max_buffer_size)
     __finished = Event()
@@ -130,9 +145,10 @@ def __init_threading():
     __report_thread.start()
     __command_dispatch_thread.start()
 
-    if config.meter_reporter_activate:
-        meter_service_thread = MeterService(__protocol.meter_reporter, __finished, logger)
-        meter_service_thread.start()
+    if config.meter_reporter_active:
+        __meter_queue = Queue(maxsize=config.meter_reporter_max_buffer_size)
+        __meter_report_thread = Thread(name='MeterReportThread', target=__report_meter, daemon=True)
+        __meter_report_thread.start()
 
     if config.log_reporter_active:
         __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
@@ -222,6 +238,7 @@ def start():
     loggings.init()
     config.finalize()
     profile.init()
+    meter.init()
 
     __init()
 
@@ -257,6 +274,13 @@ def archive_log(log_data: 'LogData'):
         __log_queue.put(log_data, block=False)
     except Full:
         logger.warning('the queue is full, the log will be abandoned')
+
+
+def archive_meter(meterdata: 'MeterData'):
+    try:
+        __meter_queue.put(meterdata, block=False)
+    except Full:
+        logger.warning('the queue is full, the meter will be abandoned')
 
 
 def add_profiling_snapshot(snapshot: TracingThreadSnapshot):

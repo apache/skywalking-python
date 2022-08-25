@@ -15,55 +15,39 @@
 # limitations under the License.
 #
 
-from time import time
+import time
+from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from skywalking import config
+from skywalking import agent
 from skywalking.meter.meter import BaseMeter
+from skywalking.utils.time import current_milli_time
 
 
 class MeterService(Thread):
-    __finished = None
-    logger = None
-
-    def __init__(self, reporter, ___finished, _logger):
-        super().__init__()
-        if not MeterService.__finished:
-            MeterService.__finished = ___finished
-            MeterService.logger = _logger
-
-        self.meterMap = {}
-        self.reporter = reporter
+    def __init__(self):
+        super().__init__(daemon=True)
+        self.meter_map = {}
 
     def register(self, meter: BaseMeter):
-        self.meterMap[meter.get_id().get_name()] = meter
+        self.meter_map[meter.get_id().get_name()] = meter
 
     def get_meter(self, name: str):
-        return self.meterMap.get(name)
+        return self.meter_map.get(name)
 
     def send(self):
 
-        def transform(adapter):
-            meterdata = adapter.transform()
+        def archive(meterdata):
+            meterdata = meterdata.transform()
             meterdata.service = config.service_name
             meterdata.serviceInstance = config.service_instance
-            meterdata.timestamp = int(time()*1000)
-            return meterdata
+            meterdata.timestamp = current_milli_time()
+            agent.archive_meter(meterdata)
 
-        wait = base = 1
-
-        while not MeterService.__finished.is_set():
-            try:
-                meterdata_ls = [transform(meterdata) for meterdata in self.meterMap.values()]
-                generator = iter(meterdata_ls)
-                self.reporter.report(generator)
-                wait = base
-            except Exception as exc:
-                MeterService.logger.error(str(exc))
-                wait = min(60, wait * 2 or 1)
-
-            MeterService.__finished.wait(wait)
-
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            executor.map(archive, self.meter_map.values())
 
     def run(self):
         while True:
+            time.sleep(1)
             self.send()

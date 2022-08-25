@@ -87,7 +87,8 @@ log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
 cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '10')
 
 # meter reporter configurations
-meter_reporter_activate: bool = os.getenv('SW_AGENT_METER_REPORTER_ACTIVE') == 'True'
+meter_reporter_active: bool = os.getenv('SW_AGENT_METER_REPORTER_ACTIVE') == 'True'
+meter_reporter_max_buffer_size: int = int(os.getenv('SW_AGENT_METER_REPORTER_BUFFER_SIZE') or '10000')
 
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 

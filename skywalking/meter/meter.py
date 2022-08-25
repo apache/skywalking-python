@@ -16,9 +16,9 @@
 #
 
 from abc import ABC, abstractmethod
-from skywalking.protocol.language_agent.Meter_pb2 import Label
-
 from enum import Enum
+from skywalking.protocol.language_agent.Meter_pb2 import Label
+import skywalking.meter as meter
 
 
 class MeterType(Enum):
@@ -82,10 +82,10 @@ class BaseMeter(ABC):
     meter_service = None
 
     def __init__(self, name: str, tags=None):
+        if BaseMeter.meter_service is None:
+            BaseMeter.meter_service = meter._meter_service
+
         self.meterId = MeterId(name, self.get_type(), tags)
-        if not BaseMeter.meter_service:
-            from skywalking.agent import meter_service_thread
-            BaseMeter.meter_service = meter_service_thread
 
     def get_name(self):
         return self.meterId.get_name()
