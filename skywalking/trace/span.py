@@ -33,11 +33,6 @@ if TYPE_CHECKING:
 
 @tostring
 class Span:
-    def __new__(cls, *args, **kwargs):
-        if cls is Span:
-            raise TypeError(f"only children of '{cls.__name__}' may be instantiated")
-        return super().__new__(cls, *args, **kwargs)
-
     def __init__(
             self,
             context: 'SpanContext',
