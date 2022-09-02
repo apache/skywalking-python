@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
 __started = False
-__protocol = Protocol()  # type: Protocol
+__protocol = None  # type: Protocol
 __heartbeat_thread = __report_thread = __log_report_thread = __query_profile_thread = __command_dispatch_thread \
     = __send_profile_thread = __queue = __log_queue = __snapshot_queue = __finished = None
 
