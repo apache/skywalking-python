@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from queue import Queue
 
 
@@ -29,12 +29,15 @@ class Protocol(ABC):
     def fork_after_in_child(self):
         pass
 
+    @abstractmethod
     def heartbeat(self):
         raise NotImplementedError()
 
+    @abstractmethod
     def report(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
 
+    @abstractmethod
     def report_log(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
 
