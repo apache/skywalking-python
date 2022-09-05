@@ -16,7 +16,6 @@
 #
 
 import time
-from abc import ABC
 from collections import defaultdict
 from typing import List, Union, DefaultDict
 from typing import TYPE_CHECKING
@@ -33,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @tostring
-class Span(ABC):
+class Span:
     def __init__(
             self,
             context: 'SpanContext',
