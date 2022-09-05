@@ -20,6 +20,7 @@ Library | Python Version - Lib Version | Plugin Name
 | [asyncpg](https://github.com/MagicStack/asyncpg) | Python >=3.6 - ['0.25.0'];  | `sw_asyncpg` |
 | [bottle](http://bottlepy.org/docs/dev/) | Python >=3.6 - ['0.12.21'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.6 - ['5.1'];  | `sw_celery` |
+| [confluent_kafka](https://www.confluent.io/) | Python >=3.6 - ['1.5.0', '1.7.0', '1.8.2'];  | `sw_confluent_kafka` |
 | [django](https://www.djangoproject.com/) | Python >=3.6 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.6 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.10 - ['2.5', '2.6']; Python >=3.6 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
