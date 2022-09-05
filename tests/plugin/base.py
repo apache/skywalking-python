@@ -18,7 +18,6 @@
 import inspect
 import os
 import sys
-from abc import ABC
 from difflib import Differ
 from os.path import dirname
 
@@ -32,7 +31,7 @@ except ImportError:
     from yaml import SafeLoader as Loader
 
 
-class TestPluginBase(ABC):
+class TestPluginBase:
     def validate(self, expected_file_name=None):
         # type: (str) -> Response
 
