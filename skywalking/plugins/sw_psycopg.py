@@ -48,7 +48,7 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/execute', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/execute', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -71,7 +71,7 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/executemany', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/executemany', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -104,7 +104,7 @@ def install_sync():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/stream', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/stream', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -163,7 +163,7 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/execute', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/execute', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -186,7 +186,7 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/executemany', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/executemany', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -219,7 +219,7 @@ def install_async():
             port = self.connection.info.port
             peer = f"{dsn['host']}:{str(port)}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/stream', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/stream', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
