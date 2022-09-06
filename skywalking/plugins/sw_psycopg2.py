@@ -46,7 +46,7 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = f"{dsn['host']}:{dsn['port']}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/execute', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/execute', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -68,7 +68,7 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = f"{dsn['host']}:{dsn['port']}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/executemany', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/executemany', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
 
@@ -100,7 +100,7 @@ def install():
             dsn = self.connection.get_dsn_parameters()
             peer = f"{dsn['host']}:{dsn['port']}"
 
-            with get_context().new_exit_span(op='PostgreSLQ/Psycopg/callproc', peer=peer,
+            with get_context().new_exit_span(op='PostgreSQL/Psycopg/callproc', peer=peer,
                                              component=Component.Psycopg) as span:
                 span.layer = Layer.Database
                 args = f"({'' if not parameters else ','.join(parameters)})"

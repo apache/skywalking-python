@@ -40,7 +40,7 @@ def install():
     async def __bind(proto, query, params, future, is_many=False):
         peer = getattr(proto, '_addr', '<unavailable>')  # just in case
 
-        with get_context().new_exit_span(op='PostgreSLQ/AsyncPG/bind', peer=peer,
+        with get_context().new_exit_span(op='PostgreSQL/AsyncPG/bind', peer=peer,
                                          component=Component.AsyncPG) as span:
             span.layer = Layer.Database
 
