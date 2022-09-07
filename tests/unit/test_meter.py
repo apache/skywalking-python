@@ -46,6 +46,9 @@ class MockMeterService():
 meter_service = MockMeterService()
 BaseMeter.meter_service = meter_service
 
+# picked empirically
+tolerance = 5e-2
+
 
 class TestMeter(unittest.TestCase):
     def test_counter(self):
@@ -61,6 +64,7 @@ class TestMeter(unittest.TestCase):
             increase_by_one()
             self.assertEqual(i, c.count)
             meterdata = meter_service.transform(c)
+            self.assertEqual(meterdata.singleValue.value, c.count)
             self.assertEqual(i, meterdata.singleValue.value)
 
     def test_counter_with_satement(self):
@@ -76,13 +80,12 @@ class TestMeter(unittest.TestCase):
                 time.sleep(i)
 
             meterdata = meter_service.transform(c)
-            a = int(i * 10)
-            b = int((meterdata.singleValue.value - pre) * 10)
-            pre = meterdata.singleValue.value
             self.assertEqual(meterdata.singleValue.value, c.count)
-            self.assertAlmostEqual(a, b)
+            self.assertLess(abs(i - (meterdata.singleValue.value - pre)), tolerance)
+            pre = meterdata.singleValue.value
 
-    def test_counter_decarator(self):
+
+    def test_counter_increase_decarator(self):
         c = Counter('c3', CounterMode.INCREMENT)
         c.build()
 
@@ -94,7 +97,28 @@ class TestMeter(unittest.TestCase):
         for i in range(1, 10):
             counter_decorator_test()
             meterdata = meter_service.transform(c)
+            self.assertEqual(meterdata.singleValue.value, c.count)
             self.assertEqual(i * 2, meterdata.singleValue.value)
+
+    def test_counter_timer_decarator(self):
+        c = Counter('c4', CounterMode.INCREMENT)
+        c.build()
+
+        ls = [i / 10 for i in range(10)]
+
+        @Counter.timer(name='c4')
+        def counter_decorator_test(s):
+            time.sleep(s)
+
+        total = 0
+        for _ in range(1, 5):
+            random.shuffle(ls)
+            for i in ls:
+                counter_decorator_test(i)
+                total += i
+                meterdata = meter_service.transform(c)
+                self.assertEqual(meterdata.singleValue.value, c.count)
+                self.assertLessEqual(abs(total - meterdata.singleValue.value), tolerance)
 
     def test_histogram(self):
         h = Histogram('h1', list(range(0, 10)))

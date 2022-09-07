@@ -73,6 +73,21 @@ class Counter(BaseMeter):
             self.metrics.increment(duration)
 
     @staticmethod
+    def timer(name: str):
+        def inner(func):
+            def wrapper(*args, **kwargs):
+                start = timeit.default_timer()
+                func(*args, **kwargs)
+                stop = timeit.default_timer()
+                duration = stop - start
+                counter = Counter.meter_service.get_meter(name)
+                counter.increment(duration)
+
+            return wrapper
+
+        return inner
+
+    @staticmethod
     def increase(name: str, num=1):
         def inner(func):
             def wrapper(*args, **kwargs):
