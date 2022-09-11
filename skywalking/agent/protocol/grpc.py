@@ -26,13 +26,14 @@ from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
-    GrpcProfileTaskChannelService, GrpcLogDataReportService
+    GrpcProfileTaskChannelService, GrpcLogDataReportService, GrpcMeterReportService
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
 from skywalking.protocol.logging.Logging_pb2 import LogData
+from skywalking.protocol.language_agent.Meter_pb2 import MeterData
 from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
 from skywalking.trace.segment import Segment
 
@@ -57,6 +58,7 @@ class GrpcProtocol(Protocol):
         self.traces_reporter = GrpcTraceSegmentReportService(self.channel)
         self.profile_channel = GrpcProfileTaskChannelService(self.channel)
         self.log_reporter = GrpcLogDataReportService(self.channel)
+        self.meter_reporter = GrpcMeterReportService(self.channel)
 
     def _cb(self, state):
         if logger_debug_enabled:
@@ -185,6 +187,38 @@ class GrpcProtocol(Protocol):
 
         try:
             self.log_reporter.report(generator())
+        except grpc.RpcError:
+            self.on_error()
+            raise
+
+    def report_meter(self, queue: Queue, block: bool = True):
+        start = None
+
+        def generator():
+            nonlocal start
+
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
+                    meter_data = queue.get(block=block, timeout=timeout)  # type: MeterData
+                except Empty:
+                    return
+
+                queue.task_done()
+
+                if logger_debug_enabled:
+                    logger.debug('Reporting Meter')
+
+                yield meter_data
+
+        try:
+            self.meter_reporter.report(generator())
         except grpc.RpcError:
             self.on_error()
             raise

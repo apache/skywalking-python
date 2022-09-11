@@ -20,7 +20,7 @@ import grpc
 
 from skywalking import config
 from skywalking.client import ServiceManagementClient, TraceSegmentReportService, ProfileTaskChannelService, \
-    LogDataReportService
+    LogDataReportService, MeterReportService
 from skywalking.command import command_service
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile import profile_task_execution_service
@@ -29,6 +29,7 @@ from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
 from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
+from skywalking.protocol.language_agent.Meter_pb2_grpc import MeterReportServiceStub
 from skywalking.protocol.management.Management_pb2_grpc import ManagementServiceStub
 from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, ProfileTaskFinishReport
 from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
@@ -68,6 +69,17 @@ class GrpcServiceManagementClient(ServiceManagementClient):
 class GrpcTraceSegmentReportService(TraceSegmentReportService):
     def __init__(self, channel: grpc.Channel):
         self.report_stub = TraceSegmentReportServiceStub(channel)
+
+    def report(self, generator):
+        self.report_stub.collect(generator)
+
+
+class GrpcMeterReportService(MeterReportService):
+    def __init__(self, channel: grpc.Channel):
+        self.report_stub = MeterReportServiceStub(channel)
+
+    def report_batch(self, generator):
+        self.report_stub.collectBatch(generator)
 
     def report(self, generator):
         self.report_stub.collect(generator)

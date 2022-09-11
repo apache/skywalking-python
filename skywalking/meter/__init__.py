@@ -15,33 +15,15 @@
 # limitations under the License.
 #
 
-
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
+_meter_service = None
 
 
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
+def init():
+    from skywalking.meter.meter_service import MeterService
 
+    global _meter_service
+    if _meter_service:
+        return
 
-class MeterReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class LogDataReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
-
-    def send(self, generator):
-        raise NotImplementedError()
+    _meter_service = MeterService()
+    _meter_service.start()

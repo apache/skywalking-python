@@ -15,33 +15,23 @@
 # limitations under the License.
 #
 
-
-class ServiceManagementClient(object):
-    def send_instance_props(self):
-        raise NotImplementedError()
-
-    def send_heart_beat(self):
-        raise NotImplementedError()
+from skywalking.meter.meter import BaseMeter, MeterType
+from skywalking.protocol.language_agent.Meter_pb2 import MeterData, MeterSingleValue
 
 
-class TraceSegmentReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
+class Gauge(BaseMeter):
+    def __init__(self, name: str, generator, tags=None):
+        super().__init__(name, tags)
+        self.generator = generator
 
+    def get(self):
+        data = next(self.generator, None)
+        return data if data else 0
 
-class MeterReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
+    def transform(self):
+        count = self.get()
+        meterdata = MeterData(singleValue=MeterSingleValue(name=self.get_name(), labels=self.transform_tags(), value=count))
+        return meterdata
 
-
-class LogDataReportService(object):
-    def report(self, generator):
-        raise NotImplementedError()
-
-
-class ProfileTaskChannelService(object):
-    def do_query(self):
-        raise NotImplementedError()
-
-    def send(self, generator):
-        raise NotImplementedError()
+    def get_type(self):
+        return MeterType.GAUGE
