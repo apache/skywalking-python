@@ -8,7 +8,7 @@ When uWSGI is used with Skywalking, the pre-fork mechanism of uWSGI must be cons
 
 If you get some problems when using skywalking, you can try to use the following method to call [`@postfork`](https://uwsgi-docs.readthedocs.io/en/latest/PythonDecorators.html#uwsgidecorators.postfork), the low-level api of uWSGI to initialize the skywalking client.
 
-The following is an example of the use of uWSGI and flask, the initialization parameters of skywalking can be referred to [Legacy Setup](https://skywalking.apache.org/docs/skywalking-python/latest/en/setup/intrusive/#legacy-setup)
+The following is an example of the use of uWSGI and flask, the initialization parameters of skywalking can be referred to [Legacy Setup](https://skywalking.apache.org/docs/skywalking-python/next/en/setup/intrusive/#legacy-setup)
 
 ```python
 # main.py
