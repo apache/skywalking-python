@@ -50,10 +50,6 @@ class Counter(BaseMeter):
         meterdata = MeterData(singleValue=MeterSingleValue(name=self.get_name(), labels=self.transform_tags(), value=count))
         return meterdata
 
-    def mode(self, mode):
-        self.mode = mode
-        return self
-
     def get_type(self):
         return MeterType.COUNTER
 
@@ -98,3 +94,11 @@ class Counter(BaseMeter):
             return wrapper
 
         return inner
+
+    class Builder(BaseMeter.Builder):
+        def __init__(self, name: str, mode: CounterMode, tags=None):
+            self.meter = Counter(name, mode, tags)
+
+        def mode(self, mode: CounterMode):
+            self.meter.mode = mode
+            return self

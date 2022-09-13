@@ -52,8 +52,9 @@ tolerance = 5e-2
 
 class TestMeter(unittest.TestCase):
     def test_counter(self):
-        c = Counter('c1', CounterMode.INCREMENT)
-        c.build()
+        builder = Counter.Builder('c1', CounterMode.INCREMENT, (('k1', 'v1'), ('k2', 'v2')))
+        builder.tag('k3', 'v3')
+        c = builder.build()
 
         @Counter.increase(name='c1')
         def increase_by_one():
@@ -68,8 +69,8 @@ class TestMeter(unittest.TestCase):
             self.assertEqual(i, meterdata.singleValue.value)
 
     def test_counter_with_satement(self):
-        c = Counter('c2', CounterMode.INCREMENT)
-        c.build()
+        builder = Counter.Builder('c2', CounterMode.INCREMENT)
+        c = builder.build()
 
         ls = [i / 10 for i in range(10)]
         random.shuffle(ls)
@@ -86,8 +87,8 @@ class TestMeter(unittest.TestCase):
 
 
     def test_counter_increase_decarator(self):
-        c = Counter('c3', CounterMode.INCREMENT)
-        c.build()
+        builder = Counter.Builder('c3', CounterMode.INCREMENT)
+        c = builder.build()
 
         @Counter.increase(name='c3', num=2)
         def counter_decorator_test():
@@ -101,8 +102,8 @@ class TestMeter(unittest.TestCase):
             self.assertEqual(i * 2, meterdata.singleValue.value)
 
     def test_counter_timer_decarator(self):
-        c = Counter('c4', CounterMode.INCREMENT)
-        c.build()
+        builder = Counter.Builder('c4', CounterMode.INCREMENT)
+        c = builder.build()
 
         ls = [i / 10 for i in range(10)]
 
@@ -121,8 +122,8 @@ class TestMeter(unittest.TestCase):
                 self.assertLessEqual(abs(total - meterdata.singleValue.value), tolerance)
 
     def test_histogram(self):
-        h = Histogram('h1', list(range(0, 10)))
-        h.build()
+        builder = Histogram.Builder('h1', list(range(0, 10)))
+        h = builder.build()
 
         for repeat in range(1, 10):
             ls = list(range(1, 10))
@@ -135,8 +136,8 @@ class TestMeter(unittest.TestCase):
                 self.assertEqual(repeat, meterdata.histogram.values[i - 1].count)
 
     def test_histogram_timer_decarator(self):
-        h = Histogram('h2', [i / 10 for i in range(10)])
-        h.build()
+        builder = Histogram.Builder('h2', [i / 10 for i in range(10)])
+        h = builder.build()
 
         ls = [i / 10 for i in range(10)]
 
@@ -153,8 +154,8 @@ class TestMeter(unittest.TestCase):
                 self.assertEqual(repeat, meterdata.histogram.values[idx].count)
 
     def test_histogram_with_satement(self):
-        h = Histogram('h3', [i / 10 for i in range(10)])
-        h.build()
+        builder = Histogram.Builder('h3', [i / 10 for i in range(10)])
+        h = builder.build()
 
         ls = [i / 10 for i in range(10)]
 
@@ -171,8 +172,8 @@ class TestMeter(unittest.TestCase):
     def test_gauge(self):
         ls = list(range(1, 10))
         random.shuffle(ls)
-        g = Gauge('g1', iter(ls))
-        g.build()
+        builder = Gauge.Builder('g1', iter(ls))
+        g = builder.build()
 
         for i in ls:
             meterdata = meter_service.transform(g)
