@@ -108,7 +108,9 @@ class BaseMeter(ABC):
     class Builder(ABC):
         @abstractmethod
         def __init__(self, name: str, tags=None):
-            self.meter = BaseMeter(name, tags)
+            # Derived Builder should instantiate its corresponding meter here.
+            # self.meter = BaseMeter(name, tags)
+            pass
 
         def tag(self, name: str, value):
             self.meter.meterId.get_tags().append(MeterTag(name, value))
