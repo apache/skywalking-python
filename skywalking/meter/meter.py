@@ -49,20 +49,20 @@ class MeterTag():
 
 
 class MeterId():
-    def __init__(self, name: str, type, tags: list) -> None:
+    def __init__(self, name: str, type, tags: tuple) -> None:
         if tags is None:
-            tags = []
+            tags = ()
 
         self.name = name
         self.type = type
-        self.tags = tags
+        self.tags = [MeterTag(key, value) for (key, value) in tags]
         self.labels = None
 
     def transform_tags(self):
         if self.labels is not None:
             return self.labels
 
-        self.labels = [Label(tag.key, tag.value) for tag in self.tags]
+        self.labels = [Label(name=tag.key, value=tag.value) for tag in self.tags]
         return self.labels
 
     def get_name(self):
@@ -101,14 +101,22 @@ class BaseMeter(ABC):
     def transform_tags(self):
         return self.get_id().transform_tags()
 
-    def tag(self, name: str, value):
-        self.meterId.get_tags().append(MeterTag(name, value))
-        return self
-
-    def build(self):
-        self.meterId.get_tags().sort()
-        BaseMeter.meter_service.register(self)
-
     @abstractmethod
     def get_type(self):
         pass
+
+    class Builder(ABC):
+        @abstractmethod
+        def __init__(self, name: str, tags=None):
+            # Derived Builder should instantiate its corresponding meter here.
+            # self.meter = BaseMeter(name, tags)
+            pass
+
+        def tag(self, name: str, value):
+            self.meter.meterId.get_tags().append(MeterTag(name, value))
+            return self
+
+        def build(self):
+            self.meter.meterId.get_tags().sort()
+            BaseMeter.meter_service.register(self.meter)
+            return self.meter

@@ -25,10 +25,12 @@ class Histogram(BaseMeter):
         super().__init__(name, tags)
         self.min_value = min_value
 
+        # check if a list is empty?
         # https://stackoverflow.com/a/53522/9845190
         if not steps:
             raise Exception('steps must not be empty')
 
+        # sort and deduplicate
         # https://stackoverflow.com/a/2931683/9845190
         steps = sorted(set(steps))
 
@@ -50,7 +52,7 @@ class Histogram(BaseMeter):
         left = 0
         right = len(self.buckets)
 
-        # find the first bucket greater than or equal the value
+        # find the first bucket greater than or equal to the value
         while left < right:
             mid = (left + right) // 2
             if self.buckets[mid].bucket < value:
@@ -118,3 +120,7 @@ class Histogram(BaseMeter):
             return wrapper
 
         return inner
+
+    class Builder(BaseMeter.Builder):
+        def __init__(self, name: str, steps, min_value=0, tags=None):
+            self.meter = Histogram(name, steps, min_value, tags)

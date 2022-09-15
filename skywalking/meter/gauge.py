@@ -35,3 +35,7 @@ class Gauge(BaseMeter):
 
     def get_type(self):
         return MeterType.GAUGE
+
+    class Builder(BaseMeter.Builder):
+        def __init__(self, name: str, generator, tags=None):
+            self.meter = Gauge(name, generator, tags)
