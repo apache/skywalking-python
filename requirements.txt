@@ -16,7 +16,7 @@ gevent==21.8.0
 hug==2.6.1
 multidict==5.2.0
 pika==1.2.0
-protobuf==3.18.1
+protobuf==3.18.3
 #psycopg2-binary==2.9.1
 psycopg[binary]==3.0.1
 pymongo==3.12.0
