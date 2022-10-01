@@ -55,7 +55,8 @@ def install():
 
     def _sw_basic_consume(self, queue='', consumer_tag='', no_local=False,
                           no_ack=False, exclusive=False, nowait=False,
-                          callback=None, *args, **kwargs):
+                          callback=None, arguments=None, on_cancel=None,
+                          argsig='BssbbbbF'):
         def _callback(msg):
             peer = getattr(self.connection, 'host', '<unavailable>')
             delivery_info = getattr(msg, 'delivery_info', {})
@@ -81,7 +82,8 @@ def install():
                 return callback(msg)
 
         return _basic_consume(self, queue=queue, consumer_tag=consumer_tag, no_local=no_local, no_ack=no_ack,
-                              exclusive=exclusive, nowait=nowait, callback=_callback, *args, **kwargs)
+                              exclusive=exclusive, nowait=nowait, callback=_callback, arguments=arguments,
+                              on_cancel=on_cancel, argsig=argsig)
 
     _basic_publish = Channel.basic_publish
     _basic_consume = Channel.basic_consume
