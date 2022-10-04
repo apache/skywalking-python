@@ -45,8 +45,8 @@ class Counter(BaseMeter):
     def transform(self):
         current_value = self.get()
         if self.mode == CounterMode.RATE:
-            self.previous = current_value
             count = current_value - self.previous
+            self.previous = current_value
         else:
             count = current_value
 
