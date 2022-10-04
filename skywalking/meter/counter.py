@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import threading
 import timeit
 from enum import Enum
 from skywalking.meter.meter import BaseMeter, MeterType
@@ -32,9 +33,11 @@ class Counter(BaseMeter):
         self.count = 0
         self.previous = 0
         self.mode = mode
+        self._lock = threading.Lock()
 
     def increment(self, value):
-        self.count += value
+        with self._lock:
+            self.count += value
 
     def get(self):
         return self.count

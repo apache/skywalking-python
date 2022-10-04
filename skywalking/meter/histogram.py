@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+import threading
 import timeit
 from skywalking.meter.meter import BaseMeter, MeterType
 from skywalking.protocol.language_agent.Meter_pb2 import MeterBucketValue, MeterData, MeterHistogram
@@ -79,13 +80,14 @@ class Histogram(BaseMeter):
         return Histogram.Timer(self)
 
     class Bucket():
-
         def __init__(self, bucket):
             self.bucket = bucket
             self.count = 0
+            self._lock = threading.Lock()
 
         def increment(self, count):
-            self.count += count
+            with self._lock:
+                self.count += count
 
         def transform(self):
             return MeterBucketValue(bucket=self.bucket, count=self.count)
