@@ -16,7 +16,6 @@
 #
 
 import psutil
-
 from skywalking.meter.pvm.data_source import DataSource
 
 
@@ -31,16 +30,3 @@ class CPUUsageDataSource(DataSource):
     def process_cpu_utilization_generator(self):
         while (True):
             yield self.cur_process.cpu_percent()
-
-    def thread_active_count_generator(self):
-        while (True):
-            ps = [psutil.Process()]
-            count = 0
-
-            while len(ps) > 0:
-                p = ps[0]
-                ps.pop(0)
-                count += len(p.threads())
-                ps += p.children()
-
-            yield count
