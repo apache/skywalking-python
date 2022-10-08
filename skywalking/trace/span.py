@@ -174,7 +174,7 @@ class EntrySpan(Span):
     def start(self):
         Span.start(self)
         self._max_depth = self._depth
-        self.component = 0
+        self.component = Component.Unknown
         self.layer = Layer.Unknown
         self.logs = []
         self.tags = defaultdict(list)
