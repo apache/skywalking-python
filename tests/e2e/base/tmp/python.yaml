@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,30 +12,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-from skywalking import config
-
-_meter_service = None
-
-
-def init():
-    from skywalking.meter.meter_service import MeterService
-
-    global _meter_service
-    if _meter_service:
-        return
-
-    _meter_service = MeterService()
-    _meter_service.start()
-
-    if config.pvm_meter_reporter_active:
-        from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
-        from skywalking.meter.pvm.gc_data import GCDataSource
-        from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
-        from skywalking.meter.pvm.thread_data import ThreadDataSource
-
-        MEMUsageDataSource().registry()
-        CPUUsageDataSource().registry()
-        GCDataSource().registry()
-        ThreadDataSource().registry()
+expSuffix: instance(['service'], ['instance'], Layer.GENERAL)
+metricPrefix: meter
+metricsRules:
+  - name: process_cpu_utilization
+    exp: process_cpu_utilization
+  - name: process_mem_utilization
+    exp: process_mem_utilization
+  - name: total_cpu_utilization
+    exp: total_cpu_utilization
+  - name: total_mem_utilization
+    exp: total_mem_utilization
+  - name: gc_g0
+    exp: gc_g0
+  - name: gc_g1
+    exp: gc_g1
+  - name: gc_g2
+    exp: gc_g2
+  - name: gc_time
+    exp: gc_time
+  - name: thread_active_count
+    exp: thread_active_count

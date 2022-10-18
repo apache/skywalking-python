@@ -15,28 +15,34 @@
 # limitations under the License.
 #
 
-from skywalking import config
+import gc
+import time
 
-_meter_service = None
+from skywalking.meter.pvm.data_source import DataSource
 
 
-def init():
-    from skywalking.meter.meter_service import MeterService
+class GCDataSource(DataSource):
+    def gc_g0_generator(self):
+        while (True):
+            yield gc.get_stats()[0]['collected']
 
-    global _meter_service
-    if _meter_service:
-        return
+    def gc_g1_generator(self):
+        while (True):
+            yield gc.get_stats()[1]['collected']
 
-    _meter_service = MeterService()
-    _meter_service.start()
+    def gc_g2_generator(self):
+        while (True):
+            yield gc.get_stats()[2]['collected']
 
-    if config.pvm_meter_reporter_active:
-        from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
-        from skywalking.meter.pvm.gc_data import GCDataSource
-        from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
-        from skywalking.meter.pvm.thread_data import ThreadDataSource
+    def gc_callback(self, phase, info):
+        if phase == 'start':
+            self.start_time = time.time()
+        elif phase == 'stop':
+            self.gc_time = time.time() - self.start_time
 
-        MEMUsageDataSource().registry()
-        CPUUsageDataSource().registry()
-        GCDataSource().registry()
-        ThreadDataSource().registry()
+    def gc_time_generator(self):
+        if hasattr(gc, 'callbacks'):
+            gc.callbacks.append(self.gc_callback)
+
+        while (True):
+            yield self.gc_time

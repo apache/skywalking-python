@@ -40,6 +40,7 @@ setup(
         'grpcio-tools',
         'packaging',
         'wrapt',
+        'psutil',
     ],
     extras_require={
         'test': [

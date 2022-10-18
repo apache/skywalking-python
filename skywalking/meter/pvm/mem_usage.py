@@ -15,28 +15,18 @@
 # limitations under the License.
 #
 
-from skywalking import config
+from skywalking.meter.pvm.data_source import DataSource
+import psutil
 
-_meter_service = None
 
+class MEMUsageDataSource(DataSource):
+    def __init__(self):
+        self.cur_process = psutil.Process()
 
-def init():
-    from skywalking.meter.meter_service import MeterService
+    def total_mem_utilization_generator(self):
+        while (True):
+            yield psutil.virtual_memory().percent
 
-    global _meter_service
-    if _meter_service:
-        return
-
-    _meter_service = MeterService()
-    _meter_service.start()
-
-    if config.pvm_meter_reporter_active:
-        from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
-        from skywalking.meter.pvm.gc_data import GCDataSource
-        from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
-        from skywalking.meter.pvm.thread_data import ThreadDataSource
-
-        MEMUsageDataSource().registry()
-        CPUUsageDataSource().registry()
-        GCDataSource().registry()
-        ThreadDataSource().registry()
+    def process_mem_utilization_generator(self):
+        while (True):
+            yield self.cur_process.memory_info().rss / psutil.virtual_memory().total
