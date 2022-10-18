@@ -21,9 +21,10 @@ import os
 from kafka import KafkaProducer
 
 from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService, LogDataReportService
+from skywalking.client import MeterReportService, ServiceManagementClient, TraceSegmentReportService, LogDataReportService
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Meter_pb2 import MeterDataCollection
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
 kafka_configs = {}
@@ -125,6 +126,19 @@ class KafkaLogDataReportService(LogDataReportService):
             key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
             value = bytes(log_data.SerializeToString())
             self.producer.send(topic=self.topic, key=key, value=value)
+
+
+class KafkaMeterDataReportService(MeterReportService):
+    def __init__(self):
+        self.producer = KafkaProducer(**kafka_configs)
+        self.topic = config.kafka_topic_meter
+
+    def report(self, generator):
+        collection = MeterDataCollection()
+        collection.meterData.extend(list(generator))
+        key = bytes(config.service_instance, encoding='utf-8')
+        value = bytes(collection.SerializeToString())
+        self.producer.send(topic=self.topic, key=key, value=value)
 
 
 class KafkaConfigDuplicated(Exception):
