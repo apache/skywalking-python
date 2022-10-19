@@ -61,9 +61,7 @@ verify:
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql instance list --service-name=e2e-service-provider
       expected: ../expected/service-instance.yml
 
-    # TODO: Metric Collection Implementation is not merged https://github.com/apache/skywalking/issues/7084
-    # service instance pvm metrics TODO: PVM Collection Implementation needed https://github.com/apache/skywalking/issues/5944
-    # swctl --display yaml --base-url=http://localhost:12800/graphql metrics linear --name instance_jvm_thread_live_count --instance-name=provider1 --service-name=e2e-service-provider |yq e 'to_entries' -
+    # service instance pvm metrics
     - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql metrics linear --name meter_total_cpu_utilization --instance-name=provider1 --service-name=e2e-service-provider |yq e 'to_entries' -
       expected: ../expected/metrics-has-value.yml
 
