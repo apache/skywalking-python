@@ -21,9 +21,10 @@ import os
 from kafka import KafkaProducer
 
 from skywalking import config
-from skywalking.client import ServiceManagementClient, TraceSegmentReportService, LogDataReportService
+from skywalking.client import MeterReportService, ServiceManagementClient, TraceSegmentReportService, LogDataReportService
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
+from skywalking.protocol.language_agent.Meter_pb2 import MeterDataCollection
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
 kafka_configs = {}
@@ -79,7 +80,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         )
 
         key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
-        value = bytes(instance.SerializeToString())
+        value = instance.SerializeToString()
         self.producer.send(topic=self.topic, key=key, value=value)
 
     def send_heart_beat(self):
@@ -96,7 +97,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         )
 
         key = bytes(instance_ping_pkg.serviceInstance, encoding='utf-8')
-        value = bytes(instance_ping_pkg.SerializeToString())
+        value = instance_ping_pkg.SerializeToString()
         future = self.producer.send(topic=self.topic, key=key, value=value)
         res = future.get(timeout=10)
         if logger_debug_enabled:
@@ -111,7 +112,7 @@ class KafkaTraceSegmentReportService(TraceSegmentReportService):
     def report(self, generator):
         for segment in generator:
             key = bytes(segment.traceSegmentId, encoding='utf-8')
-            value = bytes(segment.SerializeToString())
+            value = segment.SerializeToString()
             self.producer.send(topic=self.topic, key=key, value=value)
 
 
@@ -123,8 +124,21 @@ class KafkaLogDataReportService(LogDataReportService):
     def report(self, generator):
         for log_data in generator:
             key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
-            value = bytes(log_data.SerializeToString())
+            value = log_data.SerializeToString()
             self.producer.send(topic=self.topic, key=key, value=value)
+
+
+class KafkaMeterDataReportService(MeterReportService):
+    def __init__(self):
+        self.producer = KafkaProducer(**kafka_configs)
+        self.topic = config.kafka_topic_meter
+
+    def report(self, generator):
+        collection = MeterDataCollection()
+        collection.meterData.extend(list(generator))
+        key = bytes(config.service_instance, encoding='utf-8')
+        value = collection.SerializeToString()
+        self.producer.send(topic=self.topic, key=key, value=value)
 
 
 class KafkaConfigDuplicated(Exception):

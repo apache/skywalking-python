@@ -22,10 +22,11 @@ from time import time
 from skywalking import config
 from skywalking.agent import Protocol
 from skywalking.client.kafka import KafkaServiceManagementClient, KafkaTraceSegmentReportService, \
-    KafkaLogDataReportService
+    KafkaLogDataReportService, KafkaMeterDataReportService
 from skywalking.loggings import logger, getLogger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
+from skywalking.protocol.language_agent.Meter_pb2 import MeterData
 from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
@@ -39,6 +40,7 @@ class KafkaProtocol(Protocol):
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
         self.log_reporter = KafkaLogDataReportService()
+        self.meter_reporter = KafkaMeterDataReportService()
 
     def heartbeat(self):
         self.service_management.send_heart_beat()
@@ -133,3 +135,30 @@ class KafkaProtocol(Protocol):
                 yield log_data
 
         self.log_reporter.report(generator=generator())
+
+    def report_meter(self, queue: Queue, block: bool = True):
+        start = None
+
+        def generator():
+            nonlocal start
+
+            while True:
+                try:
+                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    if not start:  # make sure first time through queue is always checked
+                        start = time()
+                    else:
+                        timeout -= int(time() - start)
+                        if timeout <= 0:  # this is to make sure we exit eventually instead of being fed continuously
+                            return
+                    meter_data = queue.get(block=block, timeout=timeout)  # type: MeterData
+                except Empty:
+                    return
+                queue.task_done()
+
+                if logger_debug_enabled:
+                    logger.debug('Reporting Meter')
+
+                yield meter_data
+
+        self.meter_reporter.report(generator=generator())

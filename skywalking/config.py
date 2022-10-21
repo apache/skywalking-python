@@ -38,6 +38,7 @@ kafka_bootstrap_servers: str = os.getenv('SW_KAFKA_REPORTER_BOOTSTRAP_SERVERS') 
 kafka_topic_management: str = os.getenv('SW_KAFKA_REPORTER_TOPIC_MANAGEMENT') or 'skywalking-managements'
 kafka_topic_segment: str = os.getenv('SW_KAFKA_REPORTER_TOPIC_SEGMENT') or 'skywalking-segments'
 kafka_topic_log: str = os.getenv('SW_KAFKA_REPORTER_TOPIC_LOG') or 'skywalking-logs'
+kafka_topic_meter: str = os.getenv('SW_KAFKA_REPORTER_TOPIC_METER') or 'skywalking-meters'
 force_tls: bool = os.getenv('SW_AGENT_FORCE_TLS', '').lower() == 'true'
 protocol: str = (os.getenv('SW_AGENT_PROTOCOL') or 'grpc').lower()
 authentication: str = os.getenv('SW_AGENT_AUTHENTICATION')
