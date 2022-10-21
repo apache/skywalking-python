@@ -80,7 +80,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         )
 
         key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
-        value = bytes(instance.SerializeToString())
+        value = instance.SerializeToString()
         self.producer.send(topic=self.topic, key=key, value=value)
 
     def send_heart_beat(self):
@@ -97,7 +97,7 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         )
 
         key = bytes(instance_ping_pkg.serviceInstance, encoding='utf-8')
-        value = bytes(instance_ping_pkg.SerializeToString())
+        value = instance_ping_pkg.SerializeToString()
         future = self.producer.send(topic=self.topic, key=key, value=value)
         res = future.get(timeout=10)
         if logger_debug_enabled:
@@ -112,7 +112,7 @@ class KafkaTraceSegmentReportService(TraceSegmentReportService):
     def report(self, generator):
         for segment in generator:
             key = bytes(segment.traceSegmentId, encoding='utf-8')
-            value = bytes(segment.SerializeToString())
+            value = segment.SerializeToString()
             self.producer.send(topic=self.topic, key=key, value=value)
 
 
@@ -124,7 +124,7 @@ class KafkaLogDataReportService(LogDataReportService):
     def report(self, generator):
         for log_data in generator:
             key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
-            value = bytes(log_data.SerializeToString())
+            value = log_data.SerializeToString()
             self.producer.send(topic=self.topic, key=key, value=value)
 
 
@@ -137,7 +137,7 @@ class KafkaMeterDataReportService(MeterReportService):
         collection = MeterDataCollection()
         collection.meterData.extend(list(generator))
         key = bytes(config.service_instance, encoding='utf-8')
-        value = bytes(collection.SerializeToString())
+        value = collection.SerializeToString()
         self.producer.send(topic=self.topic, key=key, value=value)
 
 
