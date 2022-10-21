@@ -42,6 +42,10 @@ def install():
     async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
         from starlette.requests import Request
 
+        if scope['type'] == 'websocket':
+            resp = await _original_fast_api(self, scope, receive, send)
+            return resp
+
         req = Request(scope, receive=receive, send=send)
         carrier = Carrier()
         method = req.method
