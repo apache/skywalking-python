@@ -90,6 +90,7 @@ class ProfileTaskExecutionService:
 
     def add_profile_task(self, task: ProfileTask):
         # update last command create time, which will be used in command query
+        logger.debug(f"======== add profile task:{task}")
         if task.create_time > self._last_command_create_time:
             self._last_command_create_time = task.create_time
 
@@ -107,6 +108,7 @@ class ProfileTaskExecutionService:
         self.profile_task_scheduler.schedule(delay_millis, self.process_profile_task, [task])
 
     def add_profiling(self, context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
+        logger.debug(f"========= add profiling, context:{context}, segment_id:{segment_id}")
         execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
         if execution_context is None:
             return ProfileStatusReference.create_with_none()

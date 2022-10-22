@@ -35,3 +35,21 @@ Before submitting a pull request or pushing a commit, please read our [contribut
 
 ## License
 Apache 2.0
+
+
+key concept:
+ProfileTaskExecutionService
+ProfileTaskExecutionContext
+ProfileThread
+ThreadProfiler
+
+服务启动后，定时轮询oap，发现新的profiling task
+一旦有新的profiling task,则：
+ProfileTaskCommandExecutor执行 profile_task_execution_service.add_profile_task()
+时间到后，执行service.process_profile_task(),通过context.start_profiling()启动profiling,同时设置定时器，task到期后执行service.stop_current_profile_task()关闭profiling
+
+context.start_profiling时，创建一个ProfileThread(taskContext)，这个线程会不停dump taskThread出来，如果dump成功，则会发一个snapshot到OAP.profile的逻辑在ProfileThread实现
+改为Greenlet模式后，start_profiling()就应该settrace() callback， 不再需要另外起一个线程
+
+
+context.new_entry_span(),判断是否有profile，如果有，则通过profile_task_execution_service.add_profiling()开启一个profiling

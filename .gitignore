@@ -18,6 +18,7 @@
 #
 .idea/
 *.iml
+.env/
 .DS_Store
 *~
 **/*_pb2*

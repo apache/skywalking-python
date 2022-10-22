@@ -34,6 +34,17 @@ from skywalking.utils.integer import AtomicInteger
 from skywalking.utils.time import current_milli_time
 
 
+threadModel = "thread"
+try:
+    from gevent import monkey
+    import greenlet
+
+    if monkey.is_module_patched("threading"):
+        threadModel = "greenlet"
+except ImportError:
+    pass
+
+
 class ProfileTaskExecutionContext:
     def __init__(self, task: ProfileTask):
         self.task = task  # type: ProfileTask
@@ -44,18 +55,37 @@ class ProfileTaskExecutionContext:
         self._profiling_stop_event = None  # type: Optional[Event]
 
     def start_profiling(self):
-        profile_thread = ProfileThread(self)
-        self._profiling_stop_event = Event()
+        if threadModel == "greenlet":
+            for profiler in self.profiling_segment_slots:
+                if profiler and isinstance(profiler, GreenletProfiler):
+                    profiler.start_profiling()
+        else:
+            profile_thread = ProfileThread(self)
+            self._profiling_stop_event = Event()
 
-        self._profiling_thread = Thread(target=profile_thread.start, args=[self._profiling_stop_event], daemon=True)
-        self._profiling_thread.start()
+            self._profiling_thread = Thread(
+                target=profile_thread.start,
+                args=[self._profiling_stop_event],
+                daemon=True,
+            )
+            self._profiling_thread.start()
 
     def stop_profiling(self):
-        if self._profiling_thread is not None and self._profiling_stop_event is not None:
-            self._profiling_stop_event.set()
+        if threadModel == "greenlet":
+            for profiler in self.profiling_segment_slots:
+                if profiler and isinstance(profiler, GreenletProfiler):
+                    profiler.stop_profiling()
 
-    def attempt_profiling(self, trace_context: SpanContext, segment_id: str, first_span_opname: str) -> \
-            ProfileStatusReference:
+        else:
+            if (
+                self._profiling_thread is not None
+                and self._profiling_stop_event is not None
+            ):
+                self._profiling_stop_event.set()
+
+    def attempt_profiling(
+        self, trace_context: SpanContext, segment_id: str, first_span_opname: str
+    ) -> ProfileStatusReference:
         """
         check have available slot to profile and add it
         """
@@ -74,14 +104,26 @@ class ProfileTaskExecutionContext:
             return ProfileStatusReference.create_with_none()
 
         # try to occupy slot
-        if not self._current_profiling_cnt.compare_and_set(using_slot_cnt,
-                                                           using_slot_cnt + 1):
+        if not self._current_profiling_cnt.compare_and_set(
+            using_slot_cnt, using_slot_cnt + 1
+        ):
             return ProfileStatusReference.create_with_none()
 
-        thread_profiler = ThreadProfiler(trace_context=trace_context,
-                                         segment_id=segment_id,
-                                         profiling_thread=current_thread(),
-                                         profile_context=self)
+        if threadModel == "greenlet":
+            thread_profiler = GreenletProfiler(
+                trace_context=trace_context,
+                segment_id=segment_id,
+                profiling_thread=greenlet.getcurrent,
+                profile_context=self,
+            )
+
+        else:  # default model is thread
+            thread_profiler = ThreadProfiler(
+                trace_context=trace_context,
+                segment_id=segment_id,
+                profiling_thread=current_thread(),
+                profile_context=self,
+            )
 
         slot_length = self.profiling_segment_slots.length()
         for idx in range(slot_length):
@@ -91,14 +133,16 @@ class ProfileTaskExecutionContext:
 
         return ProfileStatusReference.create_with_none()
 
-    def profiling_recheck(self, trace_context: SpanContext, segment_id: str, first_span_opname: str):
+    def profiling_recheck(
+        self, trace_context: SpanContext, segment_id: str, first_span_opname: str
+    ):
         if trace_context.profile_status.is_being_watched():
             return
 
         # if first_span_opname was changed by other plugin, there can start profile as well
-        trace_context.profile_status.update_status(self.attempt_profiling(trace_context,
-                                                                          segment_id,
-                                                                          first_span_opname).get())
+        trace_context.profile_status.update_status(
+            self.attempt_profiling(trace_context, segment_id, first_span_opname).get()
+        )
 
     def stop_tracing_profile(self, trace_context: SpanContext):
         """
@@ -112,7 +156,10 @@ class ProfileTaskExecutionContext:
                 break
 
     def is_start_profileable(self):
-        return self._total_started_profiling_cnt.add_and_get(1) <= self.task.max_sampling_count
+        return (
+            self._total_started_profiling_cnt.add_and_get(1)
+            <= self.task.max_sampling_count
+        )
 
 
 class ProfileThread:
@@ -127,32 +174,42 @@ class ProfileThread:
         try:
             self.profiling(self._task_execution_context)
         except Exception as e:
-            logger.error('profiling task fail. task_id:[%s] error:[%s]', self._task_execution_context.task.task_id, e)
+            logger.error(
+                "profiling task fail. task_id:[%s] error:[%s]",
+                self._task_execution_context.task.task_id,
+                e,
+            )
         finally:
-            self._task_execution_service.stop_current_profile_task(self._task_execution_context)
+            self._task_execution_service.stop_current_profile_task(
+                self._task_execution_context
+            )
 
     def profiling(self, context: ProfileTaskExecutionContext):
         max_sleep_period = context.task.thread_dump_period
 
+        logger.debug("=======starting profiling")
         while not self._stop_event.is_set():
             current_loop_start_time = current_milli_time()
             profilers = self._task_execution_context.profiling_segment_slots
 
             for profiler in profilers:  # type: ThreadProfiler
-                if profiler is None:
+                if profiler is None or isinstance(profiler, GreenletProfiler):
                     continue
-
                 if profiler.profile_status.get() is ProfileStatus.PENDING:
                     profiler.start_profiling_if_need()
                 elif profiler.profile_status.get() is ProfileStatus.PROFILING:
                     snapshot = profiler.build_snapshot()
                     if snapshot is not None:
+                        logger.debug(f"======== add snapshot :{snapshot}")
                         agent.add_profiling_snapshot(snapshot)
                     else:
                         # tell execution context current tracing thread dump failed, stop it
+                        logger.debug("======== snapshot is none, stop profile")
                         context.stop_tracing_profile(profiler.trace_context)
 
-            need_sleep = (current_loop_start_time + max_sleep_period) - current_milli_time()
+            need_sleep = (
+                current_loop_start_time + max_sleep_period
+            ) - current_milli_time()
             if not need_sleep > 0:
                 need_sleep = max_sleep_period
 
@@ -161,8 +218,13 @@ class ProfileThread:
 
 
 class ThreadProfiler:
-    def __init__(self, trace_context: SpanContext, segment_id: str, profiling_thread: Thread,
-                 profile_context: ProfileTaskExecutionContext):
+    def __init__(
+        self,
+        trace_context: SpanContext,
+        segment_id: str,
+        profiling_thread: Thread,
+        profile_context: ProfileTaskExecutionContext,
+    ):
         self.trace_context = trace_context
         self._segment_id = segment_id
         self._profiling_thread = profiling_thread
@@ -175,11 +237,16 @@ class ThreadProfiler:
         if trace_context.profile_status is None:
             self.profile_status = ProfileStatusReference.create_with_pending()
         else:
-            self.profile_status = trace_context.profile_status  # type: ProfileStatusReference
+            self.profile_status = (
+                trace_context.profile_status
+            )  # type: ProfileStatusReference
             self.profile_status.update_status(ProfileStatus.PENDING)
 
     def start_profiling_if_need(self):
-        if current_milli_time() - self.trace_context.create_time > self._profile_context.task.min_duration_threshold:
+        if (
+            current_milli_time() - self.trace_context.create_time
+            > self._profile_context.task.min_duration_threshold
+        ):
             self._profile_start_time = current_milli_time()
             self.trace_context.profile_status.update_status(ProfileStatus.PROFILING)
 
@@ -187,6 +254,9 @@ class ThreadProfiler:
         self.trace_context.profile_status.update_status(ProfileStatus.STOPPED)
 
     def build_snapshot(self) -> Optional[TracingThreadSnapshot]:
+        logger.debug(
+            f"======== build snapshot, profiling_thread is alive:{self._profiling_thread.is_alive()}"
+        )
         if not self._profiling_thread.is_alive():
             return None
 
@@ -197,6 +267,7 @@ class ThreadProfiler:
         # get thread stack of target thread
         stack = sys._current_frames().get(int(self._profiling_thread.ident))
         if not stack:
+            logger.debug(f"======== build snapshot, stack is none")
             return None
 
         extracted = traceback.extract_stack(stack)
@@ -204,20 +275,160 @@ class ThreadProfiler:
             if idx > config.profile_dump_max_stack_depth:
                 break
 
-            code_sig = f'{item.filename}.{item.name}: {item.lineno}'
+            code_sig = f"{item.filename}.{item.name}: {item.lineno}"
             stack_list.append(code_sig)
 
         # if is first dump, check is can start profiling
         if self.dump_sequence == 0 and not self._profile_context.is_start_profileable():
+            logger.debug(
+                f"======== build snapshot, dump_sequence == 0 and profile context is not started"
+            )
             return None
 
-        t = TracingThreadSnapshot(self._profile_context.task.task_id,
-                                  self._segment_id,
-                                  self.dump_sequence,
-                                  current_time,
-                                  stack_list)
+        t = TracingThreadSnapshot(
+            self._profile_context.task.task_id,
+            self._segment_id,
+            self.dump_sequence,
+            current_time,
+            stack_list,
+        )
         self.dump_sequence += 1
         return t
+
+    def matches(self, trace_context: SpanContext) -> bool:
+        return self.trace_context == trace_context
+
+
+import greenlet
+
+
+# class ProfileGreenlet:
+#     def __init__(self, context: ProfileTaskExecutionContext):
+#         self._task_execution_context = context
+#         self._task_execution_service = profile.profile_task_execution_service
+#         self._stop_event = None  # type: Optional[Event]
+
+#     def start(self, stop_event: Event):
+#         self._stop_event = stop_event
+
+#         try:
+#             pass
+
+#         except Exception as e:
+#             logger.error(
+#                 "profiling task fail. task_id:[%s] error:[%s]",
+#                 self._task_execution_context.task.task_id,
+#                 e,
+#             )
+#             self._task_execution_service.stop_current_profile_task(
+#                 self._task_execution_context
+#             )
+
+
+class GreenletProfiler:
+    def __init__(
+        self,
+        trace_context: SpanContext,
+        segment_id: str,
+        profiling_thread: greenlet,
+        profile_context: ProfileTaskExecutionContext,
+    ):
+        self._task_execution_service = profile.profile_task_execution_service
+        self.trace_context = trace_context
+        self._segment_id = segment_id
+        self._profiling_thread = profiling_thread
+        self._profile_context = profile_context
+        self._profile_start_time = -1
+        self.profiling_max_time_mills = config.profile_duration * 60 * 1000
+
+        self.dump_sequence = 0
+
+        if trace_context.profile_status is None:
+            self.profile_status = ProfileStatusReference.create_with_pending()
+        else:
+            self.profile_status = (
+                trace_context.profile_status
+            )  # type: ProfileStatusReference
+            self.profile_status.update_status(ProfileStatus.PENDING)
+
+    def start_profiling_if_need(self):
+        if (
+            current_milli_time() - self.trace_context.create_time
+            > self._profile_context.task.min_duration_threshold
+        ):
+            self._profile_start_time = current_milli_time()
+            self.start_profiling()
+
+    def stop_profiling(self):
+        from greenlet import getcurrent
+
+        curr = getcurrent()
+        curr.settrace(self._old_trace)
+
+    def start_profiling(self, context: ProfileTaskExecutionContext):
+        self._task_execution_context = context
+        try:
+            from greenlet import getcurrent
+
+            curr = getcurrent()
+
+            def callback(event, args):
+                origin, target = args
+                # logger.debug(f"+-+-+-+-+ switch greenlet, origin:{origin}, target:{target}, event:{event}")
+                if origin == curr:
+                    logger.debug(
+                        f"+-+-+-+-+ switch out, trace:{traceback.format_stack(origin.gr_frame)}"
+                    )
+
+                    stack_list = []
+                    extracted = traceback.extract_stack(origin.gr_frame)
+                    for idx, item in enumerate(extracted):
+                        if idx > config.profile_dump_max_stack_depth:
+                            break
+
+                        code_sig = f"{item.filename}.{item.name}: {item.lineno}"
+                        stack_list.append(code_sig)
+
+                    # if is first dump, check is can start profiling
+                    if (
+                        self.dump_sequence == 0
+                        and not self._profile_context.is_start_profileable()
+                    ):
+                        logger.debug(
+                            f"======== build snapshot, dump_sequence == 0 and profile context is not started"
+                        )
+                        return None
+
+                    current_time = current_milli_time()
+                    snapshot = TracingThreadSnapshot(
+                        self._profile_context.task.task_id,
+                        self._segment_id,
+                        self.dump_sequence,
+                        current_time,
+                        stack_list,
+                    )
+                    self.dump_sequence += 1
+                    if snapshot is not None:
+                        logger.debug(f"======== add snapshot :{snapshot}")
+                        agent.add_profiling_snapshot(snapshot)
+                    else:
+                        # tell execution context current tracing thread dump failed, stop it
+                        logger.debug("======== snapshot is none, stop profile")
+                        self._profiling_context.stop_tracing_profile(self.trace_context)
+
+                if target == curr:
+                    logger.debug(f"+-+-+-+-+ switch in")
+
+            self._old_trace = curr.settrace(callback)
+        except Exception as e:
+            logger.error(
+                "profiling task fail. task_id:[%s] error:[%s]",
+                self._profiling_context.task.task_id,
+                e,
+            )
+            self.profiling_context.stop_current_profile_task(
+                self._task_execution_context
+            )
 
     def matches(self, trace_context: SpanContext) -> bool:
         return self.trace_context == trace_context
