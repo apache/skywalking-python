@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import logging
-import traceback
 
 from skywalking import Component, agent, config
 from skywalking import profile
@@ -28,7 +26,6 @@ from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
 from skywalking.utils.time import current_milli_time
-
 
 
 try:  # attempt to use async-local instead of thread-local context and spans

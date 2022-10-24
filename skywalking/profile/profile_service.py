@@ -32,6 +32,7 @@ from skywalking.utils.time import current_milli_time
 
 
 class Scheduler:
+
     @staticmethod
     def schedule(milliseconds, func, *args, **kwargs):
         seconds = milliseconds / 1000
@@ -89,14 +90,13 @@ class ProfileTaskExecutionService:
 
     def add_profile_task(self, task: ProfileTask):
         # update last command create time, which will be used in command query
-        logger.debug(f"======== add profile task:{task}")
         if task.create_time > self._last_command_create_time:
             self._last_command_create_time = task.create_time
 
         # check profile task object
         success, error_reason = self._check_profile_task(task)
         if not success:
-            logger.warning("check command error, cannot process this profile task. reason: %s", error_reason)
+            logger.warning('check command error, cannot process this profile task. reason: %s', error_reason)
             return
 
         # add task to list
@@ -107,9 +107,7 @@ class ProfileTaskExecutionService:
         self.profile_task_scheduler.schedule(delay_millis, self.process_profile_task, [task])
 
     def add_profiling(self, context: SpanContext, segment_id: str, first_span_opname: str) -> ProfileStatusReference:
-        execution_context = (
-            self.task_execution_context.get()
-        )  # type: ProfileTaskExecutionContext
+        execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
         # 这里判断这个entrypoint是否在执行profiling
         if execution_context is None:
             return ProfileStatusReference.create_with_none()
@@ -120,14 +118,10 @@ class ProfileTaskExecutionService:
         """
         Re-check current trace need profiling, in case that third-party plugins change the operation name.
         """
-        execution_context = (
-            self.task_execution_context.get()
-        )  # type: ProfileTaskExecutionContext
+        execution_context = self.task_execution_context.get()  # type: ProfileTaskExecutionContext
         if execution_context is None:
             return
-        execution_context.profiling_recheck(
-            trace_context, segment_id, first_span_opname
-        )
+        execution_context.profiling_recheck(trace_context, segment_id, first_span_opname)
 
     # using reentrant lock for process_profile_task and stop_current_profile_task,
     # to make sure thread safe.
@@ -143,7 +137,7 @@ class ProfileTaskExecutionService:
             # start profiling this task
             current_context.start_profiling()
             if logger_debug_enabled:
-                logger.debug("profile task [%s] for endpoint [%s] started",task.task_id,task.first_span_op_name)
+                logger.debug('profile task [%s] for endpoint [%s] started',task.task_id,task.first_span_op_name)
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
@@ -184,12 +178,13 @@ class ProfileTaskExecutionService:
 
             # dump period
             if task.thread_dump_period < ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS:
-                return (False, f'dump period must be greater than or equals to '
-                               f'{ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS} milliseconds')
+                return (False, 
+                        f'dump period must be greater than or equals to '
+                        f'{ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS} milliseconds')
 
             # max sampling count
             if task.max_sampling_count <= 0:
-                return False, "max sampling count must be greater than zero"
+                return False, 'max sampling count must be greater than zero'
             if task.max_sampling_count >= ProfileConstants.TASK_MAX_SAMPLING_COUNT:
                 return (False, f'max sampling count must be less than '
                                f'{ProfileConstants.TASK_MAX_SAMPLING_COUNT}')
@@ -203,14 +198,14 @@ class ProfileTaskExecutionService:
                     # if the end time of the task to be added is during the execution of any data, means is a error data
                     if task.start_time <= task_finish_time <= self._cal_profile_task_finish_time(profile_task):
                         return (False,
-                            f'there already have processing task in time range, '
-                            f'could not add a new task again. processing task '
-                            f'monitor endpoint name: {profile_task.first_span_op_name}')
+                                f'there already have processing task in time range, '
+                                f'could not add a new task again. processing task '
+                                f'monitor endpoint name: {profile_task.first_span_op_name}')
 
             return True, ''
 
         except TypeError:
-            return False, "ProfileTask attributes have a type error"
+            return False, 'ProfileTask attributes have a type error'
 
     def _cal_profile_task_finish_time(self, task: ProfileTask) -> int:
         return task.start_time + task.duration * self.MINUTE_TO_MILLIS
