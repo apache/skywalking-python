@@ -137,7 +137,7 @@ class ProfileTaskExecutionService:
             # start profiling this task
             current_context.start_profiling()
             if logger_debug_enabled:
-                logger.debug('profile task [%s] for endpoint [%s] started',task.task_id,task.first_span_op_name)
+                logger.debug('profile task [%s] for endpoint [%s] started', task.task_id,task.first_span_op_name)
 
             millis = task.duration * self.MINUTE_TO_MILLIS
             self.profile_task_scheduler.schedule(millis, self.stop_current_profile_task, [current_context])
@@ -151,8 +151,8 @@ class ProfileTaskExecutionService:
 
             need_stop.stop_profiling()
             if logger_debug_enabled:
-                logger.debug("profile task [%s] for endpoint [%s] stopped",need_stop.task.task_id,
-                            need_stop.task.first_span_op_name)
+                logger.debug('profile task [%s] for endpoint [%s] stopped', need_stop.task.task_id,
+                             need_stop.task.first_span_op_name)
 
             self.remove_from_profile_task_list(need_stop.task)
 
@@ -178,7 +178,7 @@ class ProfileTaskExecutionService:
 
             # dump period
             if task.thread_dump_period < ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS:
-                return (False, 
+                return (False,
                         f'dump period must be greater than or equals to '
                         f'{ProfileConstants.TASK_DUMP_PERIOD_MIN_MILLIS} milliseconds')
 

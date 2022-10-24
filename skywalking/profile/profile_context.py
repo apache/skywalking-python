@@ -102,7 +102,7 @@ class ProfileTaskExecutionContext:
             return ProfileStatusReference.create_with_none()
 
         # try to occupy slot
-        if not self._current_profiling_cnt.compare_and_set(using_slot_cnt, 
+        if not self._current_profiling_cnt.compare_and_set(using_slot_cnt,
                                                            using_slot_cnt + 1):
             return ProfileStatusReference.create_with_none()
 
@@ -137,8 +137,8 @@ class ProfileTaskExecutionContext:
             return
 
         # if first_span_opname was changed by other plugin, there can start profile as well
-        trace_context.profile_status.update_status(self.attempt_profiling(trace_context, 
-                                                                          segment_id, 
+        trace_context.profile_status.update_status(self.attempt_profiling(trace_context,
+                                                                          segment_id,
                                                                           first_span_opname).get())
 
     def stop_tracing_profile(self, trace_context: SpanContext):
@@ -168,7 +168,7 @@ class ProfileThread:
         try:
             self.profiling(self._task_execution_context)
         except Exception as e:
-            logger.error("profiling task fail. task_id:[%s] error:[%s]", self._task_execution_context.task.task_id, e)
+            logger.error('profiling task fail. task_id:[%s] error:[%s]', self._task_execution_context.task.task_id, e)
         finally:
             self._task_execution_service.stop_current_profile_task(self._task_execution_context)
 
@@ -202,7 +202,7 @@ class ProfileThread:
 
 class ThreadProfiler:
     def __init__(self, trace_context: SpanContext, segment_id: str, profiling_thread: Thread,
-                profile_context: ProfileTaskExecutionContext):
+                 profile_context: ProfileTaskExecutionContext):
         self.trace_context = trace_context
         self._segment_id = segment_id
         self._profiling_thread = profiling_thread
