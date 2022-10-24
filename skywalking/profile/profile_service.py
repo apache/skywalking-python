@@ -170,6 +170,7 @@ class ProfileTaskExecutionService:
             )
 
     def stop_current_profile_task(self, need_stop: ProfileTaskExecutionContext):
+        logger.debug(f"-================= stop_current_profile_task")
         with self._rlock:
             # need_stop is None or task_execution_context is not need_stop context
             if need_stop is None or not self.task_execution_context.compare_and_set(

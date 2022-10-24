@@ -55,7 +55,7 @@ class ProfileTaskExecutionContext:
         self._profiling_stop_event = None  # type: Optional[Event]
 
     def start_profiling(self):
-        logger.debug(f"======== start profiling, threadmodel:{threadModel}")
+        logger.debug(f"======== start profiling, threadModel:{threadModel}")
         if threadModel == "greenlet":
             # greenlet的profiler会在创建时自动启动，而threadmode的profiler需要在另外的ProfileThread运行
             pass
@@ -77,6 +77,7 @@ class ProfileTaskExecutionContext:
 
     def stop_profiling(self):
         if threadModel == "greenlet":
+            logger.debug(f"========== stop_profiling (ProfileTaskExecutionContext)")
             for profiler in self.profiling_segment_slots:
                 if profiler and isinstance(profiler, GreenletProfiler):
                     profiler.stop_profiling()
@@ -251,7 +252,8 @@ class ThreadProfiler:
 
     def start_profiling_if_need(self):
         if (
-            current_milli_time() - self.trace_context.create_time > self._profile_context.task.min_duration_threshold
+            current_milli_time() - self.trace_context.create_time
+            > self._profile_context.task.min_duration_threshold
         ):
             self._profile_start_time = current_milli_time()
             self.trace_context.profile_status.update_status(ProfileStatus.PROFILING)
@@ -308,29 +310,6 @@ class ThreadProfiler:
 import greenlet
 
 
-# class ProfileGreenlet:
-#     def __init__(self, context: ProfileTaskExecutionContext):
-#         self._task_execution_context = context
-#         self._task_execution_service = profile.profile_task_execution_service
-#         self._stop_event = None  # type: Optional[Event]
-
-#     def start(self, stop_event: Event):
-#         self._stop_event = stop_event
-
-#         try:
-#             pass
-
-#         except Exception as e:
-#             logger.error(
-#                 "profiling task fail. task_id:[%s] error:[%s]",
-#                 self._task_execution_context.task.task_id,
-#                 e,
-#             )
-#             self._task_execution_service.stop_current_profile_task(
-#                 self._task_execution_context
-#             )
-
-
 class GreenletProfiler:
     def __init__(
         self,
@@ -368,14 +347,10 @@ class GreenletProfiler:
 
             def callback(event, args):
                 origin, target = args
-                # logger.debug(f"+-+-+-+-+ switch greenlet, origin:{origin}, target:{target}, event:{event}")
                 if origin == curr or target == curr:
-                    logger.debug(
-                        f"+-+-+-+-+ switch out/out, trace:{traceback.format_stack(origin.gr_frame)}"
-                    )
 
                     stack_list = []
-                    extracted = traceback.extract_stack(origin.gr_frame)
+                    extracted = traceback.extract_stack(curr.gr_frame)
                     for idx, item in enumerate(extracted):
                         if idx > config.profile_dump_max_stack_depth:
                             break
@@ -388,9 +363,6 @@ class GreenletProfiler:
                         self.dump_sequence == 0
                         and not self._profile_context.is_start_profileable()
                     ):
-                        logger.debug(
-                            f"======== build snapshot, dump_sequence == 0 and profile context is not profileable"
-                        )
                         return None
 
                     current_time = current_milli_time()
@@ -403,20 +375,16 @@ class GreenletProfiler:
                     )
                     self.dump_sequence += 1
                     if snapshot is not None:
-                        logger.debug(f"======== add snapshot :{snapshot}")
                         agent.add_profiling_snapshot(snapshot)
                     else:
                         # tell execution context current tracing thread dump failed, stop it
-                        logger.debug("======== snapshot is none, stop profile")
+                        # todo test it
                         self._profiling_context.stop_tracing_profile(self.trace_context)
-
-                # if target == curr:
-                    # logger.debug(f"+-+-+-+-+ switch in")
 
             self.profile_status.update_status(ProfileStatus.PROFILING)
             self._old_trace = curr.settrace(callback)
         except ImportError as e:
-            logger.error("===== no gevent.")
+            logger.error("run in Greenlet Model without greenlet.")
             self.profiling_context.stop_current_profile_task(
                 self._task_execution_context
             )
@@ -427,6 +395,7 @@ class GreenletProfiler:
                 self._profiling_context.task.task_id,
                 e,
             )
+            # todo test this can current stop profile task or not
             self.profiling_context.stop_current_profile_task(
                 self._task_execution_context
             )
