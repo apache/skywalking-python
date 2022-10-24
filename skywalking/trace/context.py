@@ -21,7 +21,6 @@ from skywalking import Component, agent, config
 from skywalking import profile
 from skywalking.agent import isfull
 from skywalking.profile.profile_status import ProfileStatusReference
-from skywalking.profile.snapshot import TracingThreadSnapshot
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import Segment, SegmentRef
@@ -30,8 +29,6 @@ from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
 from skywalking.utils.time import current_milli_time
 
-
-logger = logging.getLogger(__name__)
 
 
 try:  # attempt to use async-local instead of thread-local context and spans

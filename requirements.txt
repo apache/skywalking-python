@@ -24,7 +24,8 @@ pymysql==1.0.2
 pyramid==2.0
 PyYAML==6.0
 redis==3.5.3
-sanic==20.12.7  # for python3.6
+sanic==21.9.1
+# sanic==20.12.7  # for python3.6
 tornado==6.1
 Werkzeug==2.0.2
 yarl==1.7.0
@@ -33,4 +34,3 @@ fastapi==0.70.1
 uvicorn==0.16.0
 gunicorn==20.1.0
 bottle==0.12.21
-# apache-skywalking==0.8.0
