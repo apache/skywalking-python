@@ -19,16 +19,7 @@ from abc import ABC, abstractmethod
 from queue import Queue
 
 
-class Protocol(ABC):
-    def fork_before(self):
-        pass
-
-    def fork_after_in_parent(self):
-        pass
-
-    def fork_after_in_child(self):
-        pass
-
+class BaseProtocol(ABC):
     @abstractmethod
     def heartbeat(self):
         raise NotImplementedError()
@@ -41,8 +32,19 @@ class Protocol(ABC):
     def report_log(self, queue: Queue, block: bool = True):
         raise NotImplementedError()
 
+
+class Protocol(BaseProtocol):
+    def fork_before(self):
+        pass
+
+    def fork_after_in_parent(self):
+        pass
+
+    def fork_after_in_child(self):
+        pass
+
     def report_meter(self, queue: Queue, block: bool = True):
-        raise NotImplementedError()
+        pass
 
     def query_profile_commands(self):
         pass

@@ -34,15 +34,17 @@ class GCDataSource(DataSource):
         while (True):
             yield gc.get_stats()[2]['collected']
 
-    def gc_callback(self, phase, info):
-        if phase == 'start':
-            self.start_time = time.time()
-        elif phase == 'stop':
-            self.gc_time = time.time() - self.start_time
-
     def gc_time_generator(self):
+        self.gc_time = 0
+
+        def gc_callback(phase, info):
+            if phase == 'start':
+                self.start_time = time.time()
+            elif phase == 'stop':
+                self.gc_time = (time.time() - self.start_time) * 1000
+
         if hasattr(gc, 'callbacks'):
-            gc.callbacks.append(self.gc_callback)
+            gc.callbacks.append(gc_callback)
 
         while (True):
             yield self.gc_time
