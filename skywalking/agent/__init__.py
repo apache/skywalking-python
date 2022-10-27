@@ -150,6 +150,18 @@ def __init_threading():
         __meter_report_thread = Thread(name='MeterReportThread', target=__report_meter, daemon=True)
         __meter_report_thread.start()
 
+        if config.pvm_meter_reporter_active:
+            from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
+            from skywalking.meter.pvm.gc_data import GCDataSource
+            from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
+            from skywalking.meter.pvm.thread_data import ThreadDataSource
+
+            MEMUsageDataSource().registry()
+            CPUUsageDataSource().registry()
+            GCDataSource().registry()
+            ThreadDataSource().registry()
+
+
     if config.log_reporter_active:
         __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
         __log_report_thread = Thread(name='LogReportThread', target=__report_log, daemon=True)
