@@ -13,24 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_IMAGE
+# This file is used to show how to write configuration files and can be used to test.
 
-FROM python:${BASE_PYTHON_IMAGE}
+setup:
+  env: compose
+  file: docker-compose.yml
+  timeout: 20m
+  init-system-environment: ../../../script/env
+  steps:
+    - name: install yq
+      command: bash tests/e2e/script/prepare/install.sh yq
+    - name: install swctl
+      command: bash tests/e2e/script/prepare/install.sh swctl
 
-VOLUME /services
 
-COPY tests/e2e/base/consumer/consumer.py /services/
-COPY tests/e2e/base/provider/provider.py /services/
-
-# Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && make install
-ENV PATH="/skywalking-python/venv/bin:$PATH"
-
-RUN pip install requests kafka-python
-# Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp flask
-
-# Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+verify:
+  retry:
+    count: 20
+    interval: 3s
+  cases:
+    - includes:
+        - ../profiling-cases.yaml

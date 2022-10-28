@@ -266,7 +266,7 @@ class GreenletProfiler:
         self,
         trace_context: SpanContext,
         segment_id: str,
-        profiling_thread: greenlet,
+        profiling_thread, # : greenlet,
         profile_context: ProfileTaskExecutionContext,
     ):
         self._task_execution_service = profile.profile_task_execution_service
