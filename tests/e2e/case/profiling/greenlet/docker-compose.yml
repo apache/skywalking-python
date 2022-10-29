@@ -33,8 +33,8 @@ services:
     ports:
       - "9090"
     volumes:
-      - ../../../base/provider/flask_provider.py:/services/provider.py
-      - ./entrypoint.py:/services/entrypoint.py
+      - ../provider/provider.py:/services/provider.py
+      - ../provider/entrypoint.py:/services/entrypoint.py
       - ./start_gevent.sh:/services/start_gevent.sh
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
@@ -59,4 +59,3 @@ services:
 
 networks:
   e2e:
-  

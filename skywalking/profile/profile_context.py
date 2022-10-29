@@ -36,12 +36,16 @@ from skywalking.utils.time import current_milli_time
 
 THREAD_MODEL = 'thread'
 try:
-    from gevent import monkey
+    from gevent import monkey, hub
     import greenlet
+    from gevent.exceptions import BlockingSwitchOutError
+    
 
     if monkey.is_module_patched('threading'):
         THREAD_MODEL = 'greenlet'
-except ImportError:
+        logger.info("+++++++++++++++++== GREENLET !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+except ImportError as e:
+    logger.warn(f"===== import error: {e}")
     pass
 
 
@@ -324,13 +328,22 @@ class GreenletProfiler:
             def callback(event, args):
                 origin, target = args
                 if origin == curr or target == curr:
-                    snapshot = self.build_snapshot()
-                    if snapshot is not None:
-                        agent.add_profiling_snapshot(snapshot)
-                    else:
-                        # tell execution context current tracing thread dump failed, stop it
-                        # todo test it
+                    try:
+                        snapshot = self.build_snapshot()
+                        if snapshot is not None:
+                            agent.add_profiling_snapshot(snapshot)
+                        else:
+                            # tell execution context current tracing thread dump failed, stop it
+                            # todo test it
+                            self._profile_context.stop_tracing_profile(self.trace_context)
+                    except BlockingSwitchOutError as e:
                         self._profile_context.stop_tracing_profile(self.trace_context)
+                    except Exception as e:
+                        logger.error(f"build and add snapshot failed. error: {e}")
+                        self._profile_context.stop_tracing_profile(self.trace_context)
+                        raise e
+
+            
 
             self.profile_status.update_status(ProfileStatus.PROFILING)
             self._old_trace = curr.settrace(callback)

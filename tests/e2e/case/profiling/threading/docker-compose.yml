@@ -18,55 +18,6 @@
 version: '2.1'
 
 services:
-  # h2db:
-  #   build:
-  #     context: .
-  #     dockerfile: ../../../base/Dockerfile.h2
-  #   networks:
-  #     - e2e
-  #   expose:
-  #     - 1521
-  #   healthcheck:
-  #     test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/1521"]
-  #     interval: 5s
-  #     timeout: 60s
-  #     retries: 120
-
-  # oap:
-  #   image: ghcr.io/apache/skywalking/oap:${SW_OAP_COMMIT}
-  #   expose:
-  #     - 11800
-  #     - 12800
-  #     - 10051
-  #     - 5005
-  #   ports:
-  #     - 12800
-  #   networks:
-  #     - e2e
-  #   # volumes:
-  #     # - ./../prepare/setup-oap/download-mysql.sh:/download-mysql.sh
-  #     # - ./../prepare/setup-oap/log4j2.xml:/skywalking/config/log4j2.xml
-  #   environment:
-  #     SW_CLUSTER_ZK_HOST_PORT: zk:2181
-  #     SW_STORAGE_ES_CLUSTER_NODES: es:9200
-  #     SW_JDBC_URL: jdbc:mysql://mysql:3306/swtest
-  #     SW_STORAGE_INFLUXDB_URL: http://influxdb:8086
-  #     SW_STORAGE_BANYANDB_HOST: "banyandb"
-  #     SW_STORAGE_IOTDB_HOST: iotdb
-  #     SW_STORAGE_IOTDB_SESSIONPOOL_SIZE: 2
-  #     SW_CONFIG_ETCD_PERIOD: 1
-  #     SW_CONFIG_ETCD_ENDPOINTS: http://etcd:2379
-  #     SW_CLUSTER_ETCD_ENDPOINTS: http://etcd:2379
-  #     SW_STORAGE: h2
-  #     SW_STORAGE_H2_URL: jdbc:h2:tcp://h2db:1521/skywalking-oap-db
-  #   healthcheck:
-  #     test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/11800"]
-  #     interval: 5s
-  #     timeout: 60s
-  #     retries: 120
-  #   depends_on:
-  #     h2db:
-  #       condition: service_healthy
 
   oap:
     extends:
@@ -83,7 +34,7 @@ services:
     ports:
       - "9090"
     volumes:
-      - ../../../base/provider/flask_provider.py:/services/provider.py
+      - ../provider/provider.py:/services/provider.py
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
     depends_on:
