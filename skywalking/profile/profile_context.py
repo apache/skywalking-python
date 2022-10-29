@@ -43,9 +43,7 @@ try:
 
     if monkey.is_module_patched('threading'):
         THREAD_MODEL = 'greenlet'
-        logger.info("+++++++++++++++++== GREENLET !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 except ImportError as e:
-    logger.warn(f"===== import error: {e}")
     pass
 
 
