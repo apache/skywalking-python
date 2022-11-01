@@ -20,19 +20,19 @@ import random
 from flask import Flask, request
 
 app = Flask(__name__)
-   
+
+
 @app.route('/artist', methods=['POST'])
 def artist():
     try:
 
         time.sleep(random.random())
         payload = request.get_json()
-        print(f" args:{payload}")
-        return {"artist": "song"}
-        
+        print(f'args: {payload}')
+
+        return {'artist': 'song'}
     except Exception as e:  # noqa
-        print(f"error: {e}")
-        return {'message': e}
+        return {'message': str(e)}
 
 
 if __name__ == '__main__':

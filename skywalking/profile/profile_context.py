@@ -36,14 +36,13 @@ from skywalking.utils.time import current_milli_time
 
 THREAD_MODEL = 'thread'
 try:
-    from gevent import monkey, hub
+    from gevent import monkey
     import greenlet
     from gevent.exceptions import BlockingSwitchOutError
-    
 
     if monkey.is_module_patched('threading'):
         THREAD_MODEL = 'greenlet'
-except ImportError as e:
+except ImportError:
     pass
 
 
@@ -268,7 +267,7 @@ class GreenletProfiler:
         self,
         trace_context: SpanContext,
         segment_id: str,
-        profiling_thread, # : greenlet,
+        profiling_thread,  # greenlet
         profile_context: ProfileTaskExecutionContext,
     ):
         self._task_execution_service = profile.profile_task_execution_service
@@ -334,14 +333,13 @@ class GreenletProfiler:
                             # tell execution context current tracing thread dump failed, stop it
                             # todo test it
                             self._profile_context.stop_tracing_profile(self.trace_context)
-                    except BlockingSwitchOutError as e:
+                    except BlockingSwitchOutError:
                         self._profile_context.stop_tracing_profile(self.trace_context)
                     except Exception as e:
-                        logger.error(f"build and add snapshot failed. error: {e}")
+                        logger.error(f'build and add snapshot failed. error: {e}')
                         self._profile_context.stop_tracing_profile(self.trace_context)
                         raise e
 
-            
 
             self.profile_status.update_status(ProfileStatus.PROFILING)
             self._old_trace = curr.settrace(callback)
