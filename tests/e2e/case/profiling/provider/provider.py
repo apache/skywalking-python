@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,25 +13,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-# Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_IMAGE
+import time
+import random
+from flask import Flask, request
 
-FROM python:${BASE_PYTHON_IMAGE}
+app = Flask(__name__)
 
-VOLUME /services
 
-COPY tests/e2e/base/consumer/consumer.py /services/
-COPY tests/e2e/base/provider/provider.py /services/
+@app.route('/artist', methods=['POST'])
+def artist():
+    try:
 
-# Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && make install
-ENV PATH="/skywalking-python/venv/bin:$PATH"
+        time.sleep(random.random())
+        payload = request.get_json()
+        print(f'args: {payload}')
 
-RUN pip install requests kafka-python
-# Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp flask
+        return {'artist': 'song'}
+    except Exception as e:  # noqa
+        return {'message': str(e)}
 
-# Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+
+if __name__ == '__main__':
+    # noinspection PyTypeChecker
+    app.run(host='0.0.0.0', port=9090)

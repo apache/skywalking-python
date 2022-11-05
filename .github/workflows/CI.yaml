@@ -223,6 +223,10 @@ jobs:
             path: tests/e2e/case/http/e2e.yaml
           - name: Kafka
             path: tests/e2e/case/kafka/e2e.yaml
+          - name: profiling_threading
+            path: tests/e2e/case/profiling/threading/e2e.yaml
+          - name: profiling_greenlet
+            path: tests/e2e/case/profiling/greenlet/e2e.yaml
       fail-fast: false
     steps:
       - name: Checkout source codes

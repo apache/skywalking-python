@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,25 +13,47 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-# Builds -> skywalking-agent:latest-e2e
-ARG BASE_PYTHON_IMAGE
+version: '2.1'
 
-FROM python:${BASE_PYTHON_IMAGE}
+services:
 
-VOLUME /services
+  oap:
+    extends:
+      file: ../../../base/docker-compose.base.yml
+      service: oap
+    ports:
+      - "12800"
 
-COPY tests/e2e/base/consumer/consumer.py /services/
-COPY tests/e2e/base/provider/provider.py /services/
 
-# Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && make install
-ENV PATH="/skywalking-python/venv/bin:$PATH"
+  provider:
+    extends:
+      file: ../../../base/docker-compose.base.yml
+      service: provider
+    ports:
+      - "9090"
+    volumes:
+      - ../provider/provider.py:/services/provider.py
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+    depends_on:
+      oap:
+        condition: service_healthy
 
-RUN pip install requests kafka-python
-# Extra dependencies for e2e services
-RUN pip install fastapi uvicorn aiohttp flask
+  consumer:
+    extends:
+      file: ../../../base/docker-compose.base.yml
+      service: consumer
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+    ports:
+      - "9090"
+    depends_on:
+      provider:
+        condition: service_healthy
 
-# Entrypoint with agent attached
-Entrypoint ["sw-python", "run"]
+    
+
+networks:
+  e2e:
