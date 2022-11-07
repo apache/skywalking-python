@@ -1,38 +1,49 @@
-# Developers' Guide
+# Quick Start for Contributors
 
-## Steps to get an operational virtual environment:
+## Make and Makefile
+We rely on `Makefile` to automate jobs, including setting up environments, testing and releasing.
 
-1. `git clone https://github.com/apache/skywalking-python.git`
-1. Run the script(`setup-linux.sh`, `setup-windows.ps1`) for your relevant OS to create a virtual environment folder in the project root
-(*skywalking-python/venv*) and install all the necessary requirements
-1. Set up your IDE to use the generated virtual environment of Python
+First you need to have the `make` command available: 
+```ubuntu/wsl
+# ubuntu/wsl
+sudo apt-get update
 
-## Developing a new plugin
+sudo apt-get -y install make
+```
+or 
+```windows powershell
+# windows powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
 
-You can always take [the existing plugins](../setup/Plugins.md) as examples, while there are some general ideas for all plugins.
-1. A plugin is a module under the directory `skywalking/plugins` with an `install` method; 
-1. Inside the `install` method, you find out the relevant method(s) of the libraries that you plan to instrument, and create/close spans before/after those method(s).
-1. You should also provide version rules in the plugin module, which means the version of package your plugin support. You should init a dict with keys `name` and `rules`. the `name` is your plugin's corresponding package's name, the `rules` is the version rules this package should follow.
-   
-   You can use >, >=, ==, <=, <, and != operators in rules. 
-   
-   The relation between rules element in the rules array is **OR**, which means the version of the package should follow at least one rule in rules array.
-   
-   You can set many version rules in one element of rules array, separate each other with a space character, the relation of rules in one rule element is **AND**, which means the version of package should follow all rules in this rule element.
-   
-   For example, below `version_rule` indicates that the package version of `django` should `>=2.0 AND <=2.3 AND !=2.2.1` OR `>3.0`.
-   ```python
-   version_rule = {
-       "name": "django",
-       "rules": [">=2.0 <=2.3 !=2.2.1", ">3.0"]
-   }
-   ```
-1. Every plugin requires a corresponding test under `tests/plugin` before it can be merged, refer to [the plugin test guide](PluginTest.md) when writing a plugin test.
-1. Update the [Supported Plugin List](../setup/Plugins.md).
-1. Add the environment variables to [Environment Variable list](../setup/EnvVars.md) if any.
+irm get.scoop.sh | iex
 
-## Steps after coding
+scoop install make
+```
+## Poetry 
+We have migrated from basic pip to [Poetry](https://python-poetry.org/) to manage dependencies and package our project.
 
-If your PR introduces the need for a new non-standard library which needs to be pulled via pip or if it removes the need for a previously-used library:
-1. Execute the `build_requirements` script relevant to your OS.
-1. Double check the `requirements.txt` file in the project root to ensure that the changes have been reflected. 
+Once you have `make` ready, run `make env`, this will automatically install the right Poetry release, and create 
+(plus manage) a `.venv` virtual environment for us based on the currently activated Python 3 version. Enjoy coding!
+
+### Switching between Multiple Python Versions
+Do not develop/test on Python < 3.7, since Poetry and some other functionalities we implement rely on Python 3.7+
+
+If you would like to test on multiple Python versions, run the following to switch and recreate virtual environment:
+#### Without Python Version Tools
+```bash
+poetry env use python3.x
+poetry install
+```
+
+#### With Python Version Tools
+```shell
+pyenv shell 3.9.11
+poetry env use $(pyenv which python)
+poetry install
+```
+
+Or try: `virtualenvs.prefer-active-python`, which is an experimental poetry feature that can be set to `true` so that it will 
+automatically follow environment.
+
+# Next
+Refer to the [Plugin Development Guide](How-to-develop-plugin.md) to learn how to build a new plugin for a library.

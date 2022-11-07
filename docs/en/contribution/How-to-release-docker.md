@@ -35,12 +35,10 @@ make
 ```
 
 ## How to publish images
-
-1. After a SkyWalking Apache release for the Python agent, 
-please compose a new script named `<version>.sh` to `docker/v` folder.
+After a SkyWalking Apache release for the Python agent and wheels have been pushed to PyPI:
 
 
-2. Build images from the project root:
+1. Build images from the project root, this step pulls agent wheel from PyPI and installs it:
     
     ```shell
     export AGENT_VERSION=<version>
@@ -49,10 +47,10 @@ please compose a new script named `<version>.sh` to `docker/v` folder.
     ```
 
 
-3. Verify the images built.
+2. Verify the images built.
 
 
-4. Push built images to docker hub repos:
+3. Push built images to docker hub repos:
 
    ```shell
    make push-image

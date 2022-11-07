@@ -1,9 +1,13 @@
-<!-- Uncomment the following checklist WHEN AND ONLY WHEN you're adding a new plugin -->
+<!-- Fill the following checklists when a feature/plugin is added or modified-->
 <!--
-- [ ] Add a test case for the new plugin
-- [ ] Add a CHANGELOG entry for the new plugin
-- [ ] Add a component id in [the main repo](https://github.com/apache/skywalking/blob/master/oap-server/server-starter/src/main/resources/component-libraries.yml)
-- [ ] Add a logo in [the UI repo](https://github.com/apache/skywalking-booster-ui/tree/main/src/assets/img/technologies)
-- [ ] Rebuild the `requirements.txt` by running `tools/env/build_requirements_(linux|windows).sh`
-- [ ] Rebuild the `Plugins.md` documentation by running `make doc-gen`
+- [ ] I have added test cases for the feature/plugin
+- [ ] I have tested the added code and they work well
+- [ ] I have added a CHANGELOG entry for the new feature/plugin
+-->
+
+<!-- Additionally fill the following checklists when it's plugin-related -->
+- [ ] I have added a component id in [the main repo](https://github.com/apache/skywalking/blob/master/oap-server/server-starter/src/main/resources/component-libraries.yml)
+- [ ] I have added a logo in [the UI repo](https://github.com/apache/skywalking-booster-ui/tree/main/src/assets/img/technologies)
+- [ ] I have added the library to `pyproject.toml` (plugin group) by running `poetry add library --group plugins`
+- [ ] I have Rebuild the `Plugins.md` documentation by running `make doc-gen`
 -->

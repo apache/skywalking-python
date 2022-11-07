@@ -13,6 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 2022-04-23 commit
-SW_CTL_COMMIT=d2c95c3782f137518b09554331794c10e1457d95
-SW_OAP_COMMIT=3256b6c9d9b202ca676554ef2f1eac822c8a882f
+# 2022-11-05 commit
+SW_CTL_COMMIT=521843f963917aa806740a9ad09c65aa59aca179
+SW_OAP_COMMIT=93d021ab0bbffa6cfa73adacdcbbf9e25f8016be

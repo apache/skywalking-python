@@ -23,6 +23,6 @@ WORKDIR /agent
 
 ADD $ROOT /agent
 
-RUN cd /agent && make setup-test
+RUN cd /agent && make install
 
-ENV PATH="/agent/venv/bin:$PATH"
+# ENV PATH="/agent/venv/bin:$PATH"

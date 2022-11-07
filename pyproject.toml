@@ -1,0 +1,144 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[tool.poetry]
+name = "apache-skywalking"
+version = "0.8.0"
+description = "The Python Agent for Apache SkyWalking, which provides the native tracing/metrics/logging abilities for Python projects."
+license = "Apache-2.0"
+authors = ["Apache Software Foundation <dev@skywalking.apache.org>"]
+maintainers = ["Apache SkyWalking Community <dev@skywalking.apache.org>"]
+readme = "README.md"
+homepage = "https://skywalking.apache.org/"
+repository = "https://github.com/apache/skywalking-python"
+documentation = "https://skywalking.apache.org/docs/skywalking-python/next/readme/"
+keywords = [
+    "skywalking", "tracing", "metrics", "logging",
+    "observability", "distributed-tracing", "apm",
+    "python"
+]
+classifiers=[
+    'License :: OSI Approved :: Apache Software License',
+
+    'Operating System :: OS Independent',
+
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+
+    'Topic :: System :: Monitoring',
+    'Topic :: Software Development',
+]
+
+packages = [
+    { include = "skywalking" },
+    { include = "sw_python" }
+]
+
+# poetry will ignore generated files as .gitignore, but we need them in package
+include = ['skywalking/protocol/**/*']
+exclude = ['tests']
+
+[tool.poetry.build]
+generate-setup-file = true
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/apache/skywalking/issues"
+
+[tool.poetry.scripts]
+sw-python = 'skywalking.bootstrap.cli.sw_python:start'
+
+
+[tool.poetry.dependencies]
+python = ">=3.7, <3.11"
+grpcio = '*'
+grpcio-tools = '*'
+contextvars = "2.4"
+packaging = '*'
+wrapt = '*'
+psutil = '*'
+testcontainers = { version = "*", optional = true}
+pyyaml = { version = "*", optional = true }
+pytest = { version = "*", optional = true }
+requests = { version = ">=2.26.0", optional = true }
+kafka-python = { version = "*", optional = true }
+
+[tool.poetry.extras]
+all=[
+    'requests',
+    'kafka-python',
+]
+http= [
+    'requests',
+]
+kafka=[
+    'kafka-python',
+]
+
+[tool.poetry.group.dev.dependencies]
+pkginfo = "^1.8.3"
+testcontainers = "*"
+pyyaml = "*"
+pytest = "*"
+
+
+[tool.poetry.group.plugins.dependencies]
+urllib3 = "1.26.7"
+aiohttp = "3.7.4"
+celery = "5.1.2"
+django = "3.2.8"
+elasticsearch = "7.15.1"
+flask = "2.0.2"
+gevent = "21.8.0"
+hug = "2.6.1"
+pika = "1.2.0"
+psycopg = {version = "3.0.1", extras = ["binary"]}
+pymongo = "3.12.0"
+pymysql = "1.0.2"
+pyramid = "2.0"
+pyyaml = "6.0"
+redis = "3.5.3"
+sanic = "21.9.1"
+tornado = "6.1"
+werkzeug = "2.0.2"
+fastapi = "0.70.1"
+uvicorn = "0.16.0"
+gunicorn = "20.1.0"
+bottle = "0.12.21"
+
+[tool.poetry.group.lint.dependencies]
+flake8 = "^5.0.4"
+# isort = "^5.10.1"
+unify = "^0.5"
+flynt = "^0.76"
+flake8-quotes = "^3.3.1"
+flake8-use-fstring = "^1.4"
+pep8-naming = "^0.13.2"
+darglint = "^1.8.1"
+flake8-eradicate = "^1.4.0"
+flake8-docstrings = "^1.6.0"
+flake8-bugbear = "^22.9.23"
+flake8-comprehensions = "^3.10.0"
+flake8-2020 = "^1.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

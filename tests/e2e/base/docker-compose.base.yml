@@ -23,9 +23,6 @@ services:
     expose:
       - 11800 # gRPC
       - 12800 # HTTP
-    volumes: # only for temporary use and should be removed after related backend PR accepted
-      - ./tmp/python.yaml:/skywalking/config/meter-analyzer-config/python.yaml
-      - ./tmp/application.yml:/skywalking/config/application.yml
     networks:
       - e2e
     healthcheck: # python base image has no nc command

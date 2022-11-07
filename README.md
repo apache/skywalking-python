@@ -2,15 +2,17 @@
 
 <img src="http://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
 
-**SkyWalking-Python**: The Python Agent for Apache SkyWalking, which provides the native tracing abilities for Python project.
+**SkyWalking-Python**: The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging abilities for Python projects.
 
-**SkyWalking**: an APM(application performance monitor) system, especially designed for
-microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
+**[SkyWalking](https://github.com/apache/skywalking)**: Application performance monitor tool for distributed systems, especially designed for microservices, cloud native and container-based (Kubernetes) architectures.
+
 
 [![GitHub stars](https://img.shields.io/github/stars/apache/skywalking-python.svg?style=for-the-badge&label=Stars&logo=github)](https://github.com/apache/skywalking-python)
-[![Twitter Follow](https://img.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
+[![Twitter Follow](https://imQDg.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
 
-[![Build](https://github.com/apache/skywalking-python/workflows/Build/badge.svg?branch=master)](https://github.com/apache/skywalking-python/actions?query=branch%3Amaster+event%3Apush+workflow%3A%22Build%22)
+![Release](https://img.shields.io/pypi/v/apache-skywalking)
+![Version](https://img.shields.io/pypi/pyversions/apache-skywalking)
+![Build](https://github.com/apache/skywalking-python/actions/workflows/CI.yaml/badge.svg?event=push)
 
 ## Documentation
 
@@ -19,9 +21,13 @@ microservices, cloud native and container-based (Docker, Kubernetes, Mesos) arch
 
 ## Installation Requirements
 
-SkyWalking Python Agent requires SkyWalking 8.0+ and Python 3.6+.
+SkyWalking Python Agent requires [Apache SkyWalking 8.0+](https://skywalking.apache.org/downloads/#SkyWalkingAPM) and Python 3.6+.
 
 > If you would like to try out the latest features that are not released yet, please refer to this [guide](docs/en/setup/faq/How-to-build-from-sources.md) to build from sources.
+
+## Live Demo
+- Find the [live demo](https://skywalking.apache.org/#demo) and [screenshots](https://skywalking.apache.org/#arch) on our website.
+- Follow the [showcase](https://skywalking.apache.org/docs/skywalking-showcase/next/readme/) to set up preview deployment quickly.
 
 ## Contributing
 

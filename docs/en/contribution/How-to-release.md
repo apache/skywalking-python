@@ -5,7 +5,7 @@ This documentation guides the release manager to release the SkyWalking Python i
 ## Prerequisites
 
 1. Close (if finished, or move to next milestone otherwise) all issues in the current milestone from [skywalking-python](https://github.com/apache/skywalking-python/milestones) and [skywalking](https://github.com/apache/skywalking/milestones), create a new milestone if needed.
-2. Update CHANGELOG.md and `version` in setup.py.
+2. Update CHANGELOG.md and `version` in `pyproject.toml`.
 
 
 ## Add your GPG public key to Apache svn
@@ -201,7 +201,7 @@ Vote result should follow these:
 
     On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking Python $VERSION is now released.
 
-    SkyWalking Python: The Python Agent for Apache SkyWalking, which provides the native tracing abilities for Python project.
+    SkyWalking Python: The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging abilities for Python projects.
 
     SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
