@@ -19,11 +19,20 @@ VERSION ?= next
 # determine host platform
 ifeq ($(OS),Windows_NT)
     OS := Windows
+else ifeq ($(shell uname -s),Darwin)
+    OS := Darwin
 else
     OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
 endif
 
-.PHONY: poetry
+.PHONY: poetry poetry-fallback
+# poetry installer may not work on macOS's default python
+# falls back to pipx installer
+poetry-fallback:
+	python3 -m pip install --user pipx
+	python3 -m pipx ensurepath
+	pipx install poetry
+	pipx upgrade poetry
 
 poetry:
 ifeq ($(OS),Windows)
@@ -31,7 +40,7 @@ ifeq ($(OS),Windows)
 	poetry self update
 else
 	-curl -sSL https://install.python-poetry.org | python3 -
-	poetry self update
+	poetry self update || $(MAKE) poetry-fallback
 endif
 
 .PHONY: gen
