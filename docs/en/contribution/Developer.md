@@ -4,14 +4,14 @@
 We rely on `Makefile` to automate jobs, including setting up environments, testing and releasing.
 
 First you need to have the `make` command available: 
-```ubuntu/wsl
+```shell
 # ubuntu/wsl
 sudo apt-get update
 
 sudo apt-get -y install make
 ```
 or 
-```windows powershell
+```shell
 # windows powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser # Optional: Needed to run a remote script the first time
 
