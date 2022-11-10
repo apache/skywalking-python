@@ -73,10 +73,12 @@ def _sw__poll_once_func(__poll_once):
 
 def _sw_send_func(_send):
     def _sw_send(this, topic, value=None, key=None, headers=None, partition=None, timestamp_ms=None):
-        # ignore trace & log reporter - skywalking self request
-        if config.protocol == 'kafka' and config.kafka_topic_segment == topic \
-                or config.kafka_topic_log == topic \
-                or config.kafka_topic_management == topic:
+        # ignore trace, log and meter reporter - skywalking self request
+        if config.protocol == 'kafka' and \
+                (config.kafka_topic_segment == topic
+                 or config.kafka_topic_log == topic
+                 or config.kafka_topic_management == topic
+                 or config.kafka_topic_meter == topic):
             return _send(this, topic, value=value, key=key, headers=headers, partition=partition,
                          timestamp_ms=timestamp_ms)
 

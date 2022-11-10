@@ -2,6 +2,8 @@
 
 To enable or disable this feature, you will need to set some environment variables.
 
+**Important Note**: Meter reporter is currently available to send in `gRPC` and `Kafka` protocol, 
+`HTTP` protocol is not implemented yet (requires additional handler on SkyWalking OAP side).
 
 ## Enabling the feature (default)
 ```Python 

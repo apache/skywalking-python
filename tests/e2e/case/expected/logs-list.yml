@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+errorreason: null
 logs:
   {{- contains .logs }}
   # FIXME: issues/8752, now first entry is not verified at all
@@ -76,4 +77,3 @@ logs:
       value: {{ notEmpty .value }}
     {{- end }}
   {{- end }}
-total: 3

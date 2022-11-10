@@ -14,87 +14,111 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-VERSION ?= latest
+VERSION ?= next
 
 # determine host platform
-VENV_DIR = venv
-VENV = $(VENV_DIR)/bin
-ifeq (win32,$(shell python3 -c "import sys; print(sys.platform)"))
-VENV=$(VENV_DIR)/Scripts
+ifeq ($(OS),Windows_NT)
+    OS := Windows
+else ifeq ($(shell uname -s),Darwin)
+    OS := Darwin
+else
+    OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
 endif
 
-.PHONY: license
+.PHONY: poetry poetry-fallback
+# poetry installer may not work on macOS's default python
+# falls back to pipx installer
+poetry-fallback:
+	python3 -m pip install --user pipx
+	python3 -m pipx ensurepath
+	pipx install poetry
+	pipx upgrade poetry
 
-$(VENV):
-	python3 -m venv $(VENV_DIR)
-	$(VENV)/python -m pip install --upgrade pip
-	$(VENV)/python -m pip install wheel twine
+poetry:
+ifeq ($(OS),Windows)
+	-powershell (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+	poetry self update
+else
+	-curl -sSL https://install.python-poetry.org | python3 -
+	poetry self update || $(MAKE) poetry-fallback
+endif
 
-setup: $(VENV)
-	$(VENV)/python -m pip install grpcio --ignore-installed
+.PHONY: gen
+gen:
+	poetry run python3 -m grpc_tools.protoc --version || poetry run pip install grpcio-tools
+	poetry run python3 tools/grpc_code_gen.py
 
-setup-test: setup gen
-	$(VENV)/pip install -e .[test]
+.PHONY: gen-basic
+gen-basic:
+	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
+	python3 tools/grpc_code_gen.py
 
-gen: $(VENV)
-	$(VENV)/python -m grpc_tools.protoc --version || $(VENV)/python -m pip install grpcio-tools
-	$(VENV)/python tools/codegen.py
+.PHONY: install
+install: gen-basic
+	python3 -m pip install --upgrade pip
+	python3 -m pip install .[all]
 
+.PHONY: env
+env: poetry gen
+	poetry install
+	poetry run pip install --upgrade pip
+
+
+.PHONY: lint
 # flake8 configurations should go to the file setup.cfg
-lint: clean $(VENV)
-	$(VENV)/python -m pip install -r requirements-style.txt
-	$(VENV)/flake8 .
+lint: clean
+	poetry run flake8 .
 
-# used in development
-dev-setup: $(VENV)
-	$(VENV)/python -m pip install -r requirements-style.txt
-
-dev-check: dev-setup
-	$(VENV)/flake8 .
-
+.PHONY: fix
 # fix problems described in CodingStyle.md - verify outcome with extra care
-dev-fix: dev-setup
-	$(VENV)/isort .
-	$(VENV)/unify -r --in-place .
-	$(VENV)/flynt -tc -v .
+fix:
+	poetry run unify -r --in-place .
+	poetry run flynt -tc -v .
 
-doc-gen: $(VENV) install
-	$(VENV)/python tools/doc/plugin_doc_gen.py
+.PHONY: doc-gen
+doc-gen: gen
+	poetry run python3 tools/plugin_doc_gen.py
 
-check-doc-gen: dev-setup doc-gen
+.PHONY: check-doc-gen
+check-doc-gen: doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
-		echo "Plugin doc is not consisitent with CI:"; \
+		echo "Plugin doc is not consistent with CI:"; \
 		git status -s; \
 		exit 1; \
 	fi
 
+.PHONY: license
 license: clean
-	docker run -it --rm -v $(shell pwd):/github/workspace ghcr.io/apache/skywalking-eyes/license-eye:f461a46e74e5fa22e9f9599a355ab4f0ac265469 header check
+	docker run -it --rm -v $(shell pwd):/github/workspace ghcr.io/apache/skywalking-eyes/license-eye:20da317d1ad158e79e24355fdc28f53370e94c8a header check
 
-test: gen setup-test
-	$(VENV)/python -m pytest -v tests
+.PHONY: test
+test: env
+	sudo apt-get -y install jq
+	docker build --build-arg BASE_PYTHON_IMAGE=3.7 -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
+	poetry run pytest -v $(bash tests/gather_test_paths.sh)
 
-# This is intended for GitHub CI only
-test-parallel-setup: gen setup-test
-
-install: gen
-	$(VENV)/python setup.py install --force
-
+.PHONY: package
 package: clean gen
-	$(VENV)/python setup.py sdist bdist_wheel
+	poetry build
 
+.PHONY: upload-test
 upload-test: package
-	$(VENV)/twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	poetry run twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
+.PHONY: upload
 upload: package
-	$(VENV)/twine upload dist/*
+	poetry run twine upload dist/*
 
+.PHONY: build-image
 build-image:
 	$(MAKE) -C docker build
 
+.PHONY: push-image
 push-image:
 	$(MAKE) -C docker push
 
+.PHONY: clean
+# FIXME change to python based so we can run on windows
 clean:
 	rm -rf skywalking/protocol
 	rm -rf apache_skywalking.egg-info dist build
@@ -103,7 +127,8 @@ clean:
 	find . -name ".pytest_cache" -exec rm -r {} +
 	find . -name "*.pyc" -exec rm -r {} +
 
+.PHONY: release
 release: clean lint license
-	-tar -zcvf skywalking-python-src-$(VERSION).tgz --exclude venv *
+	-tar -zcvf skywalking-python-src-$(VERSION).tgz --exclude .venv *
 	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
 	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512

@@ -38,7 +38,7 @@ class E2EProviderFormatter(logging.Formatter):
 
     def format(self, record):
         result = super().format(record)
-        return 'e2e_provider:=' + result
+        return f'e2e_provider:={result}'
 
     def formatException(self, ei):  # noqa
         """

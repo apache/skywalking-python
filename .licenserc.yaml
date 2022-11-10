@@ -30,6 +30,7 @@ header:
     - '.github/PULL_REQUEST_TEMPLATE'
     - '.gitignore'
     - '**/*.json'
-    - 'venv'
+    - '.venv'
+    - 'poetry.lock'
 
   comment: on-failure

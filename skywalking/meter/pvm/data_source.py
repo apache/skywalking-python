@@ -23,4 +23,4 @@ class DataSource:
         for name in dir(self):
             if name.endswith('generator'):
                 generator = getattr(self, name)()
-                Gauge.Builder(name[:-10], generator).build()
+                Gauge.Builder('instance_pvm_' + name[:-10], generator).build()

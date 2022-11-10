@@ -16,10 +16,11 @@
 #
 
 version: '2.1'
+# TODO Agent test tool testing for meter data and log data, currently missing
 
 services:
   collector:
-    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:092c6a3c753684b5a301baf5bcb1965f2dfaf79d
+    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:7f20775e0631356c4823d9372b09d653db0e6540
     ports:
       - 19876:19876
       - 12800:12800

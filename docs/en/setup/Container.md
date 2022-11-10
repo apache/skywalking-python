@@ -3,7 +3,7 @@
 **Docker images are not official ASF releases but provided for convenience. Recommended usage is always to build the
 source**
 
-This image hosts the SkyWalking Python agent package on top of official Python base images providing support from 
+This image hosts the SkyWalking Python agent package on top of official Python base images (full & slim) providing support from 
 Python 3.6 - 3.10.
 
 ## How to use this image

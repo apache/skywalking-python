@@ -7,18 +7,21 @@ After cloning the repo, make sure you also have cloned the submodule for protoco
 git submodule update --init
 ```
 
-Then run ``make setup-test``. This will create virtual environments for python and generate the protocol folder needed for the agent.
+Please first refer to the [Developer Guide](Developer.md) to set up a development environment.
 
-By now, you can do what you want.
+TL;DR: run ``make env``. This will create virtual environments for python and generate the protocol folder needed for the agent.
 
-Let's get to the topic of how to test.
-The test process requires docker and docker-compose throughout. If you haven't installed them, please install them first.
+By now, you can do what you want. Let's get to the topic of how to test.
 
-In the test process, the script will create several docker containers based on a particular docker image(apache/skywalking-python-agent:latest-plugin), but the current script does not create this docker image automatically. So we need to create manually.
-```
-docker build --build-arg BASE_PYTHON_IMAGE=3.6 -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
-```
-By the way, because the test process runs in the docker container, we need to apply the changes you did to the docker image. You may need to run this command whenever you change files before the test.
+The test process requires `docker` and `docker-compose` throughout. If you haven't installed them, please install them first.
 
-Then ``make test`` will run as expected.
+Then run ``make test``, which will generate a list of plugin versions based on the `support_matrix` variable in each Plugin and orchestrate
+the tests automatically. Remember to inspect the outcomes carefully to debug your plugin.
 
+Alternatively, you can run full tests via our GitHub action workflow on your own GitHub fork, it is usually easier since local environment can be
+tricky to setup for new contributors. 
+
+To do so, you need to fork this repo on GitHub and enable GitHub actions on your forked repo. Then, you can simply push your changes and
+open a Pull Request to **the fork's** master branch. 
+
+Note: GitHub automatically targets Pull Requests to the upstream repo, be careful when you open them to avoid accidental PRs to upstream.

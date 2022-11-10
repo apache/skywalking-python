@@ -42,7 +42,10 @@ jobs:
       - name: Check License
         uses: apache/skywalking-eyes/header@501a28d2fb4a9b962661987e50cf0219631b32ff
       - name: Lint codes
-        run: make lint
+        run: |
+          make poetry
+          poetry install --only lint
+          make lint
 
   # Check if the plugin doc is generated correctly 
   plugin-doc-check:
@@ -55,11 +58,14 @@ jobs:
         with:
           submodules: true
       - name: Check plugin doc
-        run: make check-doc-gen
+        run: |
+          make env
+          make check-doc-gen
 
   changes:
     # Check if any file related to Agent/ CI behavior is changed
     # set outputs for other jobs to access for if conditions
+    name: Check Changes
     runs-on: ubuntu-latest
     needs: [ license-and-lint, plugin-doc-check ]
     # To prevent error when there's no base branch
@@ -87,14 +93,15 @@ jobs:
               - '**/*.bat'
               - '**/*.sh'
               - '**/*.ps1'
-              - '**/requirements*.text'
+              - '**/pyproject.toml'
+              - '**/poetry.lock'
               - '**/*.cfg'
           list-files: json  # logs matched files
 
   # Only run the Plugin and E2E jobs if there are essential changes as stated above
   prep-plugin-and-unit-tests:
     # prep step for plugin and unit test
-    name: Prepare Plugin and UT Matrix
+    name: Build Plugin and UT Matrix
     needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
       always() && 
@@ -103,23 +110,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: set-matrix
+        # TODO change to github output
         run: |
           sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash tests/gather_test_paths.sh)"
+          echo "matrix=$(bash tests/gather_test_paths.sh)" >> $GITHUB_OUTPUT
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
-    name: Construct Agent Plugin Test Images
+    name: Build Plugin Test Image
     needs: [ license-and-lint, changes, plugin-doc-check, prep-plugin-and-unit-tests ]
     if: |
-      always() && 
+      always() &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
-        python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
@@ -142,16 +150,16 @@ jobs:
   plugin-and-unit-tests:
     # Execute plugin tests with matrix of Python versions and matrix of cases
     # this step is only run after passing building images + prep matrix + changes
-    name: Execute Agent Plugin and Unit Tests
+    name: Plugin and Unit Tests
     needs: [ license-and-lint, changes, plugin-doc-check, docker-plugin, prep-plugin-and-unit-tests ]
     if: |
-      always() && 
+      always() &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: [ "3.6", "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
@@ -170,23 +178,29 @@ jobs:
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Set up Python ${{ matrix.python-version }}
         # This step is crucial for correct plugin matrix in test orchestration
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run unit tests
         run: |
-          make test-parallel-setup
-          ./venv/bin/python -m pytest -v ${{ matrix.test-path }}
+          make env
+          poetry run pytest -v ${{ matrix.test-path }}
 
   docker-e2e:
     # build docker image for E2E tests, single Python version for now.
-    name: Construct Agent E2E Test Images
+    name: Build E2E Test Image
     needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
       always() && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      matrix:
+        python-image-variant: [ "3.7", "3.7-slim" ]
+      fail-fast: false
+    env:
+      BASE_PYTHON_IMAGE: ${{ matrix.python-image-variant }}
     steps:
       - name: Checkout source codes
         uses: actions/checkout@v3
@@ -195,19 +209,17 @@ jobs:
       - name: Build SkyWalking Python agent base e2e image
         run: |
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
-          docker save -o docker-images-skywalking-python-e2e.tar apache/skywalking-python-agent:latest-e2e
-        env: # may support pypy in the future
-          BASE_PYTHON_IMAGE: 3.7
+          docker save -o docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar apache/skywalking-python-agent:latest-e2e
       - name: Upload docker image
         uses: actions/upload-artifact@v3
         with:
-          name: docker-images-skywalking-python-e2e
-          path: docker-images-skywalking-python-e2e.tar
+          name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
+          path: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar
           retention-days: 1
 
   e2e-tests:
     # execute E2E tests with SkyWalking-infra-e2e with a matrix of agent protocols
-    name: Basic function + ${{ matrix.case.name }} Transport (Python3.7)
+    name: E2E
     needs: [ license-and-lint, changes, plugin-doc-check, docker-e2e ]
     if: |
       always() && 
@@ -216,6 +228,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
+        python-image-variant: [ "3.7", "3.7-slim" ]
         case:
           - name: gRPC
             path: tests/e2e/case/grpc/e2e.yaml
@@ -236,14 +249,10 @@ jobs:
       - name: Pull SkyWalking Python agent base image
         uses: actions/download-artifact@v3
         with:
-          name: docker-images-skywalking-python-e2e
+          name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
-      - name: Setup go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.16'
       - name: Run E2E Tests
         uses: apache/skywalking-infra-e2e@main
         with:
@@ -253,7 +262,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ failure() }}
         with:
-          name: e2e_logs
+          name: e2e_logs_${{ matrix.case.name }}_${{ matrix.python-image-variant }}
           path: "${{ env.SW_INFRA_E2E_LOG_DIR }}"
 
   CheckStatus:

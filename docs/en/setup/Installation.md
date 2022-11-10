@@ -34,7 +34,7 @@ Simply pull SkyWalking Python image from [Docker Hub](https://hub.docker.com/r/a
 based on desired agent version, protocol and Python version.
 
 ```dockerfile
-FROM apache/skywalking-python:0.7.0-grpc-py3.9
+FROM apache/skywalking-python:0.8.0-grpc-py3.10
 
 # ... build your Python application
 ```
