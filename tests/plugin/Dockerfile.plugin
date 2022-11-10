@@ -25,4 +25,3 @@ ADD $ROOT /agent
 
 RUN cd /agent && make install
 
-# ENV PATH="/agent/venv/bin:$PATH"
