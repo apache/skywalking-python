@@ -65,11 +65,13 @@ sequenceDiagram
     rect rgb(0,200,0)
     greenlet.HUB-->>+working thread 1: swap in the profiled greenlet and snapshot
     working thread 1-->>-greenlet.HUB : swap out the profiled greenlet and snapshot
+    end
     greenlet.HUB-->>+working thread 1: swap in the other greenlet
+    rect rgb(0,200,0)
     greenlet.HUB-->>+working thread 2: swap in the profiled greenlet and snapshot
     working thread 2-->-greenlet.HUB : swap out the profiled greenlet and snapshot
-    working thread 1-->>-greenlet.HUB : swap out the other greenlet
     end
+    working thread 1-->>-greenlet.HUB : swap out the other greenlet
     working thread 1-->>-API: response
 ```
 
