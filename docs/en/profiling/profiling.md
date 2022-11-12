@@ -1,6 +1,6 @@
 # how does threading-profiler (the default mode) work  
 
-These [skywalking-profiling](https://skywalking.apache.org/blog/2020-04-13-apache-skywalking-profiling/#profiling-in-production) [skywalking-python-profiling](https://skywalking.apache.org/blog/2021-09-12-skywalking-python-profiling/) documents described how the threading-profiler works
+These blogs [skywalking-profiling](https://skywalking.apache.org/blog/2020-04-13-apache-skywalking-profiling/#profiling-in-production) and [skywalking-python-profiling](https://skywalking.apache.org/blog/2021-09-12-skywalking-python-profiling/) described how the threading-profiler works
 
 And this figure demonstrated how the profiler works as well:
 
