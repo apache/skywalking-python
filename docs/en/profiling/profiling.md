@@ -54,7 +54,7 @@ In this circumstance, the snapshot of the working thread includes multi contexts
 Fortunately, greenlet has an API for profiling, the doc is [here](https://greenlet.readthedocs.io/en/latest/tracing.html). We can implement a greenlet profiler to solve this issue.
 
 
-# how the greenlet profiler works
+# How the greenlet profiler works
 
 A greenlet profiler leverages the trace callback of greenlet, it works like this:
 
