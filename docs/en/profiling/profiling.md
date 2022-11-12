@@ -48,7 +48,7 @@ sequenceDiagram
 ```
   
 
-In this circumstance, the snapshot of the working thread includes multi contexts of different greenlets, which will make skywalking confusing to build the trace stack.
+In this circumstance, the snapshot of the working thread includes multi contexts of different greenlets, which will make skywalking confused to build the trace stack.
 
 
 Fortunately, greenlet has an API for profiling, the doc is [here](https://greenlet.readthedocs.io/en/latest/tracing.html). We can implement a greenlet profiler to solve this issue.
