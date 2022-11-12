@@ -29,7 +29,7 @@ When the python program runs with gevent + greenlet, the process would be like t
 ```mermaid
 sequenceDiagram
     API->>+working thread 1: get: /api/v1/user/
-    rect rgb(0,100,0)
+    rect rgb(0,200,0)
     greenlet.HUB-->>+working thread 1: swap in the profiled greenlet
     API->>+profiling thread: start profiling
     profiling thread->>working thread 1: snapshot
@@ -62,7 +62,7 @@ A greenlet profiler leverages the trace callback of greenlet, it works like this
 ```mermaid
 sequenceDiagram
     API->>+working thread 1: get: /api/v1/user/
-    rect rgb(0,100,0)
+    rect rgb(0,200,0)
     greenlet.HUB-->>+working thread 1: swap in the profiled greenlet and snapshot
     working thread 1-->>-greenlet.HUB : swap out the profiled greenlet and snapshot
     greenlet.HUB-->>+working thread 1: swap in the other greenlet
