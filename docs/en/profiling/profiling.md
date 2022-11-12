@@ -21,7 +21,7 @@ sequenceDiagram
 
 It works well with threading mode because the whole process will be executed in **the same** thread, so the profiling thread can fetch the complete profiling info of the process of the API request.
 
-# why doesn't threading-profiler work in greenlet mode
+# Why doesn't threading-profiler work in greenlet mode
 When the python program runs with gevent + greenlet, the process would be like this:
 
 
