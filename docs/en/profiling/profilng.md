@@ -8,7 +8,7 @@ And this figure demonstrated how the profiler works as well:
 ```mermaid
 sequenceDiagram
     API->>+working thread: get: /api/v1/user/
-    rect rgb(0,100,0)
+    rect rgb(0,200,0)
     API->>+profiling thread: start profiling
     profiling thread->>working thread: snapshot
     profiling thread->>working thread: snapshot
