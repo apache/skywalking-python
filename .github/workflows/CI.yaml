@@ -258,6 +258,7 @@ jobs:
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
+          batch-mode: true
       - name: Upload Logs
         uses: actions/upload-artifact@v3
         if: ${{ failure() }}
