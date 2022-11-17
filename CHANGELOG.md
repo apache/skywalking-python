@@ -1,5 +1,40 @@
 ## Change Logs
 
+### 1.0.0
+- Feature:
+  - Drop support for Python 3.6 (Pending)
+  - Add support for Python 3.11 (Pending)
+  - Add MeterReportService (gRPC, Kafka reporter) (default:disabled) (#231, #236, #241, #243)
+  - Add reporter for PVM runtime metrics (default:disabled) (#238, #247)
+  - Add Greenlet profiler (#246)
+  - Add test and support for Python Slim base images (#249)
+
+- Plugins:
+  - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 
+  - Add Confluent Kafka plugin (#233 Missing test coverage) 
+
+- Fixes:
+  - Allow RabbitMQ BlockingChannel.basic_consume() to link with outgoing spans (#224)
+  - Fix RabbitMQ basic_get bug (#225, #226)
+  - Fix case when tornado socket name is None (#227)
+  - Fix misspelled text "PostgreSLQ" -> "PostgreSQL" in Postgres-related plugins (#234)
+  - Make sure `span.component` initialized as Unknown rather than 0 (#242)
+  - Ignore websocket connections inside fastapi temporarily (#244, issue#9724)
+  - Fix Kafka-python plugin SkyWalking self reporter ignore condition (#249)
+
+- Docs:
+  - New documentation on how to test locally (#222)
+  - New documentation on the newly added meter reporter feature (#240)
+  - New documentation on the newly added greenlet profiler and the original threading profiler (#250)
+  - Overhaul documentation on development setup and testing (#249)
+
+- Others:
+  - Pin CI SkyWalking License Eye (#221)
+  - Fix dead link due to the 'next' url change (#235)
+  - Pin CI SkyWalking Infra-E2E (#251)
+  - Sync OAP, SWCTL versions in E2E and fix test cases (#249)
+  - Overhaul development flow with Poetry (#249)
+
 ### 0.8.0
 - Feature:
   - Update mySQL plugin to support two different parameter keys. (#186)
