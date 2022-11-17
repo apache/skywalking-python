@@ -78,6 +78,6 @@ sequenceDiagram
 We can set a callback function to the greenlet that we need to profiling, then when the greenlet.HUB switches the context in/out to the working thread, the callback will build a snapshot of the greenlet's traceback and send it to skywalking.
 
 
-# the difference between these two profilers
+# The difference between these two profilers
 
 The greenlet profiler will significantly reduce the snapshot times of the profiling process, which means that it will cost less CPU time than the threading profiler.
