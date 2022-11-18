@@ -18,8 +18,11 @@ import glob
 import os
 import re
 
+import pkg_resources
 from grpc_tools import protoc
+from packaging import version
 
+grpc_tools_version = pkg_resources.get_distribution('grpcio-tools').version
 dest_dir = 'skywalking/protocol'
 src_dir = 'protocol'
 
@@ -27,18 +30,22 @@ src_dir = 'protocol'
 def touch(filename):
     open(filename, 'a').close()
 
-
 def codegen():
     if not os.path.exists(dest_dir):
         os.mkdir(dest_dir)
 
     touch(os.path.join(dest_dir, '__init__.py'))
-
-    protoc.main(['grpc_tools.protoc',
-                 f'--proto_path={src_dir}',
-                 f'--python_out={dest_dir}',
-                 f'--grpc_python_out={dest_dir}'
-                 ] + list(glob.iglob(f'{src_dir}/**/*.proto')))
+    protoc_args = [
+        'grpc_tools.protoc',
+        f'--proto_path={src_dir}',
+        f'--python_out={dest_dir}',
+        f'--grpc_python_out={dest_dir}'
+    ]
+    if version.parse(grpc_tools_version) >= version.parse('1.49.0'):
+        # https://github.com/grpc/grpc/issues/31247
+        protoc_args += [f'pyi_out={dest_dir}']
+    protoc_args += list(glob.iglob(f'{src_dir}/**/*.proto'))
+    protoc.main(protoc_args)
 
     for py_file in glob.iglob(os.path.join(dest_dir, '**/*.py')):
         touch(os.path.join(os.path.dirname(py_file), '__init__.py'))
