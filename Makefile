@@ -45,12 +45,12 @@ endif
 
 .PHONY: gen
 gen:
-	poetry run python3 -m grpc_tools.protoc --version || poetry run pip install grpcio-tools
+	poetry run pip install grpcio-tools packaging
 	poetry run python3 tools/grpc_code_gen.py
 
 .PHONY: gen-basic
 gen-basic:
-	python3 -m grpc_tools.protoc --version || python3 -m pip install grpcio-tools
+	python3 -m pip install grpcio-tools packaging
 	python3 tools/grpc_code_gen.py
 
 .PHONY: install
