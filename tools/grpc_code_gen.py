@@ -44,7 +44,7 @@ def codegen():
     ]
     if version.parse(grpc_tools_version) >= version.parse('1.49.0'):
         # https://github.com/grpc/grpc/issues/31247
-        protoc_args += [f'pyi_out={dest_dir}']
+        protoc_args += [f'--pyi_out={dest_dir}']
     protoc_args += list(glob.iglob(f'{src_dir}/**/*.proto'))
     protoc.main(protoc_args)
 
