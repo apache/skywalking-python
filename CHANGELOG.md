@@ -34,6 +34,7 @@
   - Pin CI SkyWalking Infra-E2E (#251)
   - Sync OAP, SWCTL versions in E2E and fix test cases (#249)
   - Overhaul development flow with Poetry (#249)
+  - Fix grpcio-tools generated message type (#253)
 
 ### 0.8.0
 - Feature:
