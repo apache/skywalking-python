@@ -30,6 +30,7 @@ src_dir = 'protocol'
 def touch(filename):
     open(filename, 'a').close()
 
+
 def codegen():
     if not os.path.exists(dest_dir):
         os.mkdir(dest_dir)
