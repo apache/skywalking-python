@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import random
+import threading
+import time
 import uuid
 
 from skywalking.utils.counter import AtomicCounter
@@ -24,7 +26,7 @@ _id = AtomicCounter()
 
 class ID(object):
     def __init__(self, raw_id: str = None):
-        self.value = raw_id or str(uuid.uuid1()).replace('-', '')
+        self.value = raw_id or f"{str(uuid.uuid1()).replace('-', '')}.{threading.get_ident()}.{int(time.time() * 1000)}{random.randint(1000, 9999)}"
 
     def __str__(self):
         return self.value
