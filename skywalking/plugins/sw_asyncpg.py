@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagD
 link_vector = ['https://github.com/MagicStack/asyncpg']
 support_matrix = {
     'asyncpg': {
-        '>=3.6': ['0.25.0'],
+        '>=3.7': ['0.25.0'],
     }
 }
 note = """"""

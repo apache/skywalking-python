@@ -34,7 +34,6 @@ support_matrix = {
     'sanic': {
         '>=3.10': [],  # not supporting any version yet
         '>=3.7': ['20.12'],  # 21.9 Future LTS - Not supported by SW yet
-        '>=3.6': ['20.12']  # 20.12 last LTS for python 3.6
     }  # TODO: add instrumentation for 21.9 (method signature change) remove - write_callback, stream_callback
 }
 note = """"""

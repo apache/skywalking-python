@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbStatement
 link_vector = ['https://github.com/elastic/elasticsearch-py']
 support_matrix = {
     'elasticsearch': {
-        '>=3.6': ['7.13', '7.14', '7.15'],
+        '>=3.7': ['7.13', '7.14', '7.15'],
     }
 }
 note = """"""

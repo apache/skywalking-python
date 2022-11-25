@@ -30,7 +30,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://www.tornadoweb.org']
 support_matrix = {
     'tornado': {
-        '>=3.6': ['6.0', '6.1']
+        '>=3.7': ['6.0', '6.1']
     }
 }
 note = """"""

@@ -23,7 +23,7 @@ from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 link_vector = ['https://www.confluent.io/']
 support_matrix = {
     'confluent_kafka': {
-        '>=3.6': ['1.5.0', '1.7.0', '1.8.2']
+        '>=3.7': ['1.5.0', '1.7.0', '1.8.2']
     }
 }
 note = """"""

@@ -2,7 +2,7 @@
 
 ### 1.0.0
 - Feature:
-  - Drop support for Python 3.6 (Pending)
+  - Drop support for Python 3.6
   - Add support for Python 3.11 (Pending)
   - Add MeterReportService (gRPC, Kafka reporter) (default:disabled) (#231, #236, #241, #243)
   - Add reporter for PVM runtime metrics (default:disabled) (#238, #247)

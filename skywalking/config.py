@@ -18,7 +18,6 @@ import os
 import re
 import uuid
 
-# Change to future after Python3.6 support ends
 from typing import List, Pattern
 
 QUEUE_TIMEOUT: int = 1

@@ -20,15 +20,10 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context
 from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 
-# version_rule = {
-#     "name": "aiormq",
-#     "rules": [">=3.3.1"]
-# }
-
 link_vector = ['https://pypi.org/project/aiormq/']
 support_matrix = {
     'aiormq': {
-        '>=3.6': ['3.3.1', '6.4.1']
+        '>=3.7': ['6.3', '6.4']
     }
 }
 note = """"""
