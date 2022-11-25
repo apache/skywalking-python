@@ -82,7 +82,7 @@ doc-gen: gen
 .PHONY: check-doc-gen
 check-doc-gen: doc-gen
 	@if [ ! -z "`git status -s`" ]; then \
-		echo "Plugin doc is not consistent with CI:"; \
+		echo "Plugin doc is not consistent with CI, please regenerate by `make doc-gen`"; \
 		git status -s; \
 		exit 1; \
 	fi

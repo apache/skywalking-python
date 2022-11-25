@@ -13,8 +13,8 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 ### Plugin Support Table
 Library | Python Version - Lib Version | Plugin Name
 | :--- | :--- | :--- |
-| [aiohttp](https://docs.aiohttp.org) | Python >=3.10 - ['3.8']; Python >=3.7 - ['3.7'];  | `sw_aiohttp` |
-| [aioredis](https://aioredis.readthedocs.io/) | Python >=3.7 - ['2.0.1'];  | `sw_aioredis` |
+| [aiohttp](https://docs.aiohttp.org) | Python >=3.7 - ['3.7.*'];  | `sw_aiohttp` |
+| [aioredis](https://aioredis.readthedocs.io/) | Python >=3.7 - ['2.0.*'];  | `sw_aioredis` |
 | [aiormq](https://pypi.org/project/aiormq/) | Python >=3.7 - ['6.3', '6.4'];  | `sw_aiormq` |
 | [amqp](https://pypi.org/project/amqp/) | Python >=3.7 - ['2.6.1'];  | `sw_amqp` |
 | [asyncpg](https://github.com/MagicStack/asyncpg) | Python >=3.7 - ['0.25.0'];  | `sw_asyncpg` |
@@ -32,7 +32,7 @@ Library | Python Version - Lib Version | Plugin Name
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.0'];  | `sw_mysqlclient` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.7 - ['3.0'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
-| [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11'];  | `sw_pymongo` |
+| [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
 | [pymysql](https://pymysql.readthedocs.io/en/latest/) | Python >=3.7 - ['1.0'];  | `sw_pymysql` |
 | [pyramid](https://trypyramid.com) | Python >=3.7 - ['1.10', '2.0'];  | `sw_pyramid` |
 | [pika](https://pika.readthedocs.io) | Python >=3.7 - ['1.2'];  | `sw_rabbitmq` |

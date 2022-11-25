@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking.protocol.common.Common_pb2 import Command
+from skywalking.protocol.common.Command_pb2 import Command
 
 from skywalking.command.base_command import BaseCommand
 from skywalking.utils.lang import tostring

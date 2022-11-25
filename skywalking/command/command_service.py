@@ -18,7 +18,7 @@
 import queue
 from collections import deque
 
-from skywalking.protocol.common.Common_pb2 import Commands, Command
+from skywalking.protocol.common.Command_pb2 import Commands, Command
 
 from skywalking.command.base_command import BaseCommand
 from skywalking.command.executors import noop_command_executor_instance
