@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 link_vector = ['https://aioredis.readthedocs.io/']
 support_matrix = {
     'aioredis': {
-        '>=3.6': ['2.0.1']
+        '>=3.7': ['2.0.*']
     }
 }
 note = """"""

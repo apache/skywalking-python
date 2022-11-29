@@ -24,7 +24,7 @@ link_vector = ['https://docs.celeryq.dev']
 # TODO: Celery is missing plugin test
 support_matrix = {
     'celery': {
-        '>=3.6': ['5.1']
+        '>=3.7': ['5.1']
     }
 }
 note = """The celery server running with "celery -A ..." should be run with the HTTP protocol

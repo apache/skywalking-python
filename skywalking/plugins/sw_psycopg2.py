@@ -23,7 +23,7 @@ link_vector = ['https://www.psycopg.org/']
 support_matrix = {
     'psycopg2-binary': {
         '>=3.10': [],
-        '>=3.6': ['2.9']  # transition to psycopg(3), not working for python 3.10
+        '>=3.7': ['2.9']  # transition to psycopg(3), not working for python 3.10
     }
 }
 note = """"""

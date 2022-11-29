@@ -23,7 +23,7 @@ from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 link_vector = ['https://pika.readthedocs.io']
 support_matrix = {
     'pika': {
-        '>=3.6': ['1.2']
+        '>=3.7': ['1.2']
     }
 }
 note = """"""

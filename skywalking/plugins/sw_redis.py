@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 link_vector = ['https://github.com/andymccurdy/redis-py/']
 support_matrix = {
     'redis': {
-        '>=3.6': ['3.5']  # "4.0" next, incompatible to current instrumentation
+        '>=3.7': ['3.5']  # "4.0" next, incompatible to current instrumentation
     }
 }
 note = """"""

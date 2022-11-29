@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement
 link_vector = ['https://pymongo.readthedocs.io']
 support_matrix = {
     'pymongo': {
-        '>=3.6': ['3.11']  # TODO: "3.12" incompatible with all python versions, need investigation
+        '>=3.7': ['3.11.*']  # TODO: "3.12" incompatible with all python versions, need investigation
     }
 }
 note = """"""

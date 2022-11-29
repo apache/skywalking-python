@@ -24,7 +24,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://trypyramid.com']
 support_matrix = {
     'pyramid': {
-        '>=3.6': ['1.10', '2.0']
+        '>=3.7': ['1.10', '2.0']
     }
 }
 note = """"""

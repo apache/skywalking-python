@@ -37,7 +37,6 @@ classifiers=[
 
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
@@ -122,6 +121,9 @@ fastapi = "0.70.1"
 uvicorn = "0.16.0"
 gunicorn = "20.1.0"
 bottle = "0.12.21"
+aioredis = "^2.0.1"
+aiormq = "^6.4.2"
+asyncpg = "^0.27.0"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^5.0.4"

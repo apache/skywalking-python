@@ -25,7 +25,7 @@ link_vector = ['https://falcon.readthedocs.io/en/stable/']
 support_matrix = {
     'hug': {
         '>=3.10': ['2.5', '2.6'],  # api deprecated for 3.10
-        '>=3.6': ['2.4.1', '2.5', '2.6'],  # support begins 2.4.1
+        '>=3.7': ['2.4.1', '2.5', '2.6'],  # support begins 2.4.1
     }
 }
 note = """"""

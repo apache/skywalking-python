@@ -25,7 +25,7 @@ link_vector = ['https://kafka-python.readthedocs.io']
 
 support_matrix = {
     'kafka-python': {
-        '>=3.6': ['2.0']
+        '>=3.7': ['2.0']
     }
 }
 note = """"""

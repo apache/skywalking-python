@@ -27,10 +27,10 @@ link_vector = ['https://docs.python.org/3/library/http.server.html',
                'https://werkzeug.palletsprojects.com/']
 support_matrix = {
     'http_server': {
-        '>=3.6': ['*']
+        '>=3.7': ['*']
     },
     'werkzeug': {
-        '>=3.6': ['1.0.1', '2.0']
+        '>=3.7': ['1.0.1', '2.0']
     }
 }
 note = """"""

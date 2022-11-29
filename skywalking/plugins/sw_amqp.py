@@ -23,7 +23,7 @@ from skywalking.trace.tags import TagMqBroker, TagMqTopic, TagMqQueue
 link_vector = ['https://pypi.org/project/amqp/']
 support_matrix = {
     'amqp': {
-        '>=3.6': ['2.6.1']
+        '>=3.7': ['2.6.1']
     }
 }
 note = """"""
