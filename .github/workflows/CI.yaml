@@ -104,7 +104,7 @@ jobs:
     name: Build Plugin and UT Matrix
     needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
-      always() && 
+      ( always() && ! cancelled() ) && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     steps:
@@ -122,7 +122,7 @@ jobs:
     name: Build Plugin Test Image
     needs: [ license-and-lint, changes, plugin-doc-check, prep-plugin-and-unit-tests ]
     if: |
-      always() &&
+      ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     strategy:
@@ -153,7 +153,7 @@ jobs:
     name: Plugin and Unit Tests
     needs: [ license-and-lint, changes, plugin-doc-check, docker-plugin, prep-plugin-and-unit-tests ]
     if: |
-      always() &&
+      ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -191,7 +191,7 @@ jobs:
     name: Build E2E Test Image
     needs: [ license-and-lint, changes, plugin-doc-check ]
     if: |
-      always() && 
+      ( always() && ! cancelled() ) && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -222,7 +222,7 @@ jobs:
     name: E2E
     needs: [ license-and-lint, changes, plugin-doc-check, docker-e2e ]
     if: |
-      always() && 
+      ( always() && ! cancelled() ) && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
