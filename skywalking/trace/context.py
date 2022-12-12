@@ -201,11 +201,18 @@ class SpanContext(object):
 
         return False
 
+    @property
     def active_span(self):
         spans = _spans()
         if spans:
-            return spans[len(spans) - 1]
+            return spans[-1]
+        return None
 
+    @property
+    def parent_span(self):
+        spans = _spans()
+        if spans:
+            return spans[0]
         return None
 
     def get_correlation(self, key):
@@ -233,7 +240,7 @@ class SpanContext(object):
 
         return Snapshot(
             segment_id=str(self.segment.segment_id),
-            span_id=self.active_span().sid,
+            span_id=self.active_span.sid,
             trace_id=self.segment.related_traces[0],
             endpoint=spans[0].op,
             correlation=self._correlation,
@@ -244,7 +251,7 @@ class SpanContext(object):
             return None
         if not snapshot.is_from_current(self) and snapshot.is_valid():
             ref = SegmentRef.build_ref(snapshot)
-            span = self.active_span()
+            span = self.active_span
             span.refs.append(ref)
             self.segment.relate(ID(ref.trace_id))
             self._correlation.update(snapshot.correlation)

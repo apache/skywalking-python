@@ -23,8 +23,8 @@ logs:
     serviceid: {{ b64enc "e2e-service-provider" }}.1
     serviceinstancename: provider1
     serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: null
-    endpointid: null
+    endpointname: /artist
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
@@ -42,8 +42,8 @@ logs:
     serviceid: {{ b64enc "e2e-service-provider" }}.1
     serviceinstancename: provider1
     serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: null
-    endpointid: null
+    endpointname: /artist
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
@@ -61,8 +61,8 @@ logs:
     serviceid: {{ b64enc "e2e-service-provider" }}.1
     serviceinstancename: provider1
     serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: null
-    endpointid: null
+    endpointname: /artist
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT

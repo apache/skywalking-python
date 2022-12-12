@@ -78,10 +78,11 @@ def install():
                     text=sw_filter(transform(record))
                 )
             ),
+            endpoint=context.parent_span.op,
             traceContext=TraceContext(
                 traceId=str(context.segment.related_traces[0]),
                 traceSegmentId=str(context.segment.segment_id),
-                spanId=context.active_span().sid if context.active_span() else -1
+                spanId=context.active_span.sid if context.active_span else -1
             ),
             tags=build_log_tags(),
         )
