@@ -26,6 +26,7 @@ from skywalking.trace.carrier import Carrier
 from skywalking.trace.segment import SegmentRef, Segment
 from skywalking.trace.tags import Tag
 from skywalking.utils.lang import tostring
+from skywalking.utils.exception import IllegalStateError
 
 if TYPE_CHECKING:
     from skywalking.trace.context import SpanContext
@@ -61,6 +62,10 @@ class Span:
         self.start_time = 0  # type: int
         self.end_time = 0  # type: int
         self.error_occurred = False  # type: bool
+
+    @property
+    def depth(self):
+        return self._depth
 
     def start(self):
         self._depth += 1
@@ -111,7 +116,7 @@ class Span:
                 yield from tag
 
     def inject(self) -> 'Carrier':
-        raise RuntimeWarning(
+        raise IllegalStateError(
             'can only inject context carrier into ExitSpan, this may be a potential bug in the agent, '
             'please report this in https://github.com/apache/skywalking/issues if you encounter this. '
         )

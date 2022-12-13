@@ -78,7 +78,6 @@ def install():
                     text=sw_filter(transform(record))
                 )
             ),
-            endpoint=context.parent_span.op,
             traceContext=TraceContext(
                 traceId=str(context.segment.related_traces[0]),
                 traceSegmentId=str(context.segment.segment_id),
@@ -86,6 +85,11 @@ def install():
             ),
             tags=build_log_tags(),
         )
+
+        primary_endpoint_name = context.primary_endpoint.get_name()
+        if primary_endpoint_name:
+            log_data.endpoint = primary_endpoint_name
+
         _handle(self=self, record=record)
 
         agent.archive_log(log_data)

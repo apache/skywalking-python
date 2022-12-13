@@ -21,6 +21,7 @@
   - Make sure `span.component` initialized as Unknown rather than 0 (#242)
   - Ignore websocket connections inside fastapi temporarily (#244, issue#9724)
   - Fix Kafka-python plugin SkyWalking self reporter ignore condition (#249)
+  - Add missing endpoint information in log reporter (#?)
 
 - Docs:
   - New documentation on how to test locally (#222)
