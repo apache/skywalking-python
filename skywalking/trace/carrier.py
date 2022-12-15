@@ -47,7 +47,10 @@ class Carrier(CarrierItem):
     def __init__(self, trace_id: str = '', segment_id: str = '', span_id: str = '', service: str = '',
                  service_instance: str = '', endpoint: str = '', client_address: str = '',
                  correlation: dict = None):  # pyre-ignore
-        super(Carrier, self).__init__(key='sw8')
+        if config.agent_namespace is not None:
+                super(Carrier, self).__init__(key=config.agent_namespace+'-sw8')
+        else:
+                super(Carrier, self).__init__(key='sw8')
         self.__val = None
         self.trace_id = trace_id  # type: str
         self.segment_id = segment_id  # type: str
@@ -120,7 +123,10 @@ class Carrier(CarrierItem):
 
 class SW8CorrelationCarrier(CarrierItem):
     def __init__(self):
-        super(SW8CorrelationCarrier, self).__init__(key='sw8-correlation')
+        if config.agent_namespace is not None:
+                super(SW8CorrelationCarrier, self).__init__(key=config.agent_namespace+'-sw8-correlation')
+        else:
+                super(SW8CorrelationCarrier, self).__init__(key='sw8-correlation')
         self.correlation = {}  # type: dict
 
     @property
