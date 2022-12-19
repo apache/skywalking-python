@@ -75,8 +75,10 @@ except ImportError:
 
 class PrimaryEndpoint:
     """
-    PrimaryEndpoint is the primary endpoint of the current segment.
-    Holds the span and primary endpoint info
+    Behavior mocks Java agent's PrimaryEndpoint.
+    Primary endpoint name is used for endpoint dependency. The name pick policy according to priority is
+    1. Use the first entry span's operation name
+    2. Use the first span's operation name
     """
 
     def __init__(self, span: Span):
@@ -100,7 +102,8 @@ class SpanContext:
         self.create_time = current_milli_time()
         self.primary_endpoint: Optional[PrimaryEndpoint] = None
 
-    def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
+    @staticmethod
+    def ignore_check(op: str, kind: Kind, carrier: 'Carrier' = None):
         if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
             return NoopSpan(context=NoopContext())
 
@@ -152,7 +155,7 @@ class SpanContext:
                                                                                        op)
 
         if parent is not None and parent.kind.is_entry and inherit == parent.component:
-            # Span's operation name could be override, recheck here
+            # Span's operation name could be overriden, recheck here
             # if the op name now is being profiling, start profile it here
             self.profiling_recheck(parent, op)
 
