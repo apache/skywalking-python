@@ -103,7 +103,7 @@ class SpanContext:
         self.primary_endpoint: Optional[PrimaryEndpoint] = None
 
     @staticmethod
-    def ignore_check(op: str, kind: Kind, carrier: 'Carrier' = None):
+    def ignore_check(op: str, kind: Kind, carrier: Optional[Carrier] = None):
         if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
             return NoopSpan(context=NoopContext())
 
@@ -142,7 +142,7 @@ class SpanContext:
         parent = self.peek()
         return self.new_span(parent, Span, op=op, kind=Kind.Local)
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Component = None) -> Span:
         span = self.ignore_check(op, Kind.Entry, carrier)
         if span is not None:
             return span
@@ -284,7 +284,7 @@ class NoopContext(SpanContext):
     def new_local_span(self, op: str) -> Span:
         return NoopSpan(self)
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Component = None) -> Span:
         return NoopSpan(self)
 
     def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
