@@ -155,7 +155,7 @@ class SpanContext:
                                                                                        op)
 
         if parent is not None and parent.kind.is_entry and inherit == parent.component:
-            # Span's operation name could be overriden, recheck here
+            # Span's operation name could be overridden, recheck here
             # if the op name now is being profiling, start profile it here
             self.profiling_recheck(parent, op)
 
