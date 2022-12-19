@@ -142,7 +142,7 @@ class SpanContext:
         parent = self.peek()
         return self.new_span(parent, Span, op=op, kind=Kind.Local)
 
-    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Optional[Component] = None) -> Span:
         span = self.ignore_check(op, Kind.Entry, carrier)
         if span is not None:
             return span
@@ -170,7 +170,8 @@ class SpanContext:
 
         return span
 
-    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
+    def new_exit_span(self, op: str, peer: str,
+                      component: Optional[Component] = None, inherit: Optional[Component] = None) -> Span:
         span = self.ignore_check(op, Kind.Exit)
         if span is not None:
             return span
@@ -284,10 +285,11 @@ class NoopContext(SpanContext):
     def new_local_span(self, op: str) -> Span:
         return NoopSpan(self)
 
-    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Optional[Component] = None) -> Span:
         return NoopSpan(self)
 
-    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
+    def new_exit_span(self, op: str, peer: str,
+                      component: Optional[Component] = None, inherit: Optional[Component] = None) -> Span:
         return NoopSpan(self)
 
     def stop(self, span: Span) -> bool:
