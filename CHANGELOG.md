@@ -21,7 +21,8 @@
   - Make sure `span.component` initialized as Unknown rather than 0 (#242)
   - Ignore websocket connections inside fastapi temporarily (#244, issue#9724)
   - Fix Kafka-python plugin SkyWalking self reporter ignore condition (#249)
-  - Add primary endpoint in tracing context and endpoint info to log reporter (#256)
+  - Add primary endpoint in tracing context and endpoint info to log reporter (#261)
+  - Enforce tag class type conversion (#262)
 
 - Docs:
   - New documentation on how to test locally (#222)
