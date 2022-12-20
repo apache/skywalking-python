@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Optional
 
 from skywalking import Component, agent, config
 from skywalking import profile
@@ -25,6 +26,7 @@ from skywalking.trace.segment import Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
+from skywalking.utils.exception import IllegalStateError
 from skywalking.utils.time import current_milli_time
 
 try:  # attempt to use async-local instead of thread-local context and spans
@@ -71,23 +73,44 @@ except ImportError:
     _spans_dup = _spans
 
 
-class SpanContext(object):
-    def __init__(self):
-        self.segment = Segment()  # type: Segment
-        self._sid = Counter()
-        self._correlation = {}  # type: dict
-        self._nspans = 0
-        self.profile_status = None  # type: ProfileStatusReference
-        self.create_time = current_milli_time()
+class PrimaryEndpoint:
+    """
+    Behavior mocks Java agent's PrimaryEndpoint.
+    Primary endpoint name is used for endpoint dependency. The name pick policy according to priority is
+    1. Use the first entry span's operation name
+    2. Use the first span's operation name
+    """
 
-    def ignore_check(self, op: str, kind: Kind, carrier: 'Carrier' = None):
+    def __init__(self, span: Span):
+        self.span: Span = span
+
+    def set_primary_endpoint(self, span):
+        if self.span.kind != Kind.Entry and span.kind == Kind.Entry:
+            self.span = span
+
+    def get_name(self):
+        return self.span.op
+
+
+class SpanContext:
+    def __init__(self):
+        self.segment: Segment = Segment()
+        self._sid: Counter = Counter()
+        self._correlation: dict = {}
+        self._nspans: int = 0
+        self.profile_status: Optional[ProfileStatusReference] = None
+        self.create_time = current_milli_time()
+        self.primary_endpoint: Optional[PrimaryEndpoint] = None
+
+    @staticmethod
+    def ignore_check(op: str, kind: Kind, carrier: Optional[Carrier] = None):
         if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
             return NoopSpan(context=NoopContext())
 
         return None
 
-    def new_span(self, parent: Span, SpanType: type, **kwargs) -> Span: # noqa
-        finished = parent and not parent._depth
+    def new_span(self, parent: Optional[Span], SpanType: type, **kwargs) -> Span:  # noqa
+        finished = parent and not parent.depth
         context = SpanContext() if finished else self
         span = SpanType(context=context,
                         sid=context._sid.next(),
@@ -116,19 +139,15 @@ class SpanContext(object):
         if span is not None:
             return span
 
-        spans = _spans()
-        parent = spans[-1] if spans else None  # type: Span
-
+        parent = self.peek()
         return self.new_span(parent, Span, op=op, kind=Kind.Local)
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Optional[Component] = None) -> Span:
         span = self.ignore_check(op, Kind.Entry, carrier)
         if span is not None:
             return span
 
-        spans = _spans()
-        parent = spans[-1] if spans else None  # type: Span
-
+        parent = self.peek()
         # start profiling if profile_context is set
         if self.profile_status is None:
             self.profile_status = profile.profile_task_execution_service.add_profiling(self,
@@ -136,7 +155,7 @@ class SpanContext(object):
                                                                                        op)
 
         if parent is not None and parent.kind.is_entry and inherit == parent.component:
-            # Span's operation name could be override, recheck here
+            # Span's operation name could be overridden, recheck here
             # if the op name now is being profiling, start profile it here
             self.profiling_recheck(parent, op)
 
@@ -151,14 +170,13 @@ class SpanContext(object):
 
         return span
 
-    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
+    def new_exit_span(self, op: str, peer: str,
+                      component: Optional[Component] = None, inherit: Optional[Component] = None) -> Span:
         span = self.ignore_check(op, Kind.Exit)
         if span is not None:
             return span
 
-        spans = _spans()
-        parent = spans[-1] if spans else None  # type: Span
-
+        parent = self.peek()
         if parent is not None and parent.kind.is_exit and component == parent.inherit:
             span = parent
             span.op = op
@@ -184,6 +202,11 @@ class SpanContext(object):
         spans = _spans_dup()
         if span not in spans:
             spans.append(span)
+            # check primary endpoint is set
+            if not self.primary_endpoint:
+                self.primary_endpoint = PrimaryEndpoint(span)
+            else:
+                self.primary_endpoint.set_primary_endpoint(span)
 
     def stop(self, span: Span) -> bool:
         spans = _spans_dup()
@@ -191,7 +214,7 @@ class SpanContext(object):
 
         try:
             spans.remove(span)
-        except Exception:
+        except ValueError:
             pass
 
         self._nspans -= 1
@@ -201,12 +224,17 @@ class SpanContext(object):
 
         return False
 
-    def active_span(self):
+    @staticmethod
+    def peek() -> Optional[Span]:
         spans = _spans()
-        if spans:
-            return spans[len(spans) - 1]
+        return spans[-1] if spans else None
 
-        return None
+    @property
+    def active_span(self):
+        active_span = self.peek()
+        if not active_span:
+            raise IllegalStateError('No active span')
+        return active_span
 
     def get_correlation(self, key):
         if key in self._correlation:
@@ -233,7 +261,7 @@ class SpanContext(object):
 
         return Snapshot(
             segment_id=str(self.segment.segment_id),
-            span_id=self.active_span().sid,
+            span_id=self.active_span.sid,
             trace_id=self.segment.related_traces[0],
             endpoint=spans[0].op,
             correlation=self._correlation,
@@ -244,7 +272,7 @@ class SpanContext(object):
             return None
         if not snapshot.is_from_current(self) and snapshot.is_valid():
             ref = SegmentRef.build_ref(snapshot)
-            span = self.active_span()
+            span = self.active_span
             span.refs.append(ref)
             self.segment.relate(ID(ref.trace_id))
             self._correlation.update(snapshot.correlation)
@@ -257,10 +285,11 @@ class NoopContext(SpanContext):
     def new_local_span(self, op: str) -> Span:
         return NoopSpan(self)
 
-    def new_entry_span(self, op: str, carrier: 'Carrier' = None, inherit: Component = None) -> Span:
+    def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Optional[Component] = None) -> Span:
         return NoopSpan(self)
 
-    def new_exit_span(self, op: str, peer: str, component: Component = None, inherit: Component = None) -> Span:
+    def new_exit_span(self, op: str, peer: str,
+                      component: Optional[Component] = None, inherit: Optional[Component] = None) -> Span:
         return NoopSpan(self)
 
     def stop(self, span: Span) -> bool:
@@ -268,7 +297,7 @@ class NoopContext(SpanContext):
 
         try:
             spans.remove(span)
-        except Exception:
+        except ValueError:
             pass
 
         self._nspans -= 1
@@ -292,6 +321,6 @@ def get_context() -> SpanContext:
     spans = _spans()
 
     if spans:
-        return spans[len(spans) - 1].context
+        return spans[-1].context
 
     return SpanContext()

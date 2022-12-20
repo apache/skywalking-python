@@ -49,7 +49,7 @@ def install():
 
     def _sw_format_http1_response(status: int, headers, body=b''):
         if status is not None:
-            entry_span = get_context().active_span()
+            entry_span = get_context().active_span
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 if status >= 400:
                     entry_span.error_occurred = True
@@ -59,7 +59,7 @@ def install():
 
     def _sw_handlers_ErrorHandler_response(self: handlers.ErrorHandler, req, e): # noqa
         if e is not None:
-            entry_span = get_context().active_span()
+            entry_span = get_context().active_span
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 entry_span.raised()
 

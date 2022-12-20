@@ -72,7 +72,7 @@ def install():
 
     def _sw_handle_user_exception(this: Flask, e):
         if e is not None:
-            entry_span = get_context().active_span()
+            entry_span = get_context().active_span
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 entry_span.raised()
 
@@ -80,7 +80,7 @@ def install():
 
     def _sw_handle_exception(this: Flask, e):
         if e is not None:
-            entry_span = get_context().active_span()
+            entry_span = get_context().active_span
             if entry_span is not None and type(entry_span) is not NoopSpan:
                 entry_span.raised()
 

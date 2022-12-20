@@ -77,7 +77,7 @@ def install():
 
     def _sw_handle_uncaught_exception(request, resolver, exc_info):
         if exc_info is not None:
-            entry_span = get_context().active_span()
+            entry_span = get_context().active_span
             if entry_span is not None:
                 entry_span.raised()
 
