@@ -16,10 +16,14 @@
 #
 
 class Tag:
-    overridable = True
+    key: str = ''
+    overridable: bool = True
 
     def __init__(self, val):
-        self.val = val
+        try:
+            self.val = str(val)
+        except ValueError:
+            raise ValueError('Tag value must be a string or convertible to a string')
 
 
 class TagHttpMethod(Tag):

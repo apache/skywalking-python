@@ -136,7 +136,7 @@ class GrpcProtocol(Protocol):
                         ) for log in span.logs],
                         tags=[KeyStringValuePair(
                             key=tag.key,
-                            value=str(tag.val),
+                            value=tag.val,
                         ) for tag in span.iter_tags()],
                         refs=[SegmentReference(
                             refType=0 if ref.ref_type == 'CrossProcess' else 1,
