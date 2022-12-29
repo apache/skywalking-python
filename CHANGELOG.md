@@ -8,6 +8,7 @@
   - Add reporter for PVM runtime metrics (default:disabled) (#238, #247)
   - Add Greenlet profiler (#246)
   - Add test and support for Python Slim base images (#249)
+  - Add support for the tags of Virtual Cache for Redis (#10212)
 
 - Plugins:
   - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 
