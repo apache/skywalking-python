@@ -27,38 +27,6 @@ support_matrix = {
 }
 note = """"""
 
-
-def install():
-    from redis.connection import Connection
-
-    _send_command = Connection.send_command
-
-    def _sw_send_command(this: Connection, *args, **kwargs):
-        peer = f'{this.host}:{this.port}'
-        cmd, key = args[0], args[1]
-
-        if cmd in OPERATIONS_WRITE:
-            op = 'write'
-        elif cmd in OPERATIONS_READ:
-            op = 'read'
-        else:
-            op = ''
-
-        context = get_context()
-        with context.new_exit_span(op=f'Redis/{cmd}' or '/', peer=peer, component=Component.Redis) as span:
-            span.layer = Layer.Cache
-
-            res = _send_command(this, *args, **kwargs)
-            span.tag(TagCacheType('Redis'))
-            span.tag(TagCacheKey(key))
-            span.tag(TagCacheCmd(cmd))
-            span.tag(TagCacheOp(op))
-
-            return res
-
-    Connection.send_command = _sw_send_command
-
-
 OPERATIONS_WRITE = set({'GETSET',
                         'SET',
                         'SETBIT',
@@ -153,3 +121,34 @@ OPERATIONS_READ = set({'GETRANGE',
                        'XLEN',
                        'XRANGE',
                        'XREVRANGE'})
+
+
+def install():
+    from redis.connection import Connection
+
+    _send_command = Connection.send_command
+
+    def _sw_send_command(this: Connection, *args, **kwargs):
+        peer = f'{this.host}:{this.port}'
+        cmd, key = args[0], args[1]
+
+        if cmd in OPERATIONS_WRITE:
+            op = 'write'
+        elif cmd in OPERATIONS_READ:
+            op = 'read'
+        else:
+            op = ''
+
+        context = get_context()
+        with context.new_exit_span(op=f'Redis/{cmd}' or '/', peer=peer, component=Component.Redis) as span:
+            span.layer = Layer.Cache
+
+            res = _send_command(this, *args, **kwargs)
+            span.tag(TagCacheType('Redis'))
+            span.tag(TagCacheKey(key))
+            span.tag(TagCacheCmd(cmd))
+            span.tag(TagCacheOp(op))
+
+            return res
+
+    Connection.send_command = _sw_send_command
