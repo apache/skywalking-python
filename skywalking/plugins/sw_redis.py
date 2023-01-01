@@ -86,7 +86,7 @@ OPERATIONS_WRITE = set({'GETSET',
                         'XADD',
                         'XDEL',
                         'DEL',
-                        'xtrim'})
+                        'XTRIM'})
 
 OPERATIONS_READ = set({'GETRANGE',
                        'GETBIT ',
