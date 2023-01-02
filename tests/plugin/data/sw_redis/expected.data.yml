@@ -26,12 +26,14 @@ segmentItems:
             spanId: 1
             spanLayer: Cache
             tags:
-              - key: db.type
+              - key: cache.type
                 value: Redis
-              - key: db.instance
-                value: '0'
-              - key: db.statement
-                value: 'SET'
+              - key: cache.key
+                value: foo
+              - key: cache.cmd
+                value: SET
+              - key: cache.op
+                value: write
             startTime: gt 0
             endTime: gt 0
             componentId: 7
@@ -43,12 +45,14 @@ segmentItems:
             spanId: 2
             spanLayer: Cache
             tags:
-              - key: db.type
+              - key: cache.type
                 value: Redis
-              - key: db.instance
-                value: '0'
-              - key: db.statement
-                value: 'GET'
+              - key: cache.key
+                value: foo
+              - key: cache.cmd
+                value: GET
+              - key: cache.op
+                value: read
             startTime: gt 0
             endTime: gt 0
             componentId: 7

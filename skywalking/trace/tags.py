@@ -63,6 +63,22 @@ class TagDbSqlParameters(Tag):
     overridable = False
 
 
+class TagCacheType(Tag):
+    key = 'cache.type'
+
+
+class TagCacheOp(Tag):
+    key = 'cache.op'
+
+
+class TagCacheCmd(Tag):
+    key = 'cache.cmd'
+
+
+class TagCacheKey(Tag):
+    key = 'cache.key'
+
+
 class TagMqBroker(Tag):
     key = 'mq.broker'
 
