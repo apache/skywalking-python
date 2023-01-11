@@ -31,6 +31,6 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', get_test_vector(lib_name='hbase', support_matrix=support_matrix))
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='happybase', support_matrix=support_matrix))
     def test_plugin(self, docker_compose, version):
         self.validate()
