@@ -42,7 +42,7 @@ def install():
 
     def _sw_create_table(this, name, families):
         context = get_context()
-        peer = ','.join([f'{this.connection.host}:{str(this.connection.port)}'])
+        peer = ','.join([f'{this.host}:{str(this.port)}'])
         table_name = name.decode()
         with context.new_exit_span(op=f'Hbase/ADD/{table_name}', peer=peer,
                                    component=Component.Hbase) as span:
