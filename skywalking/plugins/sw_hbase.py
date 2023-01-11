@@ -71,7 +71,7 @@ def install():
 
     def _sw_rows(this, rows, columns=None, timestamp=None, include_timestamp=False):
         def __sw_rows():
-            return _sw_rows(this, rows, columns, timestamp, include_timestamp)
+            return _rows(this, rows, columns, timestamp, include_timestamp)
 
         row = ''
         if rows and isinstance(rows, list):
@@ -82,7 +82,7 @@ def install():
 
     def _sw_cells(this, row, column, versions=None, timestamp=None, include_timestamp=False):
         def __sw_cells():
-            return _sw_cells(this, row, column, versions, timestamp, include_timestamp)
+            return _cells(this, row, column, versions, timestamp, include_timestamp)
 
         res = _sw_hbase_opt(this, 'cells', __sw_cells, row)
         return res
@@ -92,7 +92,7 @@ def install():
                  include_timestamp=False, batch_size=1000, scan_batching=None,
                  limit=None, sorted_columns=False, reverse=False):
         def __sw_scan():
-            return _sw_scan(this, row_start, row_stop, row_prefix,
+            return _scan(this, row_start, row_stop, row_prefix,
                             columns, filter, timestamp,
                             include_timestamp, batch_size, scan_batching,
                             limit, sorted_columns, reverse)
