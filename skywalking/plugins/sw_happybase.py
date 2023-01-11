@@ -37,7 +37,7 @@ def install():
     _scan = Table.scan
     _put = Table.put
     _delete = Table.delete
-    _batch = Table.batch
+    # _batch = Table.batch
     _create_table = Connection.create_table
 
     def _sw_create_table(this, name, families):
@@ -48,8 +48,7 @@ def install():
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
-        res = _create_table(this, name, families)
-        return res
+            _create_table(this, name, families)
 
     def _sw_hbase_opt(table, name, fun, row):
         context = get_context()
@@ -104,22 +103,20 @@ def install():
         def __sw_put():
             return _put(this, row, data, timestamp, wal)
 
-        res = _sw_hbase_opt(this, 'put', __sw_put, row)
-        return res
+        _sw_hbase_opt(this, 'put', __sw_put, row)
 
     def _sw_delete(this, row, columns=None, timestamp=None, wal=True):
         def __sw_delete():
             return _delete(this, row, columns, timestamp, wal)
 
-        res = _sw_hbase_opt(this, 'delete', __sw_delete, row)
-        return res
+        _sw_hbase_opt(this, 'delete', __sw_delete, row)
 
-    def _sw_batch(this, timestamp=None, batch_size=None, transaction=False, wal=True):
-        def __sw_batch():
-            return _batch(this, timestamp=None, batch_size=None, transaction=False, wal=True)
-
-        res = _sw_hbase_opt(this, 'delete', __sw_batch, 'batch')
-        return res
+    # def _sw_batch(this, timestamp=None, batch_size=None, transaction=False, wal=True):
+    #     def __sw_batch():
+    #         return _batch(this, timestamp=None, batch_size=None, transaction=False, wal=True)
+    #
+    #     res = _sw_hbase_opt(this, 'delete', __sw_batch, 'batch')
+    #     return res
 
     Table.row = _sw_row
     Table.rows = _sw_rows
