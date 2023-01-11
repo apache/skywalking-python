@@ -24,12 +24,12 @@ if __name__ == '__main__':
     app = Flask(__name__)
     connection = happybase.Connection('hbase', port=9090)
     connection.open()
-    row = b"row_key"
-    info = {b"INFO:col1", b"value"}
+    row = b'row_key'
+    info = {b'INFO:col1', b'value'}
     table_name = "test"
 
     def create_table():
-        families = {"INFO": dict()}
+        families = {'INFO': dict()}
         connection.create_table(table_name, families)
 
     def save_table():

@@ -42,7 +42,7 @@ def install():
 
     def _sw_create_table(this, name, families):
         context = get_context()
-        peer = ','.join([f"{this.connection.host}:{str(this.connection.port)}"])
+        peer = ','.join([f'{this.connection.host}:{str(this.connection.port)}'])
         table_name = name.decode()
         with context.new_exit_span(op=f'Hbase/ADD/{table_name}', peer=peer,
                                    component=Component.Hbase) as span:
@@ -53,7 +53,7 @@ def install():
 
     def _sw_hbase_opt(table, name, fun, row):
         context = get_context()
-        peer = ','.join([f"{table.connection.host}:{str(table.connection.port)}"])
+        peer = ','.join([f'{table.connection.host}:{str(table.connection.port)}'])
         table_name = table.name.decode()
         with context.new_exit_span(op=f'Hbase/{name}/{table_name}/{row}', peer=peer,
                                    component=Component.Hbase) as span:
@@ -93,9 +93,9 @@ def install():
                  limit=None, sorted_columns=False, reverse=False):
         def __sw_scan():
             return _scan(this, row_start, row_stop, row_prefix,
-                            columns, filter, timestamp,
-                            include_timestamp, batch_size, scan_batching,
-                            limit, sorted_columns, reverse)
+                         columns, filter, timestamp,
+                         include_timestamp, batch_size, scan_batching,
+                         limit, sorted_columns, reverse)
 
         res = _sw_hbase_opt(this, 'scan', __sw_scan, row_start)
         return res
@@ -112,6 +112,13 @@ def install():
             return _delete(this, row, columns, timestamp, wal)
 
         res = _sw_hbase_opt(this, 'delete', __sw_delete, row)
+        return res
+
+    def _sw_batch(this, timestamp=None, batch_size=None, transaction=False, wal=True):
+        def __sw_batch():
+            return _batch(this, timestamp=None, batch_size=None, transaction=False, wal=True)
+
+        res = _sw_hbase_opt(this, 'delete', __sw_batch, 'batch')
         return res
 
     Table.row = _sw_row
