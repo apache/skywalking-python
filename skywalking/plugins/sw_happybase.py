@@ -21,7 +21,7 @@ from skywalking.trace.tags import TagDbType
 
 link_vector = ['https://happybase.readthedocs.io']
 support_matrix = {
-    'hbase': {
+    'happybase': {
         '>=1.0.0': ['1.2.0'],
     }
 }
