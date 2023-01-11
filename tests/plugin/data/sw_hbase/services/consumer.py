@@ -26,10 +26,10 @@ if __name__ == '__main__':
     connection.open()
     row = b'row_key'
     info = {b'INFO:col1', b'value'}
-    table_name = "test"
+    table_name = 'test'
 
     def create_table():
-        families = {'INFO': dict()}
+        families = {'INFO': {}}
         connection.create_table(table_name, families)
 
     def save_table():
