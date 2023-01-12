@@ -45,7 +45,7 @@ if __name__ == '__main__':
         create_table()
         save_table()
         get_row()
-        return jsonify(info)
+        return jsonify({'INFO:data': 'value'})
 
     PORT = 9090
     app.run(host='0.0.0.0', port=PORT, debug=True)
