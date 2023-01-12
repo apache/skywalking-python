@@ -25,7 +25,7 @@ if __name__ == '__main__':
     connection = happybase.Connection('hbase', port=9090)
     connection.open()
     row = b'row_key'
-    info = {b'INFO:col1', b'value'}
+    info = {b'INFO:data': b'value'}
     table_name = 'test'
 
     def create_table():
