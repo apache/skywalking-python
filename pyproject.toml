@@ -104,11 +104,12 @@ aiohttp = "3.7.4"
 celery = "5.1.2"
 django = "3.2.8"
 elasticsearch = "7.15.1"
+happybase = "1.2.0"
 flask = "2.0.2"
 gevent = "21.8.0"
 hug = "2.6.1"
 pika = "1.2.0"
-psycopg = {version = "3.1.6", extras = ["binary"]}
+psycopg = {extras = ["binary"], version = "^3.1.7"}
 pymongo = "3.12.0"
 pymysql = "1.0.2"
 pyramid = "2.0"

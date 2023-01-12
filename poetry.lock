@@ -1834,25 +1834,25 @@ test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "psycopg"
-version = "3.1.6"
+version = "3.1.7"
 description = "PostgreSQL database adapter for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "psycopg-3.1.6-py3-none-any.whl", hash = "sha256:aff1561afa079992f653e5bc34ff3d5b29023e26f9e691db6ac953033f390890"},
-    {file = "psycopg-3.1.6.tar.gz", hash = "sha256:812100b4215747f18d0c0f14cb568c3f39d9676053fd3e326bd0c718cfc37f33"},
+    {file = "psycopg-3.1.7-py3-none-any.whl", hash = "sha256:7030781cb98f33b6780ffef4cfe0449a1e0ec626d4009378aa081143dab3b20f"},
+    {file = "psycopg-3.1.7.tar.gz", hash = "sha256:83bb8b231a58802b6434d994d20c4897818d7e2d8970206975a06b6919c63985"},
 ]
 
 [package.dependencies]
 "backports.zoneinfo" = {version = ">=0.2.0", markers = "python_version < \"3.9\""}
-psycopg-binary = {version = "3.1.6", optional = true, markers = "extra == \"binary\""}
+psycopg-binary = {version = ">=3.1.6,<=3.1.7", optional = true, markers = "extra == \"binary\""}
 typing-extensions = ">=4.1"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
-binary = ["psycopg-binary (==3.1.6)"]
-c = ["psycopg-c (==3.1.6)"]
+binary = ["psycopg-binary (>=3.1.6,<=3.1.7)"]
+c = ["psycopg-c (>=3.1.6,<=3.1.7)"]
 dev = ["black (>=22.3.0)", "dnspython (>=2.1)", "flake8 (>=4.0)", "mypy (>=0.990)", "types-setuptools (>=57.4)", "wheel (>=0.37)"]
 docs = ["Sphinx (>=5.0)", "furo (==2022.6.21)", "sphinx-autobuild (>=2021.3.14)", "sphinx-autodoc-typehints (>=1.12)"]
 pool = ["psycopg-pool"]
@@ -3226,4 +3226,4 @@ kafka = ["kafka-python"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7, <3.11"
-content-hash = "558b54cb4309d4ba2198c59110625f0f40a884122a3082af67cbf2b6098e93f5"
+content-hash = "df1bcb5a7f7176c713cced331295819711b0d6dd54ab9f0f8cda84d14613f515"

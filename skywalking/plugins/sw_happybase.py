@@ -22,7 +22,7 @@ from skywalking.trace.tags import TagDbType, TagDbStatement
 link_vector = ['https://happybase.readthedocs.io']
 support_matrix = {
     'happybase': {
-        '>=1.0.0': ['1.2.0'],
+        '>=3.7': ['1.2.0'],
     }
 }
 note = """"""
@@ -37,7 +37,6 @@ def install():
     _scan = Table.scan
     _put = Table.put
     _delete = Table.delete
-    # _batch = Table.batch
     _create_table = Connection.create_table
 
     def bytes2str(value):
@@ -120,13 +119,6 @@ def install():
             return _delete(this, row, columns, timestamp, wal)
 
         _sw_hbase_opt(this, 'delete', __sw_delete, row, False)
-
-    # def _sw_batch(this, timestamp=None, batch_size=None, transaction=False, wal=True):
-    #     def __sw_batch():
-    #         return _batch(this, timestamp=None, batch_size=None, transaction=False, wal=True)
-    #
-    #     res = _sw_hbase_opt(this, 'delete', __sw_batch, 'batch')
-    #     return res
 
     Table.row = _sw_row
     Table.rows = _sw_rows
