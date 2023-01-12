@@ -49,13 +49,13 @@ def install():
         context = get_context()
         peer = ','.join([f'{this.host}:{str(this.port)}'])
         table_name = name
-        with context.new_exit_span(op=f'Hbase/add/{table_name}', peer=peer,
+        with context.new_exit_span(op=f'Hbase/create/{table_name}', peer=peer,
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
             _create_table(this, name, families)
 
-    def _sw_hbase_opt(table, name, fun, row):
+    def _sw_hbase_opt(table, name, fun, row, is_return=True):
         context = get_context()
         peer = ','.join([f'{table.connection.host}:{str(table.connection.port)}'])
         table_name = bytes2str(table.name)
@@ -64,8 +64,10 @@ def install():
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
-            res = fun()
-            return res
+            if is_return:
+                return fun()
+            else:
+                fun()
 
     def _sw_row(this, row, columns=None, timestamp=None, include_timestamp=False):
         def __sw_row():
@@ -109,13 +111,13 @@ def install():
         def __sw_put():
             return _put(this, row, data, timestamp, wal)
 
-        _sw_hbase_opt(this, 'put', __sw_put, row)
+        _sw_hbase_opt(this, 'put', __sw_put, row, False)
 
     def _sw_delete(this, row, columns=None, timestamp=None, wal=True):
         def __sw_delete():
             return _delete(this, row, columns, timestamp, wal)
 
-        _sw_hbase_opt(this, 'delete', __sw_delete, row)
+        _sw_hbase_opt(this, 'delete', __sw_delete, row, False)
 
     # def _sw_batch(this, timestamp=None, batch_size=None, transaction=False, wal=True):
     #     def __sw_batch():

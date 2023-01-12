@@ -21,7 +21,7 @@ segmentItems:
     segments:
       - segmentId: not null
         spans:
-          - operationName: Hbase/add/test
+          - operationName: Hbase/create/test
             parentSpanId: 0
             spanId: 1
             spanLayer: Database
