@@ -48,10 +48,10 @@ def install():
         context = get_context()
         peer = ','.join([f'{this.host}:{str(this.port)}'])
         table_name = name
-        with context.new_exit_span(op=f'Hbase/create/{table_name}', peer=peer,
+        with context.new_exit_span(op=f'HBase/create/{table_name}', peer=peer,
                                    component=Component.HBase) as span:
             span.layer = Layer.Database
-            span.tag(TagDbType('Hbase'))
+            span.tag(TagDbType('HBase'))
             span.tag(TagDbStatement(''))
             _create_table(this, name, families)
 
@@ -60,10 +60,10 @@ def install():
         peer = ','.join([f'{table.connection.host}:{str(table.connection.port)}'])
         table_name = bytes2str(table.name)
         row = bytes2str(row)
-        with context.new_exit_span(op=f'Hbase/{name}/{table_name}/{row}', peer=peer,
+        with context.new_exit_span(op=f'HBase/{name}/{table_name}/{row}', peer=peer,
                                    component=Component.HBase) as span:
             span.layer = Layer.Database
-            span.tag(TagDbType('Hbase'))
+            span.tag(TagDbType('HBase'))
             span.tag(TagDbStatement(''))
             if is_return:
                 return fun()

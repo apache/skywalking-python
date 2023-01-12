@@ -21,7 +21,7 @@ segmentItems:
     segments:
       - segmentId: not null
         spans:
-          - operationName: Hbase/create/test
+          - operationName: HBase/create/test
             parentSpanId: 0
             spanId: 1
             spanLayer: Database
@@ -37,7 +37,7 @@ segmentItems:
                 value: HBase
               - key: db.statement
                 value: ''
-          - operationName: Hbase/put/test/row_key
+          - operationName: HBase/put/test/row_key
             parentSpanId: 0
             spanId: 2
             spanLayer: Database
@@ -53,7 +53,7 @@ segmentItems:
                 value: HBase
               - key: db.statement
                 value: ''
-          - operationName: Hbase/row/test/row_key
+          - operationName: HBase/row/test/row_key
             parentSpanId: 0
             spanId: 3
             spanLayer: Database
