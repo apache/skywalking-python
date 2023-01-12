@@ -27,14 +27,14 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 48
+            componentId: 94
             isError: false
             spanType: Exit
             peer: hbase:9090
             skipAnalysis: false
             tags:
               - key: db.type
-                value: Hbase
+                value: HBase
               - key: db.statement
                 value: ''
           - operationName: Hbase/put/test/row_key
@@ -43,14 +43,14 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 48
+            componentId: 94
             isError: false
             spanType: Exit
             peer: hbase:9090
             skipAnalysis: false
             tags:
               - key: db.type
-                value: Hbase
+                value: HBase
               - key: db.statement
                 value: ''
           - operationName: Hbase/row/test/row_key
@@ -59,14 +59,14 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 48
+            componentId: 94
             isError: false
             spanType: Exit
             peer: hbase:9090
             skipAnalysis: false
             tags:
               - key: db.type
-                value: Hbase
+                value: HBase
               - key: db.statement
                 value: ''
           - operationName: /users
