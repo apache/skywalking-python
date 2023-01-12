@@ -27,7 +27,7 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 47
+            componentId: 48
             isError: false
             spanType: Exit
             peer: hbase:9090
@@ -43,10 +43,10 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 47
+            componentId: 48
             isError: false
             spanType: Exit
-            peer: hbase:9200
+            peer: hbase:9090
             skipAnalysis: false
             tags:
               - key: db.type
@@ -59,10 +59,10 @@ segmentItems:
             spanLayer: Database
             startTime: gt 0
             endTime: gt 0
-            componentId: 47
+            componentId: 48
             isError: false
             spanType: Exit
-            peer: hbase:9200
+            peer: hbase:9090
             skipAnalysis: false
             tags:
               - key: db.type

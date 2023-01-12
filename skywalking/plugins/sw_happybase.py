@@ -44,7 +44,7 @@ def install():
         context = get_context()
         peer = ','.join([f'{this.host}:{str(this.port)}'])
         table_name = name
-        with context.new_exit_span(op=f'Hbase/ADD/{table_name}', peer=peer,
+        with context.new_exit_span(op=f'Hbase/add/{table_name}', peer=peer,
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
