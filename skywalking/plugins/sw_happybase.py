@@ -17,7 +17,7 @@
 
 from skywalking import Layer, Component
 from skywalking.trace.context import get_context
-from skywalking.trace.tags import TagDbType
+from skywalking.trace.tags import TagDbType, TagDbStatement
 
 link_vector = ['https://happybase.readthedocs.io']
 support_matrix = {
@@ -53,6 +53,7 @@ def install():
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
+            span.tag(TagDbStatement(''))
             _create_table(this, name, families)
 
     def _sw_hbase_opt(table, name, fun, row, is_return=True):
@@ -64,6 +65,7 @@ def install():
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
+            span.tag(TagDbStatement(''))
             if is_return:
                 return fun()
             else:
