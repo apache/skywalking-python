@@ -37,7 +37,7 @@ class Component(Enum):
     RabbitmqProducer = 52
     RabbitmqConsumer = 53
     Elasticsearch = 47
-    Hbase = 48
+    HBase = 94
     Urllib3 = 7006
     Sanic = 7007
     AioHttp = 7008

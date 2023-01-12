@@ -49,7 +49,7 @@ def install():
         peer = ','.join([f'{this.host}:{str(this.port)}'])
         table_name = name
         with context.new_exit_span(op=f'Hbase/create/{table_name}', peer=peer,
-                                   component=Component.Hbase) as span:
+                                   component=Component.HBase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
             span.tag(TagDbStatement(''))
@@ -61,7 +61,7 @@ def install():
         table_name = bytes2str(table.name)
         row = bytes2str(row)
         with context.new_exit_span(op=f'Hbase/{name}/{table_name}/{row}', peer=peer,
-                                   component=Component.Hbase) as span:
+                                   component=Component.HBase) as span:
             span.layer = Layer.Database
             span.tag(TagDbType('Hbase'))
             span.tag(TagDbStatement(''))
