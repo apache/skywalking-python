@@ -40,6 +40,11 @@ def install():
     # _batch = Table.batch
     _create_table = Connection.create_table
 
+    def bytes2str(value):
+        if isinstance(value, bytes):
+            return value.decode()
+        return value
+
     def _sw_create_table(this, name, families):
         context = get_context()
         peer = ','.join([f'{this.host}:{str(this.port)}'])
@@ -53,7 +58,8 @@ def install():
     def _sw_hbase_opt(table, name, fun, row):
         context = get_context()
         peer = ','.join([f'{table.connection.host}:{str(table.connection.port)}'])
-        table_name = table.name.decode()
+        table_name = bytes2str(table.name)
+        row = bytes2str(row)
         with context.new_exit_span(op=f'Hbase/{name}/{table_name}/{row}', peer=peer,
                                    component=Component.Hbase) as span:
             span.layer = Layer.Database
