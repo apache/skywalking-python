@@ -13,6 +13,7 @@
 - Plugins:
   - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 
   - Add Confluent Kafka plugin (#233 Missing test coverage) 
+  - Add HBase plugin Python HappyBase model  (#266) 
 
 - Fixes:
   - Allow RabbitMQ BlockingChannel.basic_consume() to link with outgoing spans (#224)

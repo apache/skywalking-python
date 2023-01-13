@@ -124,6 +124,7 @@ bottle = "0.12.21"
 aioredis = "^2.0.1"
 aiormq = "^6.4.2"
 asyncpg = "^0.27.0"
+happybase = "1.2.0"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^5.0.4"

@@ -26,6 +26,7 @@ Library | Python Version - Lib Version | Plugin Name
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.70.1'];  | `sw_fastapi` |
 | [flask](https://flask.palletsprojects.com) | Python >=3.7 - ['2.0'];  | `sw_flask` |
+| [happybase](https://happybase.readthedocs.io) | Python >=3.7 - ['1.2.0'];  | `sw_happybase` |
 | [http_server](https://docs.python.org/3/library/http.server.html) | Python >=3.7 - ['*'];  | `sw_http_server` |
 | [werkzeug](https://werkzeug.palletsprojects.com/) | Python >=3.7 - ['1.0.1', '2.0'];  | `sw_http_server` |
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.7 - ['2.0'];  | `sw_kafka` |
