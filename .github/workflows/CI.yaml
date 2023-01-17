@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
@@ -159,7 +159,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim" ]
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
@@ -176,11 +176,11 @@ jobs:
           path: docker-images
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python (pytest)
         # This step is crucial for correct plugin matrix in test orchestration
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.10
       - name: Run unit tests
         run: |
           make env

@@ -17,11 +17,11 @@ ARG BASE_PYTHON_IMAGE
 
 FROM python:${BASE_PYTHON_IMAGE}
 
-ARG ROOT=.
-
 WORKDIR /agent
 
-ADD $ROOT /agent
+COPY . /agent
 
-RUN cd /agent && make install
-
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential\
+    && cd /agent && make install \
+    && apt-get purge -y --auto-remove gcc build-essential
