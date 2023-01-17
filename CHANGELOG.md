@@ -14,6 +14,8 @@
   - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 
   - Add Confluent Kafka plugin (#233 Missing test coverage) 
   - Add HBase plugin Python HappyBase model  (#266) 
+  - Add FastAPI plugin websocket protocol support (#269)
+  - Add Websockets (client) plugin (#269)
 
 - Fixes:
   - Allow RabbitMQ BlockingChannel.basic_consume() to link with outgoing spans (#224)
@@ -39,6 +41,7 @@
   - Sync OAP, SWCTL versions in E2E and fix test cases (#249)
   - Overhaul development flow with Poetry (#249)
   - Fix grpcio-tools generated message type (#253)
+  - Add unit tests to sw_filters (#269)
 
 ### 0.8.0
 - Feature:

@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import requests
 import websockets
 
 import asyncio
@@ -25,12 +24,7 @@ if __name__ == '__main__':
 
     app = FastAPI()
 
-    @app.get('/users')
-    async def application():
-        res = requests.get('http://provider:9091/users', timeout=5)
-        websocket_pong = await websocket_ping()
-        return {'http': res.json(), 'websocket': websocket_pong}
-
+    @app.get('/ws')
     async def websocket_ping():
         async with websockets.connect('ws://provider:9091/ws', extra_headers=None) as websocket:
             await websocket.send('Ping')

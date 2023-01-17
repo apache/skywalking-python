@@ -14,31 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
+
+import pytest
 import requests
-import websockets
 
-import asyncio
+from skywalking.plugins.sw_websockets import support_matrix
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
-if __name__ == '__main__':
-    from fastapi import FastAPI
-    import uvicorn
 
-    app = FastAPI()
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/ws?test=test1&test=test2&test2=test2', timeout=5)
 
-    @app.get('/users')
-    async def application():
-        res = requests.get('http://provider:9091/users', timeout=5)
-        websocket_pong = await websocket_ping()
-        return {'http': res.json(), 'websocket': websocket_pong}
 
-    async def websocket_ping():
-        async with websockets.connect('ws://provider:9091/ws', extra_headers=None) as websocket:
-            await websocket.send('Ping')
-
-            response = await websocket.recv()
-            await asyncio.sleep(0.5)
-
-            await websocket.close()
-            return response
-
-    uvicorn.run(app, host='0.0.0.0', port=9090)
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='websockets', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        self.validate()
