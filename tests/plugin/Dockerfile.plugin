@@ -24,4 +24,3 @@ COPY . /agent
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential\
     && cd /agent && make install \
-    && apt-get purge -y --auto-remove gcc build-essential
