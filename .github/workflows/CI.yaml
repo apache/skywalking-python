@@ -47,7 +47,7 @@ jobs:
           poetry install --only lint
           make lint
 
-  # Check if the plugin doc is generated correctly 
+  # Check if the plugin doc is generated correctly
   plugin-doc-check:
     name: Check Plugin Doc
     needs: license-and-lint

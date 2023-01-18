@@ -50,6 +50,7 @@ class Component(Enum):
     Bottle = 7015
     AsyncPG = 7016
     AIORedis = 7017
+    Websockets = 7018
 
 
 class Layer(Enum):
