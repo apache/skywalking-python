@@ -36,7 +36,7 @@ services:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/3306"]
       interval: 5s
       timeout: 60s
-      retries: 120
+      retries: 3
     networks:
       - beyond
 
@@ -48,6 +48,7 @@ services:
       - 9091:9091
     volumes:
       - .:/app
+    # required external dependency for mysql-client
     command: ['bash', '-c', 'pip install flask && pip install -r /app/requirements.txt && sw-python run python3 /app/services/provider.py']
     depends_on:
       collector:
@@ -58,7 +59,7 @@ services:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
       interval: 5s
       timeout: 60s
-      retries: 120
+      retries: 3
     environment:
       SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG

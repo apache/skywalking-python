@@ -38,7 +38,7 @@ services:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9200"]
       interval: 5s
       timeout: 60s
-      retries: 120
+      retries: 3
     networks:
       - beyond
 

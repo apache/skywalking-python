@@ -22,5 +22,5 @@ WORKDIR /agent
 COPY . /agent
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential\
+    && apt-get install -y --no-install-recommends build-essential procps \
     && cd /agent && make install \
