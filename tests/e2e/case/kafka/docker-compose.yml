@@ -31,7 +31,7 @@ services:
       test: [ "CMD", "sh", "-c", "nc -nz 127.0.0.1 2181" ]
       interval: 5s
       timeout: 60s
-      retries: 3
+      retries: 120
 
   broker-a:
     image: bitnami/kafka:2.4.1
@@ -51,7 +51,7 @@ services:
       test: [ "CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181" ]
       interval: 5s
       timeout: 60s
-      retries: 3
+      retries: 120
 
   broker-b:
     image: bitnami/kafka:2.4.1
@@ -71,7 +71,7 @@ services:
       test: [ "CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181" ]
       interval: 5s
       timeout: 60s
-      retries: 3
+      retries: 120
   oap:
     extends:
       file: ../../base/docker-compose.base.yml

@@ -32,7 +32,7 @@ services:
       test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
       interval: 5s
       timeout: 60s
-      retries: 3
+      retries: 120
     networks:
       - beyond
 
@@ -54,7 +54,7 @@ services:
       test: ["CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9091"]
       interval: 5s
       timeout: 60s
-      retries: 3
+      retries: 120
     environment:
       SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
