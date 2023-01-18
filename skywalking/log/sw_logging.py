@@ -21,6 +21,7 @@ from skywalking import config, agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
 from skywalking.trace.context import get_context
+from skywalking.utils.exception import IllegalStateError
 from skywalking.utils.filter import sw_traceback, sw_filter
 
 
@@ -36,14 +37,16 @@ def install():
     log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
 
     def _sw_handle(self, record):
+        _handle(self=self, record=record)
+
         if record.name in ['skywalking', 'skywalking-cli', 'skywalking-loader']:  # Ignore SkyWalking internal loggers
-            return _handle(self, record)
+            return
 
         if record.levelno < log_reporter_level:
-            return _handle(self, record)
+            return
 
         if not config.log_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
-            return _handle(self, record)  # return handle to original if record is vetoed, just to be safe
+            return
 
         def build_log_tags() -> LogTags:
             core_tags = [
@@ -68,6 +71,18 @@ def install():
 
         context = get_context()
 
+        active_span_id = -1
+        primary_endpoint_name = ''
+
+        try:
+            # Try to extract active span, if user code/plugin code throws uncaught
+            # exceptions before any span is even created, just ignore these fields and
+            # avoid appending 'no active span' traceback that could be confusing.
+            active_span_id = context.active_span.sid
+            primary_endpoint_name = context.primary_endpoint.get_name()
+        except IllegalStateError:
+            pass
+
         log_data = LogData(
             timestamp=round(record.created * 1000),
             service=config.service_name,
@@ -81,16 +96,12 @@ def install():
             traceContext=TraceContext(
                 traceId=str(context.segment.related_traces[0]),
                 traceSegmentId=str(context.segment.segment_id),
-                spanId=context.active_span.sid if context.active_span else -1
+                spanId=active_span_id
             ),
             tags=build_log_tags(),
         )
-
-        primary_endpoint_name = context.primary_endpoint.get_name()
         if primary_endpoint_name:
             log_data.endpoint = primary_endpoint_name
-
-        _handle(self=self, record=record)
 
         agent.archive_log(log_data)
 
