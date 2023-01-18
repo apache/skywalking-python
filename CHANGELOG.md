@@ -25,6 +25,7 @@
   - Fix Kafka-python plugin SkyWalking self reporter ignore condition (#249)
   - Add primary endpoint in tracing context and endpoint info to log reporter (#261)
   - Enforce tag class type conversion (#262)
+  - Fix sw_logging (log reporter) potentially throw exception leading to traceback confusion (#267)
 
 - Docs:
   - New documentation on how to test locally (#222)
