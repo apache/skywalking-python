@@ -42,6 +42,7 @@
   - Sync OAP, SWCTL versions in E2E and fix test cases (#249)
   - Overhaul development flow with Poetry (#249)
   - Fix grpcio-tools generated message type (#253)
+  - Switch plugin tests to use slim Python images (#268)
   - Add unit tests to sw_filters (#269)
 
 ### 0.8.0
