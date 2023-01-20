@@ -32,6 +32,7 @@
   - New documentation on the newly added meter reporter feature (#240)
   - New documentation on the newly added greenlet profiler and the original threading profiler (#250)
   - Overhaul documentation on development setup and testing (#249)
+  - Add tables to state currently supported features of Python agent. (#271)
 
 - Others:
   - Pin CI SkyWalking License Eye (#221)
