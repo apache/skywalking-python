@@ -34,7 +34,9 @@ catalog:
         catalog:
           - name: "Log Reporter"
             path: "/en/setup/advanced/LogReporter"
-          - name: "Manual Instrumentation"
+          - name: "Meter Reporter"
+            path: "/en/setup/advanced/MeterReporter"
+          - name: "Manual Trace Instrumentation"
             path: "/en/setup/advanced/API"
   - name: "Plugins"
     catalog:

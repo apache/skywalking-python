@@ -22,7 +22,7 @@ from skywalking import config
 from skywalking import agent
 from skywalking.meter.meter import BaseMeter
 from skywalking.utils.time import current_milli_time
-from skywalking.config import meter_reporter_peroid
+from skywalking.config import meter_reporter_period
 
 
 class MeterService(Thread):
@@ -50,5 +50,5 @@ class MeterService(Thread):
 
     def run(self):
         while True:
-            time.sleep(meter_reporter_peroid)
+            time.sleep(meter_reporter_period)
             self.send()
