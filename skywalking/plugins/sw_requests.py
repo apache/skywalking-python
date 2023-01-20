@@ -31,6 +31,7 @@ note = """"""
 
 def install():
     from requests import Session
+    from skywalking.utils.filter import sw_urlparse
 
     _request = Session.request
 
@@ -39,7 +40,6 @@ def install():
                     auth=None, timeout=None, allow_redirects=True, proxies=None,
                     hooks=None, stream=None, verify=None, cert=None, json=None):
 
-        from skywalking.utils.filter import sw_urlparse
         url_param = sw_urlparse(url)
 
         # ignore trace skywalking self request

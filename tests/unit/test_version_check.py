@@ -99,3 +99,7 @@ class TestVersionCheck(unittest.TestCase):
         self.assertFalse(check('<=1.7.0', current_version))
         self.assertFalse(check('==1.0.0', current_version))
         self.assertFalse(check('!=1.8.0', current_version))
+
+
+if __name__ == '__main__':
+    unittest.main()

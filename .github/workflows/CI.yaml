@@ -47,7 +47,7 @@ jobs:
           poetry install --only lint
           make lint
 
-  # Check if the plugin doc is generated correctly 
+  # Check if the plugin doc is generated correctly
   plugin-doc-check:
     name: Check Plugin Doc
     needs: license-and-lint
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
@@ -172,7 +172,7 @@ jobs:
       - name: Pull SkyWalking Python agent base image
         uses: actions/download-artifact@v3
         with:
-          name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
+          name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}-slim
           path: docker-images
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;

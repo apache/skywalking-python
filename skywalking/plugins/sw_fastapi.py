@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 from skywalking import Layer, Component, config
 from skywalking.trace.carrier import Carrier
 from skywalking.trace.context import get_context, NoopContext
@@ -24,7 +23,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 link_vector = ['https://fastapi.tiangolo.com']
 support_matrix = {
     'fastapi': {
-        '>=3.7': ['0.70.1']
+        '>=3.7': ['0.89.*', '0.88.*']
     }
 }
 note = """"""
@@ -32,23 +31,20 @@ note = """"""
 
 def install():
     from starlette.types import Receive, Scope, Send, Message
-    from starlette.exceptions import ExceptionMiddleware
+    try:
+        from starlette.middleware.exceptions import ExceptionMiddleware
+    except ImportError:  # deprecated in newer versions
+        from starlette.exceptions import ExceptionMiddleware
+    from starlette.requests import Request
+    from starlette.websockets import WebSocket  # FastAPI imports from starlette.websockets
 
     _original_fast_api = ExceptionMiddleware.__call__
 
     def params_tostring(params):
         return '\n'.join([f"{k}=[{','.join(params.getlist(k))}]" for k, _ in params.items()])
 
-    async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
-        from starlette.requests import Request
-
-        if scope['type'] == 'websocket':
-            resp = await _original_fast_api(self, scope, receive, send)
-            return resp
-
-        req = Request(scope, receive=receive, send=send)
+    async def create_span(self, method, scope, req, send, receive):
         carrier = Carrier()
-        method = req.method
 
         for item in carrier:
             if item.key.capitalize() in req.headers:
@@ -62,24 +58,43 @@ def install():
             span.component = Component.FastAPI
             span.peer = f'{req.client.host}:{req.client.port}'
             span.tag(TagHttpMethod(method))
-            span.tag(TagHttpURL(req.url._url.split('?')[0]))
+            span.tag(TagHttpURL(str(req.url).split('?')[0]))
             if config.fastapi_collect_http_params and req.query_params:
                 span.tag(TagHttpParams(params_tostring(req.query_params)[0:config.http_params_length_threshold]))
 
             status_code = 500
 
             async def wrapped_send(message: Message) -> None:
+                nonlocal status_code
+
                 if message['type'] == 'http.response.start':
-                    nonlocal status_code
                     status_code = message['status']
+
+                elif message['type'] == 'websocket.accept' or message['type'] == 'websocket.close':
+                    status_code = 200
+
                 await send(message)
 
-            try:
-                resp = await _original_fast_api(self, scope, receive, wrapped_send)
+            try:  # return handle to original
+                await _original_fast_api(self, scope, receive, wrapped_send)
             finally:
                 span.tag(TagHttpStatusCode(status_code))
                 if status_code >= 400:
                     span.error_occurred = True
-        return resp
+
+    async def _sw_fast_api(self, scope: Scope, receive: Receive, send: Send):
+
+        if scope['type'] == 'websocket':
+            ws = WebSocket(scope, receive=receive, send=send)
+            method = 'websocket.accept'
+            await create_span(self, method, scope, ws, send, receive)
+
+        elif scope['type'] == 'http':
+            req = Request(scope, receive=receive, send=send)
+            method = req.method
+            await create_span(self, method, scope, req, send, receive)
+
+        else:
+            await _original_fast_api(self, scope, receive, send)
 
     ExceptionMiddleware.__call__ = _sw_fast_api

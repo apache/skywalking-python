@@ -94,7 +94,7 @@ license: clean
 .PHONY: test
 test: env
 	sudo apt-get -y install jq
-	docker build --build-arg BASE_PYTHON_IMAGE=3.7 -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
+	docker build --build-arg BASE_PYTHON_IMAGE=3.7-slim -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
 	poetry run pytest -v $(bash tests/gather_test_paths.sh)
 
 .PHONY: package

@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,15 +13,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+import websockets
 
-ARG BASE_PYTHON_IMAGE
+import asyncio
 
-FROM python:${BASE_PYTHON_IMAGE}
+if __name__ == '__main__':
+    from fastapi import FastAPI
+    import uvicorn
 
-WORKDIR /agent
+    app = FastAPI()
 
-COPY . /agent
+    @app.get('/ws')
+    async def websocket_ping():
+        async with websockets.connect('ws://provider:9091/ws', extra_headers=None) as websocket:
+            await websocket.send('Ping')
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential procps \
-    && cd /agent && make install \
+            response = await websocket.recv()
+            await asyncio.sleep(0.5)
+
+            await websocket.close()
+            return response
+
+    uvicorn.run(app, host='0.0.0.0', port=9090)

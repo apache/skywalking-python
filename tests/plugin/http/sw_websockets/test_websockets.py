@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,15 +13,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+from typing import Callable
 
-ARG BASE_PYTHON_IMAGE
+import pytest
+import requests
 
-FROM python:${BASE_PYTHON_IMAGE}
+from skywalking.plugins.sw_websockets import support_matrix
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
-WORKDIR /agent
 
-COPY . /agent
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/ws?test=test1&test=test2&test2=test2', timeout=5)
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential procps \
-    && cd /agent && make install \
+
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='websockets', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        self.validate()
