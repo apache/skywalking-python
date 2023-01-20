@@ -50,32 +50,19 @@ ignore_suffix: str = os.getenv('SW_IGNORE_SUFFIX') or '.jpg,.jpeg,.js,.css,.png,
 correlation_element_max_number: int = int(os.getenv('SW_CORRELATION_ELEMENT_MAX_NUMBER') or '3')
 correlation_value_max_length: int = int(os.getenv('SW_CORRELATION_VALUE_MAX_LENGTH') or '128')
 
-# Plugin configurations
-sql_parameters_length: int = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')
-pymongo_trace_parameters: bool = os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True'
-pymongo_parameters_max_length: int = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')
-elasticsearch_trace_dsl: bool = os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True'
-
-http_params_length_threshold: int = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')
-http_ignore_method: str = os.getenv('SW_HTTP_IGNORE_METHOD', '').upper()
-flask_collect_http_params: bool = os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True'
-sanic_collect_http_params: bool = os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True'
-django_collect_http_params: bool = os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True'
-fastapi_collect_http_params: bool = os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True'
-bottle_collect_http_params: bool = os.getenv('SW_BOTTLE_COLLECT_HTTP_PARAMS') == 'True'
-
-celery_parameters_length: int = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
+# sw-python CLI
+# SW_PYTHON_BOOTSTRAP_PROPAGATE only available when passed as env var
 
 # profiling configurations
-get_profile_task_interval: int = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
 profile_active: bool = os.getenv('SW_AGENT_PROFILE_ACTIVE') != 'False'
+get_profile_task_interval: int = int(os.getenv('SW_PROFILE_TASK_QUERY_INTERVAL') or '20')
 profile_max_parallel: int = int(os.getenv('SW_AGENT_PROFILE_MAX_PARALLEL') or '5')
 profile_duration: int = int(os.getenv('SW_AGENT_PROFILE_DURATION') or '10')
 profile_dump_max_stack_depth: int = int(os.getenv('SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH') or '500')
 profile_snapshot_transport_buffer_size: int = int(os.getenv('SW_AGENT_PROFILE_SNAPSHOT_TRANSPORT_BUFFER_SIZE') or '50')
 
 # log reporter configurations
-log_reporter_active: bool = os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') == 'True'
+log_reporter_active: bool = os.getenv('SW_AGENT_LOG_REPORTER_ACTIVE') != 'False'
 log_reporter_safe_mode: bool = os.getenv('SW_AGENT_LOG_REPORTER_SAFE_MODE') == 'True'
 log_reporter_max_buffer_size: int = int(os.getenv('SW_AGENT_LOG_REPORTER_BUFFER_SIZE') or '10000')
 log_reporter_level: str = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL') or 'WARNING'
@@ -87,10 +74,26 @@ log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT') or \
 cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH') or '10')
 
 # meter reporter configurations
-meter_reporter_active: bool = os.getenv('SW_AGENT_METER_REPORTER_ACTIVE') == 'True'
+meter_reporter_active: bool = os.getenv('SW_AGENT_METER_REPORTER_ACTIVE') != 'False'
 meter_reporter_max_buffer_size: int = int(os.getenv('SW_AGENT_METER_REPORTER_BUFFER_SIZE') or '10000')
-meter_reporter_peroid: int = int(os.getenv('SW_AGENT_METER_REPORTER_PEROID') or '20')
-pvm_meter_reporter_active: bool = os.getenv('SW_AGENT_PVM_METER_REPORTER_ACTIVE') == 'True'
+meter_reporter_period: int = int(os.getenv('SW_AGENT_METER_REPORTER_PERIOD') or '20')
+pvm_meter_reporter_active: bool = os.getenv('SW_AGENT_PVM_METER_REPORTER_ACTIVE') != 'False'
+
+
+# Plugin configurations
+sql_parameters_length: int = int(os.getenv('SW_SQL_PARAMETERS_LENGTH') or '0')
+pymongo_trace_parameters: bool = os.getenv('SW_PYMONGO_TRACE_PARAMETERS') == 'True'
+pymongo_parameters_max_length: int = int(os.getenv('SW_PYMONGO_PARAMETERS_MAX_LENGTH') or '512')
+elasticsearch_trace_dsl: bool = os.getenv('SW_ELASTICSEARCH_TRACE_DSL') == 'True'
+http_params_length_threshold: int = int(os.getenv('SW_HTTP_PARAMS_LENGTH_THRESHOLD') or '1024')
+http_ignore_method: str = os.getenv('SW_HTTP_IGNORE_METHOD', '').upper()
+flask_collect_http_params: bool = os.getenv('SW_FLASK_COLLECT_HTTP_PARAMS') == 'True'
+sanic_collect_http_params: bool = os.getenv('SW_SANIC_COLLECT_HTTP_PARAMS') == 'True'
+django_collect_http_params: bool = os.getenv('SW_DJANGO_COLLECT_HTTP_PARAMS') == 'True'
+fastapi_collect_http_params: bool = os.getenv('SW_FASTAPI_COLLECT_HTTP_PARAMS') == 'True'
+bottle_collect_http_params: bool = os.getenv('SW_BOTTLE_COLLECT_HTTP_PARAMS') == 'True'
+celery_parameters_length: int = int(os.getenv('SW_CELERY_PARAMETERS_LENGTH') or '512')
+
 
 options = {key for key in globals() if key not in options}  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 

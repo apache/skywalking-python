@@ -4,11 +4,27 @@
 
 You can install the SkyWalking Python agent via various ways.
 
-> If you want to try out the latest features that are not released yet, please refer to this [guide](faq/How-to-build-from-sources.md) to build from sources.
+> If you want to try out the latest features that are not released yet, please refer to
+> this [guide](faq/How-to-build-from-sources.md) to build from sources.
+
+## Important Note on Different Reporter Protocols
+
+Currently only gRPC protocol fully supports [all available telemetry capabilities](../../README.md#capabilities) in the Python agent.
+
+While gRPC is highly recommended, we provide alternative protocols to suit your production requirements.
+
+Please refer to the table below before deciding which report protocol suits best for you.
+
+| Reporter Protocol | Trace Reporter | Log Reporter | Meter Reporter | Profiling | 
+|:------------------|:---------------|:-------------|:---------------|:----------|
+| gRPC              | ✅              | ✅            | ✅              | ✅         |                
+| HTTP              | ✅              | ✅            | ❌              | ❌         |                 
+| Kafka             | ✅              | ✅            | ✅              | ❌         |     
 
 ### From PyPI
 
-The Python agent module is published to [PyPI](https://pypi.org/project/apache-skywalking/), from where you can use `pip` to install:
+The Python agent module is published to [PyPI](https://pypi.org/project/apache-skywalking/), 
+from where you can use `pip` to install:
 
 ```shell
 # Install the latest version, using the default gRPC protocol to report data to OAP
@@ -27,7 +43,7 @@ pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no ma
 
 ### From Docker Hub
 
-SkyWalking Python agent starts to provide convenient dockerfile 
+SkyWalking Python agent provides convenient dockerfile
 and images for easy integration utilizing its [auto-bootstrap](CLI.md) capability.
 
 Simply pull SkyWalking Python image from [Docker Hub](https://hub.docker.com/r/apache/skywalking-python)
@@ -37,10 +53,16 @@ based on desired agent version, protocol and Python version.
 FROM apache/skywalking-python:0.8.0-grpc-py3.10
 
 # ... build your Python application
+
+# If you prefer compact images (built from official Python slim image)
+
+FROM apache/skywalking-python:0.8.0-grpc-py3.10-slim
+
+# ... build your Python application
 ```
 
 Then, You can build your Python application image based on our agent-enabled Python images and start
-your applications with SkyWalking agent enabled for you. Please refer to our 
+your applications with SkyWalking agent enabled for you. Please refer to our
 [Containerization Guide](Container.md) for further instructions on integration and configuring.
 
 ### From Source Code

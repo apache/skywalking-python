@@ -19,6 +19,16 @@
 - [Official documentation](https://skywalking.apache.org/docs/#PythonAgent)
 - [Blog](https://skywalking.apache.org/blog/2021-09-12-skywalking-python-profiling/) about the Python Agent Profiling Feature
 
+## Capabilities
+
+| Reporter  | Supported?       | Details                                                                                              | 
+|:----------|:-----------------|:-----------------------------------------------------------------------------------------------------|
+| Trace     | ✅ (default: ON)  | Automatic instrumentation + Manual SDK                                                               |            
+| Log       | ✅ (default: OFF) | Direct reporter only. (Tracing context in log planned)                                               |
+| Meter     | ✅ (default: ON)  | Meter API + Automatic PVM metrics                                                                    |
+| Event     | ❌ (Planned)      | Report lifecycle events of your awesome Python application                              |
+| Profiling | ✅ (default: ON)  | Threading and Greenlet Profiler                                                                      |
+
 ## Installation Requirements
 
 SkyWalking Python Agent requires [Apache SkyWalking 8.0+](https://skywalking.apache.org/downloads/#SkyWalkingAPM) and Python 3.7+.
@@ -26,7 +36,7 @@ SkyWalking Python Agent requires [Apache SkyWalking 8.0+](https://skywalking.apa
 > If you would like to try out the latest features that are not released yet, please refer to this [guide](docs/en/setup/faq/How-to-build-from-sources.md) to build from sources.
 
 ## Live Demo
-- Find the [live demo](https://skywalking.apache.org/#demo) and [screenshots](https://skywalking.apache.org/#arch) on our website.
+- Find the [live demo](https://skywalking.apache.org/#demo) with Python agent on our website.
 - Follow the [showcase](https://skywalking.apache.org/docs/skywalking-showcase/next/readme/) to set up preview deployment quickly.
 
 ## Contributing
@@ -34,10 +44,11 @@ SkyWalking Python Agent requires [Apache SkyWalking 8.0+](https://skywalking.apa
 Before submitting a pull request or pushing a commit, please read our [contributing](CONTRIBUTING.md) and [developer guide](docs/en/contribution/Developer.md).
 
 ## Contact Us
-* Submit an [GitHub Issue](https://github.com/apache/skywalking/issues/new) by using [Python] as title prefix.
 * Mail list: **dev@skywalking.apache.org**. Mail to `dev-subscribe@skywalking.apache.org`, follow the reply to subscribe the mail list.
-* Join `skywalking` channel at [Apache Slack](http://s.apache.org/slack-invite). If the link is not working, find the latest one at [Apache INFRA WIKI](https://cwiki.apache.org/confluence/display/INFRA/Slack+Guest+Invites).
+* Send `Request to join SkyWalking slack` mail to the mail list(`dev@skywalking.apache.org`), we will invite you in.
 * Twitter, [ASFSkyWalking](https://twitter.com/AsfSkyWalking)
+* QQ Group: 901167865, 392443393
+* [bilibili B站 视频](https://space.bilibili.com/390683219)
 
 ## License
 Apache 2.0
