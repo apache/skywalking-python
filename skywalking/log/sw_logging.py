@@ -17,7 +17,8 @@
 
 import logging
 
-from skywalking import config, agent
+from skywalking import config
+from skywalking.agent import agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
 from skywalking.trace.context import get_context
@@ -78,6 +79,7 @@ def install():
             # Try to extract active span, if user code/plugin code throws uncaught
             # exceptions before any span is even created, just ignore these fields and
             # avoid appending 'no active span' traceback that could be confusing.
+            # Or simply the log is generated outside any span context.
             active_span_id = context.active_span.sid
             primary_endpoint_name = context.primary_endpoint.get_name()
         except IllegalStateError:
@@ -93,13 +95,17 @@ def install():
                     text=sw_filter(transform(record))
                 )
             ),
-            traceContext=TraceContext(
+            tags=build_log_tags(),
+        )
+
+        if active_span_id != -1:
+            trace_context = TraceContext(
                 traceId=str(context.segment.related_traces[0]),
                 traceSegmentId=str(context.segment.segment_id),
                 spanId=active_span_id
-            ),
-            tags=build_log_tags(),
-        )
+            )
+            log_data.traceContext = trace_context
+
         if primary_endpoint_name:
             log_data.endpoint = primary_endpoint_name
 
