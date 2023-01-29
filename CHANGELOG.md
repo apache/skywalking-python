@@ -28,7 +28,8 @@
   - Add primary endpoint in tracing context and endpoint info to log reporter (#261)
   - Enforce tag class type conversion (#262)
   - Fix sw_logging (log reporter) potentially throw exception leading to traceback confusion (#267)
-
+  - Avoid reporting meaningless tracecontext with logs when there's no active span, UI will now show empty traceID (#272)
+  
 - Docs:
   - New documentation on how to test locally (#222)
   - New documentation on the newly added meter reporter feature (#240)
