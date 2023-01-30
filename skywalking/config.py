@@ -20,10 +20,11 @@ through code level, default values are provided for each option.
 
 The environment variables must be named as `SW_AGENT_<option_variable>`.
 
-To contributors: When adding an new configuration option, please precede each option with a comment block like this:
+Contributors attention: When adding an new configuration option, please precede each option with a comment like this:
 # This option does bla bla
 # could be multiple lines
 actual_option: str = os.getenv('SW_AGENT_ACTUAL_OPTION') or 'default_value'
+
 The comments along with each option will be used to generate the documentation for the agent, you don't need to modify
 any documentation to reflect changes here, just make sure to run `make doc-gen` to generate the documentation.
 """

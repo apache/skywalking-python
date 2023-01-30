@@ -17,13 +17,13 @@ This documentation covers a number of ways to set up the Python agent for variou
 
 The following table demonstrates the currently supported telemetry collection capabilities in SkyWalking Python agent:
 
-| Reporter  | Supported?       | Details                                                    | 
-|:----------|:-----------------|:-----------------------------------------------------------|
-| Trace     | ✅ (default: ON)  | Automatic instrumentation + Manual SDK                     |            
-| Log       | ✅ (default: OFF) | Direct reporter only. (Tracing context in log planned)     |
-| Meter     | ✅ (default: ON)  | Meter API + Automatic PVM metrics                          |
-| Event     | ❌ (Planned)      | Report lifecycle events of your awesome Python application |
-| Profiling | ✅ (default: ON)  | Threading and Greenlet Profiler                            |
+| Reporter  | Supported?      | Details                                                    | 
+|:----------|:----------------|:-----------------------------------------------------------|
+| Trace     | ✅ (default: ON) | Automatic instrumentation + Manual SDK                     |            
+| Log       | ✅ (default: ON) | Direct reporter only. (Tracing context in log planned)     |
+| Meter     | ✅ (default: ON) | Meter API + Automatic PVM metrics                          |
+| Event     | ❌ (Planned)     | Report lifecycle events of your awesome Python application |
+| Profiling | ✅ (default: ON) | Threading and Greenlet Profiler                            |
 
 
 ## Live Demo

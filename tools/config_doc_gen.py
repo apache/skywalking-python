@@ -23,12 +23,12 @@ from skywalking.config import options_with_default_value_and_type
 DOC_HEAD = """# Supported Agent Configuration Options
 
 Below is the full list of supported configurations you can set to
-customize the agent behavior, please read the descriptions for what they can achieve.
+customize the agent behavior, please take some time to read the descriptions for what they can achieve.
 
 > Usage: (Pass in intrusive setup)
 ```
 from skywalking import config, agent
-config.init(configuration=YourValue))
+config.init(YourConfiguration=YourValue))
 agent.start()
 ```
 > Usage: (Pass by environment variables)
@@ -108,7 +108,8 @@ def generate_markdown_table() -> None:
         offset = 0
         for config_index, comment in enumerate(comments):
             if comment.startswith('# BEGIN'):
-                plugin_doc.write(TABLE_HEAD.format(comment.lstrip('# ')))
+                # remove `#BEGIN: `
+                plugin_doc.write(TABLE_HEAD.format(comment[8:]))
                 offset += 1
             else:
                 table_entry = create_entry(comment, config_index - offset)

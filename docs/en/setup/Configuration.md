@@ -1,12 +1,12 @@
 # Supported Agent Configuration Options
 
 Below is the full list of supported configurations you can set to
-customize the agent behavior, please read the descriptions for what they can achieve.
+customize the agent behavior, please take some time to read the descriptions for what they can achieve.
 
 > Usage: (Pass in intrusive setup)
 ```
 from skywalking import config, agent
-config.init(configuration=YourValue))
+config.init(YourConfiguration=YourValue))
 agent.start()
 ```
 > Usage: (Pass by environment variables)
@@ -14,7 +14,7 @@ agent.start()
 export SW_AGENT_YourConfiguration=YourValue
 ```
 
-### BEGIN: Agent Core Configuration Options
+###  Agent Core Configuration Options
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | collector_address | SW_AGENT_COLLECTOR_ADDRESS | <class 'str'> | oap_host:oap_port | The backend OAP server address, 11800 is default OAP gRPC port, 12800 is HTTP, Kafka ignores this option and uses kafka_bootstrap_servers option. **This option should be changed accordingly with selected protocol** |
@@ -31,18 +31,18 @@ export SW_AGENT_YourConfiguration=YourValue
 | force_tls | SW_AGENT_FORCE_TLS | <class 'bool'> | False | Use TLS for communication with SkyWalking OAP (no cert required) |
 | authentication | SW_AGENT_AUTHENTICATION | <class 'str'> |  | The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap -server/server-bootstrap/src/main/resources/application.yml#L155-L158). |
 | logging_level | SW_AGENT_LOGGING_LEVEL | <class 'str'> | INFO | The level of agent self-logs, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` Please turn on debug if an issue is encountered to find out what's going on |
-### BEGIN: Agent Core Danger Zone
+###  Agent Core Danger Zone
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | heartbeat_period | SW_AGENT_HEARTBEAT_PERIOD | <class 'int'> | 30 | The agent will exchange heartbeat message with SkyWalking OAP backend every `period` seconds |
 | service_instance_property_report_factor | SW_AGENT_SERVICE_INSTANCE_PROPERTY_REPORT_FACTOR | <class 'int'> | 10 | The agent will report service instance properties every `factor * heartbeat period` seconds default: 10*30 = 300 seconds (TODO) |
 | experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will try to restart itself in any os.fork()-ed child process. Important note: it's not suitable for large numbered, short-lived processes such as multiprocessing.Pool, as each one will introduce overhead and create numerous instances in SkyWalking dashboard in format of `service_instance-child-<pid>` (TODO) |
 | queue_timeout | SW_AGENT_QUEUE_TIMEOUT | <class 'int'> | 1 | DANGEROUS - This option controls the interval of each bulk report from telemetry data queues Do not modify unless you have evaluated its impact given your service load. |
-### BEGIN: SW_PYTHON Auto Instrumentation CLI
+###  SW_PYTHON Auto Instrumentation CLI
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | sw_python_bootstrap_propagate | SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE | <class 'bool'> | False | Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the [ CLI Guide](CLI.md) for details. |
-### BEGIN: Trace Reporter Configurations
+###  Trace Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | trace_reporter_max_buffer_size | SW_AGENT_TRACE_REPORTER_MAX_BUFFER_SIZE | <class 'int'> | 10000 | The maximum queue backlog size for sending the segment data to backend, segments beyond this are silently dropped |
@@ -50,7 +50,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | ignore_suffix | SW_AGENT_IGNORE_SUFFIX | <class 'str'> | .jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg  | If the operation name of the first span is included in this set, this segment should be ignored. |
 | correlation_element_max_number | SW_AGENT_CORRELATION_ELEMENT_MAX_NUMBER | <class 'int'> | 3 | Max element count of the correlation context. |
 | correlation_value_max_length | SW_AGENT_CORRELATION_VALUE_MAX_LENGTH | <class 'int'> | 128 | Max value length of correlation context element. |
-### BEGIN: Profiling Configurations
+###  Profiling Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | profiler_active | SW_AGENT_PROFILER_ACTIVE | <class 'bool'> | True | If `True`, Python agent will enable profiler when user create a new profiling task. |
@@ -59,7 +59,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | profile_duration | SW_AGENT_PROFILE_DURATION | <class 'int'> | 10 | The maximum monitor segment time(minutes), if current segment monitor time out of limit, then stop it. |
 | profile_dump_max_stack_depth | SW_AGENT_PROFILE_DUMP_MAX_STACK_DEPTH | <class 'int'> | 500 | The number of max dump thread stack depth |
 | profile_snapshot_transport_buffer_size | SW_AGENT_PROFILE_SNAPSHOT_TRANSPORT_BUFFER_SIZE | <class 'int'> | 50 | The number of snapshot transport to backend buffer size |
-### BEGIN: Log Reporter Configurations
+###  Log Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | log_reporter_active | SW_AGENT_LOG_REPORTER_ACTIVE | <class 'bool'> | True | If `True`, Python agent will report collected logs to the OAP or Satellite. Otherwise, it disables the feature. |
@@ -70,14 +70,14 @@ export SW_AGENT_YourConfiguration=YourValue
 | log_reporter_formatted | SW_AGENT_LOG_REPORTER_FORMATTED | <class 'bool'> | True | If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised. |
 | log_reporter_layout | SW_AGENT_LOG_REPORTER_LAYOUT | <class 'str'> | %(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s | The log reporter formats the logRecord message based on the layout given. |
 | cause_exception_depth | SW_AGENT_CAUSE_EXCEPTION_DEPTH | <class 'int'> | 10 | This configuration is shared by log reporter and tracer This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback]( https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations. |
-### BEGIN: Meter Reporter Configurations
+###  Meter Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | meter_reporter_active | SW_AGENT_METER_REPORTER_ACTIVE | <class 'bool'> | True | If `True`, Python agent will report collected meters to the OAP or Satellite. Otherwise, it disables the feature. |
 | meter_reporter_max_buffer_size | SW_AGENT_METER_REPORTER_MAX_BUFFER_SIZE | <class 'int'> | 10000 | The maximum queue backlog size for sending meter data to backend, meters beyond this are silently dropped. |
 | meter_reporter_period | SW_AGENT_METER_REPORTER_PERIOD | <class 'int'> | 20 | The interval in seconds between each meter data report |
 | pvm_meter_reporter_active | SW_AGENT_PVM_METER_REPORTER_ACTIVE | <class 'bool'> | True | If `True`, Python agent will report collected Python Virtual Machine (PVM) meters to the OAP or Satellite. Otherwise, it disables the feature. |
-### BEGIN: Plugin Related configurations
+###  Plugin Related configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | disable_plugins | SW_AGENT_DISABLE_PLUGINS | <class 'list'> | [''] | The name patterns in comma-separated pattern, plugins whose name matches one of the pattern won't be installed |
