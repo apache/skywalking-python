@@ -30,7 +30,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | kafka_reporter_custom_configurations | SW_AGENT_KAFKA_REPORTER_CUSTOM_CONFIGURATIONS | <class 'str'> |  | The configs to init KafkaProducer, supports the basic arguments (whose type is either `str`, `bool`, or `int`) listed [here](https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#kafka.KafkaProducer) This config only works from env variables, each one should be passed in `SW_AGENT_KAFKA_REPORTER_CONFIG_<KEY_NAME>` |
 | force_tls | SW_AGENT_FORCE_TLS | <class 'bool'> | False | Use TLS for communication with SkyWalking OAP (no cert required) |
 | authentication | SW_AGENT_AUTHENTICATION | <class 'str'> |  | The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap-server/server-bootstrap/src/main/resources/application.yml#L155-L158). |
-| logging_level | SW_AGENT_LOGGING_LEVEL | <class 'str'> | INFO | The level of agent self-logs, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG` Please turn on debug if an issue is encountered to find out what's going on |
+| logging_level | SW_AGENT_LOGGING_LEVEL | <class 'str'> | INFO | The level of agent self-logs, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG`. Please turn on debug if an issue is encountered to find out what's going on |
 ###  Agent Core Danger Zone
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
@@ -41,7 +41,7 @@ export SW_AGENT_YourConfiguration=YourValue
 ###  SW_PYTHON Auto Instrumentation CLI
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
-| sw_python_bootstrap_propagate | SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE | <class 'bool'> | False | Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the [ CLI Guide](CLI.md) for details. |
+| sw_python_bootstrap_propagate | SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE | <class 'bool'> | False | Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the [CLI Guide](CLI.md) for details. |
 ###  Trace Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
@@ -69,7 +69,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | log_reporter_ignore_filter | SW_AGENT_LOG_REPORTER_IGNORE_FILTER | <class 'bool'> | False | This config customizes whether to ignore the application-defined logger filters, if `True`, all logs are reported disregarding any filter rules. |
 | log_reporter_formatted | SW_AGENT_LOG_REPORTER_FORMATTED | <class 'bool'> | True | If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised. |
 | log_reporter_layout | SW_AGENT_LOG_REPORTER_LAYOUT | <class 'str'> | %(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s | The log reporter formats the logRecord message based on the layout given. |
-| cause_exception_depth | SW_AGENT_CAUSE_EXCEPTION_DEPTH | <class 'int'> | 10 | This configuration is shared by log reporter and tracer This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback]( https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations. |
+| cause_exception_depth | SW_AGENT_CAUSE_EXCEPTION_DEPTH | <class 'int'> | 10 | This configuration is shared by log reporter and tracer. This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback]( https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations. |
 ###  Meter Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
