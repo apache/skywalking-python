@@ -41,8 +41,8 @@ class HttpServiceManagementClient(ServiceManagementClient):
             {'key': 'language', 'value': 'python'},
             {'key': 'Process No.', 'value': str(os.getpid())},
         ]
-        if config.agent_namespace:
-            properties.append({'key': 'namespace', 'value': config.agent_namespace})
+        if config.namespace:
+            properties.append({'key': 'namespace', 'value': config.namespace})
         res = self.session.post(self.url_instance_props, json={
             'service': config.service_name,
             'serviceInstance': config.service_instance,

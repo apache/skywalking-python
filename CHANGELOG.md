@@ -1,11 +1,19 @@
 ## Change Logs
 
 ### 1.0.0
+
+- Important Note and breaking changes:
+  - Python 3.6 is no longer supported and may not function properly
+  - A number of configuration options (mostly environment variables) are renamed in this release to follow the convention of
+  'SW_AGENT' prefixes, please check the latest official documentation 
+  https://skywalking.apache.org/docs/skywalking-python/v0.8.0/en/setup/configuration/
+  - All agent core capabilities are now covered by test cases and enabled by default (Trace, Log, PVM runtime metrics, Profiler)
+
+
 - Feature:
   - Drop support for Python 3.6
-  - Add support for Python 3.11 (Pending)
-  - Add MeterReportService (gRPC, Kafka reporter) (default:disabled) (#231, #236, #241, #243)
-  - Add reporter for PVM runtime metrics (default:disabled) (#238, #247)
+  - Add MeterReportService (gRPC, Kafka reporter) (default:enabled) (#231, #236, #241, #243)
+  - Add reporter for PVM runtime metrics (default:enabled) (#238, #247)
   - Add Greenlet profiler (#246)
   - Add test and support for Python Slim base images (#249)
   - Add support for the tags of Virtual Cache for Redis (#263)
@@ -36,6 +44,7 @@
   - New documentation on the newly added greenlet profiler and the original threading profiler (#250)
   - Overhaul documentation on development setup and testing (#249)
   - Add tables to state currently supported features of Python agent. (#271)
+  - New configuration documentation generator (#273) 
 
 - Others:
   - Pin CI SkyWalking License Eye (#221)
@@ -46,6 +55,7 @@
   - Fix grpcio-tools generated message type (#253)
   - Switch plugin tests to use slim Python images (#268)
   - Add unit tests to sw_filters (#269)
+  - **BREAKING** SW_AGENT_PROFILE_ACTIVE | config.profile_active is renamed from profile to profiler (#273)
 
 ### 0.8.0
 - Feature:

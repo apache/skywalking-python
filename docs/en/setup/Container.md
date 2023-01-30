@@ -28,7 +28,7 @@ You could start your Python application with `CMD`. For example - `CMD ['gunicor
 You don't need to care about enabling the SkyWalking Python agent manually, 
 it should be adopted and bootstrapped automatically through the `sw-python` CLI.
 
-[Environment variables](EnvVars.md) can be provided to customize the agent behavior.
+[Environment variables](Configuration.md) can be provided to customize the agent behavior.
 
 ### Build an image from the dockerfile 
 

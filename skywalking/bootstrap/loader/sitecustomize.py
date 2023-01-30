@@ -87,7 +87,7 @@ finally:  # surprise the import error by adding loaded back
 # This behavior can be turned off using a user provided env below
 # os.environ['SW_PYTHON_BOOTSTRAP_PROPAGATE']
 
-if os.environ.get('SW_PYTHON_BOOTSTRAP_PROPAGATE') == 'False':
+if os.environ.get('SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE') == 'False':
     if os.environ.get('PYTHONPATH'):
         partitioned = os.environ['PYTHONPATH'].split(os.path.pathsep)
         loader_path = os.path.dirname(__file__)

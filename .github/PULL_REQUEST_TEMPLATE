@@ -27,6 +27,7 @@
 - [ ] Update the documentation to include this new feature.
 - [ ] Tests(including UT, IT, E2E) are added to verify the new feature.
 - [ ] If it's UI related, attach the screenshots below.
+- [ ] I have rebuilt the `Configuration.md` documentation by running `make doc-gen`
      ==== 🆕 Remove this line WHEN AND ONLY WHEN you're adding a new feature, follow the checklist 👆 ==== -->
 
 <!-- ==== 📱 Remove this line WHEN AND ONLY WHEN you're adding or modifying a plugin instrumentation, follow the checklist 👇 ====

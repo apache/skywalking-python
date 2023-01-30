@@ -78,6 +78,7 @@ fix:
 .PHONY: doc-gen
 doc-gen: gen
 	poetry run python3 tools/plugin_doc_gen.py
+	poetry run python3 tools/config_doc_gen.py
 
 .PHONY: check-doc-gen
 check-doc-gen: doc-gen

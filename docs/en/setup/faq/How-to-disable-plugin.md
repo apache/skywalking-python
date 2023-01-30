@@ -10,4 +10,4 @@ config.disable_plugins = ['sw_http_server', 'sw_urllib_request']  # can be also 
 ```
 
 You can also disable the plugins via environment variables `SW_AGENT_DISABLE_PLUGINS`, 
-please check the [Environment Variables List](../EnvVars.md) for an explanation.
+please check the [Environment Variables List](../Configuration.md) for an explanation.

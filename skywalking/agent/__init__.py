@@ -61,7 +61,7 @@ def __report():
 
     while not __finished.is_set():
         try:
-            __protocol.report(__queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+            __protocol.report(__queue)  # is blocking actually, blocks for max config.queue_timeout seconds
             wait = base
         except Exception as exc:
             logger.error(str(exc))
@@ -117,7 +117,7 @@ def __report_meter():
 
     while not __finished.is_set():
         try:
-            __protocol.report_meter(__meter_queue)  # is blocking actually, blocks for max config.QUEUE_TIMEOUT seconds
+            __protocol.report_meter(__meter_queue)  # is blocking actually, blocks for max config.queue_timeout seconds
             wait = base
         except Exception as exc:
             logger.error(str(exc))
@@ -135,7 +135,7 @@ def __init_threading():
     global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
         __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue, __meter_queue, __finished
 
-    __queue = Queue(maxsize=config.max_buffer_size)
+    __queue = Queue(maxsize=config.trace_reporter_max_buffer_size)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
@@ -167,7 +167,7 @@ def __init_threading():
         __log_report_thread = Thread(name='LogReportThread', target=__report_log, daemon=True)
         __log_report_thread.start()
 
-    if config.profile_active:
+    if config.profiler_active:
         __snapshot_queue = Queue(maxsize=config.profile_snapshot_transport_buffer_size)
 
         __query_profile_thread = Thread(name='QueryProfileCommandThread', target=__query_profile_command, daemon=True)
@@ -205,7 +205,7 @@ def __fini():
         __protocol.report_log(__log_queue, False)
         __log_queue.join()
 
-    if config.profile_active:
+    if config.profiler_active:
         __protocol.send_snapshot(__snapshot_queue, False)
         __snapshot_queue.join()
 

@@ -41,7 +41,7 @@ services:
       timeout: 60s
       retries: 120
     environment:
-      SW_AGENT_NAME: provider
+      SW_AGENT_SERVICE_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
 
   consumer:
@@ -59,8 +59,8 @@ services:
       provider:
         condition: service_healthy
     environment:
-      SW_AGENT_NAME: consumer
+      SW_AGENT_SERVICE_NAME: consumer
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_FLASK_COLLECT_HTTP_PARAMS: 'True'
+      SW_AGENT_FLASK_COLLECT_HTTP_PARAMS: 'True'
 networks:
   beyond:

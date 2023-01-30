@@ -26,7 +26,7 @@ on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` poi
 `log_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
 
 Alternatively, you can pass configurations through environment variables. 
-Please refer to the [Environment Variables List](../EnvVars.md) for the list of environment variables associated with the log reporter.
+Please refer to the [Environment Variables List](../Configuration.md) for the list of environment variables associated with the log reporter.
 
 ## Specify a logging level
 Only the logs with a level equal to or higher than the specified will be collected and reported. 
