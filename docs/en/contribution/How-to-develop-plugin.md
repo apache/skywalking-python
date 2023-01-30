@@ -20,7 +20,7 @@ You can always take [the existing plugins](../setup/Plugins.md) as examples, whi
    ```
 4. Every plugin requires a corresponding test under `tests/plugin` before it can be merged, refer to the [Plugin Test Guide](How-to-test-plugin.md) when writing a plugin test.
 5. Update the [Supported Plugin List](../setup/Plugins.md).
-6. Add the environment variables to [Environment Variable list](../setup/EnvVars.md) if any.
+6. Add the environment variables to [Environment Variable list](../setup/Configuration.md) if any.
 
 ## Steps after coding
 

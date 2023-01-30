@@ -11,7 +11,7 @@ an incompatible version with Python in the original library
 or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 
 ### Plugin Support Table
-Library | Python Version - Lib Version | Plugin Name
+| Library | Python Version - Lib Version | Plugin Name |
 | :--- | :--- | :--- |
 | [aiohttp](https://docs.aiohttp.org) | Python >=3.7 - ['3.7.*'];  | `sw_aiohttp` |
 | [aioredis](https://aioredis.readthedocs.io/) | Python >=3.7 - ['2.0.*'];  | `sw_aioredis` |

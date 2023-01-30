@@ -2,10 +2,13 @@
 
 **SkyWalking Python agent requires SkyWalking 8.0+ and Python 3.7+**
 
-You can install the SkyWalking Python agent via various ways.
+You can install the SkyWalking Python agent via various ways described next.
 
-> If you want to try out the latest features that are not released yet, please refer to
-> this [guide](faq/How-to-build-from-sources.md) to build from sources.
+> **Already installed? Check out easy ways to start the agent in your application**
+
+> [Non-intrusive](CLI.md) | [Intrusive <minimal>](Intrusive.md) | [Containerization](Container.md) 
+
+> **All available configurations are listed [here](Configuration.md)**
 
 ## Important Note on Different Reporter Protocols
 
@@ -22,6 +25,9 @@ Please refer to the table below before deciding which report protocol suits best
 | Kafka             | ✅              | ✅            | ✅              | ❌         |     
 
 ### From PyPI
+
+> If you want to try out the latest features that are not released yet, please refer to
+> this [guide](faq/How-to-build-from-sources.md) to build from sources.
 
 The Python agent module is published to [PyPI](https://pypi.org/project/apache-skywalking/), 
 from where you can use `pip` to install:

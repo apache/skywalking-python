@@ -36,7 +36,7 @@ services:
     volumes:
       - ../provider/provider.py:/services/provider.py
     environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+      SW_AGENT_COLLECTOR_ADDRESS: oap:11800
     depends_on:
       oap:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       file: ../../../base/docker-compose.base.yml
       service: consumer
     environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+      SW_AGENT_COLLECTOR_ADDRESS: oap:11800
     ports:
       - "9090"
     depends_on:

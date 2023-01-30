@@ -36,7 +36,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 
 """
 table_head = """### Plugin Support Table
-Library | Python Version - Lib Version | Plugin Name
+| Library | Python Version - Lib Version | Plugin Name |
 | :--- | :--- | :--- |
 """
 

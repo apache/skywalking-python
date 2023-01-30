@@ -98,7 +98,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    timeout = config.queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -167,7 +167,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    timeout = config.queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -199,7 +199,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    timeout = config.queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -231,7 +231,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.QUEUE_TIMEOUT  # type: int
+                    timeout = config.queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:

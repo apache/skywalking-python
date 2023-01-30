@@ -353,9 +353,9 @@ class GreenletProfiler:
             self._old_trace = curr.settrace(callback)
 
         except Exception as e:
-            logger.error('profiling task fail. task_id:[%s] error:[%s]', self._profiling_context.task.task_id, e)
+            logger.error('profiling task fail. task_id:[%s] error:[%s]', self._profile_context.task.task_id, e)
             # todo test this can current stop profile task or not
-            self.profiling_context.stop_current_profile_task(
+            self._task_execution_service.stop_current_profile_task(
                 self._task_execution_context
             )
 

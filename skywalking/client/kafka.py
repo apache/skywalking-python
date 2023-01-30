@@ -33,7 +33,7 @@ kafka_configs = {}
 def __init_kafka_configs():
     kafka_configs['bootstrap_servers'] = config.kafka_bootstrap_servers.split(',')
     # process all kafka configs in env
-    kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_KAFKA_REPORTER_CONFIG_')]
+    kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_AGENT_KAFKA_REPORTER_CONFIG_')]
     for kafka_key in kafka_keys:
         key = kafka_key[25:]
         val = os.environ.get(kafka_key)
@@ -71,8 +71,8 @@ class KafkaServiceManagementClient(ServiceManagementClient):
             KeyStringValuePair(key='language', value='python'),
             KeyStringValuePair(key='Process No.', value=str(os.getpid())),
         ]
-        if config.agent_namespace:
-            properties.append(KeyStringValuePair(key='namespace', value=config.agent_namespace))
+        if config.namespace:
+            properties.append(KeyStringValuePair(key='namespace', value=config.namespace))
         instance = InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
