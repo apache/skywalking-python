@@ -74,10 +74,10 @@ kafka_reporter_custom_configurations: str = os.getenv('SW_AGENT_KAFKA_REPORTER_C
 # Use TLS for communication with SkyWalking OAP (no cert required)
 force_tls: bool = os.getenv('SW_AGENT_FORCE_TLS', '').lower() == 'true'
 # The authentication token to verify that the agent is trusted by the backend OAP, as for how to configure the
-# backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/oap
-# -server/server-bootstrap/src/main/resources/application.yml#L155-L158).
+# backend, refer to [the yaml](https://github.com/apache/skywalking/blob/4f0f39ffccdc9b41049903cc540b8904f7c9728e/
+# oap-server/server-bootstrap/src/main/resources/application.yml#L155-L158).
 authentication: str = os.getenv('SW_AGENT_AUTHENTICATION', '')
-# The level of agent self-logs, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG`
+# The level of agent self-logs, could be one of `CRITICAL`, `FATAL`, `ERROR`, `WARN`(`WARNING`), `INFO`, `DEBUG`.
 # Please turn on debug if an issue is encountered to find out what's going on
 logging_level: str = os.getenv('SW_AGENT_LOGGING_LEVEL', 'INFO')
 
@@ -97,8 +97,8 @@ queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
 
 # BEGIN: SW_PYTHON Auto Instrumentation CLI
 # Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in
-# `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the [
-# CLI Guide](CLI.md) for details.
+# `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the
+# [CLI Guide](CLI.md) for details.
 sw_python_bootstrap_propagate = os.getenv('SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE', '').lower() == 'true'
 
 # BEGIN: Trace Reporter Configurations
@@ -148,7 +148,7 @@ log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED', '').
 # The log reporter formats the logRecord message based on the layout given.
 log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT',
                                      '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s')
-# This configuration is shared by log reporter and tracer
+# This configuration is shared by log reporter and tracer.
 # This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback](
 # https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations.
 cause_exception_depth: int = int(os.getenv('SW_AGENT_CAUSE_EXCEPTION_DEPTH', '10'))

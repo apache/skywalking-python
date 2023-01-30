@@ -65,7 +65,7 @@ def comments_from_file(file_path):
                     comment_block_begin = False
                     continue
                 if comment_block_begin:
-                    comments[-1] += line.lstrip('#')
+                    comments[-1] += line.lstrip('#') if not comments[-1].endswith('/') else line.lstrip('# ')
                     continue
                 comment_block_begin = True
                 comments.append(line.lstrip('# '))
