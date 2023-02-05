@@ -230,7 +230,7 @@ def finalize_name() -> None:
     global service_name
     if namespace:
         service_name = f'{service_name}|{namespace}'
-        
+
     global kafka_topic_management, kafka_topic_meter, kafka_topic_log, kafka_topic_segment
     if kafka_namespace:
         kafka_topic_management = f'{kafka_namespace}-{kafka_topic_management}'
