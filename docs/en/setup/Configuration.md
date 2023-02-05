@@ -23,6 +23,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | service_instance | SW_AGENT_SERVICE_INSTANCE | <class 'str'> | str(uuid.uuid1()).replace('-', '') | The name of this particular awesome Python service instance |
 | namespace | SW_AGENT_NAMESPACE | <class 'str'> |  | The agent namespace of the Python service (available as tag and the suffix of service name) |
 | kafka_bootstrap_servers | SW_AGENT_KAFKA_BOOTSTRAP_SERVERS | <class 'str'> | localhost:9092 | A list of host/port pairs to use for establishing the initial connection to your Kafka cluster. It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol) |
+| kafka_namespace | SW_AGENT_KAFKA_NAMESPACE | <class 'str'> |  | The kafka namespace specified by OAP SW_NAMESPACE, prepends the following kafka topic names. |
 | kafka_topic_management | SW_AGENT_KAFKA_TOPIC_MANAGEMENT | <class 'str'> | skywalking-managements | Specifying Kafka topic name for service instance reporting and registering, this should be in sync with OAP |
 | kafka_topic_segment | SW_AGENT_KAFKA_TOPIC_SEGMENT | <class 'str'> | skywalking-segments | Specifying Kafka topic name for Tracing data, this should be in sync with OAP |
 | kafka_topic_log | SW_AGENT_KAFKA_TOPIC_LOG | <class 'str'> | skywalking-logs | Specifying Kafka topic name for Log data, this should be in sync with OAP |
