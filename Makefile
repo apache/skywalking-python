@@ -25,6 +25,11 @@ else
     OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
 endif
 
+.PHONY: env
+env: poetry gen
+	poetry install
+	poetry run pip install --upgrade pip
+
 .PHONY: poetry poetry-fallback
 # poetry installer may not work on macOS's default python
 # falls back to pipx installer
@@ -57,12 +62,6 @@ gen-basic:
 install: gen-basic
 	python3 -m pip install --upgrade pip
 	python3 -m pip install .[all]
-
-.PHONY: env
-env: poetry gen
-	poetry install
-	poetry run pip install --upgrade pip
-
 
 .PHONY: lint
 # flake8 configurations should go to the file setup.cfg

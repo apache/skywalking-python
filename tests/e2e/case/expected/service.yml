@@ -20,9 +20,9 @@
   layers:
     - GENERAL
   group: ""
-- id: {{ b64enc "e2e-service-consumer" }}.1
-  name: e2e-service-consumer
-  shortname: e2e-service-consumer
+- id: {{ b64enc "e2e-service-consumer|namespace" }}.1
+  name: "e2e-service-consumer|namespace"
+  shortname: "e2e-service-consumer|namespace"
   normal: true
   layers:
     - GENERAL

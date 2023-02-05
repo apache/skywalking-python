@@ -20,7 +20,7 @@ spans:
   spanid: {{ .spanid }}
   parentspanid: {{ .parentspanid }}
   refs: []
-  servicecode: e2e-service-consumer
+  servicecode: "e2e-service-consumer|namespace"
   serviceinstancename: consumer1
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}
@@ -46,7 +46,7 @@ spans:
   spanid: {{ .spanid }}
   parentspanid: {{ .parentspanid }}
   refs: []
-  servicecode: e2e-service-consumer
+  servicecode: "e2e-service-consumer|namespace"
   serviceinstancename: consumer1
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}

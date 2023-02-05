@@ -72,7 +72,7 @@ verify:
     # trace detail
     - query: |
         swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace $( \
-          swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls --service-name=e2e-service-consumer\
+          swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls --service-name="e2e-service-consumer|namespace" \
             | yq e '.traces | select(.[].endpointnames[0]=="/artist") | .[0].traceids[0]' -
         )
       expected: ../expected/trace-artist-detail.yml

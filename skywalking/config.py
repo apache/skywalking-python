@@ -54,7 +54,7 @@ protocol: str = os.getenv('SW_AGENT_PROTOCOL', 'grpc').lower()
 service_name: str = os.getenv('SW_AGENT_SERVICE_NAME', 'Python Service Name')
 # The name of this particular awesome Python service instance
 service_instance: str = os.getenv('SW_AGENT_SERVICE_INSTANCE', str(uuid.uuid1()).replace('-', ''))
-# The agent namespace of the Python service (available as tag)
+# The agent namespace of the Python service (available as tag and the suffix of service name)
 namespace: str = os.getenv('SW_AGENT_NAMESPACE', '')
 # A list of host/port pairs to use for establishing the initial connection to your Kafka cluster.
 # It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol)
@@ -218,7 +218,22 @@ def init(**kwargs) -> None:
         glob[key] = val
 
 
-def finalize():
+def finalize_name() -> None:
+    """
+    This function concatenates the serviceName according to
+    Java agent's implementation.
+    TODO: add kafka namespace prefix and cluster concept
+    Ref https://github.com/apache/skywalking-java/pull/123
+    """
+    global service_name
+    if namespace:
+        service_name = f'{service_name}|{namespace}'
+
+
+def finalize_regex() -> None:
+    """
+    Build path matchers based on user provided regex expressions
+    """
     reesc = re.compile(r'([.*+?^=!:${}()|\[\]\\])')
     suffix = r'^.+(?:' + '|'.join(reesc.sub(r'\\\1', s.strip()) for s in ignore_suffix.split(',')) + ')$'
     method = r'^' + '|'.join(s.strip() for s in http_ignore_method.split(',')) + '$'
@@ -242,3 +257,11 @@ def finalize():
 
 def ignore_http_method_check(method: str):
     return RE_HTTP_IGNORE_METHOD.match(method)
+
+
+def finalize() -> None:
+    """
+    invokes finalizers
+    """
+    finalize_regex()
+    finalize_name()
