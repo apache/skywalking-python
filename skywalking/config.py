@@ -218,7 +218,7 @@ def init(**kwargs) -> None:
         glob[key] = val
 
 
-def finalize_service_name() -> None:
+def finalize_name() -> None:
     """
     This function concatenates the serviceName according to
     Java agent's implementation.
@@ -264,4 +264,4 @@ def finalize() -> None:
     invokes finalizers
     """
     finalize_regex()
-    finalize_service_name()
+    finalize_name()
