@@ -23,7 +23,6 @@ from kafka import KafkaProducer
 from skywalking import config
 from skywalking.client import MeterReportService, ServiceManagementClient, TraceSegmentReportService, LogDataReportService
 from skywalking.loggings import logger, logger_debug_enabled
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Meter_pb2 import MeterDataCollection
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
 
@@ -58,6 +57,9 @@ __init_kafka_configs()
 
 class KafkaServiceManagementClient(ServiceManagementClient):
     def __init__(self):
+        super().__init__()
+        self.instance_properties = self.get_instance_properties_proto()
+
         if logger_debug_enabled:
             logger.debug('kafka reporter configs: %s', kafka_configs)
         self.producer = KafkaProducer(**kafka_configs)
@@ -67,16 +69,10 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         self.send_instance_props()
 
     def send_instance_props(self):
-        properties = [
-            KeyStringValuePair(key='language', value='python'),
-            KeyStringValuePair(key='Process No.', value=str(os.getpid())),
-        ]
-        if config.namespace:
-            properties.append(KeyStringValuePair(key='namespace', value=config.namespace))
         instance = InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=properties,
+            properties=self.instance_properties,
         )
 
         key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
@@ -84,6 +80,8 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         self.producer.send(topic=self.topic, key=key, value=value)
 
     def send_heart_beat(self):
+        self.refresh_instance_props()
+
         if logger_debug_enabled:
             logger.debug(
                 'service heart beats, [%s], [%s]',

@@ -18,11 +18,15 @@
 _meter_service = None
 
 
-def init():
+def init(force: bool = False):
+    """
+    If the meter service is not initialized, initialize it.
+    if force, we are in a fork(), we force re-initialization
+    """
     from skywalking.meter.meter_service import MeterService
 
     global _meter_service
-    if _meter_service:
+    if _meter_service and not force:
         return
 
     _meter_service = MeterService()

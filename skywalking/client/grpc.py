@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-import os
 import grpc
 
 from skywalking import config
@@ -25,7 +24,6 @@ from skywalking.command import command_service
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile import profile_task_execution_service
 from skywalking.profile.profile_task import ProfileTask
-from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2_grpc import TraceSegmentReportServiceStub
 from skywalking.protocol.logging.Logging_pb2_grpc import LogReportServiceStub
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
@@ -37,33 +35,31 @@ from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
 
 class GrpcServiceManagementClient(ServiceManagementClient):
     def __init__(self, channel: grpc.Channel):
+        super().__init__()
+        self.instance_properties = self.get_instance_properties_proto()
         self.service_stub = ManagementServiceStub(channel)
 
     def send_instance_props(self):
-        # TODO: other properties periodically | matching behavior of java agent
-        properties = [
-            KeyStringValuePair(key='language', value='python'),
-            KeyStringValuePair(key='Process No.', value=str(os.getpid())),
-        ]
-        if config.namespace:
-            properties.append(KeyStringValuePair(key='namespace', value=config.namespace))
         self.service_stub.reportInstanceProperties(InstanceProperties(
             service=config.service_name,
             serviceInstance=config.service_instance,
-            properties=properties,
+            properties=self.instance_properties,
         ))
 
     def send_heart_beat(self):
+        self.refresh_instance_props()
+
+        self.service_stub.keepAlive(InstancePingPkg(
+            service=config.service_name,
+            serviceInstance=config.service_instance,
+        ))
+
         if logger_debug_enabled:
             logger.debug(
                 'service heart beats, [%s], [%s]',
                 config.service_name,
                 config.service_instance,
             )
-        self.service_stub.keepAlive(InstancePingPkg(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
-        ))
 
 
 class GrpcTraceSegmentReportService(TraceSegmentReportService):
@@ -107,7 +103,7 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
         commands = self.profile_stub.getProfileTaskCommands(query)
         command_service.receive_command(commands)
 
-    def send(self, generator):
+    def report(self, generator):
         self.profile_stub.collectSnapshot(generator)
 
     def finish(self, task: ProfileTask):

@@ -35,8 +35,8 @@ export SW_AGENT_YourConfiguration=YourValue
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | heartbeat_period | SW_AGENT_HEARTBEAT_PERIOD | <class 'int'> | 30 | The agent will exchange heartbeat message with SkyWalking OAP backend every `period` seconds |
-| service_instance_property_report_factor | SW_AGENT_SERVICE_INSTANCE_PROPERTY_REPORT_FACTOR | <class 'int'> | 10 | The agent will report service instance properties every `factor * heartbeat period` seconds default: 10*30 = 300 seconds (TODO) |
-| experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will try to restart itself in any os.fork()-ed child process. Important note: it's not suitable for large numbered, short-lived processes such as multiprocessing.Pool, as each one will introduce overhead and create numerous instances in SkyWalking dashboard in format of `service_instance-child-<pid>` (TODO) |
+| service_instance_property_report_factor | SW_AGENT_SERVICE_INSTANCE_PROPERTY_REPORT_FACTOR | <class 'int'> | 10 | The agent will report service instance properties every `factor * heartbeat period` seconds default: 10*30 = 300 seconds |
+| experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard in format of `service_instance-child-<pid>` |
 | queue_timeout | SW_AGENT_QUEUE_TIMEOUT | <class 'int'> | 1 | DANGEROUS - This option controls the interval of each bulk report from telemetry data queues Do not modify unless you have evaluated its impact given your service load. |
 ###  SW_PYTHON Auto Instrumentation CLI
 | Configuration | Environment Variable | Type | Default Value | Description |

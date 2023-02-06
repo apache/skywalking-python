@@ -16,9 +16,9 @@
 #
 from typing import Optional
 
-from skywalking import Component, agent, config
+from skywalking import Component, config
 from skywalking import profile
-from skywalking.agent import isfull
+from skywalking.agent import agent
 from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
@@ -104,7 +104,7 @@ class SpanContext:
 
     @staticmethod
     def ignore_check(op: str, kind: Kind, carrier: Optional[Carrier] = None):
-        if config.RE_IGNORE_PATH.match(op) or isfull() or (carrier is not None and carrier.is_suppressed):
+        if config.RE_IGNORE_PATH.match(op) or agent.is_segment_queue_full() or (carrier is not None and carrier.is_suppressed):
             return NoopSpan(context=NoopContext())
 
         return None
@@ -219,7 +219,7 @@ class SpanContext:
 
         self._nspans -= 1
         if self._nspans == 0:
-            agent.archive(self.segment)
+            agent.archive_segment(self.segment)
             return True
 
         return False

@@ -17,6 +17,7 @@
   - Add Greenlet profiler (#246)
   - Add test and support for Python Slim base images (#249)
   - Add support for the tags of Virtual Cache for Redis (#263)
+  - Add **experimental** support for explicit os.fork(), restarts agent in new process (#278)
 
 - Plugins:
   - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 
@@ -39,6 +40,7 @@
   - Avoid reporting meaningless tracecontext with logs when there's no active span, UI will now show empty traceID (#272)
   - Fix exception handler in profile_context (#273)
   - Add namespace suffix to service name (#275)
+  - Add periodical instance property report to prevent data loss (#278)
 
 - Docs:
   - New documentation on how to test locally (#222)

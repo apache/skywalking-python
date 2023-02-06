@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,14 +12,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+from flask import Flask, jsonify
+from skywalking import agent, config
 
-from skywalking.meter.gauge import Gauge
+config.init(collector_address='localhost:12800', protocol='http', service_name='great-app-provider-http',
+            service_instance='instance-01',
+            experimental_fork_support=True, logging_level='DEBUG', log_reporter_active=True,
+            meter_reporter_active=True,
+            profiler_active=True)
+
+agent.start()
+
+app = Flask(__name__)
 
 
-class DataSource:
-    def register(self):
-        for name in dir(self):
-            if name.endswith('generator'):
-                generator = getattr(self, name)()
-                Gauge.Builder('instance_pvm_' + name[:-10], generator).build()
+@app.route('/', methods=['POST', 'GET'])
+def application():
+    return jsonify({'status': 'ok'})
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=9999, debug=True)

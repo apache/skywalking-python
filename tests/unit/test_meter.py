@@ -23,6 +23,7 @@ from skywalking.meter.counter import Counter, CounterMode
 from skywalking.meter.histogram import Histogram
 from skywalking.meter.gauge import Gauge
 from skywalking.meter.meter import BaseMeter
+from skywalking import meter
 
 
 class MockMeterService():
@@ -44,7 +45,7 @@ class MockMeterService():
 
 
 meter_service = MockMeterService()
-BaseMeter.meter_service = meter_service
+meter._meter_service = meter_service
 
 # picked empirically
 tolerance = 5e-2
@@ -84,7 +85,6 @@ class TestMeter(unittest.TestCase):
             self.assertEqual(meterdata.singleValue.value, c.count)
             self.assertLess(abs(i - (meterdata.singleValue.value - pre)), tolerance)
             pre = meterdata.singleValue.value
-
 
     def test_counter_increase_decarator(self):
         builder = Counter.Builder('c3', CounterMode.INCREMENT)
@@ -167,7 +167,6 @@ class TestMeter(unittest.TestCase):
                 idx = int(i * 10)
                 meterdata = meter_service.transform(h)
                 self.assertEqual(repeat, meterdata.histogram.values[idx].count)
-
 
     def test_gauge(self):
         ls = list(range(1, 10))

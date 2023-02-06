@@ -17,7 +17,8 @@
 
 import logging
 
-from skywalking import config, agent
+from skywalking import config
+from skywalking.agent import agent
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.logging.Logging_pb2 import LogData, LogDataBody, TraceContext, LogTags, TextLog
 from skywalking.trace.context import get_context

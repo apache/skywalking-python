@@ -41,7 +41,7 @@ def _get_sw_loader_logger():
     from logging import getLogger
     logger = getLogger('skywalking-loader')
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(name)s [%(threadName)s] [%(levelname)s] %(message)s')
+    formatter = logging.Formatter('%(name)s <%(process)d> [%(threadName)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.propagate = False

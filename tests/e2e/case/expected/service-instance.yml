@@ -20,16 +20,19 @@
   name: {{ notEmpty .name }}
   attributes:
     {{- contains .attributes }}
-# TODO: The following attributes implementation is missing
-#    - name: OS Name
-#      value: linux
-#    - name: hostname
-#      value: {{ notEmpty .value }}
-#    - name: Process No.
-#      value: {{ notEmpty .value }}
+    - name: OS Name
+      value: "posix"
+    - name: Process No.
+      value: {{ notEmpty .value }}
+    - name: hostname
+      value: {{ notEmpty .value }}
+    - name: python_implementation
+      value: "CPython"
+    - name: python_version
+      value: {{ notEmpty .value }}
     - name: ipv4s
-      value: ""
-    {{- end}}
+      value: {{ notEmpty .value }}
+      {{- end }}
   language: PYTHON
   instanceuuid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
 {{- end}}

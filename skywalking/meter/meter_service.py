@@ -14,20 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 import time
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from skywalking import config
-from skywalking import agent
+from skywalking.agent import agent
 from skywalking.meter.meter import BaseMeter
 from skywalking.utils.time import current_milli_time
 from skywalking.config import meter_reporter_period
+from skywalking.loggings import logger
 
 
 class MeterService(Thread):
     def __init__(self):
-        super().__init__(daemon=True)
+        super().__init__(name='meterService', daemon=True)
+        logger.debug('Started meter service')
         self.meter_map = {}
 
     def register(self, meter: BaseMeter):
@@ -45,7 +46,7 @@ class MeterService(Thread):
             meterdata.timestamp = current_milli_time()
             agent.archive_meter(meterdata)
 
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(thread_name_prefix='meter_service_pool_worker', max_workers=1) as executor:
             executor.map(archive, self.meter_map.values())
 
     def run(self):
