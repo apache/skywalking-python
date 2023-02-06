@@ -160,9 +160,6 @@ segmentItems:
                 value: GET
               - key: http.status_code
                 value: '200'
-
-      - segmentId: not null
-        spans:
           - operationName: '/users'
             parentSpanId: -1
             spanId: 0
