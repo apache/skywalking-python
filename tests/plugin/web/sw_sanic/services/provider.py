@@ -30,4 +30,4 @@ if __name__ == '__main__':
         )
 
     PORT = 9091
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=True, use_reloader=False)

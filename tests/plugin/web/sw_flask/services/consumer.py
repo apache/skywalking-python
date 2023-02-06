@@ -44,4 +44,4 @@ if __name__ == '__main__':
         return jsonify(res.json())
 
     PORT = 9090
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=True, use_reloader=False)

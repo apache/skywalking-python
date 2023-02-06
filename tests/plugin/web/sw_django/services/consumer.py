@@ -23,7 +23,7 @@ from django.conf.urls import url
 from django.http import JsonResponse
 
 settings.configure(
-    DEBUG=True,
+    debug=True, use_reloader=False,
     ROOT_URLCONF=__name__,
     ALLOWED_HOSTS=['*'],
 )

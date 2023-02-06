@@ -29,4 +29,4 @@ if __name__ == '__main__':
         return jsonify({'song': 'Despacito', 'artist': 'Luis Fonsi'})
 
     PORT = 9091
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=True, use_reloader=False)

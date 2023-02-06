@@ -26,4 +26,4 @@ if __name__ == '__main__':
         res = requests.post('http://provider:9091/users', timeout=5)
         return res.json()
 
-    run(host='0.0.0.0', port=9090, debug=True)
+    run(host='0.0.0.0', port=9090, debug=True, use_reloader=False)
