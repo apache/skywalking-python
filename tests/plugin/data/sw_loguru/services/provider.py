@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import logging
 import time
 
 from loguru import logger
@@ -24,6 +25,8 @@ if __name__ == '__main__':
 
     app = FastAPI()
 
+    logging_logger = logging.getLogger()
+
 
     @app.get('/users')
     async def application():
@@ -31,14 +34,26 @@ if __name__ == '__main__':
 
         try:
             raise Exception('Loguru Exception Test.')
-        except Exception:   # noqa
+        except Exception:  # noqa
             logger.opt(exception=True).error('Loguru provider error reported.')
+            time.sleep(0.5)
+            logging_logger.error('Logging provider error reported.', exc_info=True)
 
+        time.sleep(0.5)
+
+        # this will be filtered by SW_AGENT_LOG_REPORTER_LEVEL
         logger.debug('Loguru provider debug reported.')
 
+        time.sleep(0.5)
+
         logger.warning('Loguru provider warning reported.')
+
+        time.sleep(0.5)
+
+        logging_logger.critical('Logging provider critical reported.')
 
         return {'song': 'Despacito', 'artist': 'Luis Fonsi'}
 
 
-    uvicorn.run(app, host='0.0.0.0', port=9091)
+    # error level filter the uvicorn's log by logging
+    uvicorn.run(app, host='0.0.0.0', port=9091, log_level='error')
