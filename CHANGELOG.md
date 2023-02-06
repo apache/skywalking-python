@@ -17,6 +17,7 @@
   - Add Greenlet profiler (#246)
   - Add test and support for Python Slim base images (#249)
   - Add support for the tags of Virtual Cache for Redis (#263)
+  - Add a new configuration `kafka_namespace` to prefix the kafka topic names (#277)
   - Add **experimental** support for explicit os.fork(), restarts agent in new process (#278)
 
 - Plugins:

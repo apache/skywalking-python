@@ -59,6 +59,8 @@ namespace: str = os.getenv('SW_AGENT_NAMESPACE', '')
 # A list of host/port pairs to use for establishing the initial connection to your Kafka cluster.
 # It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol)
 kafka_bootstrap_servers: str = os.getenv('SW_AGENT_KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
+# The kafka namespace specified by OAP side SW_NAMESPACE, prepends the following kafka topic names with a `-`.
+kafka_namespace: str = os.getenv('SW_AGENT_KAFKA_NAMESPACE', '')
 # Specifying Kafka topic name for service instance reporting and registering, this should be in sync with OAP
 kafka_topic_management: str = os.getenv('SW_AGENT_KAFKA_TOPIC_MANAGEMENT', 'skywalking-managements')
 # Specifying Kafka topic name for Tracing data, this should be in sync with OAP
@@ -239,12 +241,19 @@ def finalize_name() -> None:
     """
     This function concatenates the serviceName according to
     Java agent's implementation.
-    TODO: add kafka namespace prefix and cluster concept
+    TODO: add cluster concept
     Ref https://github.com/apache/skywalking-java/pull/123
     """
     global service_name
     if namespace:
         service_name = f'{service_name}|{namespace}'
+
+    global kafka_topic_management, kafka_topic_meter, kafka_topic_log, kafka_topic_segment
+    if kafka_namespace:
+        kafka_topic_management = f'{kafka_namespace}-{kafka_topic_management}'
+        kafka_topic_meter = f'{kafka_namespace}-{kafka_topic_meter}'
+        kafka_topic_log = f'{kafka_namespace}-{kafka_topic_log}'
+        kafka_topic_segment = f'{kafka_namespace}-{kafka_topic_segment}'
 
 
 def finalize_regex() -> None:
