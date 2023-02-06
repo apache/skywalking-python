@@ -132,7 +132,7 @@ segmentItems:
                 networkAddress: not null
                 refType: CrossProcess
                 parentSpanId: 1
-                parentTraceSegmentId: not null,
+                parentTraceSegmentId: not null
                 parentServiceInstance: not null
                 parentService: consumer
                 traceId: not null
