@@ -81,6 +81,7 @@ services:
       SW_KAFKA_FETCHER_SERVERS: broker-a:9092,broker-b:9092
       SW_KAFKA_FETCHER_PARTITIONS: 2
       SW_KAFKA_FETCHER_PARTITIONS_FACTOR: 1
+      SW_NAMESPACE: 'e2e'
     depends_on:
       broker-a:
         condition: service_healthy
@@ -99,7 +100,7 @@ services:
       SW_AGENT_COLLECTOR_ADDRESS: oap:11800
       SW_AGENT_PROTOCOL: kafka
       SW_AGENT_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
-
+      SW_AGENT_KAFKA_NAMESPACE: 'e2e'
     depends_on:
       oap:
         condition: service_healthy
@@ -112,6 +113,7 @@ services:
       SW_AGENT_COLLECTOR_ADDRESS: oap:11800
       SW_AGENT_PROTOCOL: kafka
       SW_AGENT_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
+      SW_AGENT_KAFKA_NAMESPACE: 'e2e'
     ports:
       - "9090"
     depends_on:
