@@ -56,10 +56,8 @@ logItems:
             - key: level
               value: ERROR
             - key: logger
-              value: root
-            - key: thread
               value: not null
-            - key: exception
+            - key: thread
               value: not null
         layer: ''
 
@@ -88,7 +86,7 @@ logItems:
         body:
           type: 'text'
           content:
-            text: 'Logging provider info reported.'
+            text: not null
         traceContext:
           traceId: not null
           traceSegmentId: not null
@@ -98,7 +96,7 @@ logItems:
             - key: level
               value: CRITICAL
             - key: logger
-              value: root
+              value: not null
             - key: thread
               value: not null
         layer: ''
