@@ -36,19 +36,12 @@ if __name__ == '__main__':
             raise Exception('Loguru Exception Test.')
         except Exception:  # noqa
             logger.opt(exception=True).error('Loguru provider error reported.')
-            time.sleep(0.5)
             logging_logger.error('Logging provider error reported.', exc_info=True)
-
-        time.sleep(0.5)
 
         # this will be filtered by SW_AGENT_LOG_REPORTER_LEVEL
         logger.debug('Loguru provider debug reported.')
 
-        time.sleep(0.5)
-
         logger.warning('Loguru provider warning reported.')
-
-        time.sleep(0.5)
 
         logging_logger.critical('Logging provider critical reported.')
 
