@@ -17,18 +17,18 @@
 
 logItems:
   - serviceName: provider
-    logSize: 2
+    logSize: 4
     logs:
       - timestamp: gt 0
-        endpoint: "/user"
+        endpoint: '/users'
         body:
-          type: ''
+          type: 'text'
           content:
-            text: {{ regexp .content "(?s).+Loguru provider error reported."}}
+            text: 'Loguru provider error reported.'
         traceContext:
           traceId: not null
           traceSegmentId: not null
-          spanId: not null
+          spanId: 0
         tags:
           data:
             - key: level
@@ -37,18 +37,42 @@ logItems:
               value: loguru
             - key: thread
               value: not null
+            - key: exception
+              value: not null
         layer: ''
 
       - timestamp: gt 0
-        endpoint: "/user"
+        endpoint: '/users'
         body:
-          type: ''
+          type: 'text'
+          content:
+            text: not null
+        traceContext:
+          traceId: not null
+          traceSegmentId: not null
+          spanId: 0
+        tags:
+          data:
+            - key: level
+              value: ERROR
+            - key: logger
+              value: root
+            - key: thread
+              value: not null
+            - key: exception
+              value: not null
+        layer: ''
+
+      - timestamp: gt 0
+        endpoint: '/users'
+        body:
+          type: 'text'
           content:
             text: 'Loguru provider warning reported.'
         traceContext:
           traceId: not null
           traceSegmentId: not null
-          spanId: not null
+          spanId: 0
         tags:
           data:
             - key: level
@@ -59,3 +83,103 @@ logItems:
               value: not null
         layer: ''
 
+      - timestamp: gt 0
+        endpoint: '/users'
+        body:
+          type: 'text'
+          content:
+            text: 'Logging provider info reported.'
+        traceContext:
+          traceId: not null
+          traceSegmentId: not null
+          spanId: 0
+        tags:
+          data:
+            - key: level
+              value: CRITICAL
+            - key: logger
+              value: root
+            - key: thread
+              value: not null
+        layer: ''
+
+meterItems: [ ]
+
+segmentItems:
+  - serviceName: provider
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: '/users'
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7014
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - key: http.method
+                value: GET
+              - key: http.url
+                value: not null
+              - key: http.status_code
+                value: '200'
+            refs:
+              - parentEndpoint: '/users'
+                networkAddress: not null
+                refType: CrossProcess
+                parentSpanId: 1
+                parentTraceSegmentId: not null,
+                parentServiceInstance: not null
+                parentService: consumer
+                traceId: not null
+
+  - serviceName: consumer
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: '/users'
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7002
+            isError: false
+            spanType: Exit
+            peer: ''
+            skipAnalysis: false
+            tags:
+              - key: http.url
+                value: not null
+              - key: http.method
+                value: GET
+              - key: http.status_code
+                value: '200'
+
+      - segmentId: not null
+        spans:
+          - operationName: '/users'
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7014
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - key: http.method
+                value: GET
+              - key: http.url
+                value: not null
+              - key: http.status_code
+                value: '200'
