@@ -151,6 +151,9 @@ def install():
     def _sw_log(self, level_id, static_level_no, from_decorator, options, message, args, kwargs):
         _log(level_id, static_level_no, from_decorator, options, message, args, kwargs)
         record = gen_record(self, level_id, static_level_no, from_decorator, options, message, args, kwargs)
+        if record is None:
+            return
+
         core = self._core
 
         if record['level'].no < log_reporter_level:
