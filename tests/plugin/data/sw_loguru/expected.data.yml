@@ -142,35 +142,35 @@ segmentItems:
     segments:
       - segmentId: not null
         spans:
-          - operationName: '/users'
+          - componentId: 7002
+            endTime: gt 0
+            isError: false
+            operationName: '/users'
             parentSpanId: 0
+            peer: not null
+            skipAnalysis: false
             spanId: 1
             spanLayer: Http
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7002
-            isError: false
             spanType: Exit
-            peer: not null
-            skipAnalysis: false
+            startTime: gt 0
             tags:
-              - key: http.url
-                value: not null
               - key: http.method
                 value: GET
+              - key: http.url
+                value: not null
               - key: http.status_code
                 value: '200'
-          - operationName: '/users'
+          - componentId: 7014
+            endTime: gt 0
+            isError: false
+            operationName: '/users'
             parentSpanId: -1
+            peer: not null
+            skipAnalysis: false
             spanId: 0
             spanLayer: Http
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7014
-            isError: false
             spanType: Entry
-            peer: not null
-            skipAnalysis: false
+            startTime: gt 0
             tags:
               - key: http.method
                 value: GET
@@ -178,3 +178,4 @@ segmentItems:
                 value: not null
               - key: http.status_code
                 value: '200'
+
