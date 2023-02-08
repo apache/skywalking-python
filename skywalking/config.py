@@ -146,8 +146,10 @@ log_reporter_level: str = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL', 'WARNING')
 log_reporter_ignore_filter: bool = os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER', '').lower() == 'true'
 # If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args
 # into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised.
+# Only applies to logging module.
 log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED', '').lower() != 'false'
 # The log reporter formats the logRecord message based on the layout given.
+# Only applies to logging module.
 log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT',
                                      '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s')
 # This configuration is shared by log reporter and tracer.

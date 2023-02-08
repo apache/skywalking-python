@@ -1,6 +1,6 @@
 # Python Agent Log Reporter
 
-This functionality reports logs collected from the Python logging module (in theory, also logging libraries depending on the core logging module).
+This functionality reports logs collected from the Python logging module (in theory, also logging libraries depending on the core logging module) and loguru module.
 
 To utilize this feature, you will need to add some new configurations to the agent initialization step.
 
