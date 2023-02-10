@@ -16,7 +16,6 @@
 #
 
 import atexit
-import os
 from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING
