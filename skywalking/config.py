@@ -32,8 +32,8 @@ any documentation to reflect changes here, just make sure to run `make doc-gen` 
 import os
 import re
 import uuid
-
 from typing import List, Pattern
+import warnings
 
 RE_IGNORE_PATH: Pattern = re.compile('^$')
 RE_HTTP_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
@@ -87,11 +87,13 @@ logging_level: str = os.getenv('SW_AGENT_LOGGING_LEVEL', 'INFO')
 # The agent will exchange heartbeat message with SkyWalking OAP backend every `period` seconds
 heartbeat_period: int = int(os.getenv('SW_AGENT_HEARTBEAT_PERIOD', '30'))
 # The agent will report service instance properties every
-# `factor * heartbeat period` seconds default: 10*30 = 300 seconds (TODO)
-service_instance_property_report_factor = int(os.getenv('SW_AGENT_SERVICE_INSTANCE_PROPERTY_REPORT_FACTOR', '10'))
-# The agent will try to restart itself in any os.fork()-ed child process. Important note: it's not suitable for
-# large numbered, short-lived processes such as multiprocessing.Pool, as each one will introduce overhead and create
-# numerous instances in SkyWalking dashboard in format of `service_instance-child-<pid>` (TODO)
+# `factor * heartbeat period` seconds default: 10*30 = 300 seconds
+collector_properties_report_period_factor = int(os.getenv('SW_AGENT_COLLECTOR_PROPERTIES_REPORT_PERIOD_FACTOR', '10'))
+# A custom JSON string to be reported as service instance properties, e.g. `{"key": "value"}`
+instance_properties_json: str = os.getenv('SW_INSTANCE_PROPERTIES_JSON', '')
+# The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for
+# short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard
+# in format of `service_instance-child-<pid>` (TODO)
 experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SUPPORT', '').lower() == 'true'
 # DANGEROUS - This option controls the interval of each bulk report from telemetry data queues
 # Do not modify unless you have evaluated its impact given your service load.
@@ -222,6 +224,23 @@ def init(**kwargs) -> None:
         glob[key] = val
 
 
+def finalize_feature() -> None:
+    """
+    Examine reporter configuration and warn users about the incompatibility of protocol vs features
+    """
+    global profiler_active, meter_reporter_active
+
+    if protocol == 'http' and (profiler_active or meter_reporter_active):
+        profiler_active = False
+        meter_reporter_active = False
+        warnings.warn('HTTP protocol does not support meter reporter and profiler. Please use gRPC protocol if you '
+                      'would like to use both features.')
+    elif protocol == 'kafka' and profiler_active:
+        profiler_active = False
+        warnings.warn('Kafka protocol does not support profiler. Please use gRPC protocol if you would like to use '
+                      'this feature.')
+
+
 def finalize_name() -> None:
     """
     This function concatenates the serviceName according to
@@ -274,5 +293,6 @@ def finalize() -> None:
     """
     invokes finalizers
     """
+    finalize_feature()
     finalize_regex()
     finalize_name()
