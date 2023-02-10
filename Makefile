@@ -27,7 +27,7 @@ endif
 
 .PHONY: env
 env: poetry gen
-	poetry install
+	poetry install --all-extras
 	poetry run pip install --upgrade pip
 
 .PHONY: poetry poetry-fallback

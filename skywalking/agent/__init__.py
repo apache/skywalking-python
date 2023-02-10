@@ -61,7 +61,7 @@ def __report():
 
     while not __finished.is_set():
         try:
-            __protocol.report(__queue)  # is blocking actually, blocks for max config.queue_timeout seconds
+            __protocol.report_segment(__queue)  # is blocking actually, blocks for max config.queue_timeout seconds
             wait = base
         except Exception as exc:
             logger.error(str(exc))
@@ -89,7 +89,7 @@ def __send_profile_snapshot():
 
     while not __finished.is_set():
         try:
-            __protocol.send_snapshot(__snapshot_queue)
+            __protocol.report_snapshot(__snapshot_queue)
             wait = base
         except Exception as exc:
             logger.error(str(exc))
@@ -198,7 +198,7 @@ def __init():
 
 
 def __fini():
-    __protocol.report(__queue, False)
+    __protocol.report_segment(__queue, False)
     __queue.join()
 
     if config.log_reporter_active:
@@ -206,29 +206,10 @@ def __fini():
         __log_queue.join()
 
     if config.profiler_active:
-        __protocol.send_snapshot(__snapshot_queue, False)
+        __protocol.report_snapshot(__snapshot_queue, False)
         __snapshot_queue.join()
 
     __finished.set()
-
-
-def __fork_before():
-    if config.protocol != 'http':
-        logger.warning(f'fork() not currently supported with {config.protocol} protocol')
-
-    # TODO: handle __queue and __finished correctly (locks, mutexes, etc...), need to lock before fork and unlock after
-    # if possible, or ensure they are not locked in threads (end threads and restart after fork?)
-
-    __protocol.fork_before()
-
-
-def __fork_after_in_parent():
-    __protocol.fork_after_in_parent()
-
-
-def __fork_after_in_child():
-    __protocol.fork_after_in_child()
-    __init_threading()
 
 
 def start():
@@ -255,10 +236,6 @@ def start():
     __init()
 
     atexit.register(__fini)
-
-    if (hasattr(os, 'register_at_fork')):
-        os.register_at_fork(before=__fork_before, after_in_parent=__fork_after_in_parent,
-                            after_in_child=__fork_after_in_child)
 
 
 def stop():

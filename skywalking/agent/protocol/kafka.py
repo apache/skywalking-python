@@ -45,7 +45,7 @@ class KafkaProtocol(Protocol):
     def heartbeat(self):
         self.service_management.send_heart_beat()
 
-    def report(self, queue: Queue, block: bool = True):
+    def report_segment(self, queue: Queue, block: bool = True):
         start = None
 
         def generator():
@@ -162,3 +162,13 @@ class KafkaProtocol(Protocol):
                 yield meter_data
 
         self.meter_reporter.report(generator=generator())
+
+    # TODO: implement profiling for kafka
+    def report_snapshot(self, queue: Queue, block: bool = True):
+        ...
+
+    def query_profile_commands(self):
+        ...
+
+    def notify_profile_task_finish(self, task):
+        ...

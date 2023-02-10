@@ -41,6 +41,7 @@
   - Avoid reporting meaningless tracecontext with logs when there's no active span, UI will now show empty traceID (#272)
   - Fix exception handler in profile_context (#273)
   - Add namespace suffix to service name (#275)
+  - Add periodical instance property report to prevent data loss (#279)
 
 - Docs:
   - New documentation on how to test locally (#222)

@@ -90,7 +90,7 @@ class GrpcProtocol(Protocol):
         self.channel.unsubscribe(self._cb)
         self.channel.subscribe(self._cb, try_to_connect=True)
 
-    def report(self, queue: Queue, block: bool = True):
+    def report_segment(self, queue: Queue, block: bool = True):
         start = None
 
         def generator():
@@ -214,7 +214,6 @@ class GrpcProtocol(Protocol):
 
                 if logger_debug_enabled:
                     logger.debug('Reporting Meter')
-
                 yield meter_data
 
         try:
@@ -223,7 +222,7 @@ class GrpcProtocol(Protocol):
             self.on_error()
             raise
 
-    def send_snapshot(self, queue: Queue, block: bool = True):
+    def report_snapshot(self, queue: Queue, block: bool = True):
         start = None
 
         def generator():
@@ -255,7 +254,7 @@ class GrpcProtocol(Protocol):
                 yield transform_snapshot
 
         try:
-            self.profile_channel.send(generator())
+            self.profile_channel.report(generator())
         except grpc.RpcError:
             self.on_error()
             raise
