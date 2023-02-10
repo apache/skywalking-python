@@ -99,7 +99,6 @@ class HttpProtocol(Protocol):
         except Exception:
             pass
 
-    # TODO: implement profiling for kafka
     # meter support requires OAP side HTTP handler to be implemented
     def report_meter(self, queue: Queue, block: bool = True):
         ...

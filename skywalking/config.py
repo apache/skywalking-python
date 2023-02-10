@@ -59,6 +59,8 @@ namespace: str = os.getenv('SW_AGENT_NAMESPACE', '')
 # A list of host/port pairs to use for establishing the initial connection to your Kafka cluster.
 # It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol)
 kafka_bootstrap_servers: str = os.getenv('SW_AGENT_KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
+# The kafka namespace specified by OAP side SW_NAMESPACE, prepends the following kafka topic names with a `-`.
+kafka_namespace: str = os.getenv('SW_AGENT_KAFKA_NAMESPACE', '')
 # Specifying Kafka topic name for service instance reporting and registering, this should be in sync with OAP
 kafka_topic_management: str = os.getenv('SW_AGENT_KAFKA_TOPIC_MANAGEMENT', 'skywalking-managements')
 # Specifying Kafka topic name for Tracing data, this should be in sync with OAP
@@ -91,7 +93,7 @@ collector_properties_report_period_factor = int(os.getenv('SW_AGENT_COLLECTOR_PR
 instance_properties_json: str = os.getenv('SW_INSTANCE_PROPERTIES_JSON', '')
 # The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for
 # short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard
-# in format of `service_instance-child-<pid>`
+# in format of `service_instance-child-<pid>` (TODO)
 experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SUPPORT', '').lower() == 'true'
 # DANGEROUS - This option controls the interval of each bulk report from telemetry data queues
 # Do not modify unless you have evaluated its impact given your service load.
@@ -146,8 +148,10 @@ log_reporter_level: str = os.getenv('SW_AGENT_LOG_REPORTER_LEVEL', 'WARNING')
 log_reporter_ignore_filter: bool = os.getenv('SW_AGENT_LOG_REPORTER_IGNORE_FILTER', '').lower() == 'true'
 # If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args
 # into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised.
+# Only applies to logging module.
 log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED', '').lower() != 'false'
 # The log reporter formats the logRecord message based on the layout given.
+# Only applies to logging module.
 log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT',
                                      '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s')
 # This configuration is shared by log reporter and tracer.
@@ -241,12 +245,19 @@ def finalize_name() -> None:
     """
     This function concatenates the serviceName according to
     Java agent's implementation.
-    TODO: add kafka namespace prefix and cluster concept
+    TODO: add cluster concept
     Ref https://github.com/apache/skywalking-java/pull/123
     """
     global service_name
     if namespace:
         service_name = f'{service_name}|{namespace}'
+
+    global kafka_topic_management, kafka_topic_meter, kafka_topic_log, kafka_topic_segment
+    if kafka_namespace:
+        kafka_topic_management = f'{kafka_namespace}-{kafka_topic_management}'
+        kafka_topic_meter = f'{kafka_namespace}-{kafka_topic_meter}'
+        kafka_topic_log = f'{kafka_namespace}-{kafka_topic_log}'
+        kafka_topic_segment = f'{kafka_namespace}-{kafka_topic_segment}'
 
 
 def finalize_regex() -> None:

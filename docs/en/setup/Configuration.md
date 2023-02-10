@@ -23,6 +23,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | service_instance | SW_AGENT_SERVICE_INSTANCE | <class 'str'> | str(uuid.uuid1()).replace('-', '') | The name of this particular awesome Python service instance |
 | namespace | SW_AGENT_NAMESPACE | <class 'str'> |  | The agent namespace of the Python service (available as tag and the suffix of service name) |
 | kafka_bootstrap_servers | SW_AGENT_KAFKA_BOOTSTRAP_SERVERS | <class 'str'> | localhost:9092 | A list of host/port pairs to use for establishing the initial connection to your Kafka cluster. It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol) |
+| kafka_namespace | SW_AGENT_KAFKA_NAMESPACE | <class 'str'> |  | The kafka namespace specified by OAP side SW_NAMESPACE, prepends the following kafka topic names with a `-`. |
 | kafka_topic_management | SW_AGENT_KAFKA_TOPIC_MANAGEMENT | <class 'str'> | skywalking-managements | Specifying Kafka topic name for service instance reporting and registering, this should be in sync with OAP |
 | kafka_topic_segment | SW_AGENT_KAFKA_TOPIC_SEGMENT | <class 'str'> | skywalking-segments | Specifying Kafka topic name for Tracing data, this should be in sync with OAP |
 | kafka_topic_log | SW_AGENT_KAFKA_TOPIC_LOG | <class 'str'> | skywalking-logs | Specifying Kafka topic name for Log data, this should be in sync with OAP |
@@ -37,7 +38,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | heartbeat_period | SW_AGENT_HEARTBEAT_PERIOD | <class 'int'> | 30 | The agent will exchange heartbeat message with SkyWalking OAP backend every `period` seconds |
 | collector_properties_report_period_factor | SW_AGENT_COLLECTOR_PROPERTIES_REPORT_PERIOD_FACTOR | <class 'int'> | 10 | The agent will report service instance properties every `factor * heartbeat period` seconds default: 10*30 = 300 seconds |
 | instance_properties_json | SW_AGENT_INSTANCE_PROPERTIES_JSON | <class 'str'> |  | A custom JSON string to be reported as service instance properties, e.g. `{"key": "value"}` |
-| experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard in format of `service_instance-child-<pid>` |
+| experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard in format of `service_instance-child-<pid>` (TODO) |
 | queue_timeout | SW_AGENT_QUEUE_TIMEOUT | <class 'int'> | 1 | DANGEROUS - This option controls the interval of each bulk report from telemetry data queues Do not modify unless you have evaluated its impact given your service load. |
 ###  SW_PYTHON Auto Instrumentation CLI
 | Configuration | Environment Variable | Type | Default Value | Description |
@@ -68,8 +69,8 @@ export SW_AGENT_YourConfiguration=YourValue
 | log_reporter_max_buffer_size | SW_AGENT_LOG_REPORTER_MAX_BUFFER_SIZE | <class 'int'> | 10000 | The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped. |
 | log_reporter_level | SW_AGENT_LOG_REPORTER_LEVEL | <class 'str'> | WARNING | This config specifies the logger levels of concern, any logs with a level below the config will be ignored. |
 | log_reporter_ignore_filter | SW_AGENT_LOG_REPORTER_IGNORE_FILTER | <class 'bool'> | False | This config customizes whether to ignore the application-defined logger filters, if `True`, all logs are reported disregarding any filter rules. |
-| log_reporter_formatted | SW_AGENT_LOG_REPORTER_FORMATTED | <class 'bool'> | True | If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised. |
-| log_reporter_layout | SW_AGENT_LOG_REPORTER_LAYOUT | <class 'str'> | %(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s | The log reporter formats the logRecord message based on the layout given. |
+| log_reporter_formatted | SW_AGENT_LOG_REPORTER_FORMATTED | <class 'bool'> | True | If `True`, the log reporter will transmit the logs as formatted. Otherwise, puts logRecord.msg and logRecord.args into message content and tags(`argument.n`), respectively. Along with an `exception` tag if an exception was raised. Only applies to logging module. |
+| log_reporter_layout | SW_AGENT_LOG_REPORTER_LAYOUT | <class 'str'> | %(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s | The log reporter formats the logRecord message based on the layout given. Only applies to logging module. |
 | cause_exception_depth | SW_AGENT_CAUSE_EXCEPTION_DEPTH | <class 'int'> | 10 | This configuration is shared by log reporter and tracer. This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback]( https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations. |
 ###  Meter Reporter Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
