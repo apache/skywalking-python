@@ -20,7 +20,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | agent_collector_backend_services | SW_AGENT_AGENT_COLLECTOR_BACKEND_SERVICES | <class 'str'> | oap_host:oap_port | The backend OAP server address, 11800 is default OAP gRPC port, 12800 is HTTP, Kafka ignores this option and uses kafka_bootstrap_servers option. **This option should be changed accordingly with selected protocol** |
 | agent_protocol | SW_AGENT_AGENT_PROTOCOL | <class 'str'> | grpc | The protocol to communicate with the backend OAP, `http`, `grpc` or `kafka`, **we highly suggest using `grpc` in production as it's well optimized than `http`**. The `kafka` protocol provides an alternative way to submit data to the backend. |
 | agent_name | SW_AGENT_AGENT_NAME | <class 'str'> | Python Service Name | The name of your awesome Python service |
-| agent_instance_name | SW_AGENT_AGENT_INSTANCE_NAME | <class 'str'> | f9031506ab1611ed985bea3b2d323761 | The name of this particular awesome Python service instance |
+| agent_instance_name | SW_AGENT_AGENT_INSTANCE_NAME | <class 'str'> | str(uuid.uuid1()).replace('-', '') | The name of this particular awesome Python service instance |
 | agent_namespace | SW_AGENT_AGENT_NAMESPACE | <class 'str'> |  | The agent namespace of the Python service (available as tag and the suffix of service name) |
 | kafka_bootstrap_servers | SW_AGENT_KAFKA_BOOTSTRAP_SERVERS | <class 'str'> | localhost:9092 | A list of host/port pairs to use for establishing the initial connection to your Kafka cluster. It is in the form of host1:port1,host2:port2,... (used for Kafka reporter protocol) |
 | kafka_namespace | SW_AGENT_KAFKA_NAMESPACE | <class 'str'> |  | The kafka namespace specified by OAP side SW_NAMESPACE, prepends the following kafka topic names with a `-`. |
