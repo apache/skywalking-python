@@ -48,17 +48,17 @@ def install():
             span.tag(TagDbInstance(getattr(proto, '_database', '<unavailable>')))
             span.tag(TagDbStatement(query))
 
-            if config.sql_parameters_length and params is not None:
+            if config.plugin_sql_parameters_max_length and params is not None:
                 if not is_many:
                     text = ','.join(str(v) for v in params)
 
-                    if len(text) > config.sql_parameters_length:
-                        text = f'{text[:config.sql_parameters_length]}...'
+                    if len(text) > config.plugin_sql_parameters_max_length:
+                        text = f'{text[:config.plugin_sql_parameters_max_length]}...'
 
                     span.tag(TagDbSqlParameters(f'[{text}]'))
 
                 else:
-                    max_len = config.sql_parameters_length
+                    max_len = config.plugin_sql_parameters_max_length
                     total_len = 0
                     text_list = []
 

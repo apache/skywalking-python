@@ -60,8 +60,8 @@ def install():
                 span.peer = f"{req.environ['REMOTE_ADDR']}:{req.environ['REMOTE_PORT']}"
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split('?')[0]))
-            if config.flask_collect_http_params and req.values:
-                span.tag(TagHttpParams(params_tostring(req.values)[0:config.http_params_length_threshold]))
+            if config.plugin_flask_collect_http_params and req.values:
+                span.tag(TagHttpParams(params_tostring(req.values)[0:config.plugin_http_http_params_length_threshold]))
             resp = _full_dispatch_request(this)
 
             if resp.status_code >= 400:

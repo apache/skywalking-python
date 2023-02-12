@@ -61,9 +61,9 @@ def install():
                 span.tag(TagDbInstance((self.connection.db or '')))
                 span.tag(TagDbStatement(query))
 
-                if config.sql_parameters_length and args:
+                if config.plugin_sql_parameters_max_length and args:
                     parameter = ','.join([str(arg) for arg in args])
-                    max_len = config.sql_parameters_length
+                    max_len = config.plugin_sql_parameters_max_length
                     parameter = f'{parameter[0:max_len]}...' if len(parameter) > max_len else parameter
                     span.tag(TagDbSqlParameters(f'[{parameter}]'))
 

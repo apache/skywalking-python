@@ -30,7 +30,7 @@ class TestFilter(unittest.TestCase):
 
     def test_log_filter(self):
         from skywalking import config
-        config.log_reporter_safe_mode = True
+        config.agent_log_reporter_safe_mode = True
 
         self.assertEqual(
             'user:password not in http://localhost:8080',

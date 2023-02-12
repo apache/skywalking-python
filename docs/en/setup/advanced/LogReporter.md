@@ -8,7 +8,7 @@ To utilize this feature, you will need to add some new configurations to the age
 ```Python 
 from skywalking import agent, config
 
-config.init(collector_address='127.0.0.1:11800', service_name='your awesome service',
+config.init(collector_address='127.0.0.1:11800', agent_name='your awesome service',
                 log_reporter_active=True)  # defaults to grpc protocol
 agent.start()
 ``` 

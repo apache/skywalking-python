@@ -53,7 +53,7 @@ class KafkaProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -71,8 +71,8 @@ class KafkaProtocol(Protocol):
                 s = SegmentObject(
                     traceId=str(segment.related_traces[0]),
                     traceSegmentId=str(segment.segment_id),
-                    service=config.service_name,
-                    serviceInstance=config.service_instance,
+                    service=config.agent_name,
+                    serviceInstance=config.agent_instance_name,
                     spans=[SpanObject(
                         spanId=span.sid,
                         parentSpanId=span.pid,
@@ -117,7 +117,7 @@ class KafkaProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -144,7 +144,7 @@ class KafkaProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:

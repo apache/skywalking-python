@@ -43,14 +43,14 @@ class GrpcProtocol(Protocol):
         self.properties_sent = False
         self.state = None
 
-        if config.force_tls:
-            self.channel = grpc.secure_channel(config.collector_address, grpc.ssl_channel_credentials())
+        if config.agent_force_tls:
+            self.channel = grpc.secure_channel(config.agent_collector_backend_services, grpc.ssl_channel_credentials())
         else:
-            self.channel = grpc.insecure_channel(config.collector_address)
+            self.channel = grpc.insecure_channel(config.agent_collector_backend_services)
 
-        if config.authentication:
+        if config.agent_authentication:
             self.channel = grpc.intercept_channel(
-                self.channel, header_adder_interceptor('authentication', config.authentication)
+                self.channel, header_adder_interceptor('authentication', config.agent_authentication)
             )
 
         self.channel.subscribe(self._cb, try_to_connect=True)
@@ -98,7 +98,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -117,8 +117,8 @@ class GrpcProtocol(Protocol):
                 s = SegmentObject(
                     traceId=str(segment.related_traces[0]),
                     traceSegmentId=str(segment.segment_id),
-                    service=config.service_name,
-                    serviceInstance=config.service_instance,
+                    service=config.agent_name,
+                    serviceInstance=config.agent_instance_name,
                     spans=[SpanObject(
                         spanId=span.sid,
                         parentSpanId=span.pid,
@@ -167,7 +167,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -199,7 +199,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -230,7 +230,7 @@ class GrpcProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:

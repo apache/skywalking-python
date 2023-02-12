@@ -6,7 +6,8 @@ and disable one or more plugins by following methods.**
 ```python
 from skywalking import config
 
-config.disable_plugins = ['sw_http_server', 'sw_urllib_request']  # can be also CSV format, i.e. 'sw_http_server,sw_urllib_request'
+config.agent_disable_plugins = ['sw_http_server',
+                                'sw_urllib_request']  # can be also CSV format, i.e. 'sw_http_server,sw_urllib_request'
 ```
 
 You can also disable the plugins via environment variables `SW_AGENT_DISABLE_PLUGINS`, 

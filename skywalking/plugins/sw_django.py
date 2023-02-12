@@ -66,8 +66,8 @@ def install():
             span.tag(TagHttpURL(request.build_absolute_uri().split('?')[0]))
 
             # you can get request parameters by `request.GET` even though client are using POST or other methods
-            if config.django_collect_http_params and request.GET:
-                span.tag(TagHttpParams(params_tostring(request.GET)[0:config.http_params_length_threshold]))
+            if config.plugin_django_collect_http_params and request.GET:
+                span.tag(TagHttpParams(params_tostring(request.GET)[0:config.plugin_http_http_params_length_threshold]))
 
             resp = _get_response(this, request)
             span.tag(TagHttpStatusCode(resp.status_code))

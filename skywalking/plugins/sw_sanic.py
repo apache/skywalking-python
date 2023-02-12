@@ -94,8 +94,8 @@ def _gen_sw_handle_request(_handle_request):
             span.peer = f'{req.remote_addr or req.ip}:{req.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(req.url.split('?')[0]))
-            if config.sanic_collect_http_params and req.args:
-                span.tag(TagHttpParams(params_tostring(req.args)[0:config.http_params_length_threshold]))
+            if config.plugin_sanic_collect_http_params and req.args:
+                span.tag(TagHttpParams(params_tostring(req.args)[0:config.plugin_http_http_params_length_threshold]))
             resp = _handle_request(self, request, write_callback, stream_callback)
             if isawaitable(resp):
                 result = await resp

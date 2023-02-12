@@ -54,11 +54,11 @@ def install():
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
-                if config.sql_parameters_length and vars is not None:
+                if config.plugin_sql_parameters_max_length and vars is not None:
                     text = ','.join(str(v) for v in vars)
 
-                    if len(text) > config.sql_parameters_length:
-                        text = f'{text[:config.sql_parameters_length]}...'
+                    if len(text) > config.plugin_sql_parameters_max_length:
+                        text = f'{text[:config.plugin_sql_parameters_max_length]}...'
 
                     span.tag(TagDbSqlParameters(f'[{text}]'))
 
@@ -76,8 +76,8 @@ def install():
                 span.tag(TagDbInstance(dsn['dbname']))
                 span.tag(TagDbStatement(query))
 
-                if config.sql_parameters_length:
-                    max_len = config.sql_parameters_length
+                if config.plugin_sql_parameters_max_length:
+                    max_len = config.plugin_sql_parameters_max_length
                     total_len = 0
                     text_list = []
 

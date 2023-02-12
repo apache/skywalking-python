@@ -47,7 +47,7 @@ class ServiceManagementClient(ABC):
         Default: 30 * 10 seconds
         """
         self.sent_properties_counter += 1
-        if self.sent_properties_counter % config.collector_properties_report_period_factor == 0:
+        if self.sent_properties_counter % config.agent_collector_properties_report_period_factor == 0:
             self.send_instance_props()
 
     @staticmethod
@@ -74,11 +74,11 @@ class ServiceManagementClient(ABC):
                 {'key': 'Process No.', 'value': str(os.getpid())},
             ]
 
-        namespace = config.namespace
+        namespace = config.agent_namespace
         if namespace:
             properties.append({'key': 'namespace', 'value': namespace})
 
-        instance_properties_json = config.instance_properties_json
+        instance_properties_json = config.agent_instance_properties_json
         if instance_properties_json:
             # load instance properties from json string
             json_properties = json.loads(instance_properties_json)

@@ -21,7 +21,7 @@ from skywalking import config
 
 
 def fast_path_match(pattern, path):
-    config.trace_ignore_path = pattern
+    config.agent_trace_ignore_path = pattern
     config.finalize()
 
     return config.RE_IGNORE_PATH.match(path)

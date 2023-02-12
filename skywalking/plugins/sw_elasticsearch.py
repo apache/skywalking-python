@@ -41,7 +41,7 @@ def install():
             res = _perform_request(this, method, url, headers=headers, params=params, body=body)
 
             span.tag(TagDbType('Elasticsearch'))
-            if config.elasticsearch_trace_dsl:
+            if config.plugin_elasticsearch_trace_dsl:
                 span.tag(TagDbStatement('' if body is None else body))
 
             return res

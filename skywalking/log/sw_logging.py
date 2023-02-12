@@ -28,13 +28,13 @@ from skywalking.utils.filter import sw_traceback, sw_filter
 def install():
     from logging import Logger
 
-    layout = config.log_reporter_layout  # type: str
+    layout = config.agent_log_reporter_layout  # type: str
     if layout:
         from skywalking.log.formatter import SWFormatter
-        sw_formatter = SWFormatter(fmt=layout, tb_limit=config.cause_exception_depth)
+        sw_formatter = SWFormatter(fmt=layout, tb_limit=config.agent_cause_exception_depth)
 
     _handle = Logger.handle
-    log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
+    log_reporter_level = logging.getLevelName(config.agent_log_reporter_level)  # type: int
 
     def _sw_handle(self, record):
         _handle(self=self, record=record)
@@ -45,7 +45,7 @@ def install():
         if record.levelno < log_reporter_level:
             return
 
-        if not config.log_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
+        if not config.agent_log_reporter_ignore_filter and not self.filter(record):  # ignore filtered logs
             return
 
         def build_log_tags() -> LogTags:
@@ -57,7 +57,7 @@ def install():
             l_tags = LogTags()
             l_tags.data.extend(core_tags)
 
-            if config.log_reporter_formatted:
+            if config.agent_log_reporter_formatted:
                 return l_tags
 
             for i, arg in enumerate(record.args):
@@ -86,8 +86,8 @@ def install():
 
         log_data = LogData(
             timestamp=round(record.created * 1000),
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             body=LogDataBody(
                 type='text',
                 text=TextLog(
@@ -113,7 +113,7 @@ def install():
     Logger.handle = _sw_handle
 
     def transform(record) -> str:
-        if config.log_reporter_formatted:
+        if config.agent_log_reporter_formatted:
             if layout:
                 return sw_formatter.format(record=record)
             newline = '\n'

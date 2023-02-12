@@ -39,5 +39,5 @@ logger = getLogger('skywalking')
 def init():
     global logger_debug_enabled
     logging.addLevelName(logging.CRITICAL + 10, 'OFF')
-    logger.setLevel(logging.getLevelName(config.logging_level))
+    logger.setLevel(logging.getLevelName(config.agent_logging_level))
     logger_debug_enabled = logger.isEnabledFor(logging.DEBUG)

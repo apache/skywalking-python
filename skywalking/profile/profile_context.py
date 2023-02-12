@@ -59,7 +59,7 @@ class ProfileTaskExecutionContext:
         self.task = task  # type: ProfileTask
         self._current_profiling_cnt = AtomicInteger(var=0)
         self._total_started_profiling_cnt = AtomicInteger(var=0)
-        self.profiling_segment_slots = AtomicArray(length=config.profile_max_parallel)
+        self.profiling_segment_slots = AtomicArray(length=config.agent_profile_max_parallel)
         self._profiling_thread = None  # type: Optional[Thread]
         self._profiling_stop_event = None  # type: Optional[Event]
 
@@ -96,7 +96,7 @@ class ProfileTaskExecutionContext:
 
         # check has available slot
         using_slot_cnt = self._current_profiling_cnt.get()
-        if using_slot_cnt >= config.profile_max_parallel:
+        if using_slot_cnt >= config.agent_profile_max_parallel:
             return ProfileStatusReference.create_with_none()
 
         # check first operation name matches
@@ -215,7 +215,7 @@ class ThreadProfiler:
         self._profiling_thread = profiling_thread
         self._profile_context = profile_context
         self._profile_start_time = -1
-        self.profiling_max_time_mills = config.profile_duration * 60 * 1000
+        self.profiling_max_time_mills = config.agent_profile_duration * 60 * 1000
 
         self.dump_sequence = 0
 
@@ -248,7 +248,7 @@ class ThreadProfiler:
 
         extracted = traceback.extract_stack(stack)
         for idx, item in enumerate(extracted):
-            if idx > config.profile_dump_max_stack_depth:
+            if idx > config.agent_profile_dump_max_stack_depth:
                 break
 
             code_sig = f'{item.filename}.{item.name}: {item.lineno}'
@@ -284,7 +284,7 @@ class GreenletProfiler:
         self._profiling_thread = profiling_thread
         self._profile_context = profile_context
         self._profile_start_time = -1
-        self.profiling_max_time_mills = config.profile_duration * 60 * 1000
+        self.profiling_max_time_mills = config.agent_profile_duration * 60 * 1000
 
         self.dump_sequence = 0
 
@@ -300,7 +300,7 @@ class GreenletProfiler:
         stack_list = []
         extracted = traceback.extract_stack(self._profiling_thread.gr_frame)
         for idx, item in enumerate(extracted):
-            if idx > config.profile_dump_max_stack_depth:
+            if idx > config.agent_profile_dump_max_stack_depth:
                 break
 
             code_sig = f'{item.filename}.{item.name}: {item.lineno}'

@@ -129,6 +129,7 @@ websockets = "^10.4"
 loguru = "^0.6.0"
 
 [tool.poetry.group.lint.dependencies]
+pytest = '*'
 flake8 = "^5.0.4"
 # isort = "^5.10.1"
 unify = "^0.5"

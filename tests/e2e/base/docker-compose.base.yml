@@ -40,15 +40,15 @@ services:
     networks:
       - e2e
     environment:
-      SW_AGENT_SERVICE_NAME: e2e-service-provider
-      SW_AGENT_SERVICE_INSTANCE: provider1
+      SW_AGENT_NAME: e2e-service-provider
+      SW_AGENT_INSTANCE_NAME: provider1
       SW_AGENT_LOGGING_LEVEL: DEBUG
       SW_AGENT_LOG_REPORTER_ACTIVE: "True"
       SW_AGENT_LOG_REPORTER_LEVEL: WARNING
       SW_AGENT_LOG_REPORTER_SAFE_MODE: "True"
       SW_AGENT_METER_REPORTER_ACTIVE: "True"
       SW_AGENT_PVM_METER_REPORTER_ACTIVE: "True"
-      SW_INSTANCE_PROPERTIES_JSON: '{"custom_property":"The answer to all is 42"}'
+      SW_AGENT_INSTANCE_PROPERTIES_JSON: '{"custom_property":"The answer to all is 42"}'
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
       interval: 5s
@@ -64,9 +64,9 @@ services:
     networks:
       - e2e
     environment:
-      SW_AGENT_SERVICE_NAME: e2e-service-consumer
-      SW_AGENT_SERVICE_INSTANCE: consumer1
-      SW_AGENT_NAMESPACE: namespace
+      SW_AGENT_NAME: e2e-service-consumer
+      SW_AGENT_INSTANCE_NAME: consumer1
+      SW_AGENT_NAMESPACE: "namespace"
       SW_AGENT_LOGGING_LEVEL: DEBUG
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]

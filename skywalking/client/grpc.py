@@ -41,8 +41,8 @@ class GrpcServiceManagementClient(ServiceManagementClient):
 
     def send_instance_props(self):
         self.service_stub.reportInstanceProperties(InstanceProperties(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             properties=self.instance_properties,
         ))
 
@@ -50,15 +50,15 @@ class GrpcServiceManagementClient(ServiceManagementClient):
         self.refresh_instance_props()
 
         self.service_stub.keepAlive(InstancePingPkg(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
         ))
 
         if logger_debug_enabled:
             logger.debug(
                 'service heart beats, [%s], [%s]',
-                config.service_name,
-                config.service_instance,
+                config.agent_name,
+                config.agent_instance_name,
             )
 
 
@@ -95,8 +95,8 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
 
     def do_query(self):
         query = ProfileTaskCommandQuery(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             lastCommandTime=profile_task_execution_service.get_last_command_create_time()
         )
 
@@ -108,8 +108,8 @@ class GrpcProfileTaskChannelService(ProfileTaskChannelService):
 
     def finish(self, task: ProfileTask):
         finish_report = ProfileTaskFinishReport(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             taskId=task.task_id
         )
         self.profile_stub.reportTaskFinish(finish_report)

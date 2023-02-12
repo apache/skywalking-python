@@ -47,7 +47,7 @@ class HttpProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:
@@ -78,7 +78,7 @@ class HttpProtocol(Protocol):
 
             while True:
                 try:
-                    timeout = config.queue_timeout  # type: int
+                    timeout = config.agent_queue_timeout  # type: int
                     if not start:  # make sure first time through queue is always checked
                         start = time()
                     else:

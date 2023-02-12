@@ -17,7 +17,7 @@ from skywalking import agent, config
 
 @postfork
 def init_tracing():
-    config.init(collector_address='127.0.0.1:11800', service_name='your awesome service')
+    config.init(collector_address='127.0.0.1:11800', agent_name='your awesome service')
 
     agent.start()
 

@@ -59,8 +59,8 @@ class SegmentRef(object):
         carrier.segment_id = str(snapshot.segment_id)
         carrier.endpoint = snapshot.endpoint
         carrier.span_id = snapshot.span_id
-        carrier.service = config.service_name
-        carrier.service_instance = config.service_instance
+        carrier.service = config.agent_name
+        carrier.service_instance = config.agent_instance_name
         return SegmentRef(carrier, ref_type='CrossThread')
 
 
