@@ -177,13 +177,13 @@ def __init_threading():
 
 def __init():
     global __protocol
-    if config.agent_protocol == 'grpc':
+    if config.protocol == 'grpc':
         from skywalking.agent.protocol.grpc import GrpcProtocol
         __protocol = GrpcProtocol()
-    elif config.agent_protocol == 'http':
+    elif config.protocol == 'http':
         from skywalking.agent.protocol.http import HttpProtocol
         __protocol = HttpProtocol()
-    elif config.agent_protocol == 'kafka':
+    elif config.protocol == 'kafka':
         from skywalking.agent.protocol.kafka import KafkaProtocol
         __protocol = KafkaProtocol()
 

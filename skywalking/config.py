@@ -49,7 +49,7 @@ agent_collector_backend_services: str = os.getenv('SW_AGENT_COLLECTOR_BACKEND_SE
 # The protocol to communicate with the backend OAP, `http`, `grpc` or `kafka`, **we highly suggest using `grpc` in
 # production as it's well optimized than `http`**. The `kafka` protocol provides an alternative way to submit data to
 # the backend.
-agent_protocol: str = os.getenv('SW_AGENT_PROTOCOL', 'grpc').lower()
+protocol: str = os.getenv('SW_AGENT_PROTOCOL', 'grpc').lower()
 # The name of your awesome Python service
 agent_name: str = os.getenv('SW_AGENT_NAME', 'Python Service Name')
 # The name of this particular awesome Python service instance
@@ -233,12 +233,12 @@ def finalize_feature() -> None:
     """
     global agent_profile_active, agent_meter_reporter_active
 
-    if agent_protocol == 'http' and (agent_profile_active or agent_meter_reporter_active):
+    if protocol == 'http' and (agent_profile_active or agent_meter_reporter_active):
         agent_profile_active = False
         agent_meter_reporter_active = False
         warnings.warn('HTTP protocol does not support meter reporter and profiler. Please use gRPC protocol if you '
                       'would like to use both features.')
-    elif agent_protocol == 'kafka' and agent_profile_active:
+    elif protocol == 'kafka' and agent_profile_active:
         agent_profile_active = False
         warnings.warn('Kafka protocol does not support profiler. Please use gRPC protocol if you would like to use '
                       'this feature.')
