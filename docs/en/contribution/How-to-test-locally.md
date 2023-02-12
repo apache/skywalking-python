@@ -11,6 +11,8 @@ Please first refer to the [Developer Guide](Developer.md) to set up a developmen
 
 TL;DR: run ``make env``. This will create virtual environments for python and generate the protocol folder needed for the agent.
 
+Note: Make sure you have `python3` aliased to `python` available on Windows computers instead of pointing to the Microsoft app store.
+
 By now, you can do what you want. Let's get to the topic of how to test.
 
 The test process requires `docker` and `docker-compose` throughout. If you haven't installed them, please install them first.
