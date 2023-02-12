@@ -4,8 +4,8 @@
 
 - **Important Note and Breaking Changes:**
   - Python 3.6 is no longer supported and may not function properly.
-  - A number of configuration options (mostly environment variables) are renamed to follow the convention of
-  'SW_AGENT' prefixes, please check with the latest official documentation before upgrading. (#273)
+  - A number of common configuration options (environment variables) are renamed to follow the convention of Java agent,
+  please check with the latest official documentation before upgrading. (#273, #282)
   
   https://skywalking.apache.org/docs/skywalking-python/v1.0.0/en/setup/configuration/
   - All agent core capabilities are now covered by test cases and enabled by default (Trace, Log, PVM runtime metrics, Profiler)
