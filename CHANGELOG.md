@@ -43,6 +43,7 @@
   - Fix exception handler in profile_context (#273)
   - Add namespace suffix to service name (#275)
   - Add periodical instance property report to prevent data loss (#279)
+  - Fix sw_logging when `Logger.disabled` is true (#281)
 
 - Docs:
   - New documentation on how to test locally (#222)
