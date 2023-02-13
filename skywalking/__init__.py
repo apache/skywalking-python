@@ -51,6 +51,7 @@ class Component(Enum):
     AsyncPG = 7016
     AIORedis = 7017
     Websockets = 7018
+    HTTPX = 7019
 
 
 class Layer(Enum):

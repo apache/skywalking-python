@@ -25,6 +25,8 @@ We have migrated from basic pip to [Poetry](https://python-poetry.org/) to manag
 Once you have `make` ready, run `make env`, this will automatically install the right Poetry release, and create 
 (plus manage) a `.venv` virtual environment for us based on the currently activated Python 3 version. Enjoy coding!
 
+Note: Make sure you have `python3` aliased to `python` available on Windows computers instead of pointing to the Microsoft app store.
+
 ### Switching between Multiple Python Versions
 Do not develop/test on Python < 3.7, since Poetry and some other functionalities we implement rely on Python 3.7+
 
