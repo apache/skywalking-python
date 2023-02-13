@@ -27,8 +27,9 @@ app = FastAPI()
 @app.post('/users')
 async def application():
     try:
-        await async_client.post('http://localhost:9091/users')
-        res = client.post('http://localhost:9091/users')
+        await async_client.post('http://provider:9091/users')
+        res = client.post('http://provider:9091/users')
+
         return res.json()
     except Exception:  # noqa
         return {'message': 'Error'}
