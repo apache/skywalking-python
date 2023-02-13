@@ -26,6 +26,7 @@
   - Add HBase plugin Python HappyBase model  (#266) 
   - Add FastAPI plugin websocket protocol support (#269)
   - Add Websockets (client) plugin (#269)
+  - Add HTTPX plugin (#283)
 
 - Fixes:
   - Allow RabbitMQ BlockingChannel.basic_consume() to link with outgoing spans (#224)
