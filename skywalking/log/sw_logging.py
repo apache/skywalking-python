@@ -39,6 +39,9 @@ def install():
     def _sw_handle(self, record):
         _handle(self=self, record=record)
 
+        if self.disabled:
+            return
+
         if record.name in ['skywalking', 'skywalking-cli', 'skywalking-loader']:  # Ignore SkyWalking internal loggers
             return
 
