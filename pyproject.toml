@@ -127,6 +127,7 @@ asyncpg = "^0.27.0"
 happybase = "1.2.0"
 websockets = "^10.4"
 loguru = "^0.6.0"
+httpx = "^0.23.3"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^5.0.4"
