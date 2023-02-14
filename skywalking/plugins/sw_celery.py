@@ -59,8 +59,8 @@ def install():
             # span.tag(TagMqTopic(exchange))
             # span.tag(TagMqQueue(queue))
 
-            if config.celery_parameters_length:
-                params = f'*{args}, **{kwargs}'[:config.celery_parameters_length]
+            if config.plugin_celery_parameters_length:
+                params = f'*{args}, **{kwargs}'[:config.plugin_celery_parameters_length]
                 span.tag(TagCeleryParameters(params))
 
             options = {**options}
@@ -109,8 +109,8 @@ def install():
                 # span.tag(TagMqTopic(exchange))
                 # span.tag(TagMqQueue(queue))
 
-                if config.celery_parameters_length:
-                    params = f'*{args}, **{kwargs}'[:config.celery_parameters_length]
+                if config.plugin_celery_parameters_length:
+                    params = f'*{args}, **{kwargs}'[:config.plugin_celery_parameters_length]
                     span.tag(TagCeleryParameters(params))
 
                 return _fun(*args, **kwargs)

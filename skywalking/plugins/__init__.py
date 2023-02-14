@@ -31,7 +31,7 @@ from skywalking.utils.exception import VersionRuleException
 
 
 def install():
-    disable_patterns = config.disable_plugins
+    disable_patterns = config.agent_disable_plugins
     if isinstance(disable_patterns, str):
         disable_patterns = [re.compile(p.strip()) for p in disable_patterns.split(',') if p.strip()]
     else:

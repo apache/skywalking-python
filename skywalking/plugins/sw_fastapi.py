@@ -59,8 +59,8 @@ def install():
             span.peer = f'{req.client.host}:{req.client.port}'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(str(req.url).split('?')[0]))
-            if config.fastapi_collect_http_params and req.query_params:
-                span.tag(TagHttpParams(params_tostring(req.query_params)[0:config.http_params_length_threshold]))
+            if config.plugin_fastapi_collect_http_params and req.query_params:
+                span.tag(TagHttpParams(params_tostring(req.query_params)[0:config.plugin_http_http_params_length_threshold]))
 
             status_code = 500
 

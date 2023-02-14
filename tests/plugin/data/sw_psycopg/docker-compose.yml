@@ -61,9 +61,9 @@ services:
       timeout: 60s
       retries: 120
     environment:
-      SW_AGENT_SERVICE_NAME: provider
+      SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_AGENT_SQL_PARAMETERS_LENGTH: 512
+      SW_PLUGIN_SQL_PARAMETERS_MAX_LENGTH: 512
 
   consumer:
     extends:
@@ -80,7 +80,7 @@ services:
       provider:
         condition: service_healthy
     environment:
-      SW_AGENT_SERVICE_NAME: consumer
+      SW_AGENT_NAME: consumer
       SW_AGENT_LOGGING_LEVEL: DEBUG
 
 networks:

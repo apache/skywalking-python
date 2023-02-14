@@ -32,7 +32,7 @@ kafka_configs = {}
 def __init_kafka_configs():
     kafka_configs['bootstrap_servers'] = config.kafka_bootstrap_servers.split(',')
     # process all kafka configs in env
-    kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_AGENT_KAFKA_REPORTER_CONFIG_')]
+    kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_KAFKA_REPORTER_CONFIG_')]
     for kafka_key in kafka_keys:
         key = kafka_key[25:]
         val = os.environ.get(kafka_key)
@@ -70,8 +70,8 @@ class KafkaServiceManagementClient(ServiceManagementClient):
 
     def send_instance_props(self):
         instance = InstanceProperties(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             properties=self.instance_properties,
         )
 
@@ -85,13 +85,13 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         if logger_debug_enabled:
             logger.debug(
                 'service heart beats, [%s], [%s]',
-                config.service_name,
-                config.service_instance,
+                config.agent_name,
+                config.agent_instance_name,
             )
 
         instance_ping_pkg = InstancePingPkg(
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
         )
 
         key = bytes(instance_ping_pkg.serviceInstance, encoding='utf-8')
@@ -134,7 +134,7 @@ class KafkaMeterDataReportService(MeterReportService):
     def report(self, generator):
         collection = MeterDataCollection()
         collection.meterData.extend(list(generator))
-        key = bytes(config.service_instance, encoding='utf-8')
+        key = bytes(config.agent_instance_name, encoding='utf-8')
         value = collection.SerializeToString()
         self.producer.send(topic=self.topic, key=key, value=value)
 

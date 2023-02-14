@@ -67,6 +67,7 @@ install: gen-basic
 # flake8 configurations should go to the file setup.cfg
 lint: clean
 	poetry run flake8 .
+	poetry run pylint --disable=all --enable=E0602,E0603,E1101 skywalking tests
 
 .PHONY: fix
 # fix problems described in CodingStyle.md - verify outcome with extra care

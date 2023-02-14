@@ -130,6 +130,7 @@ loguru = "^0.6.0"
 httpx = "^0.23.3"
 
 [tool.poetry.group.lint.dependencies]
+pylint = '*'
 flake8 = "^5.0.4"
 # isort = "^5.10.1"
 unify = "^0.5"

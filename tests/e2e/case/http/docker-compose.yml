@@ -32,7 +32,7 @@ services:
     ports:
       - "9090"
     environment: # HTTP endpoint
-      SW_AGENT_COLLECTOR_ADDRESS: oap:12800
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:12800
       SW_AGENT_PROTOCOL: http
     depends_on:
       oap:
@@ -43,7 +43,7 @@ services:
       file: ../../base/docker-compose.base.yml
       service: consumer
     environment:
-      SW_AGENT_COLLECTOR_ADDRESS: oap:12800
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:12800
       SW_AGENT_PROTOCOL: http
     ports:
       - "9090"

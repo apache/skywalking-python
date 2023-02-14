@@ -67,10 +67,10 @@ def inject_socket_info(SocketInfo): # noqa
                 span.tag(TagDbType('MongoDB'))
                 span.tag(TagDbInstance(dbname))
 
-                if config.pymongo_trace_parameters:
+                if config.plugin_pymongo_trace_parameters:
                     # get filters
                     filters = _get_filter(operation, spec)
-                    max_len = config.pymongo_parameters_max_length
+                    max_len = config.plugin_pymongo_parameters_max_length
                     filters = f'{filters[0:max_len]}...' if len(filters) > max_len else filters
                     span.tag(TagDbStatement(filters))
 
@@ -116,7 +116,7 @@ def inject_bulk_write(_Bulk, bulk_op_map): # noqa
 
             span.tag(TagDbType('MongoDB'))
             span.tag(TagDbInstance(this.collection.database.name))
-            if config.pymongo_trace_parameters:
+            if config.plugin_pymongo_trace_parameters:
                 filters = ''
                 bulk_ops = this.ops
                 for bulk_op in bulk_ops:
@@ -124,7 +124,7 @@ def inject_bulk_write(_Bulk, bulk_op_map): # noqa
                     _filter = f'{opname} {str(bulk_op[1])}'
                     filters = f'{filters + _filter} '
 
-                max_len = config.pymongo_parameters_max_length
+                max_len = config.plugin_pymongo_parameters_max_length
                 filters = f'{filters[0:max_len]}...' if len(filters) > max_len else filters
                 span.tag(TagDbStatement(filters))
 
@@ -152,9 +152,9 @@ def inject_cursor(Cursor): # noqa
             span.tag(TagDbType('MongoDB'))
             span.tag(TagDbInstance(this.collection.database.name))
 
-            if config.pymongo_trace_parameters:
+            if config.plugin_pymongo_trace_parameters:
                 filters = f'find {str(operation.spec)}'
-                max_len = config.pymongo_parameters_max_length
+                max_len = config.plugin_pymongo_parameters_max_length
                 filters = f'{filters[0:max_len]}...' if len(filters) > max_len else filters
                 span.tag(TagDbStatement(filters))
 

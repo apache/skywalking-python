@@ -20,7 +20,7 @@ monkey.patch_all()
 import grpc.experimental.gevent as grpc_gevent # noqa key point
 grpc_gevent.init_gevent()  # noqa key point
 from skywalking import config, agent # noqa
-config.logging_level = 'DEBUG'
+config.agent_logging_level = 'DEBUG'
 # config.init()
 agent.start()
 

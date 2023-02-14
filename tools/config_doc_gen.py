@@ -18,7 +18,7 @@
 """
 A simple doc generator for configuration options
 """
-from skywalking.config import options_with_default_value_and_type
+from skywalking import config
 
 DOC_HEAD = """# Supported Agent Configuration Options
 
@@ -41,6 +41,8 @@ TABLE_HEAD = """### {}
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 """
+
+OPTIONS = config.options_with_default_value_and_type
 
 
 def comments_from_file(file_path):
@@ -87,12 +89,12 @@ def create_entry(comment: str, config_index: int) -> str:
     def env_var_name(config_entry):
         return 'SW_AGENT_' + config_entry.upper()
 
-    configuration = list(options_with_default_value_and_type.keys())[config_index]
-    type_ = options_with_default_value_and_type[configuration][1]
-    default_val = options_with_default_value_and_type[configuration][0]
+    configuration = list(OPTIONS.keys())[config_index]
+    type_ = OPTIONS[configuration][1]
+    default_val = OPTIONS[configuration][0]
 
     # special case for randomly generated default value
-    if configuration == 'service_instance':
+    if configuration == 'agent_instance_name':
         default_val = "str(uuid.uuid1()).replace('-', '')"
     return f'| {configuration} | {env_var_name(configuration)} | {str(type_)} | {default_val} | {comment} |'
 
@@ -123,7 +125,7 @@ def config_env_var_verify():
     """
     with open('skywalking/config.py', 'r') as config_file:
         data = config_file.read().replace('\n', '')
-        for each in options_with_default_value_and_type.keys():
+        for each in OPTIONS.keys():
             if f'_{each.upper()}' not in data:
                 raise Exception(f'Environment variable for {each.upper()} is not found in config.py\n'
                                 f'This means you have a mismatch of config.py variable and env var name')

@@ -97,10 +97,10 @@ services:
     ports:
       - "9090"
     environment:
-      SW_AGENT_COLLECTOR_ADDRESS: oap:11800
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
       SW_AGENT_PROTOCOL: kafka
-      SW_AGENT_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
-      SW_AGENT_KAFKA_NAMESPACE: 'e2e'
+      SW_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
+      SW_KAFKA_NAMESPACE: 'e2e'
     depends_on:
       oap:
         condition: service_healthy
@@ -110,10 +110,10 @@ services:
       file: ../../base/docker-compose.base.yml
       service: consumer
     environment:
-      SW_AGENT_COLLECTOR_ADDRESS: oap:11800
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
       SW_AGENT_PROTOCOL: kafka
-      SW_AGENT_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
-      SW_AGENT_KAFKA_NAMESPACE: 'e2e'
+      SW_KAFKA_BOOTSTRAP_SERVERS: broker-a:9092,broker-b:9092
+      SW_KAFKA_NAMESPACE: 'e2e'
     ports:
       - "9090"
     depends_on:

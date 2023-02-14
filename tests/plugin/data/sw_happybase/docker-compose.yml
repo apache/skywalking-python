@@ -51,8 +51,8 @@ services:
       hbase:
         condition: service_healthy
     environment:
-      SW_AGENT_SERVICE_NAME: consumer
+      SW_AGENT_NAME: consumer
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_AGENT_ELASTICSEARCH_TRACE_DSL: 'True'
+      SW_PLUGIN_ELASTICSEARCH_TRACE_DSL: 'True'
 networks:
   beyond:

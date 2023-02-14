@@ -131,7 +131,7 @@ else:
 
     # also override debug for skywalking agent itself
     if os.environ.get('SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
-        config.logging_level = 'DEBUG'
+        config.agent_logging_level = 'DEBUG'
 
     # Currently supports configs read from os.environ
 

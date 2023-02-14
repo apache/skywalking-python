@@ -47,7 +47,7 @@ def install():
     from types import MethodType
 
     _log = logger._log
-    log_reporter_level = logging.getLevelName(config.log_reporter_level)  # type: int
+    log_reporter_level = logging.getLevelName(config.agent_log_reporter_level)  # type: int
 
     def gen_record(self, level_id, static_level_no, from_decorator, options, message, args, kwargs):
         """ Generate log record as loguru.logger._log """
@@ -159,7 +159,7 @@ def install():
         if record['level'].no < log_reporter_level:
             return
 
-        if not config.log_reporter_ignore_filter and record['level'].no < core.min_level:  # ignore filtered logs
+        if not config.agent_log_reporter_ignore_filter and record['level'].no < core.min_level:  # ignore filtered logs
             return
 
         # loguru has only one logger. Use tags referring Python-Agent doc
@@ -174,7 +174,7 @@ def install():
         exception = record['exception']
         if exception:
             stack_trace = ''.join(traceback.format_exception(exception.type, exception.value, exception.traceback,
-                                                             limit=config.cause_exception_depth))
+                                                             limit=config.agent_cause_exception_depth))
             tags.data.append(KeyStringValuePair(key='exception',
                                                 value=sw_filter(stack_trace)
                                                 ))  # \n doesn't work in tags for UI
@@ -196,8 +196,8 @@ def install():
 
         log_data = LogData(
             timestamp=round(record['time'].timestamp() * 1000),
-            service=config.service_name,
-            serviceInstance=config.service_instance,
+            service=config.agent_name,
+            serviceInstance=config.agent_instance_name,
             body=LogDataBody(
                 type='text',
                 text=TextLog(

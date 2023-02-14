@@ -69,8 +69,8 @@ def install():
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(request.url.split('?')[0]))
 
-            if config.bottle_collect_http_params and request.query:
-                span.tag(TagHttpParams(params_tostring(request.query)[0:config.http_params_length_threshold]))
+            if config.plugin_bottle_collect_http_params and request.query:
+                span.tag(TagHttpParams(params_tostring(request.query)[0:config.plugin_http_http_params_length_threshold]))
 
             res = _app_call(self, environ, start_response)
 

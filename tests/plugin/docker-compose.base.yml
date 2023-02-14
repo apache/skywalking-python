@@ -35,9 +35,9 @@ services:
   agent:
     image: apache/skywalking-python-agent:latest-plugin
     environment:
-      SW_AGENT_COLLECTOR_ADDRESS: collector:19876
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:19876
       SW_AGENT_LOGGING_LEVEL: DEBUG
-      SW_AGENT_PROFILER_ACTIVE: 'False'
+      SW_AGENT_PROFILE_ACTIVE: 'False'
     networks:
       - beyond
     command: ['python3', '/entrypoint.py']

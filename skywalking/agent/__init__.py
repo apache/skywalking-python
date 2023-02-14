@@ -98,7 +98,7 @@ def __send_profile_snapshot():
 
 
 def __query_profile_command():
-    wait = base = config.get_profile_task_interval
+    wait = base = config.agent_collector_get_profile_task_interval
 
     while not __finished.is_set():
         try:
@@ -134,7 +134,7 @@ def __init_threading():
     global __heartbeat_thread, __report_thread, __log_report_thread, __query_profile_thread, \
         __command_dispatch_thread, __send_profile_thread, __queue, __log_queue, __snapshot_queue, __meter_queue, __finished
 
-    __queue = Queue(maxsize=config.trace_reporter_max_buffer_size)
+    __queue = Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
     __finished = Event()
     __heartbeat_thread = Thread(name='HeartbeatThread', target=__heartbeat, daemon=True)
     __report_thread = Thread(name='ReportThread', target=__report, daemon=True)
@@ -144,12 +144,12 @@ def __init_threading():
     __report_thread.start()
     __command_dispatch_thread.start()
 
-    if config.meter_reporter_active:
-        __meter_queue = Queue(maxsize=config.meter_reporter_max_buffer_size)
+    if config.agent_meter_reporter_active:
+        __meter_queue = Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
         __meter_report_thread = Thread(name='MeterReportThread', target=__report_meter, daemon=True)
         __meter_report_thread.start()
 
-        if config.pvm_meter_reporter_active:
+        if config.agent_pvm_meter_reporter_active:
             from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
             from skywalking.meter.pvm.gc_data import GCDataSource
             from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
@@ -160,14 +160,13 @@ def __init_threading():
             GCDataSource().registry()
             ThreadDataSource().registry()
 
-
-    if config.log_reporter_active:
-        __log_queue = Queue(maxsize=config.log_reporter_max_buffer_size)
+    if config.agent_log_reporter_active:
+        __log_queue = Queue(maxsize=config.agent_log_reporter_max_buffer_size)
         __log_report_thread = Thread(name='LogReportThread', target=__report_log, daemon=True)
         __log_report_thread.start()
 
-    if config.profiler_active:
-        __snapshot_queue = Queue(maxsize=config.profile_snapshot_transport_buffer_size)
+    if config.agent_profile_active:
+        __snapshot_queue = Queue(maxsize=config.agent_profile_snapshot_transport_buffer_size)
 
         __query_profile_thread = Thread(name='QueryProfileCommandThread', target=__query_profile_command, daemon=True)
         __query_profile_thread.start()
@@ -189,7 +188,7 @@ def __init():
         __protocol = KafkaProtocol()
 
     plugins.install()
-    if config.log_reporter_active:  # todo - Add support for printing traceID/ context in logs
+    if config.agent_log_reporter_active:  # todo - Add support for printing traceID/ context in logs
         from skywalking import log
         log.install()
 
@@ -200,11 +199,11 @@ def __fini():
     __protocol.report_segment(__queue, False)
     __queue.join()
 
-    if config.log_reporter_active:
+    if config.agent_log_reporter_active:
         __protocol.report_log(__log_queue, False)
         __log_queue.join()
 
-    if config.profiler_active:
+    if config.agent_profile_active:
         __protocol.report_snapshot(__snapshot_queue, False)
         __snapshot_queue.join()
 

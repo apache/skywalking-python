@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import typing
 from abc import ABC, abstractmethod
 from enum import Enum
 from skywalking.protocol.language_agent.Meter_pb2 import Label
@@ -110,6 +110,7 @@ class BaseMeter(ABC):
         def __init__(self, name: str, tags=None):
             # Derived Builder should instantiate its corresponding meter here.
             # self.meter = BaseMeter(name, tags)
+            self.meter: typing.Optional[BaseMeter] = None
             pass
 
         def tag(self, name: str, value):

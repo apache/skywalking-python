@@ -37,12 +37,12 @@ def sw_urlparse(url):
 def sw_filter(target: str):
     # Remove user:pw from any valid full urls
     # this filter is disabled by default due to perf impact
-    if config.log_reporter_safe_mode:
+    if config.agent_log_reporter_safe_mode:
         return re.sub(r'://(.*?)@', r'://', target)
     return target
 
 
 def sw_traceback():
-    stack_trace = traceback.format_exc(limit=config.cause_exception_depth)
+    stack_trace = traceback.format_exc(limit=config.agent_cause_exception_depth)
 
     return sw_filter(target=stack_trace)
