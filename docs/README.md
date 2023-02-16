@@ -2,7 +2,7 @@
 
 **This is the official documentation of SkyWalking Python agent. Welcome to the SkyWalking community!**
 
-The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging abilities for Python projects.
+The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging/profiling abilities for Python projects.
 
 This documentation covers a number of ways to set up the Python agent for various use cases.
 

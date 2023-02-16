@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import time
 import inspect
 import os
 import sys
@@ -38,12 +38,15 @@ class TestPluginBase:
         if expected_file_name is None:
             expected_file_name = os.path.join(dirname(inspect.getfile(self.__class__)), 'expected.data.yml')
 
-        # time.sleep(10)
-
         with open(expected_file_name) as expected_data_file:
             expected_data = os.linesep.join(expected_data_file.readlines())
 
             response = requests.post(url='http://localhost:12800/dataValidate', data=expected_data)
+
+            if response.status_code != 200:
+                # heuristically retry once
+                time.sleep(10)
+                response = requests.post(url='http://localhost:12800/dataValidate', data=expected_data)
 
             if response.status_code != 200:
                 res = requests.get('http://localhost:12800/receiveData')

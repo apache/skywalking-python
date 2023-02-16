@@ -2,18 +2,9 @@
 
 This functionality reports logs collected from the Python logging module (in theory, also logging libraries depending on the core logging module) and loguru module.
 
-To utilize this feature, you will need to add some new configurations to the agent initialization step.
+From Python agent 1.0.0, the log reporter is automatically enabled and can be disabled through `agent_log_reporter_active=False` or `SW_AGENT_LOG_REPORTER_ACTIVE=False`.
 
-## Enabling the feature
-```Python 
-from skywalking import agent, config
-
-config.init(collector_address='127.0.0.1:11800', agent_name='your awesome service',
-                log_reporter_active=True)  # defaults to grpc protocol
-agent.start()
-``` 
-
-Log reporter supports all three protocols including `grpc`, `http` and `kafka`, which shares the same config `protocol` with trace reporter.
+Log reporter supports all three protocols including `grpc`, `http` and `kafka`, which shares the same config `agent_protocol` with trace reporter.
 
 If chosen `http` protocol, the logs will be batch-reported to the collector REST endpoint `oap/v3/logs`.
 
@@ -21,12 +12,14 @@ If chosen `kafka` protocol, please make sure to config
 [kafka-fetcher](https://skywalking.apache.org/docs/main/v9.1.0/en/setup/backend/kafka-fetcher/) 
 on the OAP side, and make sure Python agent config `kafka_bootstrap_servers` points to your Kafka brokers.
 
-`log_reporter_active=True` - Enables the log reporter.
+**Please make sure OAP is consuming the same Kafka topic as your agent produces to, `kafka_namespace` must match OAP side configuration `plugin.kafka.namespace`**
 
-`log_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
+`agent_log_reporter_active=True` - Enables the log reporter.
+
+`agent_log_reporter_max_buffer_size` - The maximum queue backlog size for sending log data to backend, logs beyond this are silently dropped.
 
 Alternatively, you can pass configurations through environment variables. 
-Please refer to the [Environment Variables List](../Configuration.md) for the list of environment variables associated with the log reporter.
+Please refer to the [Configuration Vocabulary](../Configuration.md) for the list of environment variables associated with the log reporter.
 
 ## Specify a logging level
 Only the logs with a level equal to or higher than the specified will be collected and reported. 

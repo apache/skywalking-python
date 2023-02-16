@@ -23,7 +23,7 @@ from packaging import version
 from threading import Thread, Event, current_thread
 from typing import Optional
 
-from skywalking import agent
+from skywalking.agent import agent
 from skywalking import config
 from skywalking import profile
 from skywalking.loggings import logger

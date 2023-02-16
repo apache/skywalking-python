@@ -1,4 +1,4 @@
-# How to use with uWSGI ?
+# How to use with uWSGI?
 
 [uWSGI](https://uwsgi-docs.readthedocs.io/en/latest/) is popular in the Python ecosystem. It is a lightweight, fast, and easy-to-use web server.
 
@@ -13,11 +13,12 @@ The following is an example of the use of uWSGI and flask, the initialization pa
 ```python
 # main.py
 from uwsgidecorators import postfork
-from skywalking import agent, config
 
 @postfork
 def init_tracing():
-    config.init(collector_address='127.0.0.1:11800', agent_name='your awesome service')
+    # Important: The import of skywalking should be inside the postfork function
+    from skywalking import agent, config
+    config.init(agent_collector_backend_services='127.0.0.1:11800', agent_name='your awesome service')
 
     agent.start()
 

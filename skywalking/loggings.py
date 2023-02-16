@@ -25,7 +25,7 @@ logger_debug_enabled = False
 def getLogger(name=None):  # noqa
     logger = logging.getLogger(name)
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(name)s [%(threadName)s] [%(levelname)s] %(message)s')
+    formatter = logging.Formatter('%(name)s [pid:%(process)d] [%(threadName)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.propagate = False
