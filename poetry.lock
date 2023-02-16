@@ -3341,15 +3341,18 @@ files = [
 
 [[package]]
 name = "werkzeug"
-version = "2.0.2"
+version = "2.2.3"
 description = "The comprehensive WSGI web application library."
 category = "dev"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "Werkzeug-2.0.2-py3-none-any.whl", hash = "sha256:63d3dc1cf60e7b7e35e97fa9861f7397283b75d765afcaefd993d6046899de8f"},
-    {file = "Werkzeug-2.0.2.tar.gz", hash = "sha256:aa2bb6fc8dee8d6c504c0ac1e7f5f7dc5810a9903e793b6f715a9f015bdadb9a"},
+    {file = "Werkzeug-2.2.3-py3-none-any.whl", hash = "sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612"},
+    {file = "Werkzeug-2.2.3.tar.gz", hash = "sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe"},
 ]
+
+[package.dependencies]
+MarkupSafe = ">=2.1.1"
 
 [package.extras]
 watchdog = ["watchdog"]
@@ -3648,4 +3651,4 @@ kafka = ["kafka-python"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7, <3.12"
-content-hash = "426b17b1c2a7b4a46f09762ab0f1679e04bcab0e8bfc7dc44854627aabea433d"
+content-hash = "f22c08055665b7abde41d93e5e97b4d99ad1f94d01fc0230bf194ec22a0e0393"
