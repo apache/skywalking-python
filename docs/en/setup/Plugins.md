@@ -18,12 +18,12 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [aiormq](https://pypi.org/project/aiormq/) | Python >=3.7 - ['6.3', '6.4'];  | `sw_aiormq` |
 | [amqp](https://pypi.org/project/amqp/) | Python >=3.7 - ['2.6.1'];  | `sw_amqp` |
 | [asyncpg](https://github.com/MagicStack/asyncpg) | Python >=3.7 - ['0.25.0'];  | `sw_asyncpg` |
-| [bottle](http://bottlepy.org/docs/dev/) | Python >=3.7 - ['0.12.21'];  | `sw_bottle` |
+| [bottle](http://bottlepy.org/docs/dev/) | Python >=3.7 - ['0.12.23'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.7 - ['5.1'];  | `sw_celery` |
 | [confluent_kafka](https://www.confluent.io/) | Python >=3.7 - ['1.5.0', '1.7.0', '1.8.2'];  | `sw_confluent_kafka` |
 | [django](https://www.djangoproject.com/) | Python >=3.7 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.7 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
-| [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
+| [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.11 - NOT SUPPORTED YET; Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
 | [flask](https://flask.palletsprojects.com) | Python >=3.7 - ['2.0'];  | `sw_flask` |
 | [happybase](https://happybase.readthedocs.io) | Python >=3.7 - ['1.2.0'];  | `sw_happybase` |
@@ -33,7 +33,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.7 - ['2.0'];  | `sw_kafka` |
 | [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0'];  | `sw_loguru` |
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
-| [psycopg[binary]](https://www.psycopg.org/) | Python >=3.7 - ['3.0'];  | `sw_psycopg` |
+| [psycopg[binary]](https://www.psycopg.org/) | Python >=3.11 - ['3.1.*']; Python >=3.7 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
 | [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
 | [pymysql](https://pymysql.readthedocs.io/en/latest/) | Python >=3.7 - ['1.0'];  | `sw_pymysql` |
@@ -50,6 +50,9 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 - The celery server running with "celery -A ..." should be run with the HTTP protocol
 as it uses multiprocessing by default which is not compatible with the gRPC protocol implementation
 in SkyWalking currently. Celery clients can use whatever protocol they want.
+- While Falcon is instrumented, only Hug is tested.
+Hug is believed to be abandoned project, use this plugin with a bit more caution.
+Instead of Hug, plugin test should move to test actual Falcon.
 - The websocket instrumentation only traces client side connection handshake,
 the actual message exchange (send/recv) is not traced since injecting headers to socket message
 body is the only way to propagate the trace context, which requires customization of message structure

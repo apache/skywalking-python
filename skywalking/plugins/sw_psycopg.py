@@ -22,7 +22,8 @@ from skywalking.trace.tags import TagDbType, TagDbInstance, TagDbStatement, TagD
 link_vector = ['https://www.psycopg.org/']
 support_matrix = {
     'psycopg[binary]': {
-        '>=3.7': ['3.0']  # psycopg is psycopg3
+        '>=3.11': ['3.1.*'],  # 3.11 support begins 3.1
+        '>=3.7': ['3.0.18', '3.1.*']  # psycopg is psycopg3
     }
 }
 note = """"""

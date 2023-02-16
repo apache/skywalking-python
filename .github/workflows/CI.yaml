@@ -67,7 +67,6 @@ jobs:
     # set outputs for other jobs to access for if conditions
     name: Check Changes
     runs-on: ubuntu-latest
-    needs: [ license-and-lint, plugin-doc-check ]
     # To prevent error when there's no base branch
     if: github.event_name != 'schedule'
     timeout-minutes: 10
@@ -127,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
-        python-version: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim" ]
+        python-version: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
@@ -159,7 +158,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]  
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
@@ -197,7 +196,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python-image-variant: [ "3.7", "3.7-slim" ]
+        python-image-variant: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-image-variant }}
@@ -228,7 +227,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-image-variant: [ "3.7", "3.7-slim" ]
+        python-image-variant: [ "3.7-slim", "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim" ]
         case:
           - name: gRPC
             path: tests/e2e/case/grpc/e2e.yaml
@@ -254,7 +253,7 @@ jobs:
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Run E2E Tests
-        uses: apache/skywalking-infra-e2e@964ede199fe199e166920169dc5f8c9b214cfac5
+        uses: apache/skywalking-infra-e2e@2f20482135ba3a933bc0bb48c41f538ad1aa3048
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
@@ -271,7 +270,7 @@ jobs:
     timeout-minutes: 60
     # wait upon them regardless of success or skipped or failure
     if: ${{ always() }}
-    needs: [ license-and-lint, changes, plugin-and-unit-tests, e2e-tests, plugin-doc-check ]
+    needs: [ license-and-lint, changes, plugin-and-unit-tests, plugin-doc-check, e2e-tests ] 
     steps:
       - name: Merge Requirement
         # check license, lint, plugin and e2e tests, then naturally exits 0
