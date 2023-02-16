@@ -24,11 +24,14 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams, TagH
 link_vector = ['https://falcon.readthedocs.io/en/stable/']
 support_matrix = {
     'hug': {
+        '>=3.11': [],
         '>=3.10': ['2.5', '2.6'],  # api deprecated for 3.10
         '>=3.7': ['2.4.1', '2.5', '2.6'],  # support begins 2.4.1
     }
 }
-note = """"""
+note = """While Falcon is instrumented, only Hug is tested.
+Hug is believed to be abandoned project, use this plugin with a bit more caution.
+Instead of Hug, plugin test should move to test actual Falcon."""
 
 
 def install():

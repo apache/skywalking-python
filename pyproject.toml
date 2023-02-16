@@ -41,6 +41,7 @@ classifiers=[
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
 
     'Topic :: System :: Monitoring',
     'Topic :: Software Development',
@@ -66,7 +67,7 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.11"
+python = ">=3.7, <3.12"
 grpcio = '*'
 grpcio-tools = '*'
 contextvars = "2.4"
@@ -105,7 +106,7 @@ celery = "5.1.2"
 django = "3.2.8"
 elasticsearch = "7.15.1"
 flask = "2.0.2"
-gevent = "21.8.0"
+gevent = "22.8.0"
 hug = "2.6.1"
 pika = "1.2.0"
 psycopg = {extras = ["binary"], version = "^3.1.7"}

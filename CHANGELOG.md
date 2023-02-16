@@ -3,7 +3,7 @@
 ### 1.0.0
 
 - **Important Note and Breaking Changes:**
-  - Python 3.6 is no longer supported and may not function properly.
+  - Python 3.6 is no longer supported and may not function properly, Python 3.11 support is added and tested.
   - A number of common configuration options (environment variables) are renamed to follow the convention of Java agent,
   please check with the latest official documentation before upgrading. (#273, #282)
   
@@ -12,6 +12,7 @@
 
 
 - Feature:
+  - Add support for Python 3.11 (#285)
   - Add MeterReportService (gRPC, Kafka reporter) (default:enabled) (#231, #236, #241, #243)
   - Add reporter for PVM runtime metrics (default:enabled) (#238, #247)
   - Add Greenlet profiler (#246)
