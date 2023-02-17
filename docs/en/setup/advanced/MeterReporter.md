@@ -1,12 +1,15 @@
 # Python Agent Meter Reporter
 
-To enable or disable this feature, you will need to set some environment variables.
-
 **Important Note**: Meter reporter is currently available to send in `gRPC` and `Kafka` protocol, 
 `HTTP` protocol is not implemented yet (requires additional handler on SkyWalking OAP side).
 
-## Enabling the feature (default)
+## Enabling the feature (default is enabled)
+**PVM Reporter is also by default enabled, meaning useful Python metrics such as thread count/GC info will be shown in OAP General Services - Instance - PVM Tab)**
+If you really don't need such a feature, disable them through `config.agent_pvm_meter_reporter_active` or `SW_AGENT_PVM_METER_REPORTER_ACTIVE`
+
 ```Python 
+config.agent_meter_reporter_active = True
+# Or
 os.environ['SW_AGENT_METER_REPORTER_ACTIVE'] = 'True'
 ``` 
 or
@@ -88,7 +91,7 @@ h = builder.build()
 builder = Histogram.Builder('h3', [i / 10 for i in range(10)])
 h = builder.build()
 
-# Histogram h will record the time the with-wrapped codes consumed
+# Histogram h will record the time the with-wprapped codes consumed
 with h.create_timer():
     # some codes may consume a certain time
 ```

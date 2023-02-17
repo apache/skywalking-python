@@ -43,7 +43,7 @@ def install():
         url_param = sw_urlparse(url)
 
         # ignore trace skywalking self request
-        if config.protocol == 'http' and config.agent_collector_backend_services.rstrip('/').endswith(url_param.netloc):
+        if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/').endswith(url_param.netloc):
             return _request(this, method, url, params, data, headers, cookies, files, auth, timeout,
                             allow_redirects,
                             proxies,

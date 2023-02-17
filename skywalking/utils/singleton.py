@@ -15,19 +15,21 @@
 # limitations under the License.
 #
 
-import time
 
-if __name__ == '__main__':
-    from sanic import Sanic, response
+class Singleton(object):
+    """
+    This is to ensure a single process can only have one instance of agent.
+    Written by Guido van Rossum to implement a singleton pattern.
+    https://www.python.org/download/releases/2.2/descrintro/#__new__
+    Classes that inherit from this class will be singletons.
+    """
+    def __new__(cls, *args, **kwds):
+        it = cls.__dict__.get('__it__')
+        if it is not None:
+            return it
+        cls.__it__ = it = object.__new__(cls)
+        it.init(*args, **kwds)
+        return it
 
-    app = Sanic(__name__)
-
-    @app.route('/users', methods=['GET'])
-    async def application(req):
-        time.sleep(0.5)
-        return response.json(
-            {'song': 'Despacito', 'artist': 'Luis Fonsi'}
-        )
-
-    PORT = 9091
-    app.run(host='0.0.0.0', port=PORT)
+    def init(self, *args, **kwds):
+        pass

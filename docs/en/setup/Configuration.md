@@ -18,7 +18,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
 | agent_collector_backend_services | SW_AGENT_AGENT_COLLECTOR_BACKEND_SERVICES | <class 'str'> | oap_host:oap_port | The backend OAP server address, 11800 is default OAP gRPC port, 12800 is HTTP, Kafka ignores this option and uses kafka_bootstrap_servers option. **This option should be changed accordingly with selected protocol** |
-| protocol | SW_AGENT_PROTOCOL | <class 'str'> | grpc | The protocol to communicate with the backend OAP, `http`, `grpc` or `kafka`, **we highly suggest using `grpc` in production as it's well optimized than `http`**. The `kafka` protocol provides an alternative way to submit data to the backend. |
+| agent_protocol | SW_AGENT_AGENT_PROTOCOL | <class 'str'> | grpc | The protocol to communicate with the backend OAP, `http`, `grpc` or `kafka`, **we highly suggest using `grpc` in production as it's well optimized than `http`**. The `kafka` protocol provides an alternative way to submit data to the backend. |
 | agent_name | SW_AGENT_AGENT_NAME | <class 'str'> | Python Service Name | The name of your awesome Python service |
 | agent_instance_name | SW_AGENT_AGENT_INSTANCE_NAME | <class 'str'> | str(uuid.uuid1()).replace('-', '') | The name of this particular awesome Python service instance |
 | agent_namespace | SW_AGENT_AGENT_NAMESPACE | <class 'str'> |  | The agent namespace of the Python service (available as tag and the suffix of service name) |

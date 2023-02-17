@@ -22,9 +22,9 @@ catalog:
     path: "/en/setup/installation"
   - name: "Integration"
     catalog:
-      - name: "Non-Intrusive Setup"
+      - name: "Non-Intrusive Setup (Recommended)"
         path: "/en/setup/CLI"
-      - name: "Legacy Setup"
+      - name: "Legacy Setup (Fallback)"
         path: "/en/setup/Intrusive"
       - name: "Containerized Setup"
         path: "/en/setup/Container"
@@ -38,7 +38,7 @@ catalog:
             path: "/en/setup/advanced/MeterReporter"
           - name: "Manual Trace Instrumentation"
             path: "/en/setup/advanced/API"
-  - name: "Plugins"
+  - name: "Supported Plugins"
     catalog:
       - name: "Supported Libraries"
         path: "/en/setup/Plugins"

@@ -39,7 +39,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [pymysql](https://pymysql.readthedocs.io/en/latest/) | Python >=3.7 - ['1.0'];  | `sw_pymysql` |
 | [pyramid](https://trypyramid.com) | Python >=3.7 - ['1.10', '2.0'];  | `sw_pyramid` |
 | [pika](https://pika.readthedocs.io) | Python >=3.7 - ['1.2'];  | `sw_rabbitmq` |
-| [redis](https://github.com/andymccurdy/redis-py/) | Python >=3.7 - ['3.5'];  | `sw_redis` |
+| [redis](https://github.com/andymccurdy/redis-py/) | Python >=3.7 - ['3.5.*', '4.5.1'];  | `sw_redis` |
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.7 - ['6.0', '6.1'];  | `sw_tornado` |

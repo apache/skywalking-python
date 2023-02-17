@@ -3,12 +3,11 @@
 ### 1.0.0
 
 - **Important Note and Breaking Changes:**
-  - Python 3.6 is no longer supported and may not function properly, Python 3.11 support is added and tested.
-  - A number of common configuration options (environment variables) are renamed to follow the convention of Java agent,
+  - **BREAKING**: Python 3.6 is no longer supported and may not function properly, Python 3.11 support is added and tested.
+  - **BREAKING**: A number of common configuration options and environment variables are renamed to follow the convention of Java agent,
   please check with the latest official documentation before upgrading. (#273, #282)
-  
   https://skywalking.apache.org/docs/skywalking-python/v1.0.0/en/setup/configuration/
-  - All agent core capabilities are now covered by test cases and enabled by default (Trace, Log, PVM runtime metrics, Profiler)
+  - **BREAKING**: All agent core capabilities are now covered by test cases and enabled by default (Trace, Log, PVM runtime metrics, Profiler)
 
 
 - Feature:
@@ -20,6 +19,7 @@
   - Add support for the tags of Virtual Cache for Redis (#263)
   - Add a new configuration `kafka_namespace` to prefix the kafka topic names (#277)
   - Add log reporter support for loguru (#276)
+  - Add **experimental** support for explicit os.fork(), restarts agent in new process (#286)
 
 - Plugins:
   - Add aioredis, aiormq, amqp, asyncpg, aio-pika, kombu RMQ plugins (#230 Missing test coverage) 

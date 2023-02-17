@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,21 +12,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+from flask import Flask, jsonify
+from skywalking import agent, config
 
-import time
+config.init(agent_collector_backend_services='localhost:11800', agent_protocol='grpc',
+            agent_name='great-app-provider-grpc',
+            kafka_bootstrap_servers='localhost:9094',  # If you use kafka, set this
+            agent_instance_name='instance-01',
+            agent_experimental_fork_support=True,
+            agent_logging_level='DEBUG',
+            agent_log_reporter_active=True,
+            agent_meter_reporter_active=True,
+            agent_profile_active=True)
+
+
+agent.start()
+
+app = Flask(__name__)
+
+
+@app.route('/', methods=['POST', 'GET'])
+def application():
+    return jsonify({'status': 'ok'})
+
 
 if __name__ == '__main__':
-    from sanic import Sanic, response
-
-    app = Sanic(__name__)
-
-    @app.route('/users', methods=['GET'])
-    async def application(req):
-        time.sleep(0.5)
-        return response.json(
-            {'song': 'Despacito', 'artist': 'Luis Fonsi'}
-        )
-
-    PORT = 9091
-    app.run(host='0.0.0.0', port=PORT)
+    app.run(host='0.0.0.0', port=9999, debug=True, use_reloader=False)

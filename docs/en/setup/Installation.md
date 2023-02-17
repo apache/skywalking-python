@@ -6,7 +6,7 @@ You can install the SkyWalking Python agent via various ways described next.
 
 > **Already installed? Check out easy ways to start the agent in your application**
 
-> [Non-intrusive](CLI.md) | [Intrusive <minimal>](Intrusive.md) | [Containerization](Container.md) 
+> [Non-intrusive <Recommended>](CLI.md) | [Intrusive <minimal>](Intrusive.md) | [Containerization](Container.md) 
 
 > **All available configurations are listed [here](Configuration.md)**
 
@@ -35,6 +35,9 @@ from where you can use `pip` to install:
 ```shell
 # Install the latest version, using the default gRPC protocol to report data to OAP
 pip install "apache-skywalking"
+
+# Install support for every protocol (gRPC, HTTP, Kafka)
+pip install "apache-skywalking[all]"
 
 # Install the latest version, using the http protocol to report data to OAP
 pip install "apache-skywalking[http]"

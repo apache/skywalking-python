@@ -20,7 +20,7 @@ from queue import Queue
 from threading import Timer, RLock, Lock
 from typing import Tuple
 
-from skywalking import agent
+from skywalking.agent import agent
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile.profile_constants import ProfileConstants
 from skywalking.profile.profile_context import ProfileTaskExecutionContext
@@ -55,7 +55,7 @@ class ProfileTaskExecutionService:
 
         self._last_command_create_time = -1  # type: int
         # single thread executor
-        self.profile_executor = ThreadPoolExecutor(max_workers=1)
+        self.profile_executor = ThreadPoolExecutor(thread_name_prefix='profile-executor', max_workers=1)
         self.task_execution_context = AtomicRef(None)
 
         self.profile_task_scheduler = Scheduler()

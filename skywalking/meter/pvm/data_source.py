@@ -19,7 +19,7 @@ from skywalking.meter.gauge import Gauge
 
 
 class DataSource:
-    def registry(self):
+    def register(self):
         for name in dir(self):
             if name.endswith('generator'):
                 generator = getattr(self, name)()

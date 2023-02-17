@@ -73,7 +73,6 @@ def install():
             finally:
                 span.tag(TagHttpStatusMsg(status_msg))
 
-
     WebSocketClientProtocol.handshake = _sw_protocol_handshake_client
 
     # To trace per message transactions

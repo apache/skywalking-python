@@ -22,105 +22,24 @@ from skywalking.trace.tags import TagCacheType, TagCacheOp, TagCacheCmd, TagCach
 link_vector = ['https://github.com/andymccurdy/redis-py/']
 support_matrix = {
     'redis': {
-        '>=3.7': ['3.5']  # "4.0" next, incompatible to current instrumentation
+        '>=3.7': ['3.5.*', '4.5.1']
     }
 }
 note = """"""
 
-OPERATIONS_WRITE = set({'GETSET',
-                        'SET',
-                        'SETBIT',
-                        'SETEX ',
-                        'SETNX ',
-                        'SETRANGE',
-                        'STRLEN ',
-                        'MSET',
-                        'MSETNX ',
-                        'PSETEX',
-                        'INCR ',
-                        'INCRBY ',
-                        'INCRBYFLOAT',
-                        'DECR ',
-                        'DECRBY ',
-                        'APPEND ',
-                        'HMSET',
-                        'HSET',
-                        'HSETNX ',
-                        'HINCRBY',
-                        'HINCRBYFLOAT',
-                        'HDEL',
-                        'RPOPLPUSH',
-                        'RPUSH',
-                        'RPUSHX',
-                        'LPUSH',
-                        'LPUSHX',
-                        'LREM',
-                        'LTRIM',
-                        'LSET',
-                        'BRPOPLPUSH',
-                        'LINSERT',
-                        'SADD',
-                        'SDIFF',
-                        'SDIFFSTORE',
-                        'SINTERSTORE',
-                        'SISMEMBER',
-                        'SREM',
-                        'SUNION',
-                        'SUNIONSTORE',
-                        'SINTER',
-                        'ZADD',
-                        'ZINCRBY',
-                        'ZINTERSTORE',
-                        'ZRANGE',
-                        'ZRANGEBYLEX',
-                        'ZRANGEBYSCORE',
-                        'ZRANK',
-                        'ZREM',
-                        'ZREMRANGEBYLEX',
-                        'ZREMRANGEBYRANK',
-                        'ZREMRANGEBYSCORE',
-                        'ZREVRANGE',
-                        'ZREVRANGEBYSCORE',
-                        'ZREVRANK',
-                        'ZUNIONSTORE',
-                        'XADD',
-                        'XDEL',
-                        'DEL',
-                        'XTRIM'})
+OPERATIONS_WRITE = {'GETSET', 'SET', 'SETBIT', 'SETEX ', 'SETNX ', 'SETRANGE', 'STRLEN ', 'MSET', 'MSETNX ', 'PSETEX',
+                    'INCR ', 'INCRBY ', 'INCRBYFLOAT', 'DECR ', 'DECRBY ', 'APPEND ', 'HMSET', 'HSET', 'HSETNX ',
+                    'HINCRBY', 'HINCRBYFLOAT', 'HDEL', 'RPOPLPUSH', 'RPUSH', 'RPUSHX', 'LPUSH', 'LPUSHX', 'LREM',
+                    'LTRIM', 'LSET', 'BRPOPLPUSH', 'LINSERT', 'SADD', 'SDIFF', 'SDIFFSTORE', 'SINTERSTORE', 'SISMEMBER',
+                    'SREM', 'SUNION', 'SUNIONSTORE', 'SINTER', 'ZADD', 'ZINCRBY', 'ZINTERSTORE', 'ZRANGE',
+                    'ZRANGEBYLEX', 'ZRANGEBYSCORE', 'ZRANK', 'ZREM', 'ZREMRANGEBYLEX', 'ZREMRANGEBYRANK',
+                    'ZREMRANGEBYSCORE', 'ZREVRANGE', 'ZREVRANGEBYSCORE', 'ZREVRANK', 'ZUNIONSTORE', 'XADD', 'XDEL',
+                    'DEL', 'XTRIM'}
 
-OPERATIONS_READ = set({'GETRANGE',
-                       'GETBIT ',
-                       'MGET',
-                       'HVALS',
-                       'HKEYS',
-                       'HLEN',
-                       'HEXISTS',
-                       'HGET',
-                       'HGETALL',
-                       'HMGET',
-                       'BLPOP',
-                       'BRPOP',
-                       'LINDEX',
-                       'LLEN',
-                       'LPOP',
-                       'LRANGE',
-                       'RPOP',
-                       'SCARD',
-                       'SRANDMEMBER',
-                       'SPOP',
-                       'SSCAN',
-                       'SMOVE',
-                       'ZLEXCOUNT',
-                       'ZSCORE',
-                       'ZSCAN',
-                       'ZCARD',
-                       'ZCOUNT',
-                       'XGET',
-                       'GET',
-                       'XREAD',
-                       'XLEN',
-                       'XRANGE',
-                       'XREVRANGE'})
+OPERATIONS_READ = {'GETRANGE', 'GETBIT ', 'MGET', 'HVALS', 'HKEYS', 'HLEN', 'HEXISTS', 'HGET', 'HGETALL', 'HMGET',
+                   'BLPOP', 'BRPOP', 'LINDEX', 'LLEN', 'LPOP', 'LRANGE', 'RPOP', 'SCARD', 'SRANDMEMBER', 'SPOP',
+                   'SSCAN', 'SMOVE', 'ZLEXCOUNT', 'ZSCORE', 'ZSCAN', 'ZCARD', 'ZCOUNT', 'XGET', 'GET', 'XREAD', 'XLEN',
+                   'XRANGE', 'XREVRANGE'}
 
 
 def install():
@@ -130,7 +49,14 @@ def install():
 
     def _sw_send_command(this: Connection, *args, **kwargs):
         peer = f'{this.host}:{this.port}'
-        cmd, key = args[0], args[1]
+
+        if len(args) == 1:
+            cmd = args[0]
+            key = ''
+        elif len(args) > 1:
+            cmd, key = args[0], args[1]
+        else:  # just to be safe
+            cmd = key = ''
 
         if cmd in OPERATIONS_WRITE:
             op = 'write'

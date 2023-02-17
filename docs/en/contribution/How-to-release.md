@@ -201,7 +201,7 @@ Vote result should follow these:
 
     On behalf of the SkyWalking Team, I’m glad to announce that SkyWalking Python $VERSION is now released.
 
-    SkyWalking Python: The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging abilities for Python projects.
+    SkyWalking Python: The Python Agent for Apache SkyWalking provides the native tracing/metrics/logging/profiling abilities for Python projects.
 
     SkyWalking: APM (application performance monitor) tool for distributed systems, especially designed for microservices, cloud native and container-based (Docker, Kubernetes, Mesos) architectures.
 
