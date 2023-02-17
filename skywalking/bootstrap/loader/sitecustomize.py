@@ -18,7 +18,8 @@
 """ This version of sitecustomize will
 1. initialize the SkyWalking Python Agent.
 2. invoke an existing sitecustomize.py.
-Not compatible with Python <= 3.3
+Requires Python 3.7+ (os.register_at_fork) to work properly for all cases.
+A higher Python version is always recommended.
 
 When executing commands with `sw-python run command`
 This particular sitecustomize module will be picked up by any valid replacement
@@ -40,12 +41,13 @@ def _get_sw_loader_logger():
     """
     from logging import getLogger
     logger = getLogger('skywalking-loader')
+    logger.setLevel('INFO')
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(name)s [pid:%(process)d] [%(threadName)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
     logger.propagate = False
-    if os.environ.get('SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
+    if os.environ.get('SW_AGENT_SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
         logger.setLevel(level=logging.DEBUG)
     return logger
 
@@ -120,17 +122,19 @@ if not (version_match and prefix_match):
     _sw_loader_logger.error('The sw-python CLI was instructed to run a program '
                             'using an different Python installation '
                             'this is not safe and loader will not proceed. '
-                            'Please make sure that sw-python cli, skywalking agent and your '
-                            'application are using the same Python installation, '
-                            'Rerun with debug flag, `sw-python -d run yourapp` for some troubleshooting information.'
+                            'Please make sure that sw-python CLI, skywalking agent and your '
+                            'application are using the same Python executable. '
+                            'Rerun with debug flag, `sw-python -d run <your_python_command>` for '
+                            'some troubleshooting information.'
                             'use `which sw-python` to find out the invoked CLI location')
-    os._exit(1)  # do not go further
+    os._exit(1)  # noqa: do not go further
 
 else:
     from skywalking import agent, config
 
+    _sw_loader_logger.info(f'Process-{os.getpid()}, running sitecustomize.py from {__file__}')
     # also override debug for skywalking agent itself
-    if os.environ.get('SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
+    if os.environ.get('SW_AGENT_SW_PYTHON_CLI_DEBUG_ENABLED') == 'True':  # set from the original CLI runner
         config.agent_logging_level = 'DEBUG'
 
     # Currently supports configs read from os.environ
@@ -144,6 +148,26 @@ else:
     # noinspection PyBroadException
     try:
         _sw_loader_logger.debug('SkyWalking Python Agent starting, loader finished.')
-        agent.start()
+        prefork_server_detected = os.getenv('prefork')
+        if prefork_server_detected:
+            config.agent_instance_name = f'{config.agent_instance_name}-master({os.getpid()})'
+            _sw_loader_logger.info(f'Prefork server is detected ({prefork_server_detected}), '
+                                   f'agent will be automatically started after fork. \n'
+                                   f'Please monitor with care as this is an experimental feature, '
+                                   f'it may not work well with all {prefork_server_detected} configurations.')
+            if prefork_server_detected == 'uwsgi':
+                # We don't do anything here, as uwsgi cannot trigger after_in_child hook
+                # We use the already injected uwsgi postfork hook to start the agent (bootstrap/hooks/uwsgi_hook.py)
+                ...
+            if prefork_server_detected == 'gunicorn':
+                # We need to enable experimental fork support for Gunicorn
+                config.agent_experimental_fork_support = True
+                # Luckily Gunicorn is based on os.fork and can be safely forked with experimental fork support
+                agent.start()
+        else:  # Either there's some prefix like supervisor, or it simply doesn't use uwsgi/gunicorn
+            agent.start()  # CHECK: Not sure what happens when supervisor + gunicorn is used? Will it even work?
+
     except Exception:
-        _sw_loader_logger.exception('SkyWalking Python Agent failed to start, please inspect your package installation')
+        _sw_loader_logger.exception('SkyWalking Python Agent failed to start, please inspect your package installation.'
+                                    'Report issue if you think this is a bug, along with the log produced by '
+                                    'specifying the -d debug flag.')

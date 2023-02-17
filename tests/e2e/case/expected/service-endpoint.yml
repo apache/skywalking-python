@@ -14,6 +14,6 @@
 # limitations under the License.
 
   {{- contains . }}
-- id: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
-  name: /artist
+- id: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist-provider" }}
+  name: /artist-provider
   {{- end }}

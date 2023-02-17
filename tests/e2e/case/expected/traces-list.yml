@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# todo check precisely 5 times repeat, for multiprocessings
 traces:
   {{- contains .traces }}
   - segmentid: {{ notEmpty .segmentid }}
     endpointnames:
     {{- contains .endpointnames }}
-      - /artist
+      - /artist-provider
     {{- end }}
     duration: {{ ge .duration 0 }}
     start: {{ notEmpty .start}}

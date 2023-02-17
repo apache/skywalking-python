@@ -59,7 +59,9 @@ def report_with_backoff(reporter_name, init_wait):
                                      f'retry in {wait} seconds')
                 self._finished.wait(wait)
             logger.info('finished reporter thread')
+
         return backoff_wrapper
+
     return backoff_decorator
 
 
@@ -183,8 +185,16 @@ class SkyWalkingAgent(Singleton):
         """
         Simply restart the agent after we detect a fork() call
         """
+        # This will be used by os.fork() called by application and also Gunicorn, not uWSGI
+        # otherwise we assume a fork() happened, give it a new service instance name
+        logger.info('New process detected, re-initializing SkyWalking Python agent')
+        # Note: this is for experimental change, default config should never reach here
+        # Fork support is controlled by config.agent_fork_support :default: False
+        # Important: This does not impact pre-forking server support (uwsgi, gunicorn, etc...)
+        # This is only for explicit long-running fork() calls.
+        config.agent_instance_name = f'{config.agent_instance_name}-child({os.getpid()})'
         self.start()
-        logger.info('SkyWalking Python agent spawned in child after fork() call.')
+        logger.info(f'Agent spawned as {config.agent_instance_name} for service {config.agent_name}.')
 
     def start(self) -> None:
         """
@@ -194,32 +204,36 @@ class SkyWalkingAgent(Singleton):
 
         When os.fork(), the service instance should be changed to a new one by appending pid.
         """
-        python_version: tuple = sys.version_info[:2]
-        if python_version[0] < 3 and python_version[1] < 7:
+        loggings.init()
+
+        if sys.version_info < (3, 7):
             # agent may or may not work for Python 3.6 and below
             # since 3.6 is EOL, we will not officially support it
             logger.warning('SkyWalking Python agent does not support Python 3.6 and below, '
                            'please upgrade to Python 3.7 or above.')
         # Below is required for grpcio to work with fork()
         # https://github.com/grpc/grpc/blob/master/doc/fork_support.md
-        # This is not available in Python 3.7 due to frequent hanging issue
-        # It doesn't mean other Python versions will not hang, but chances seem low
-        # https://github.com/grpc/grpc/issues/18075
         if config.agent_protocol == 'grpc' and config.agent_experimental_fork_support:
-            python_version: tuple = sys.version_info[:2]
-            if python_version[0] == 3 and python_version[1] == 7:
-                raise RuntimeError('gRPC fork support is not safe on Python 3.7 and can cause subprocess hanging. '
-                                   'See: https://github.com/grpc/grpc/issues/18075.'
-                                   'Please either upgrade to Python 3.8+ (though hanging could still happen but rare), '
-                                   'or use HTTP/Kafka protocol, or disable experimental fork support.')
+            python_major_version: tuple = sys.version_info[:2]
+            if python_major_version == (3, 7):
+                logger.warning('gRPC fork support may cause hanging on Python 3.7 '
+                               'when used together with gRPC and subprocess lib'
+                               'See: https://github.com/grpc/grpc/issues/18075.'
+                               'Please consider upgrade to Python 3.8+, '
+                               'or use HTTP/Kafka protocol, or disable experimental fork support '
+                               'if your application did not start successfully.')
 
             os.environ['GRPC_ENABLE_FORK_SUPPORT'] = 'true'
             os.environ['GRPC_POLL_STRATEGY'] = 'poll'
 
         if not self.__started:
             # if not already started, start the agent
+            config.finalize()  # Must be finalized exactly once
+
             self.__started = True
-            # Install logging plugins
+            logger.info(f'SkyWalking agent instance {config.agent_instance_name} starting in pid-{os.getpid()}.')
+
+            # Install log reporter core
             # TODO - Add support for printing traceID/ context in logs
             if config.agent_log_reporter_active:
                 from skywalking import log
@@ -228,15 +242,10 @@ class SkyWalkingAgent(Singleton):
             plugins.install()
         elif self.__started and os.getpid() == self.started_pid:
             # if already started, and this is the same process, raise an error
-            raise RuntimeError('SkyWalking Python agent has already been started in this process')
-        else:
-            # otherwise we assume a fork() happened, give it a new service instance name
-            logger.info('New process detected, re-initializing SkyWalking Python agent')
-            # Note: this is for experimental change, default config should never reach here
-            # Fork support is controlled by config.agent_fork_support :default: False
-            # Important: This does not impact pre-forking server support (uwsgi, gunicorn, etc...)
-            # This is only for explicit long-running fork() calls.
-            config.agent_instance_name = f'{config.agent_instance_name}-child-{os.getpid()}'
+            raise RuntimeError('SkyWalking Python agent has already been started in this process, '
+                               'did you call start more than once in your code + sw-python CLI? '
+                               'If you already use sw-python CLI, you should remove the manual start(), vice versa.')
+        # Else there's a new process (after fork()), we will restart the agent in the new process
 
         self.started_pid = os.getpid()
 
@@ -250,8 +259,6 @@ class SkyWalkingAgent(Singleton):
             import grpc.experimental.gevent as grpc_gevent
             grpc_gevent.init_gevent()
 
-        loggings.init()
-        config.finalize()
         profile.init()
         meter.init(force=True)  # force re-init after fork()
 

@@ -15,38 +15,15 @@
 # limitations under the License.
 #
 
-version: '2.1'
+  cases:
+    # trace segment list
+    - query: swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls
+      expected: expected/traces-list.yml
 
-services:
-  oap:
-    extends:
-      file: ../../base/docker-compose.base.yml
-      service: oap
-    ports:
-      - "12800"
-  provider:
-    extends:
-      file: ../../base/docker-compose.base.yml
-      service: provider
-    ports:
-      - "9090"
-    environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
-    depends_on:
-      oap:
-        condition: service_healthy
-
-  consumer:
-    extends:
-      file: ../../base/docker-compose.base.yml
-      service: consumer
-    environment:
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
-    ports:
-      - "9090"
-    depends_on:
-      provider:
-        condition: service_healthy
-
-networks:
-  e2e:
+    # trace detail
+    - query: |
+        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace $( \
+          swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls --service-name="e2e-service-consumer|namespace"\
+            | yq e '.traces | select(.[].endpointnames[0]=="/artist-consumer") | .[0].traceids[0]' -
+        )
+      expected: expected/trace-artist-detail.yml

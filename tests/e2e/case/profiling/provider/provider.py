@@ -22,7 +22,7 @@ from flask import Flask, request
 app = Flask(__name__)
 
 
-@app.route('/artist', methods=['POST'])
+@app.route('/artist-provider', methods=['POST'])
 def artist():
     try:
 
