@@ -16,7 +16,8 @@
 # under the License.
 
 {{- contains . }}
-- id: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
+# id is base64 encoded version of e2e-service-provider=._instance_id
+- id: {{ regexp .id "ZTJlLXNlcnZpY2UtcHJvdmlkZXI.*" }}
   name: {{ notEmpty .name }}
   attributes:
     {{- contains .attributes }}
@@ -36,5 +37,5 @@
       value: "The answer to all is 42"
       {{- end }}
   language: PYTHON
-  instanceuuid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
+  instanceuuid: {{ regexp .instanceuuid "ZTJlLXNlcnZpY2UtcHJvdmlkZXI.*" }}
 {{- end}}

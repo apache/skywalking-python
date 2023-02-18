@@ -16,7 +16,7 @@
 {{- contains . }}
 - segmentid: {{ notEmpty .segmentid }}
   endpointnames:
-    - /artist
+    - /artist-provider
   duration: {{ gt .duration 0 }}
   start: "{{ notEmpty .start }}"
   iserror: false

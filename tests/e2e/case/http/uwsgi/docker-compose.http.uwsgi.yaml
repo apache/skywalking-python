@@ -15,41 +15,42 @@
 # limitations under the License.
 #
 
-version: '2.1'
 
 services:
   oap:
     extends:
-      file: ../../base/docker-compose.base.yml
+      file: ../../../base/docker-compose.base.yml
       service: oap
     ports:
       - "12800"
 
   provider:
     extends:
-      file: ../../base/docker-compose.base.yml
-      service: provider
-    ports:
-      - "9090"
-    environment: # HTTP endpoint
-      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:12800
-      SW_AGENT_PROTOCOL: http
-    depends_on:
-      oap:
-        condition: service_healthy
-
-  consumer:
-    extends:
-      file: ../../base/docker-compose.base.yml
-      service: consumer
+      file: ../../../base/docker-compose.base.yml
+      service: flask-provider
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:12800
       SW_AGENT_PROTOCOL: http
+    command: [ "run", "-p", "uwsgi", "--http", ":9090", "--wsgi-file", "flask_provider.py", "--callable", "app", "--enable-threads", "--workers", "3", "--master", "--die-on-term"]
+    depends_on:
+      oap:
+        condition: service_healthy
     ports:
       - "9090"
+
+  consumer:
+    extends:
+      file: ../../../base/docker-compose.base.yml
+      service: flask-consumer
+    environment:
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:12800
+      SW_AGENT_PROTOCOL: http
+    command: [ "run", "-p", "uwsgi", "--http", ":9090", "--wsgi-file", "flask_consumer.py", "--callable", "app", "--enable-threads", "--workers", "3", "--master", "--die-on-term"]
     depends_on:
       provider:
         condition: service_healthy
+    ports:
+      - "9090"
 
 networks:
   e2e:

@@ -156,11 +156,10 @@ class KafkaProtocol(Protocol):
                     return
                 queue.task_done()
 
-                if logger_debug_enabled:
-                    logger.debug('Reporting Meter')
-
                 yield meter_data
 
+        if logger_debug_enabled:
+            logger.debug('Reporting Meter')
         self.meter_reporter.report(generator=generator())
 
     # TODO: implement profiling for kafka

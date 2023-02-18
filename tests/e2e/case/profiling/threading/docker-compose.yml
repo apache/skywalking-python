@@ -30,7 +30,7 @@ services:
   provider:
     extends:
       file: ../../../base/docker-compose.base.yml
-      service: provider
+      service: flask-provider
     ports:
       - "9090"
     volumes:
@@ -44,7 +44,7 @@ services:
   consumer:
     extends:
       file: ../../../base/docker-compose.base.yml
-      service: consumer
+      service: flask-consumer
     environment:
       SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
     ports:

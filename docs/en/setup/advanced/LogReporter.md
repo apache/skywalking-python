@@ -22,8 +22,13 @@ Alternatively, you can pass configurations through environment variables.
 Please refer to the [Configuration Vocabulary](../Configuration.md) for the list of environment variables associated with the log reporter.
 
 ## Specify a logging level
-Only the logs with a level equal to or higher than the specified will be collected and reported. 
-In other words, the agent ignores some unwanted logs based on your level threshold.
+> [Important] Agent will only report logs that passes the default level threshold logging.getLogger().setLevel(logging.WARNING) 
+> For example, if your logger level is logging.INFO, agent will not report info logs even if you set `agent_log_reporter_level` to `INFO`
+
+Additional to the code level configuration, only the logs with a level equal to or higher than the 
+specified configuration will be collected and reported. 
+
+In other words, the agent skips reporting some unwanted logs based on your level threshold even though they are still logged.
 
 `log_reporter_level` - The string name of a logger level. 
 
