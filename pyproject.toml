@@ -70,13 +70,9 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 python = ">=3.7, <3.12"
 grpcio = '*'
 grpcio-tools = '*'
-contextvars = "2.4"
 packaging = '*'
 wrapt = '*'
 psutil = '*'
-testcontainers = { version = "*", optional = true}
-pyyaml = { version = "*", optional = true }
-pytest = { version = "*", optional = true }
 requests = { version = ">=2.26.0", optional = true }
 kafka-python = { version = "*", optional = true }
 

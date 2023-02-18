@@ -12,6 +12,7 @@
   - **BREAKING**: All agent core capabilities are now covered by test cases and enabled by default (Trace, Log, PVM runtime metrics, Profiler)
   - **BREAKING**: DockerHub Python agent images since v1.0.0 will no longer include the `run` part in `ENTRYPOINT ["sw-python", "run"]`, 
   user should prefix their command with `[-d/--debug] run [-p/--prefork] <Command>` for extra flexibility.
+  - Packaged wheel now provides a extra [all] option to support all three report protocols
 
 - Feature:
   - Add support for Python 3.11 (#285)
