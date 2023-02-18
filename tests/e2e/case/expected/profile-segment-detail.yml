@@ -21,7 +21,7 @@ spans:
   serviceinstancename: ""
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}
-  endpointname: /artist
+  endpointname: /artist-provider
   type: Entry
   peer: {{ notEmpty .peer }}
   component: {{ notEmpty .component }}

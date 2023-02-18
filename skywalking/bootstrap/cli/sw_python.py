@@ -34,19 +34,30 @@ def start() -> None:
                                      epilog='Append your command, with SkyWalking agent attached for you automatically',
                                      allow_abbrev=False)
 
-    parser.add_argument('option', help='CLI options, now only supports `run`, for help please type `sw-python -h` '
-                                       'or refer to the CLI documentation',
-                        choices=list(_options.keys()))
-
-    # TODO support parsing optional sw_config.yaml
-    # parser.add_argument('-config', nargs='?', type=argparse.FileType('r'),
-    #                     help='Optionally takes a sw_python.yaml config file')
-
-    # The command arg compress all remaining args into itself
-    parser.add_argument('command', help='Your original commands e.g. gunicorn app.wsgi',
-                        nargs=argparse.REMAINDER, metavar='command')
-
     parser.add_argument('-d', '--debug', help='Print CLI debug logs to stdout', action='store_true')
+
+    base_subparser = argparse.ArgumentParser(add_help=False)
+    subparsers = parser.add_subparsers(dest='option', required=True, help='CLI options, now only supports `run`, for '
+                                                                          'help please type `sw-python -h` or refer '
+                                                                          'to the CLI documentation')
+
+    run_parser = subparsers.add_parser('run', parents=[base_subparser])
+
+    # TODO support parsing optional sw_config.toml
+    # config_parser = subparsers.add_parser("config", parents=[base_subparser])
+    # parser.add_argument('-config', nargs='?', type=argparse.FileType('r'),
+    #                     help='Optionally takes a sw_python.toml config file')
+
+    run_parser.add_argument('-p', '--prefork', help='[Experimental] This flag turns on auto detection of '
+                                                    'uwsgi and gunicorn, '
+                                                    'then automatically starts the Python agent in each worker process.'
+                                                    "(TL;DR: You don't need to add manual "
+                                                    '@postfork hook to your app anymore)',
+                            action='store_true')
+    # The command arg compress all remaining args into itself
+    # This must be the last arg
+    run_parser.add_argument('command', help='Your original commands e.g. gunicorn app.wsgi',
+                            nargs=argparse.REMAINDER, metavar='command')
 
     # To handle cases with flags and positional args in user commands
     args = parser.parse_args()  # type: argparse.Namespace
@@ -73,4 +84,4 @@ def dispatch(args: argparse.Namespace) -> None:
     cli_logger.debug(f"SkyWalking Python agent with CLI option '{cli_option}' and command {actual_command}")
 
     # Dispatch actual user application command to runner
-    _options[cli_option].execute(actual_command)
+    _options[cli_option].execute(command=actual_command, experimental_check_prefork=args.prefork)

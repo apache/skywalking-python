@@ -97,7 +97,11 @@ pkginfo = "^1.8.3"
 testcontainers = "*"
 pyyaml = "*"
 pytest = "*"
-
+uwsgi = "*"
+gunicorn = "*"
+uvicorn = "*"
+kafka-python = "*"
+requests = "*"
 
 [tool.poetry.group.plugins.dependencies]
 urllib3 = "1.26.7"
@@ -110,8 +114,10 @@ gevent = "22.8.0"
 hug = "2.6.1"
 pika = "1.2.0"
 psycopg = {extras = ["binary"], version = "^3.1.7"}
+psycopg2-binary = "^2.9"
 pymongo = "3.12.0"
 pymysql = "1.0.2"
+mysqlclient = "^2.1.1"
 pyramid = "2.0"
 pyyaml = "6.0"
 redis = "3.5.3"
@@ -129,6 +135,7 @@ happybase = "1.2.0"
 websockets = "^10.4"
 loguru = "^0.6.0"
 httpx = "^0.23.3"
+confluent-kafka = "^2.0.2"
 
 [tool.poetry.group.lint.dependencies]
 pylint = '2.13.9'

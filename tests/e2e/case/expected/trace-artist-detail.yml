@@ -21,13 +21,14 @@ spans:
   parentspanid: {{ .parentspanid }}
   refs: []
   servicecode: "e2e-service-consumer|namespace"
-  serviceinstancename: consumer1
+  serviceinstancename: {{ regexp .serviceinstancename "consumer.*" }}
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}
-  endpointname: /artist
+  endpointname: /artist-consumer
   type: Entry
   peer: {{ notEmpty .peer }}
-  component: FastAPI
+  # component depends on the docker-compose test case provider consumer's framework
+  component: {{ regexp .component "Flask|FastAPI" }}
   iserror: false
   layer: Http
   tags:
@@ -47,13 +48,13 @@ spans:
   parentspanid: {{ .parentspanid }}
   refs: []
   servicecode: "e2e-service-consumer|namespace"
-  serviceinstancename: consumer1
+  serviceinstancename: {{ regexp .serviceinstancename "consumer.*" }}
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}
-  endpointname: /artist
+  endpointname: /artist-provider
   type: Exit
   peer: provider:9090
-  component: AioHttp
+  component: {{ regexp .component "AioHttp|Requests" }}
   iserror: false
   layer: Http
   tags:
@@ -61,7 +62,7 @@ spans:
     - key: http.method
       value: POST
     - key: http.url
-      value: http://provider:9090/artist
+      value: http://provider:9090/artist-provider
     - key: http.status_code
       value: "200"
     {{- end }}
@@ -79,13 +80,13 @@ spans:
       type: CROSS_PROCESS
     {{- end }}
   servicecode: e2e-service-provider
-  serviceinstancename: provider1
+  serviceinstancename: {{ regexp .serviceinstancename "provider.*" }}
   starttime: {{ gt .starttime 0 }}
   endtime: {{ gt .endtime 0 }}
-  endpointname: /artist
+  endpointname: /artist-provider
   type: Entry
   peer: {{ notEmpty .peer }}
-  component: FastAPI
+  component: {{ regexp .component "FastAPI|Flask" }}
   iserror: false
   layer: Http
   tags:
@@ -94,7 +95,7 @@ spans:
       value: POST
     - key: http.url
       # Change OAP side e2e from url -> http.url # why is oap e2e passing?? todo check with custom e2e build
-      value: http://provider:9090/artist
+      value: http://provider:9090/artist-provider
     - key: http.status_code
       # Change OAP side e2e from status.code -> http.status_code
       value: "200"

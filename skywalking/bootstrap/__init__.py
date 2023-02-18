@@ -26,6 +26,7 @@ import logging
 def get_cli_logger():
     """ A logger used by sw-python CLI """
     logger = logging.getLogger('skywalking-cli')
+    logger.setLevel('INFO')
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(name)s [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)

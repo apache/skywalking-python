@@ -92,9 +92,11 @@ agent_collector_properties_report_period_factor = int(
     os.getenv('SW_AGENT_COLLECTOR_PROPERTIES_REPORT_PERIOD_FACTOR', '10'))
 # A custom JSON string to be reported as service instance properties, e.g. `{"key": "value"}`
 agent_instance_properties_json: str = os.getenv('SW_AGENT_INSTANCE_PROPERTIES_JSON', '')
-# The agent will try to restart itself in any os.fork()-ed child process. Important Note: it's not suitable for
-# short-lived processes as each one will introduce overhead and create a new instance in SkyWalking dashboard
-# in format of `service_instance-child-<pid>` (TODO)
+# The agent will restart itself in any os.fork()-ed child process. Important Note: it's not suitable for
+# short-lived processes as each one will create a new instance in SkyWalking dashboard
+# in format of `service_instance-child(pid)`.
+# This feature may not work when a precise combination of gRPC + Python 3.7 + subprocess (not fork) is used together.
+# The agent will output a warning log when using on Python 3.7 for such a reason.
 agent_experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SUPPORT', '').lower() == 'true'
 # DANGEROUS - This option controls the interval of each bulk report from telemetry data queues
 # Do not modify unless you have evaluated its impact given your service load.
@@ -105,6 +107,11 @@ agent_queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
 # `sw-python` CLI, if set to `False`, a valid child process will not boot up a SkyWalking Agent. Please refer to the
 # [CLI Guide](CLI.md) for details.
 agent_sw_python_bootstrap_propagate = os.getenv('SW_AGENT_SW_PYTHON_BOOTSTRAP_PROPAGATE', '').lower() == 'true'
+# Special: can only be passed via environment. This config controls the CLI and agent logging debug mode, if set to
+# `True`, the CLI and agent will print out debug logs. Please refer to the [CLI Guide](CLI.md) for details.
+# Important: this config will set agent logging level to `DEBUG` as well, do not use it in production otherwise it will
+# flood your logs. This normally shouldn't be pass as a simple flag -d will be the same.
+agent_sw_python_cli_debug_enabled = os.getenv('SW_AGENT_SW_PYTHON_CLI_DEBUG_ENABLED', '').lower() == 'true'
 
 # BEGIN: Trace Reporter Configurations
 # The maximum queue backlog size for sending the segment data to backend, segments beyond this are silently dropped

@@ -52,21 +52,20 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
         exception = None
         exception_delay = 0
         stdout, stderr = None, None
-        for _ in range(10):
+        for _ in range(50):
             try:
-                time.sleep(10)
+                time.sleep(3)
                 prepare()
                 exception = None
                 break
             except Exception as e:
-                exception_delay += 10
+                exception_delay += 3
                 exception = e
                 stdout, stderr = compose.get_logs()
         else:  # when exception isn't in prepare,  e.g. system-level/pip error/healthcheck stuck
-            exception = 'Exception is in container startup, please pay attention to log and ' \
-                        'ensure system/python package installation or healthcheck utility is working'
+            exception = exception or 'Exception is in container startup, please pay attention to log and ' \
+                                     'ensure system/python package installation or healthcheck utility is working'
             stdout, stderr = compose.get_logs()
-
 
         if exception:
             print(f'STDOUT:\n{stdout.decode("utf-8")}')

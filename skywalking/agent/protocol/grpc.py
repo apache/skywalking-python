@@ -212,11 +212,11 @@ class GrpcProtocol(Protocol):
 
                 queue.task_done()
 
-                if logger_debug_enabled:
-                    logger.debug('Reporting Meter')
                 yield meter_data
 
         try:
+            if logger_debug_enabled:
+                logger.debug('Reporting Meter')
             self.meter_reporter.report(generator())
         except grpc.RpcError:
             self.on_error()

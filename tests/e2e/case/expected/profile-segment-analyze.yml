@@ -20,7 +20,7 @@ trees:
     {{- contains .elements }}
     - id: "{{ notEmpty .id }}"
       parentid: "{{ notEmpty .parentid }}"
-      codesignature: "/services/provider.py.artist: 29"
+      codesignature: "{{ notEmpty .codesignature }}"
       duration: {{ gt .duration 0 }}
       durationchildexcluded: {{ ge .durationchildexcluded 0 }}
       count: {{ gt .count 0 }}

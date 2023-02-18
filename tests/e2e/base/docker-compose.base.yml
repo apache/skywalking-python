@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: '2.1'
-
 services:
   # The following services are inherited by three protocols for testing
   oap:
@@ -32,7 +30,7 @@ services:
       retries: 120
 
 
-  provider:
+  fastapi-provider:
     # Previously built in CI
     image: apache/skywalking-python-agent:latest-e2e
     expose:
@@ -41,39 +39,133 @@ services:
       - e2e
     environment:
       SW_AGENT_NAME: e2e-service-provider
-      SW_AGENT_INSTANCE_NAME: provider1
+      SW_AGENT_INSTANCE_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
       SW_AGENT_LOG_REPORTER_ACTIVE: "True"
       SW_AGENT_LOG_REPORTER_LEVEL: WARNING
       SW_AGENT_LOG_REPORTER_SAFE_MODE: "True"
       SW_AGENT_METER_REPORTER_ACTIVE: "True"
       SW_AGENT_PVM_METER_REPORTER_ACTIVE: "True"
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
       SW_AGENT_INSTANCE_PROPERTIES_JSON: '{"custom_property":"The answer to all is 42"}'
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
       interval: 5s
       timeout: 60s
       retries: 120
-    command: [ "python3", "/services/provider.py" ]
+    command: [ "run", "python3", "fastapi_provider.py" ]
 
-
-  consumer:
+  flask-provider:
     image: apache/skywalking-python-agent:latest-e2e
     expose:
       - 9090
     networks:
       - e2e
     environment:
-      SW_AGENT_NAME: e2e-service-consumer
-      SW_AGENT_INSTANCE_NAME: consumer1
-      SW_AGENT_NAMESPACE: "namespace"
+      SW_AGENT_NAME: e2e-service-provider
+      SW_AGENT_INSTANCE_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_LOG_REPORTER_ACTIVE: "True"
+      SW_AGENT_LOG_REPORTER_LEVEL: WARNING
+      SW_AGENT_LOG_REPORTER_SAFE_MODE: "True"
+      SW_AGENT_METER_REPORTER_ACTIVE: "True"
+      SW_AGENT_PVM_METER_REPORTER_ACTIVE: "True"
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+      SW_AGENT_INSTANCE_PROPERTIES_JSON: '{"custom_property":"The answer to all is 42"}'
     healthcheck:
       test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
       interval: 5s
       timeout: 60s
       retries: 120
-    command: [ "python3", "/services/consumer.py" ]
+    command: [ "run", "python3", "flask_provider.py" ]
 
+
+  fastapi-consumer:
+    image: apache/skywalking-python-agent:latest-e2e
+    expose:
+      - 9090
+    networks:
+      - e2e
+    environment:
+      SW_AGENT_NAME: "e2e-service-consumer"
+      SW_AGENT_INSTANCE_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+      SW_AGENT_NAMESPACE: "namespace"
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    command: [ "run", "python3", "fastapi_consumer.py" ]
+
+  flask-consumer:
+    image: apache/skywalking-python-agent:latest-e2e
+    expose:
+      - 9090
+    networks:
+      - e2e
+    environment:
+      SW_AGENT_NAME: "e2e-service-consumer"
+      SW_AGENT_INSTANCE_NAME: consumer
+      SW_AGENT_LOGGING_LEVEL: DEBUG
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: oap:11800
+      SW_AGENT_NAMESPACE: "namespace"
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/127.0.0.1/9090" ]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    command: [ "run", "python3", "flask_consumer.py" ]
+
+  # used by Kafka reporter e2e tests
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    hostname: zookeeper
+    expose:
+      - 2181
+    networks:
+      - e2e
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "nc -nz 127.0.0.1 2181" ]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+
+  broker-a:
+    image: docker.io/bitnami/kafka:3.3
+    hostname: broker-a
+    expose:
+      - 9092
+    networks:
+      - e2e
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=10
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "broker-a:9092" ]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+
+  broker-b:
+    image: docker.io/bitnami/kafka:3.3
+    hostname: broker-b
+    expose:
+      - 9092
+    networks:
+      - e2e
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=24
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "broker-b:9092" ]
+      interval: 5s
+      timeout: 60s
+      retries: 120
 networks:
   e2e:

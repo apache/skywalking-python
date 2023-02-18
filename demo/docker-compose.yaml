@@ -65,7 +65,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     networks:
       - manual
-
+  
   kafka:
     container_name: kafka
     image: confluentinc/cp-kafka
@@ -86,21 +86,21 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - manual
-
-#
-#  kafka-ui:
-#    image: provectuslabs/kafka-ui
-#    container_name: kafka-ui
-#    ports:
-#      - "8088:8080"
-#    restart: always
-#    environment:
-#      - KAFKA_CLUSTERS_0_NAME=local
-#      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-#    depends_on:
-#      - kafka
-#    networks:
-#      - manual
+  
+  
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - "8088:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - manual
 
 networks:
   manual:

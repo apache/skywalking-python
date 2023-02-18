@@ -60,8 +60,8 @@ def install():
             logger.debug('Successfully installed plugin %s', modname)
         except Exception:
             logger.warning(
-                'plugin %s failed to install, please disregard this warning '
-                'if the corresponding package was not used in your project',
+                'Plugin %s failed to install, please ignore this warning '
+                'if the package is not used in your application.',
                 modname
             )
             traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None

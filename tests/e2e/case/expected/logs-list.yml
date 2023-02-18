@@ -21,10 +21,10 @@ logs:
     placeholder: ISHOULDNOTEXIST
   - servicename: e2e-service-provider
     serviceid: {{ b64enc "e2e-service-provider" }}.1
-    serviceinstancename: provider1
-    serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: /artist
-    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
+    serviceinstancename: {{ regexp .serviceinstancename "provider.*" }}
+    serviceinstanceid: {{ regexp .serviceinstanceid "ZTJlLXNlcnZpY2UtcHJvdmlkZXI.*" }}
+    endpointname: /artist-provider
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist-provider" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
@@ -40,10 +40,10 @@ logs:
     {{- end }}
   - servicename: e2e-service-provider
     serviceid: {{ b64enc "e2e-service-provider" }}.1
-    serviceinstancename: provider1
-    serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: /artist
-    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
+    serviceinstancename: {{ regexp .serviceinstancename "provider.*" }}
+    serviceinstanceid: {{ regexp .serviceinstanceid "ZTJlLXNlcnZpY2UtcHJvdmlkZXI.*" }}
+    endpointname: /artist-provider
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist-provider" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
@@ -59,10 +59,10 @@ logs:
     {{- end }}
   - servicename: e2e-service-provider
     serviceid: {{ b64enc "e2e-service-provider" }}.1
-    serviceinstancename: provider1
-    serviceinstanceid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "provider1" }}
-    endpointname: /artist
-    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist" }}
+    serviceinstancename: {{ regexp .serviceinstancename "provider.*" }}
+    serviceinstanceid: {{ regexp .serviceinstanceid "ZTJlLXNlcnZpY2UtcHJvdmlkZXI.*" }}
+    endpointname: /artist-provider
+    endpointid: {{ b64enc "e2e-service-provider" }}.1_{{ b64enc "/artist-provider" }}
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
