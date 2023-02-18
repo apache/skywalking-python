@@ -1,5 +1,7 @@
 ## Change Logs
 
+### 1.1.0
+
 ### 1.0.0
 
 - **Important Note and Breaking Changes:**

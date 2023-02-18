@@ -16,7 +16,7 @@
 
 [tool.poetry]
 name = "apache-skywalking"
-version = "0.8.0"
+version = "1.0.0"
 description = "The Python Agent for Apache SkyWalking, which provides the native tracing/metrics/logging/profiling abilities for Python projects."
 license = "Apache-2.0"
 authors = ["Apache Software Foundation <dev@skywalking.apache.org>"]
@@ -26,7 +26,7 @@ homepage = "https://skywalking.apache.org/"
 repository = "https://github.com/apache/skywalking-python"
 documentation = "https://skywalking.apache.org/docs/skywalking-python/next/readme/"
 keywords = [
-    "skywalking", "tracing", "metrics", "logging",
+    "skywalking", "tracing", "metrics", "logging", "profiling", 
     "observability", "distributed-tracing", "apm",
     "python"
 ]
