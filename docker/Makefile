@@ -33,8 +33,6 @@ py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
 
 PUSH_TARGETS := $(TARGETS:%=push-%)
 
-word-dash = $(word $2,$(subst -, ,$1))
-
 build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
@@ -50,7 +48,7 @@ $(TARGETS):
 
 
 $(PUSH_TARGETS):
-	$(eval version := $(call word-dash,$@,2))
+	$(eval version := $(subst push-,,$@))
 	for p in $(P); do \
 		$(D) push apache/skywalking-python:${AGENT_VERSION}-$$p-${version}; \
 	done
