@@ -18,7 +18,7 @@ D := docker
 
 P := grpc http kafka
 
-TARGETS := py3.7 py3.8 py3.9 py3.10 python3.11 py3.7-slim py3.8-slim py3.9-slim py3.10-slim python3.11-slim
+TARGETS := py3.7 py3.8 py3.9 py3.10 py3.11 py3.7-slim py3.8-slim py3.9-slim py3.10-slim py3.11-slim
 
 py3.7: BASE_PYTHON_IMAGE = python:3.7
 py3.8: BASE_PYTHON_IMAGE = python:3.8
@@ -32,8 +32,6 @@ py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
 py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
 
 PUSH_TARGETS := $(TARGETS:%=push-%)
-
-word-dash = $(word $2,$(subst -, ,$1))
 
 build: $(TARGETS)
 push: $(PUSH_TARGETS)
@@ -50,7 +48,7 @@ $(TARGETS):
 
 
 $(PUSH_TARGETS):
-	$(eval version := $(call word-dash,$@,2))
+	$(eval version := $(subst push-,,$@))
 	for p in $(P); do \
 		$(D) push apache/skywalking-python:${AGENT_VERSION}-$$p-${version}; \
 	done

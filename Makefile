@@ -112,11 +112,11 @@ upload: package
 
 .PHONY: build-image
 build-image:
-	$(MAKE) -C docker build
+	$(MAKE) -C docker build AGENT_VERSION=$(VERSION)
 
 .PHONY: push-image
 push-image:
-	$(MAKE) -C docker push
+	$(MAKE) -C docker push AGENT_VERSION=$(VERSION)
 
 .PHONY: clean
 # FIXME change to python based so we can run on windows
