@@ -87,7 +87,7 @@ def create_entry(comment: str, config_index: int) -> str:
     """
 
     def env_var_name(config_entry):
-        return 'SW_AGENT_' + config_entry.upper()
+        return 'SW_' + config_entry.upper()
 
     configuration = list(OPTIONS.keys())[config_index]
     type_ = OPTIONS[configuration][1]
