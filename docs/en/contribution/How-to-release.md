@@ -10,7 +10,7 @@ This documentation guides the release manager to release the SkyWalking Python i
 
 ## Add your GPG public key to Apache svn
 
-1. Upload your GPG public key to a public GPG site, such as [MIT's site](http://pgp.mit.edu:11371/). 
+1. Upload your GPG public key to a public GPG site, such as [Ubuntu's GPG keyserver](https://keyserver.ubuntu.com/). 
 
 1. Log in [id.apache.org](https://id.apache.org/) and submit your key fingerprint.
 
