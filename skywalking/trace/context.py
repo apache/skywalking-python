@@ -149,7 +149,7 @@ class SpanContext:
 
         parent = self.peek()
         # start profiling if profile_context is set
-        if self.profile_status is None:
+        if config.agent_profile_active and self.profile_status is None:
             self.profile_status = profile.profile_task_execution_service.add_profiling(self,
                                                                                        self.segment.segment_id,
                                                                                        op)
@@ -192,6 +192,8 @@ class SpanContext:
         return span
 
     def profiling_recheck(self, span: Span, op_name: str):
+        if not config.agent_profile_active:
+            return
         # only check first span, e.g, first opname is correct.
         if span.sid != 0:
             return

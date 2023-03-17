@@ -259,8 +259,10 @@ class SkyWalkingAgent(Singleton):
             import grpc.experimental.gevent as grpc_gevent
             grpc_gevent.init_gevent()
 
-        profile.init()
-        meter.init(force=True)  # force re-init after fork()
+        if config.agent_profile_active:
+            profile.init()
+        if config.agent_meter_reporter_active:
+            meter.init(force=True)  # force re-init after fork()
 
         self.__bootstrap()  # calls init_threading
 
