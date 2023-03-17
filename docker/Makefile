@@ -37,8 +37,10 @@ build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
 $(TARGETS):
+docker buildx create --use --driver docker-container --name skywalking_python_main
 	for p in $(P); do \
-		$(D) build $(SW_BUILD_ARGS) \
+		$(D) buildx build $(SW_BUILD_ARGS) \
+				--platform linux/amd64,linux/arm64 \
 				--build-arg BASE_PYTHON_IMAGE=$(BASE_PYTHON_IMAGE) \
 				--build-arg SW_PYTHON_AGENT_PROTOCOL=$$p \
 				--build-arg SW_PYTHON_AGENT_VERSION=${AGENT_VERSION} \
