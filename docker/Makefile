@@ -48,6 +48,10 @@ build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
 $(TARGETS):
+<<<<<<< HEAD
+=======
+	docker buildx create --use --driver docker-container --name skywalking_python_main
+>>>>>>> c650d6d67c5a4d944644a5fc62cdc5ab40928ffd
 	for p in $(P); do \
 		$(D) build $(SW_BUILD_ARGS) \
 				--build-arg BASE_PYTHON_IMAGE=$(BASE_PYTHON_IMAGE) \
