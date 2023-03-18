@@ -37,7 +37,7 @@ build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
 $(TARGETS):
-docker buildx create --use --driver docker-container --name skywalking_python_main
+	docker buildx create --use --driver docker-container --name skywalking_python_main
 	for p in $(P); do \
 		$(D) buildx build $(SW_BUILD_ARGS) \
 				--platform linux/amd64,linux/arm64 \
