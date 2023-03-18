@@ -31,16 +31,25 @@ py3.9-slim: BASE_PYTHON_IMAGE = python:3.9-slim
 py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
 py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
 
+push-py3.7: BASE_PYTHON_IMAGE = python:3.7
+push-py3.8: BASE_PYTHON_IMAGE = python:3.8
+push-py3.9: BASE_PYTHON_IMAGE = python:3.9
+push-py3.10: BASE_PYTHON_IMAGE = python:3.10
+push-py3.11: BASE_PYTHON_IMAGE = python:3.11
+push-py3.7-slim: BASE_PYTHON_IMAGE = python:3.7-slim
+push-py3.8-slim: BASE_PYTHON_IMAGE = python:3.8-slim
+push-py3.9-slim: BASE_PYTHON_IMAGE = python:3.9-slim
+push-py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
+push-py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
+
 PUSH_TARGETS := $(TARGETS:%=push-%)
 
 build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
 $(TARGETS):
-docker buildx create --use --driver docker-container --name skywalking_python_main
 	for p in $(P); do \
-		$(D) buildx build $(SW_BUILD_ARGS) \
-				--platform linux/amd64,linux/arm64 \
+		$(D) build $(SW_BUILD_ARGS) \
 				--build-arg BASE_PYTHON_IMAGE=$(BASE_PYTHON_IMAGE) \
 				--build-arg SW_PYTHON_AGENT_PROTOCOL=$$p \
 				--build-arg SW_PYTHON_AGENT_VERSION=${AGENT_VERSION} \
@@ -51,6 +60,14 @@ docker buildx create --use --driver docker-container --name skywalking_python_ma
 
 $(PUSH_TARGETS):
 	$(eval version := $(subst push-,,$@))
+	docker buildx create --use --driver docker-container --name skywalking_python_main > /dev/null 2>&1 || true
 	for p in $(P); do \
-		$(D) push apache/skywalking-python:${AGENT_VERSION}-$$p-${version}; \
+		$(D) buildx build $(SW_BUILD_ARGS) \
+				--platform linux/amd64,linux/arm64 --push \
+				--build-arg BASE_PYTHON_IMAGE=$(BASE_PYTHON_IMAGE) \
+				--build-arg SW_PYTHON_AGENT_PROTOCOL=$$p \
+				--build-arg SW_PYTHON_AGENT_VERSION=${AGENT_VERSION} \
+				-t apache/skywalking-python:${AGENT_VERSION}-$$p-${version} \
+				. ; \
 	done
+	docker buildx rm skywalking_python_main || true
