@@ -23,29 +23,22 @@ on:
       - main
 
 env:
-  HUB: ghcr.io/apache/skywalking-python
+  HUB: ghcr.io/jiang1997/skywalking-python
 
 jobs:
-  build:
-    if: github.repository == 'apache/skywalking-python'
+  build-docker:
+    if: github.repository == 'jiang1997/skywalking-python'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     timeout-minutes: 30
     env:
-      VERSION: ${{ github.sha }}
+      tag: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-
       - name: Log in to the Container registry
         uses: docker/login-action@v1.10.0
         with:
@@ -54,4 +47,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push docker image
         run: |
-          make push-docker
+          make package || make push-image
