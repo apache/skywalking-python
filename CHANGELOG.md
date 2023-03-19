@@ -2,6 +2,9 @@
 
 ### 1.1.0
 
+- Feature:
+  - Add a new workflow to push docker images for arm64 and amd64
+
 ### 1.0.0
 
 - **Important Note and Breaking Changes:**
