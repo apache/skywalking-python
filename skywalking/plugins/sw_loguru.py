@@ -40,9 +40,7 @@ note = """"""
 
 
 def install():
-    
     if not config.agent_log_reporter_active:
-        # DO NOT even try to monkey-patch if not active, avoid any performance losing.
         return
 
     from loguru import logger
