@@ -111,7 +111,7 @@ upload: package
 	poetry run twine upload dist/*
 
 .PHONY: build-image
-build-image: package
+build-image:
 	$(MAKE) -C docker build AGENT_VERSION=$(VERSION)
 
 .PHONY: push-image

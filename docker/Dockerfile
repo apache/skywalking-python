@@ -16,14 +16,13 @@
 
 ARG BASE_PYTHON_IMAGE
 
-FROM ${BASE_PYTHON_IMAGE}
+FROM ${BASE_PYTHON_IMAGE} as builder
+RUN pip install poetry
+COPY ./ /tmp/
+RUN make -C /tmp/ package
 
-ARG SW_PYTHON_AGENT_PROTOCOL
-ARG SW_PYTHON_AGENT_VERSION
-
-COPY dist/apache_skywalking*.whl /tmp/
-
-RUN pip install --no-cache-dir /tmp/apache_skywalking*.whl
-
+FROM ${BASE_PYTHON_IMAGE} as final
+COPY --from=builder /tmp/dist/apache_skywalking*.whl /tmp/
+RUN pip install /tmp/apache_skywalking*.whl 
 # So that the agent can be auto-started when container is started
 ENTRYPOINT ["sw-python"]
