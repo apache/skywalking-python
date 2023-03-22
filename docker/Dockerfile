@@ -24,5 +24,6 @@ RUN make -C /tmp/ package
 FROM ${BASE_PYTHON_IMAGE} as final
 COPY --from=builder /tmp/dist/apache_skywalking*.whl /tmp/
 RUN pip install /tmp/apache_skywalking*.whl 
+RUN rm /tmp/apache_skywalking*.whl
 # So that the agent can be auto-started when container is started
 ENTRYPOINT ["sw-python"]
