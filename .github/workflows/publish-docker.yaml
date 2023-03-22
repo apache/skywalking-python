@@ -35,8 +35,7 @@ jobs:
       packages: write
     timeout-minutes: 30
     env:
-      tag: ${{ github.sha }}
-      VERSION: 1.0.0
+      VERSION: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v2
         with:
