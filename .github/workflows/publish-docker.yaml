@@ -33,7 +33,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    timeout-minutes: 30
+    timeout-minutes: 120
     env:
       VERSION: ${{ github.sha }}
     steps:
