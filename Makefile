@@ -130,6 +130,6 @@ clean:
 
 .PHONY: release
 release: clean lint license
-	-tar -zcvf skywalking-python-src-$(VERSION).tgz --exclude .venv *
-	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
-	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512
+	tar -zcvf skywalking-python-src-$VERSION.tgz --exclude .venv *
+	gpg --batch --yes --armor --detach-sig skywalking-python-src-$VERSION.tgz
+	shasum -a 512 skywalking-python-src-$VERSION.tgz > skywalking-python-src-$VERSION.tgz.sha512
