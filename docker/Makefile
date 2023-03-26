@@ -78,10 +78,11 @@ $(TARGETS):
 
 $(PUSH_TARGETS):
 	$(eval version := $(subst push-,,$@))
-	docker buildx create --use --driver docker-container --name skywalking_python_main > /dev/null 2>&1 || true;
+	docker buildx create --driver docker-container --name skywalking_python_main_$(version) > /dev/null 2>&1 || true;
 	cd ..; \
 	for p in $(P); do \
 		$(D) buildx build $(SW_BUILD_ARGS) \
+				--builder skywalking_python_main_$(version) \
 				-f docker/Dockerfile \
 				--platform linux/amd64,linux/arm64 --push \
 				--build-arg BASE_PYTHON_IMAGE=$(BASE_PYTHON_IMAGE) \
@@ -91,4 +92,4 @@ $(PUSH_TARGETS):
 				-t $(HUB)/$(PROJECT):${AGENT_VERSION}-$$p-${version} \
 				. ; \
 	done
-	docker buildx rm skywalking_python_main || true;
+	docker buildx rm skywalking_python_main_$(version) || true;
