@@ -15,13 +15,20 @@
 # limitations under the License.
 
 ARG BASE_PYTHON_IMAGE
+ARG BUILDER_PYTHON_IMAGE
+FROM ${BASE_PYTHON_IMAGE} AS base
 
-FROM ${BASE_PYTHON_IMAGE}
+FROM ${BUILDER_PYTHON_IMAGE} AS builder
+RUN pip install --upgrade pip
+RUN pip install poetry
+COPY ./ /tmp/
+RUN make -C /tmp package
+RUN pip wheel psutil -w /tmp/dist/
 
-ARG SW_PYTHON_AGENT_PROTOCOL
-ARG SW_PYTHON_AGENT_VERSION
-
-RUN pip install --no-cache-dir "apache-skywalking[${SW_PYTHON_AGENT_PROTOCOL}]==${SW_PYTHON_AGENT_VERSION}"
-
+FROM base AS final
+COPY --from=builder /tmp/dist/*.whl /tmp/
+RUN pip install --upgrade pip
+RUN pip install /tmp/psutil*.whl /tmp/apache_skywalking*.whl
+RUN rm /tmp/apache_skywalking*.whl /tmp/psutil*.whl
 # So that the agent can be auto-started when container is started
 ENTRYPOINT ["sw-python"]
