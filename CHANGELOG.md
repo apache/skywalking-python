@@ -53,6 +53,7 @@
   - Add namespace suffix to service name (#275)
   - Add periodical instance property report to prevent data loss (#279)
   - Fix sw_logging when `Logger.disabled` is true (#281)
+  - Fix sw8 loss when use aiohttp.(#299,issue#10669)
 
 - Docs:
   - New documentation on how to test locally (#222)
