@@ -55,6 +55,7 @@ def install():
                 headers = kwargs['headers'] = CIMultiDict()
             elif not isinstance(headers, (MultiDictProxy, MultiDict)):
                 headers = CIMultiDict(headers)
+                kwargs['headers'] = headers
 
             for item in carrier:
                 headers.add(item.key, item.val)
