@@ -51,8 +51,10 @@ def report_with_backoff(reporter_name, init_wait):
             wait = base = init_wait
             while not self._finished.is_set():
                 try:
-                    func(self, *args, **kwargs)
-                    wait = base  # reset to base wait time on success
+                    flag = func(self, *args, **kwargs)
+                    # for segment/log reporter, if the queue not empty(return True), we should keep reporter working
+                    # for other cases(return false or None), reset to base wait time on success
+                    wait = 0 if flag else base 
                 except Exception:  # noqa
                     wait = min(60, wait * 2 or 1)  # double wait time with each consecutive error up to a maximum
                     logger.exception(f'Exception in {reporter_name} service in pid {os.getpid()}, '
@@ -307,15 +309,24 @@ class SkyWalkingAgent(Singleton):
     def __heartbeat(self) -> None:
         self.__protocol.heartbeat()
 
-    @report_with_backoff(reporter_name='segment', init_wait=0)
-    def __report_segment(self) -> None:
-        if not self.__segment_queue.empty():
-            self.__protocol.report_segment(self.__segment_queue)
+    # segment/log init_wait is set to 0.02 to prevent threads from hogging the cpu too much
+    # The value of 0.02(20 ms) is set to be consistent with the queue delay of the Java agent
 
-    @report_with_backoff(reporter_name='log', init_wait=0)
-    def __report_log(self) -> None:
-        if not self.__log_queue.empty():
+    @report_with_backoff(reporter_name='segment', init_wait=0.02)
+    def __report_segment(self) -> bool:
+        '''Returns True if the queue is not empty'''
+        queue_not_empty_flag = not self.__segment_queue.empty()
+        if queue_not_empty_flag:
+            self.__protocol.report_segment(self.__segment_queue)
+        return queue_not_empty_flag
+
+    @report_with_backoff(reporter_name='log', init_wait=0.02)
+    def __report_log(self) -> bool:
+        '''Returns True if the queue is not empty'''
+        queue_not_empty_flag = not self.__log_queue.empty()
+        if queue_not_empty_flag:
             self.__protocol.report_log(self.__log_queue)
+        return queue_not_empty_flag
 
     @report_with_backoff(reporter_name='meter', init_wait=config.agent_meter_reporter_period)
     def __report_meter(self) -> None:
