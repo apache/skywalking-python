@@ -314,7 +314,7 @@ class SkyWalkingAgent(Singleton):
 
     @report_with_backoff(reporter_name='segment', init_wait=0.02)
     def __report_segment(self) -> bool:
-        '''Returns True if the queue is not empty'''
+        """Returns True if the queue is not empty"""
         queue_not_empty_flag = not self.__segment_queue.empty()
         if queue_not_empty_flag:
             self.__protocol.report_segment(self.__segment_queue)
@@ -322,7 +322,7 @@ class SkyWalkingAgent(Singleton):
 
     @report_with_backoff(reporter_name='log', init_wait=0.02)
     def __report_log(self) -> bool:
-        '''Returns True if the queue is not empty'''
+        """Returns True if the queue is not empty"""
         queue_not_empty_flag = not self.__log_queue.empty()
         if queue_not_empty_flag:
             self.__protocol.report_log(self.__log_queue)
