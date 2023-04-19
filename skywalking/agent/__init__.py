@@ -54,7 +54,7 @@ def report_with_backoff(reporter_name, init_wait):
                     flag = func(self, *args, **kwargs)
                     # for segment/log reporter, if the queue not empty(return True), we should keep reporter working
                     # for other cases(return false or None), reset to base wait time on success
-                    wait = 0 if flag else base 
+                    wait = 0 if flag else base
                 except Exception:  # noqa
                     wait = min(60, wait * 2 or 1)  # double wait time with each consecutive error up to a maximum
                     logger.exception(f'Exception in {reporter_name} service in pid {os.getpid()}, '
