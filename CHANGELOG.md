@@ -7,6 +7,7 @@
 
 - Fixes:
   - Fix sw8 loss when use aiohttp.(#299,issue#10669)
+  - Fix the bug with high cpu usage.(#300,issue#10672)
 
 ### 1.0.0
 
