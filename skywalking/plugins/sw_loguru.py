@@ -16,11 +16,7 @@
 #
 
 import logging
-import sys
 import traceback
-from multiprocessing import current_process
-from os.path import basename, splitext
-from threading import current_thread
 
 from skywalking import config
 from skywalking.agent import agent
@@ -40,127 +36,20 @@ note = """"""
 
 
 def install():
-    from loguru import logger
-    from loguru._recattrs import RecordException, RecordFile, RecordLevel, RecordProcess, RecordThread
-    from loguru._datetime import aware_now
-    from loguru._get_frame import get_frame
-    from loguru._logger import start_time, context as logger_context, Logger
-    from types import MethodType
+    if not config.agent_log_reporter_active:
+        return
 
-    _log = logger._log
+    from loguru import logger
+
     log_reporter_level = logging.getLevelName(config.agent_log_reporter_level)  # type: int
 
-    def gen_record(self, level_id, static_level_no, from_decorator, options, message, args, kwargs):
-        """ Generate log record as loguru.logger._log """
-        core = self._core
+    def _sw_sink(message):
+        record = message.record
 
-        if not core.handlers:
-            return
-
-        (exception, depth, record, lazy, colors, raw, capture, patcher, extra) = options
-
-        frame = get_frame(depth + 2)
-
-        try:
-            name = frame.f_globals['__name__']
-        except KeyError:
-            name = None
-
-        try:
-            if not core.enabled[name]:
-                return
-        except KeyError:
-            enabled = core.enabled
-            if name is None:
-                status = core.activation_none
-                enabled[name] = status
-                if not status:
-                    return
-            else:
-                dotted_name = name + '.'
-                for dotted_module_name, status in core.activation_list:
-                    if dotted_name[: len(dotted_module_name)] == dotted_module_name:
-                        if status:
-                            break
-                        enabled[name] = False
-                        return
-                enabled[name] = True
-
-        current_datetime = aware_now()
-
-        if level_id is None:
-            level_icon = ' '
-            level_no = static_level_no
-            level_name = f'Level {level_no}'  # not really level name, just as loguru
-        else:
-            level_name, level_no, _, level_icon = core.levels[level_id]
-
-        if level_no < core.min_level:
-            return
-
-        code = frame.f_code
-        file_path = code.co_filename
-        file_name = basename(file_path)
-        thread = current_thread()
-        process = current_process()
-        elapsed = current_datetime - start_time
-
-        if exception:
-            if isinstance(exception, BaseException):
-                type_, value, traceback = (type(exception), exception, exception.__traceback__)
-            elif isinstance(exception, tuple):
-                type_, value, traceback = exception
-            else:
-                type_, value, traceback = sys.exc_info()
-            exception = RecordException(type_, value, traceback)
-        else:
-            exception = None
-
-        log_record = {
-            'elapsed': elapsed,
-            'exception': exception,
-            'extra': {**core.extra, **logger_context.get(), **extra},
-            'file': RecordFile(file_name, file_path),
-            'function': code.co_name,
-            'level': RecordLevel(level_name, level_no, level_icon),
-            'line': frame.f_lineno,
-            'message': str(message),
-            'module': splitext(file_name)[0],
-            'name': name,
-            'process': RecordProcess(process.ident, process.name),
-            'thread': RecordThread(thread.ident, thread.name),
-            'time': current_datetime,
-        }
-
-        if capture and kwargs:
-            log_record['extra'].update(kwargs)
-
-        if record:
-            kwargs.update(record=log_record)
-
-        if args or kwargs:
-            log_record['message'] = message.format(*args, **kwargs)
-
-        if core.patcher:
-            core.patcher(log_record)
-
-        if patcher:
-            patcher(log_record)
-
-        return log_record
-
-    def _sw_log(self, level_id, static_level_no, from_decorator, options, message, args, kwargs):
-        _log(level_id, static_level_no, from_decorator, options, message, args, kwargs)
-        record = gen_record(self, level_id, static_level_no, from_decorator, options, message, args, kwargs)
         if record is None:
             return
 
-        core = self._core
-
         if record['level'].no < log_reporter_level:
-            return
-
-        if not config.agent_log_reporter_ignore_filter and record['level'].no < core.min_level:  # ignore filtered logs
             return
 
         # loguru has only one logger. Use tags referring Python-Agent doc
@@ -221,8 +110,5 @@ def install():
 
         agent.archive_log(log_data)
 
-    # Bind _sw_log function to default logger instance.
-    bound_sw_log = MethodType(_sw_log, logger)
-    logger._log = bound_sw_log
-    # Bind _sw_log function to Logger class for new instance.
-    Logger._log = _sw_log
+    # Make sure any logged message by loguru is also sent to skywalking OAP
+    logger.add(_sw_sink)
