@@ -29,7 +29,7 @@ from skywalking.utils.filter import sw_filter
 link_vector = ['https://pypi.org/project/loguru/']
 support_matrix = {
     'loguru': {
-        '>=3.7': ['0.6.*', '0.7.*']
+        '>=3.7': ['0.6.0', '0.7.0']
     }
 }
 note = """"""

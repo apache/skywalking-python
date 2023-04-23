@@ -31,7 +31,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [werkzeug](https://werkzeug.palletsprojects.com/) | Python >=3.7 - ['1.0.1', '2.0'];  | `sw_http_server` |
 | [httpx](https://www.python-httpx.org/) | Python >=3.7 - ['0.23.*', '0.22.*'];  | `sw_httpx` |
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.7 - ['2.0'];  | `sw_kafka` |
-| [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0'];  | `sw_loguru` |
+| [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0', '0.7.0'];  | `sw_loguru` |
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.11 - ['3.1.*']; Python >=3.7 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
