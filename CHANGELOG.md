@@ -6,7 +6,7 @@
   - Add a new workflow to push docker images for arm64 and amd64
 
 - Plugins:
-  - Optimize loguru reporter plugin.
+  - Optimize loguru reporter plugin.(#302)
 
 - Fixes:
   - Fix sw8 loss when use aiohttp.(#299,issue#10669)
