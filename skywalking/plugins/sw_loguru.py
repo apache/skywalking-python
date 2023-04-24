@@ -91,7 +91,7 @@ def install():
             body=LogDataBody(
                 type='text',
                 text=TextLog(
-                    text=sw_filter(message)
+                    text=sw_filter(record['message'])
                 )
             ),
             tags=tags,
