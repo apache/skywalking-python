@@ -17,11 +17,6 @@
 
 
 services:
-  zookeeper:
-    extends:
-      file: ../../../base/docker-compose.base.yml
-      service: zookeeper
-
   broker-a:
     extends:
       file: ../../../base/docker-compose.base.yml
