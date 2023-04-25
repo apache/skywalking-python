@@ -118,33 +118,19 @@ services:
       retries: 120
     command: [ "run", "python3", "flask_consumer.py" ]
 
-  # used by Kafka reporter e2e tests
-  zookeeper:
-    image: docker.io/bitnami/zookeeper:3.8
-    hostname: zookeeper
-    expose:
-      - 2181
-    networks:
-      - e2e
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    healthcheck:
-      test: [ "CMD", "sh", "-c", "nc -nz 127.0.0.1 2181" ]
-      interval: 5s
-      timeout: 60s
-      retries: 120
-
   broker-a:
-    image: docker.io/bitnami/kafka:3.3
+    image: docker.io/bitnami/kafka:3.4
     hostname: broker-a
     expose:
       - 9092
     networks:
       - e2e
     environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_BROKER_ID=10
+      - BITNAMI_DEBUG=yes
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@broker-a:9093,1@broker-b:9093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
     healthcheck:
       test: [ "CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "broker-a:9092" ]
       interval: 5s
@@ -152,16 +138,18 @@ services:
       retries: 120
 
   broker-b:
-    image: docker.io/bitnami/kafka:3.3
+    image: docker.io/bitnami/kafka:3.4
     hostname: broker-b
     expose:
       - 9092
     networks:
       - e2e
     environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_BROKER_ID=24
+      - BITNAMI_DEBUG=yes
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@broker-a:9093,1@broker-b:9093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
     healthcheck:
       test: [ "CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "broker-b:9092" ]
       interval: 5s
