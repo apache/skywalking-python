@@ -5,6 +5,9 @@
 - Feature:
   - Add a new workflow to push docker images for arm64 and amd64 (#297)
 
+- Plugins:
+  - Optimize loguru reporter plugin.(#302)
+
 - Fixes:
   - Fix sw8 loss when use aiohttp (#299, issue#10669)
   - **Critical**: Fix a bug that leads to high cpu usage (#300, issue#10672)
