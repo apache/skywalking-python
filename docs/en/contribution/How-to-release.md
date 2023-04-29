@@ -31,16 +31,22 @@ make clean && make release
 ```bash
 svn co https://dist.apache.org/repos/dist/dev/skywalking/python release/skywalking/python
 mkdir -p release/skywalking/python/"$VERSION"
-cp skywalking-python/skywalking*.tgz release/skywalking/python/"$VERSION"
-cp skywalking-python/skywalking*.tgz.asc release/skywalking/python/"$VERSION"
-cp skywalking-python/skywalking-python*.tgz.sha512 release/skywalking/python/"$VERSION"
+cp skywalking*.tgz release/skywalking/python/"$VERSION"
+cp skywalking*.tgz.asc release/skywalking/python/"$VERSION"
+cp skywalking-python*.tgz.sha512 release/skywalking/python/"$VERSION"
 
 cd release/skywalking && svn add python/$VERSION && svn commit python -m "Draft Apache SkyWalking-Python release $VERSION"
 ```
 
 ## Make the internal announcement
 
-Send an announcement email to dev@ mailing list, **please check all links before sending the email**, the same below.
+First, generate a sha512sum for the source code package generated in last step:
+
+```bash
+sha512sum release/skywalking/python/"$VERSION"/skywalking-python-src-"$VERSION".tgz
+``` 
+
+Send an announcement email to dev@ mailing list, **please check all links before sending the email**, the same as below.
 
 ```text
 Subject: [ANNOUNCEMENT] Apache SkyWalking Python $VERSION test build available
@@ -183,11 +189,27 @@ Vote result should follow these:
     svn mv https://dist.apache.org/repos/dist/dev/skywalking/python/"$VERSION" https://dist.apache.org/repos/dist/release/skywalking/python/"$VERSION"
     ```
     
-1. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/132), update news and links on the website. There are several files need to modify.
+2. Refer to the previous [PR](https://github.com/apache/skywalking-website/pull/571), update news and links on the website. There are several files need to modify.
 
-1. Update [Github release page](https://github.com/apache/skywalking-python/releases), follow the previous convention.
 
-1. Send ANNOUNCE email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. 
+### Publish PyPI package
+
+After the official ASF release, we publish the packaged wheel to the PyPI index.
+
+1. Make sure the final upload is correct by using the test PyPI index `make upload-test`.
+2. Upload the final artifacts by running `make upload`.
+
+### Publish Docker images
+
+After the release of PyPI packages, we build Docker images based on the wheels.
+
+**Important** We announce the new release by drafting one on [Github release page](https://github.com/apache/skywalking-python/releases), following the previous convention.
+
+An automation via GitHub Actions will automatically trigger upon the mentioned release event to build and upload Docker images to DockerHub.
+
+See [How-to-release-docker](./How-to-release-docker.md) for a detailed description of manual release.
+
+4. Send ANNOUNCEMENT email to `dev@skywalking.apache.org` and `announce@apache.org`, the sender should use his/her Apache email account. 
 
     ```
     Subject: [ANNOUNCEMENT] Apache SkyWalking Python $VERSION Released
