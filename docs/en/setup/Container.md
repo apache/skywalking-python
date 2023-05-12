@@ -8,9 +8,9 @@ Python 3.7 - 3.11.
 
 ## How to use this image
 
-The images are hosted at [Docker Hub](https://hub.docker.com/r/apache/skywalking-python) and available from the `skywalking.docker.scarf.sh` endpoint.
+The images are hosted at [Docker Hub](https://hub.docker.com/r/apache/skywalking-python).
 
-`skywalking.docker.scarf.sh/apache/skywalking-python`
+The images come with protocol variants(gRPC, Kafka, HTTP) and base Python variants(Full, Slim).
 
 ### Build your Python application image on top of this image
 
@@ -18,7 +18,7 @@ Start by pulling the `skywalking-python` image as the base of your application i
 Refer to [Docker Hub](https://hub.docker.com/r/apache/skywalking-python) for the list of tags available.
 
 ```dockerfile
-FROM apache/skywalking-python:0.7.0-grpc-py3.9
+FROM apache/skywalking-python:1.1.0-grpc-py3.10
 
 # ... build your Python application
 ```
