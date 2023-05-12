@@ -201,7 +201,7 @@ After the official ASF release, we publish the packaged wheel to the PyPI index.
 
 ### Publish Docker images
 
-After the release of PyPI packages, we build Docker images based on the wheels.
+After the release on GitHub, a GitHub Action will be triggered to build Docker images based on the latest code.
 
 **Important** We announce the new release by drafting one on [Github release page](https://github.com/apache/skywalking-python/releases), following the previous convention.
 
