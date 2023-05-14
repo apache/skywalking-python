@@ -101,6 +101,10 @@ agent_experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SU
 # DANGEROUS - This option controls the interval of each bulk report from telemetry data queues
 # Do not modify unless you have evaluated its impact given your service load.
 agent_queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
+# Replace the threads to asyncio coroutines in network IO task with the OAP
+# This option is experimental and may not work as expected.
+# Profile data is temporarily unavailable to sent to the OAP if this option is enabled.
+agent_asyncio_enhancement: bool = os.getenv('SW_AGENT_ASYNCIO_ENHANCEMENT', '').lower() == 'true'
 
 # BEGIN: SW_PYTHON Auto Instrumentation CLI
 # Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in
@@ -238,7 +242,18 @@ def finalize_feature() -> None:
     """
     Examine reporter configuration and warn users about the incompatibility of protocol vs features
     """
-    global agent_profile_active, agent_meter_reporter_active
+    global agent_profile_active, agent_meter_reporter_active, agent_protocol
+
+    if agent_asyncio_enhancement:
+        if agent_protocol != 'grpc':
+            agent_protocol = 'grpc'
+            warnings.warn('Asyncio enhancement temporarily only works with gRPC protocol, please use gRPC protocol if you would \
+                          like to use this feature.')
+
+        if agent_profile_active:
+            agent_profile_active = False
+            warnings.warn('Asyncio enhancement temporarily does not work with profiler, please disable profiler if you would \
+                          like to use this feature.')
 
     if agent_protocol == 'http' and (agent_profile_active or agent_meter_reporter_active):
         agent_profile_active = False
