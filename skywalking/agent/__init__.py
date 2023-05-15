@@ -25,6 +25,7 @@ from threading import Thread, Event
 from typing import TYPE_CHECKING, Optional
 
 from uvloop import install as install_uvloop
+
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking import meter
@@ -41,6 +42,7 @@ from skywalking.utils.singleton import Singleton
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
+install_uvloop()
 
 def report_with_backoff(reporter_name, init_wait):
     """
@@ -420,7 +422,6 @@ class SkyWalkingAgentAsync(Singleton):
         self.started_pid = None
         self.__protocol: Optional[ProtocolAsync] = None
         self._finished: Optional[asyncio.Event] = None
-        install_uvloop()
 
     def __bootstrap(self):
         if config.agent_protocol == 'grpc':
@@ -438,15 +439,15 @@ class SkyWalkingAgentAsync(Singleton):
         self.__snapshot_queue: Optional[asyncio.Queue] = None
 
         self.event_loop_thread: Optional[Thread] = None
-        # According to https://github.com/python/cpython/issues/91887 
-        # creat_task() only keeps a weak reference to the asyncio.Task,
-        # To avoid the task being garbage collected, we need to keep a strong reference to it.
-        # Such as store it in a set.
-        self.tasks_ref_set: set[asyncio.Task] = set()
+        # # According to https://github.com/python/cpython/issues/91887 
+        # # creat_task() only keeps a weak reference to the asyncio.Task,
+        # # To avoid the task being garbage collected, we need to keep a strong reference to it.
+        # # Such as store it in a set.
+        # self.tasks_ref_set: set[asyncio.Task] = set()
         self.loop = asyncio.get_event_loop()
         self._finished = asyncio.Event()
 
-        # Start reporter's asyncio tasks and register queues
+        # Start reporter's asyncio coroutines and register queues
         self.__init_coroutine()
 
     def __init_coroutine(self) -> None:
@@ -494,7 +495,7 @@ class SkyWalkingAgentAsync(Singleton):
             ...
 
     def __start_event_loop(self, loop: asyncio.AbstractEventLoop) -> None:
-        # do not use asyncio.run() here, because we want loop to be used in other places
+        # do not use asyncio.run() here, because we may want loop to be used in other places
         # such as run_coroutine_threadsafe()
         asyncio.set_event_loop(loop)
         # run all coroutines
@@ -636,33 +637,40 @@ class SkyWalkingAgentAsync(Singleton):
 
     def archive_segment(self, segment: 'Segment'):
         try:
-            asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
+            self.__segment_queue.put_nowait(segment)
+            # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
         except asyncio.QueueFull:
             logger.warning('the queue is full, the segment will be abandoned')
 
     def archive_log(self, log_data: 'LogData'):
         try:
-            asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
+            self.__log_queue.put_nowait(log_data)
+            # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
         except asyncio.QueueFull:
             logger.warning('the queue is full, the log will be abandoned')
 
     def archive_meter(self, meter_data: 'MeterData'):
         try:
-            asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
+            self.__meter_queue.put_nowait(meter_data)
+            # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
         except asyncio.QueueFull:
             logger.warning('the queue is full, the meter will be abandoned')
 
     def add_profiling_snapshot_async(self, snapshot: TracingThreadSnapshot):
-        try:
-            asyncio.run_coroutine_threadsafe(self.__snapshot_queue.put(snapshot), self.loop)
-        except asyncio.QueueFull:
-            logger.warning('the snapshot queue is full, the snapshot will be abandoned')
+        # TODO: support profile
+        ...
+        # try:
+        #     self.__snapshot_queue.put_nowait(snapshot)
+        # except asyncio.QueueFull:
+        #     logger.warning('the snapshot queue is full, the snapshot will be abandoned')
 
     def notify_profile_finish_async(self, task: ProfileTask):
-        try:
-            asyncio.run_coroutine_threadsafe(self.__protocol.notify_profile_task_finish(task), self.loop)
-        except Exception as e:
-            logger.error(f'notify profile task finish to backend fail. {e}')
+        # TODO: support profile
+        ...
+        # try:
+        #     asyncio.run_coroutine_threadsafe(self.__protocol.notify_profile_task_finish(task), self.loop)
+        # except Exception as e:
+        #     logger.error(f'notify profile task finish to backend fail. {e}')
 
 # Export for user (backwards compatibility)
 # so users still use `from skywalking import agent`
