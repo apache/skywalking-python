@@ -58,6 +58,8 @@ class MeterService(Thread):
 class MeterServiceAsync():
     def __init__(self):
         self.meter_map = {}
+        # strong reference to asyncio.Task to prevent garbage collection
+        self.strong_ref_set = set()
 
     def register(self, meter: BaseMeter):
         self.meter_map[meter.get_id().get_name()] = meter

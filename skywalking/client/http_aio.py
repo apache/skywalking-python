@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 import json
-import httpx
+
+from asyncio import Event
+
+# import httpx
+import aiohttp
 from google.protobuf import json_format
 
 from skywalking import config
@@ -30,14 +34,17 @@ class HttpServiceManagementClientAsync(ServiceManagementClientAsync):
         proto = 'https://' if config.agent_force_tls else 'http://'
         self.url_instance_props = f"{proto}{config.agent_collector_backend_services.rstrip('/')}/v3/management/reportProperties"
         self.url_heart_beat = f"{proto}{config.agent_collector_backend_services.rstrip('/')}/v3/management/keepAlive"
-        self.client = httpx.AsyncClient()
+        # self.client = httpx.AsyncClient()
+        self.client = aiohttp.ClientSession()
 
     async def send_instance_props(self):
-        res = await self.client.post(self.url_instance_props, json={
-            'service': config.agent_name,
-            'serviceInstance': config.agent_instance_name,
-            'properties': self.instance_properties,
-        })
+
+        async with self.client as client:
+            res = await client.post(self.url_instance_props, json={
+                'service': config.agent_name,
+                'serviceInstance': config.agent_instance_name,
+                'properties': self.instance_properties,
+            })
         if logger_debug_enabled:
             logger.debug('heartbeat response: %s', res)
 
@@ -50,10 +57,11 @@ class HttpServiceManagementClientAsync(ServiceManagementClientAsync):
                 config.agent_name,
                 config.agent_instance_name,
             )
-        res = await self.client.post(self.url_heart_beat, json={
-            'service': config.agent_name,
-            'serviceInstance': config.agent_instance_name,
-        })
+        async with self.client as client:
+            res = await client.post(self.url_heart_beat, json={
+                'service': config.agent_name,
+                'serviceInstance': config.agent_instance_name,
+            })
         if logger_debug_enabled:
             logger.debug('heartbeat response: %s', res)
 
@@ -62,11 +70,13 @@ class HttpTraceSegmentReportServiceAsync(TraceSegmentReportServiceAsync):
     def __init__(self):
         proto = 'https://' if config.agent_force_tls else 'http://'
         self.url_report = f"{proto}{config.agent_collector_backend_services.rstrip('/')}/v3/segment"
-        self.client = httpx.AsyncClient()
+        # self.client = httpx.AsyncClient()
+        self.client = aiohttp.ClientSession()
 
     async def report(self, generator):
         async for segment in generator:
-            res = await self.client.post(self.url_report, json={
+            async with self.client as client:
+                res = await client.post(self.url_report, json={
                 'traceId': str(segment.related_traces[0]),
                 'traceSegmentId': str(segment.segment_id),
                 'service': config.agent_name,
@@ -113,11 +123,13 @@ class HttpLogDataReportServiceAsync(LogDataReportServiceAsync):
     def __init__(self):
         proto = 'https://' if config.agent_force_tls else 'http://'
         self.url_report = f"{proto}{config.agent_collector_backend_services.rstrip('/')}/v3/logs"
-        self.client = httpx.AsyncClient()
+        # self.client = httpx.AsyncClient()
+        self.client = aiohttp.ClientSession()
 
     async def report(self, generator):
         log_batch = [json.loads(json_format.MessageToJson(log_data)) async for log_data in generator]
         if log_batch:  # prevent empty batches
-            res = await self.client.post(self.url_report, json=log_batch)
+            async with self.client as client:
+                res = await client.post(self.url_report, json=log_batch)
             if logger_debug_enabled:
                 logger.debug('report batch log response: %s', res)

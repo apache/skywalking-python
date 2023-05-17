@@ -78,6 +78,7 @@ kafka-python = { version = "*", optional = true }
 janus = "^1.0.0"
 uvloop = "^0.17.0"
 aiokafka = "^0.8.0"
+yappi = "^1.4.0"
 
 [tool.poetry.extras]
 all=[

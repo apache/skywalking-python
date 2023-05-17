@@ -24,6 +24,7 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING, Optional
 
+import yappi
 from uvloop import install as install_uvloop
 
 from skywalking import config, plugins
@@ -452,7 +453,7 @@ class SkyWalkingAgentAsync(Singleton):
 
     def __init_coroutine(self) -> None:
         """
-        This method initializes all the queues and asyncio tasks for the agent and reporters.
+        This method initializes all asyncio coroutines for the agent and reporters.
 
         Heartbeat task is started by default.
         Segment reporter task and segment queue is created by default.
@@ -464,12 +465,10 @@ class SkyWalkingAgentAsync(Singleton):
         __heartbeat_coroutine = self.__heartbeat()
         self.background_coroutines.add(__heartbeat_coroutine)
 
-        # self.__segment_queue = asyncio.Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
         __segment_report_coroutine = self.__report_segment()
         self.background_coroutines.add(__segment_report_coroutine)
 
         if config.agent_meter_reporter_active:
-            # self.__meter_queue = asyncio.Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
             __meter_report_coroutine = self.__report_meter()
             self.background_coroutines.add(__meter_report_coroutine)
 
@@ -486,7 +485,6 @@ class SkyWalkingAgentAsync(Singleton):
                 ThreadDataSource().register()
 
         if config.agent_log_reporter_active:
-            # self.__log_queue = asyncio.Queue(maxsize=config.agent_log_reporter_max_buffer_size)
             __log_report_coroutine = self.__report_log()
             self.background_coroutines.add(__log_report_coroutine)
 
@@ -510,25 +508,25 @@ class SkyWalkingAgentAsync(Singleton):
         # self.__meter_init = asyncio.Event()
         self._finished = asyncio.Event()
 
+        # Install log reporter core
+        # TODO - Add support for printing traceID/ context in logs
+        if config.agent_log_reporter_active:
+            from skywalking import log
+            log.install()
+        if config.agent_profile_active:
+            # TODO: support profile
+            ...
+            # profile.init()
+        if config.agent_meter_reporter_active:
+            # meter.init(force=True)
+            await meter.init_async()
+
         self.__bootstrap()  # gather all coroutines
 
         logger.debug('All background coroutines started')
         await asyncio.gather(*self.background_coroutines)
 
     def __start_event_loop(self) -> None:
-        # # do not use asyncio.run() here, because we may want loop to be used in other places
-        # # such as run_coroutine_threadsafe()
-        # asyncio.set_event_loop(loop)
-        # # run all coroutines
-        # try:
-        #     loop.run_until_complete(asyncio.wait(self.background_coroutines))
-        # except asyncio.CancelledError:
-        #     # this is for handling KeyboardInterrupt(Ctrl + C)
-        #     # for better solution, use Python 3.11+
-        #     logger.info('Force the cancellation of event_loop tasks')
-        # finally:
-        #     loop.close()
-                # run all coroutines
         try:
             asyncio.run(self.__start_event_loop_async())
         except asyncio.CancelledError:
@@ -556,13 +554,9 @@ class SkyWalkingAgentAsync(Singleton):
             self.__started = True
             logger.info(f'SkyWalking async agent instance {config.agent_instance_name} starting in pid-{os.getpid()}.')
 
-            # Install log reporter core
-            # TODO - Add support for printing traceID/ context in logs
-            if config.agent_log_reporter_active:
-                from skywalking import log
-                log.install()
             # Here we install all other lib plugins on first time start (parent process)
             plugins.install()
+
         elif self.__started and os.getpid() == self.started_pid:
             # if already started, and this is the same process, raise an error
             raise RuntimeError('SkyWalking Python agent has already been started in this process, '
@@ -570,15 +564,10 @@ class SkyWalkingAgentAsync(Singleton):
                                'If you already use sw-python CLI, you should remove the manual start(), vice versa.')
 
         self.started_pid = os.getpid()
-
-        if config.agent_profile_active:
-            # TODO: support profile
-            ...
-            # profile.init()
-        if config.agent_meter_reporter_active:
-            meter.init(force=True)
-
         atexit.register(self.__fini)
+
+        yappi.set_clock_type("cpu") # Use set_clock_type("wall") for wall time
+        yappi.start()
 
         # can use asyncio.to_thread() in Python 3.9+
         self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, daemon=True)
@@ -610,6 +599,16 @@ class SkyWalkingAgentAsync(Singleton):
             task.cancel()
 
     def __fini(self):
+        yappi.stop()
+        
+        yappi.get_func_stats().sort('tsub').print_all(out=open("/home/lgh/logs/sw_asyncio/yappi_func_stats.out", "w"), columns={
+            0: ("name", 100),
+            1: ("ncall", 5),
+            2: ("tsub", 8),
+            3: ("ttot", 8),
+            4: ("tavg", 8)
+        })
+        yappi.get_thread_stats().print_all(out=open("/home/lgh/logs/sw_asyncio/yappi_thread_stats.out", "w"))
         asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
         if not self.loop.is_closed():
             self.loop.close()
@@ -666,26 +665,29 @@ class SkyWalkingAgentAsync(Singleton):
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
-        # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
-        try:
-            self.__segment_queue.put_nowait(segment)
-            self.loop
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the segment will be abandoned')
+        asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
+        # try:
+        #     self.__segment_queue.put_nowait(segment)
+        #     self.loop
+        # except asyncio.QueueFull:
+        #     logger.warning('the queue is full, the segment will be abandoned')
 
     def archive_log(self, log_data: 'LogData'):
-        # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
-        try:
-            self.__log_queue.put_nowait(log_data)
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the log will be abandoned')
+        asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
+        # try:
+        #     self.__log_queue.put_nowait(log_data)
+        # except asyncio.QueueFull:
+        #     logger.warning('the queue is full, the log will be abandoned')
 
     def archive_meter(self, meter_data: 'MeterData'):
-        # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
-        try:
-            self.__meter_queue.put_nowait(meter_data)
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the meter will be abandoned')
+        asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
+        # try:
+        #     self.__meter_queue.put_nowait(meter_data)
+        # except asyncio.QueueFull:
+        #     logger.warning('the queue is full, the meter will be abandoned')
+
+    async def archive_meter_async(self, meter_data: 'MeterData'):
+        await self.__meter_queue.put(meter_data)
 
     def add_profiling_snapshot_async(self, snapshot: TracingThreadSnapshot):
         # TODO: support profile
