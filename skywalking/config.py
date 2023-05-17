@@ -244,16 +244,10 @@ def finalize_feature() -> None:
     """
     global agent_profile_active, agent_meter_reporter_active, agent_protocol
 
-    if agent_asyncio_enhancement:
-        if agent_protocol != 'grpc':
-            agent_protocol = 'grpc'
-            warnings.warn('Asyncio enhancement temporarily only works with gRPC protocol, please use gRPC protocol if you would \
-                          like to use this feature.')
-
-        if agent_profile_active:
-            agent_profile_active = False
-            warnings.warn('Asyncio enhancement temporarily does not work with profiler, please disable profiler if you would \
-                          like to use this feature.')
+    if agent_asyncio_enhancement and agent_profile_active:
+        agent_profile_active = False
+        warnings.warn('Asyncio enhancement temporarily does not work with profiler, \
+                    please disable profiler if you would like to use this feature.')
 
     if agent_protocol == 'http' and (agent_profile_active or agent_meter_reporter_active):
         agent_profile_active = False

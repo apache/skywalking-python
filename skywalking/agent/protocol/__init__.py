@@ -55,19 +55,19 @@ class ProtocolAsync(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    async def report_segment(self, queue: QueueAsync, block: bool = True):
+    async def report_segment(self, queue: QueueAsync):
         raise NotImplementedError()
 
     @abstractmethod
-    async def report_log(self, queue: QueueAsync, block: bool = True):
+    async def report_log(self, queue: QueueAsync):
         raise NotImplementedError()
 
     @abstractmethod
-    async def report_meter(self, queue: QueueAsync, block: bool = True):
+    async def report_meter(self, queue: QueueAsync):
         raise NotImplementedError()
 
     @abstractmethod
-    async def report_snapshot(self, queue: QueueAsync, block: bool = True):
+    async def report_snapshot(self, queue: QueueAsync):
         raise NotImplementedError()
 
     @abstractmethod

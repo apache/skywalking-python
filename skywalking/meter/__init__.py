@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+from asyncio import Event
+
 _meter_service = None
 
 
@@ -31,3 +33,12 @@ def init(force: bool = False):
 
     _meter_service = MeterService()
     _meter_service.start()
+
+async def init_async(async_event: Event):
+    from skywalking.meter.meter_service import MeterServiceAsync
+
+    global _meter_service
+
+    _meter_service = MeterServiceAsync()
+    async_event.set()
+    await _meter_service.start()

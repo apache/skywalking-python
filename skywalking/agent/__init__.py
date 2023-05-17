@@ -422,16 +422,6 @@ class SkyWalkingAgentAsync(Singleton):
         self.started_pid = None
         self.__protocol: Optional[ProtocolAsync] = None
         self._finished: Optional[asyncio.Event] = None
-
-    def __bootstrap(self):
-        if config.agent_protocol == 'grpc':
-            from skywalking.agent.protocol.grpc_aio import GrpcProtocolAsync
-            self.__protocol = GrpcProtocolAsync()
-        else:
-            # TODO: support other protocols
-            raise ValueError(f'Unsupported protocol {config.agent_protocol}')
-        logger.info(f'You are using {config.agent_protocol} protocol to communicate with OAP backend')
-
         # Initialize asyncio queues for segment, log, meter and profiling snapshots
         self.__segment_queue: Optional[asyncio.Queue] = None
         self.__log_queue: Optional[asyncio.Queue] = None
@@ -439,13 +429,23 @@ class SkyWalkingAgentAsync(Singleton):
         self.__snapshot_queue: Optional[asyncio.Queue] = None
 
         self.event_loop_thread: Optional[Thread] = None
-        # # According to https://github.com/python/cpython/issues/91887 
-        # # creat_task() only keeps a weak reference to the asyncio.Task,
-        # # To avoid the task being garbage collected, we need to keep a strong reference to it.
-        # # Such as store it in a set.
-        # self.tasks_ref_set: set[asyncio.Task] = set()
-        self.loop = asyncio.get_event_loop()
-        self._finished = asyncio.Event()
+
+    def __bootstrap(self):
+        if config.agent_protocol == 'grpc':
+            from skywalking.agent.protocol.grpc_aio import GrpcProtocolAsync
+            self.__protocol = GrpcProtocolAsync()
+        elif config.agent_protocol == 'http':
+            from skywalking.agent.protocol.http_aio import HttpProtocolAsync
+            self.__protocol = HttpProtocolAsync()
+        elif config.agent_protocol == 'kafka':
+            from skywalking.agent.protocol.kafka_aio import KafkaProtocolAsync
+            self.__protocol = KafkaProtocolAsync()
+        else:
+            raise ValueError(f'Unsupported protocol: {config.agent_protocol}')
+        logger.info(f'You are using {config.agent_protocol} protocol to communicate with OAP backend')
+
+        # self.loop = asyncio.get_event_loop()
+        # self._finished = asyncio.Event()
 
         # Start reporter's asyncio coroutines and register queues
         self.__init_coroutine()
@@ -464,12 +464,12 @@ class SkyWalkingAgentAsync(Singleton):
         __heartbeat_coroutine = self.__heartbeat()
         self.background_coroutines.add(__heartbeat_coroutine)
 
-        self.__segment_queue = asyncio.Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
+        # self.__segment_queue = asyncio.Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
         __segment_report_coroutine = self.__report_segment()
         self.background_coroutines.add(__segment_report_coroutine)
 
         if config.agent_meter_reporter_active:
-            self.__meter_queue = asyncio.Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
+            # self.__meter_queue = asyncio.Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
             __meter_report_coroutine = self.__report_meter()
             self.background_coroutines.add(__meter_report_coroutine)
 
@@ -486,7 +486,7 @@ class SkyWalkingAgentAsync(Singleton):
                 ThreadDataSource().register()
 
         if config.agent_log_reporter_active:
-            self.__log_queue = asyncio.Queue(maxsize=config.agent_log_reporter_max_buffer_size)
+            # self.__log_queue = asyncio.Queue(maxsize=config.agent_log_reporter_max_buffer_size)
             __log_report_coroutine = self.__report_log()
             self.background_coroutines.add(__log_report_coroutine)
 
@@ -494,19 +494,51 @@ class SkyWalkingAgentAsync(Singleton):
             # TODO: support profile
             ...
 
-    def __start_event_loop(self, loop: asyncio.AbstractEventLoop) -> None:
-        # do not use asyncio.run() here, because we may want loop to be used in other places
-        # such as run_coroutine_threadsafe()
-        asyncio.set_event_loop(loop)
-        # run all coroutines
+    async def __start_event_loop_async(self) -> None:
+        self.loop = asyncio.get_running_loop()  # always get the current running loop first
+        # asyncio Queue should be created after the event loop is created
+        self.__segment_queue = asyncio.Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
+        if config.agent_meter_reporter_active:
+            self.__meter_queue = asyncio.Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
+        if config.agent_log_reporter_active:
+            self.__log_queue = asyncio.Queue(maxsize=config.agent_log_reporter_max_buffer_size)
+        if config.agent_profile_active:
+            self.__snapshot_queue = asyncio.Queue(maxsize=config.agent_profile_snapshot_transport_buffer_size)
+        # initialize background coroutines
+        self.background_coroutines = set()
+        self.background_tasks = set()
+        # self.__meter_init = asyncio.Event()
+        self._finished = asyncio.Event()
+
+        self.__bootstrap()  # gather all coroutines
+
+        logger.debug('All background coroutines started')
+        await asyncio.gather(*self.background_coroutines)
+
+    def __start_event_loop(self) -> None:
+        # # do not use asyncio.run() here, because we may want loop to be used in other places
+        # # such as run_coroutine_threadsafe()
+        # asyncio.set_event_loop(loop)
+        # # run all coroutines
+        # try:
+        #     loop.run_until_complete(asyncio.wait(self.background_coroutines))
+        # except asyncio.CancelledError:
+        #     # this is for handling KeyboardInterrupt(Ctrl + C)
+        #     # for better solution, use Python 3.11+
+        #     logger.info('Force the cancellation of event_loop tasks')
+        # finally:
+        #     loop.close()
+                # run all coroutines
         try:
-            loop.run_until_complete(asyncio.wait(self.background_coroutines, return_when=asyncio.ALL_COMPLETED))
+            asyncio.run(self.__start_event_loop_async())
         except asyncio.CancelledError:
-            # this is for handling KeyboardInterrupt(Ctrl + C)
-            # for better solution, use Python 3.11+
-            logger.info('Force the cancellation of event_loop tasks')
+            logger.info('Closed Python agent asyncio event loop')
+        except Exception as e:
+            logger.error(f'Error in Python agent asyncio event loop: {e}')
         finally:
-            loop.close()
+            self._finished.set()
+            asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
+            self.loop.close()
 
     def start(self) -> None:
         loggings.init()
@@ -546,12 +578,10 @@ class SkyWalkingAgentAsync(Singleton):
         if config.agent_meter_reporter_active:
             meter.init(force=True)
 
-        self.__bootstrap()  # gather all coroutines
-
         atexit.register(self.__fini)
 
         # can use asyncio.to_thread() in Python 3.9+
-        self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, args=(self.loop,), daemon=True)
+        self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, daemon=True)
         self.event_loop_thread.start()
 
     async def __fini_async(self):
@@ -636,23 +666,24 @@ class SkyWalkingAgentAsync(Singleton):
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
+        # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
         try:
             self.__segment_queue.put_nowait(segment)
-            # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
+            self.loop
         except asyncio.QueueFull:
             logger.warning('the queue is full, the segment will be abandoned')
 
     def archive_log(self, log_data: 'LogData'):
+        # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
         try:
             self.__log_queue.put_nowait(log_data)
-            # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
         except asyncio.QueueFull:
             logger.warning('the queue is full, the log will be abandoned')
 
     def archive_meter(self, meter_data: 'MeterData'):
+        # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
         try:
             self.__meter_queue.put_nowait(meter_data)
-            # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
         except asyncio.QueueFull:
             logger.warning('the queue is full, the meter will be abandoned')
 

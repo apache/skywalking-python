@@ -37,12 +37,16 @@ logger_kafka.setLevel(max(logging.WARN, logger.level))
 
 class KafkaProtocol(Protocol):
     def __init__(self):
+        self.properties_sent = False
         self.service_management = KafkaServiceManagementClient()
         self.traces_reporter = KafkaTraceSegmentReportService()
         self.log_reporter = KafkaLogDataReportService()
         self.meter_reporter = KafkaMeterDataReportService()
 
     def heartbeat(self):
+        if not self.properties_sent:
+            self.service_management.send_instance_props()
+            self.properties_sent = True
         self.service_management.send_heart_beat()
 
     def report_segment(self, queue: Queue, block: bool = True):

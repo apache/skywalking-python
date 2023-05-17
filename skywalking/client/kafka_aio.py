@@ -17,11 +17,13 @@
 
 import ast
 import os
+from asyncio import Event
 
-from kafka import KafkaProducer
+from aiokafka import AIOKafkaProducer
 
 from skywalking import config
-from skywalking.client import MeterReportService, ServiceManagementClient, TraceSegmentReportService, LogDataReportService
+from skywalking.client import MeterReportServiceAsync, ServiceManagementClientAsync, \
+    TraceSegmentReportServiceAsync, LogDataReportServiceAsync
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.protocol.language_agent.Meter_pb2 import MeterDataCollection
 from skywalking.protocol.management.Management_pb2 import InstancePingPkg, InstanceProperties
@@ -30,6 +32,7 @@ kafka_configs = {}
 
 
 def __init_kafka_configs():
+    global kafka_configs
     kafka_configs['bootstrap_servers'] = config.kafka_bootstrap_servers.split(',')
     # process all kafka configs in env
     kafka_keys = [key for key in os.environ.keys() if key.startswith('SW_KAFKA_REPORTER_CONFIG_')]
@@ -55,18 +58,26 @@ def __init_kafka_configs():
 __init_kafka_configs()
 
 
-class KafkaServiceManagementClient(ServiceManagementClient):
+class KafkaServiceManagementClientAsync(ServiceManagementClientAsync):
     def __init__(self):
         super().__init__()
         self.instance_properties = self.get_instance_properties_proto()
 
         if logger_debug_enabled:
             logger.debug('kafka reporter configs: %s', kafka_configs)
-        self.producer = KafkaProducer(**kafka_configs)
+        # self.producer = KafkaProducer(**kafka_configs)
+        self.producer = AIOKafkaProducer(**kafka_configs)
+        # We can not start AIOKafkaProducer in sync code
+        # So we use a event to make sure producer is started on demand
+        self.__producer_start_event = Event()
         self.topic_key_register = 'register-'
         self.topic = config.kafka_topic_management
 
-    def send_instance_props(self):
+    async def send_instance_props(self):
+        if not self.__producer_start_event.is_set():
+            await self.producer.start()
+            self.__producer_start_event.set()
+
         instance = InstanceProperties(
             service=config.agent_name,
             serviceInstance=config.agent_instance_name,
@@ -75,10 +86,14 @@ class KafkaServiceManagementClient(ServiceManagementClient):
 
         key = bytes(self.topic_key_register + instance.serviceInstance, encoding='utf-8')
         value = instance.SerializeToString()
-        self.producer.send(topic=self.topic, key=key, value=value)
+        await self.producer.send_and_wait(topic=self.topic, key=key, value=value)
 
-    def send_heart_beat(self):
-        self.refresh_instance_props()
+    async def send_heart_beat(self):
+        if not self.__producer_start_event.is_set():
+            await self.producer.start()
+            self.__producer_start_event.set()
+
+        await self.refresh_instance_props()
 
         if logger_debug_enabled:
             logger.debug(
@@ -94,47 +109,67 @@ class KafkaServiceManagementClient(ServiceManagementClient):
 
         key = bytes(instance_ping_pkg.serviceInstance, encoding='utf-8')
         value = instance_ping_pkg.SerializeToString()
-        future = self.producer.send(topic=self.topic, key=key, value=value)
-        res = future.get(timeout=10)
+        future = await self.producer.send_and_wait(topic=self.topic, key=key, value=value)
         if logger_debug_enabled:
-            logger.debug('heartbeat response: %s', res)
+            logger.debug('heartbeat response: %s', future)
 
 
-class KafkaTraceSegmentReportService(TraceSegmentReportService):
+class KafkaTraceSegmentReportServiceAsync(TraceSegmentReportServiceAsync):
     def __init__(self):
-        self.producer = KafkaProducer(**kafka_configs)
+        self.producer = AIOKafkaProducer(**kafka_configs)
+        # We can not start AIOKafkaProducer in sync code
+        # So we use a event to make sure producer is started on demand
+        self.__producer_start_event = Event()
         self.topic = config.kafka_topic_segment
 
-    def report(self, generator):
-        for segment in generator:
+    async def report(self, generator):
+        if not self.__producer_start_event.is_set():
+            await self.producer.start()
+            self.__producer_start_event.set()
+
+        async for segment in generator:
             key = bytes(segment.traceSegmentId, encoding='utf-8')
             value = segment.SerializeToString()
-            self.producer.send(topic=self.topic, key=key, value=value)
+            await self.producer.send_and_wait(topic=self.topic, key=key, value=value)
 
 
-class KafkaLogDataReportService(LogDataReportService):
+class KafkaLogDataReportServiceAsync(LogDataReportServiceAsync):
     def __init__(self):
-        self.producer = KafkaProducer(**kafka_configs)
+        self.producer = AIOKafkaProducer(**kafka_configs)
+        # We can not start AIOKafkaProducer in sync code
+        # So we use a event to make sure producer is started on demand
+        self.__producer_start_event = Event()
         self.topic = config.kafka_topic_log
 
-    def report(self, generator):
-        for log_data in generator:
+    async def report(self, generator):
+        if not self.__producer_start_event.is_set():
+            await self.producer.start()
+            self.__producer_start_event.set()
+
+        async for log_data in generator:
             key = bytes(log_data.traceContext.traceSegmentId, encoding='utf-8')
             value = log_data.SerializeToString()
-            self.producer.send(topic=self.topic, key=key, value=value)
+            await self.producer.send_and_wait(topic=self.topic, key=key, value=value)
 
 
-class KafkaMeterDataReportService(MeterReportService):
+class KafkaMeterDataReportServiceAsync(MeterReportServiceAsync):
     def __init__(self):
-        self.producer = KafkaProducer(**kafka_configs)
+        self.producer = AIOKafkaProducer(**kafka_configs)
+        # We can not start AIOKafkaProducer in sync code
+        # So we use a event to make sure producer is started on demand
+        self.__producer_start_event = Event()
         self.topic = config.kafka_topic_meter
 
-    def report(self, generator):
+    async def report(self, generator):
+        if not self.__producer_start_event.is_set():
+            await self.producer.start()
+            self.__producer_start_event.set()
+
         collection = MeterDataCollection()
-        collection.meterData.extend(list(generator))
+        collection.meterData.extend([data async for data in generator])
         key = bytes(config.agent_instance_name, encoding='utf-8')
         value = collection.SerializeToString()
-        self.producer.send(topic=self.topic, key=key, value=value)
+        await self.producer.send_and_wait(topic=self.topic, key=key, value=value)
 
 
 class KafkaConfigDuplicated(Exception):

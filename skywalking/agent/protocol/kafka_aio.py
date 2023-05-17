@@ -16,78 +16,38 @@
 #
 
 import logging
-import traceback
 from asyncio import Queue, Event
 
-import grpc
-
 from skywalking import config
-from skywalking.agent.protocol import ProtocolAsync
-from skywalking.agent.protocol.interceptors_aio import header_adder_interceptor_async
-from skywalking.client.grpc_aio import GrpcServiceManagementClientAsync, GrpcTraceSegmentReportServiceAsync, \
-    GrpcProfileTaskChannelServiceAsync, GrpcLogReportServiceAsync, GrpcMeterReportServiceAsync
-from skywalking.loggings import logger, logger_debug_enabled
-from skywalking.profile.profile_task import ProfileTask
-from skywalking.profile.snapshot import TracingThreadSnapshot
+from skywalking.agent import ProtocolAsync
+from skywalking.client.kafka_aio import KafkaServiceManagementClientAsync, KafkaTraceSegmentReportServiceAsync, \
+    KafkaLogDataReportServiceAsync, KafkaMeterDataReportServiceAsync
+from skywalking.loggings import logger, getLogger, logger_debug_enabled
 from skywalking.protocol.common.Common_pb2 import KeyStringValuePair
 from skywalking.protocol.language_agent.Tracing_pb2 import SegmentObject, SpanObject, Log, SegmentReference
-from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.protocol.language_agent.Meter_pb2 import MeterData
-from skywalking.protocol.profile.Profile_pb2 import ThreadSnapshot, ThreadStack
+from skywalking.protocol.logging.Logging_pb2 import LogData
 from skywalking.trace.segment import Segment
 
+# avoid too many kafka logs
+logger_kafka = getLogger('kafka')
+logger_kafka.setLevel(max(logging.WARN, logger.level))
 
-class GrpcProtocolAsync(ProtocolAsync):
-    """
-    grpc for asyncio
-    """
+
+class KafkaProtocolAsync(ProtocolAsync):
     def __init__(self):
         self.properties_sent = Event()
-
-        # grpc.aio.channel do not have subscribe() method to set a callback when channel state changed
-        # instead, it has wait_for_state_change()/get_state() method to get the current state of the channel
-        # since here is an inherent race between the invocation of `wait_for_state_change` and `get_state`,
-        # and the channel state is only used for debug, the cost of monitoring this value is too high to support.
-        # self.state = None
-
-        interceptors = [header_adder_interceptor_async('authentication', config.agent_authentication)] \
-                if config.agent_authentication else None
-
-        if config.agent_force_tls:
-            self.channel = grpc.aio.secure_channel(config.agent_collector_backend_services, 
-                                                   grpc.ssl_channel_credentials(), interceptors=interceptors)
-        else:
-            self.channel = grpc.aio.insecure_channel(config.agent_collector_backend_services,
-                                                     interceptors=interceptors)
-
-        self.service_management = GrpcServiceManagementClientAsync(self.channel)
-        self.traces_reporter = GrpcTraceSegmentReportServiceAsync(self.channel)
-        self.log_reporter = GrpcLogReportServiceAsync(self.channel)
-        self.meter_reporter = GrpcMeterReportServiceAsync(self.channel)
-        self.profile_channel = GrpcProfileTaskChannelServiceAsync(self.channel)
-    
-    async def query_profile_commands(self):
-        ...
-
-    async def notify_profile_task_finish(self, task: ProfileTask):
-        ...
+        self.service_management = KafkaServiceManagementClientAsync()
+        self.traces_reporter = KafkaTraceSegmentReportServiceAsync()
+        self.log_reporter = KafkaLogDataReportServiceAsync()
+        self.meter_reporter = KafkaMeterDataReportServiceAsync()
 
     async def heartbeat(self):
-        try:
-            if not self.properties_sent.is_set():
-                await self.service_management.send_instance_props()
-                self.properties_sent.set()
+        if not self.properties_sent.is_set():
+            await self.service_management.send_instance_props()
+            self.properties_sent.set()
 
-            await self.service_management.send_heart_beat()
-
-        except grpc.aio.AioRpcError:
-            self.on_error()
-            raise
-
-    def on_error(self):
-        if logger_debug_enabled:
-            logger.debug('error occurred in grpc protocol (Async)')
-        traceback.print_exc() if logger.isEnabledFor(logging.DEBUG) else None
+        await self.service_management.send_heart_beat()
 
     async def report_segment(self, queue: Queue):
         async def generator():
@@ -138,12 +98,11 @@ class GrpcProtocolAsync(ProtocolAsync):
                 )
 
                 yield s
-
         try:
             await self.traces_reporter.report(generator())
-        except grpc.aio.AioRpcError:
-            self.on_error()
-            raise  # reraise so that incremental reconnect wait can process
+        except Exception as e:
+            if logger_debug_enabled:
+                logger.debug('reporting segment failed: %s', e)
 
     async def report_log(self, queue: Queue):
         async def generator():
@@ -157,12 +116,11 @@ class GrpcProtocolAsync(ProtocolAsync):
                     logger.debug('Reporting Log %s', log_data.timestamp)
 
                 yield log_data
-
         try:
-            await self.log_reporter.report(generator())
-        except grpc.aio.AioRpcError:
-            self.on_error()
-            raise
+            await self.log_reporter.report(generator=generator())
+        except Exception as e:
+            if logger_debug_enabled:
+                logger.debug('reporting log failed: %s', e)
 
     async def report_meter(self, queue: Queue):
         async def generator():
@@ -176,33 +134,18 @@ class GrpcProtocolAsync(ProtocolAsync):
                     logger.debug('Reporting Meter %s', meter_data.timestamp)
 
                 yield meter_data
-
         try:
-            await self.meter_reporter.report(generator())
-        except grpc.aio.AioRpcError:
-            self.on_error()
-            raise
+            await self.meter_reporter.report(generator=generator())
+        except Exception as e:
+            if logger_debug_enabled:
+                logger.debug('reporting meter failed: %s', e)
 
+    # TODO: implement profiling for kafka
     async def report_snapshot(self, queue: Queue):
-        async def generator():
-            while True:
-                # Let eventloop schedule blocking instead of user configuration: `config.agent_queue_timeout`
-                snapshot = await queue.get() # type: TracingThreadSnapshot
+        ...
 
-                queue.task_done()
+    async def query_profile_commands(self):
+        ...
 
-                transform_snapshot = ThreadSnapshot(
-                    taskId=str(snapshot.task_id),
-                    traceSegmentId=str(snapshot.trace_segment_id),
-                    time=int(snapshot.time),
-                    sequence=int(snapshot.sequence),
-                    stack=ThreadStack(codeSignatures=snapshot.stack_list)
-                )
-
-                yield transform_snapshot
-
-        try:
-            await self.profile_channel.report(generator())
-        except grpc.aio.AioRpcError:
-            self.on_error()
-            raise
+    async def notify_profile_task_finish(self, task):
+        ...

@@ -15,11 +15,20 @@
 # limitations under the License.
 #
 
+from asyncio import Event
+
 from skywalking.meter.gauge import Gauge
 
 
 class DataSource:
     def register(self):
+        for name in dir(self):
+            if name.endswith('generator'):
+                generator = getattr(self, name)()
+                Gauge.Builder('instance_pvm_' + name[:-10], generator).build()
+
+    async def register_async(self, async_event: Event):
+        await async_event.wait()
         for name in dir(self):
             if name.endswith('generator'):
                 generator = getattr(self, name)()

@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 import time
+import asyncio
+
 from concurrent.futures import ThreadPoolExecutor
 from threading import Thread
 from skywalking import config
@@ -52,3 +54,30 @@ class MeterService(Thread):
         while True:
             time.sleep(config.agent_meter_reporter_period)
             self.send()
+
+class MeterServiceAsync():
+    def __init__(self):
+        self.meter_map = {}
+
+    def register(self, meter: BaseMeter):
+        self.meter_map[meter.get_id().get_name()] = meter
+
+    def get_meter(self, name: str):
+        return self.meter_map.get(name)
+
+    async def generator(self):
+        for meter_data in self.meter_map.values():
+            yield meter_data
+
+    async def send(self):
+        async for meterdata in self.generator():
+            meterdata.service = config.agent_name
+            meterdata.serviceInstance = config.agent_instance_name
+            meterdata.timestamp = current_milli_time()
+            await agent.archive_meter_async(meterdata)
+
+    async def start(self):
+        logger.debug('Started async meter service')
+        while True:
+            await asyncio.sleep(config.agent_meter_reporter_period)
+            await self.send()
