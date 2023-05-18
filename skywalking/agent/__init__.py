@@ -24,7 +24,6 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING, Optional
 
-import yappi
 from uvloop import install as install_uvloop
 
 from skywalking import config, plugins
@@ -445,9 +444,6 @@ class SkyWalkingAgentAsync(Singleton):
             raise ValueError(f'Unsupported protocol: {config.agent_protocol}')
         logger.info(f'You are using {config.agent_protocol} protocol to communicate with OAP backend')
 
-        # self.loop = asyncio.get_event_loop()
-        # self._finished = asyncio.Event()
-
         # Start reporter's asyncio coroutines and register queues
         self.__init_coroutine()
 
@@ -462,15 +458,13 @@ class SkyWalkingAgentAsync(Singleton):
 
         self.background_coroutines = set()
 
-        __heartbeat_coroutine = self.__heartbeat()
-        self.background_coroutines.add(__heartbeat_coroutine)
+        self.background_coroutines.add(self.__heartbeat())
 
         __segment_report_coroutine = self.__report_segment()
-        self.background_coroutines.add(__segment_report_coroutine)
+        self.background_coroutines.add(self.__report_segment())
 
         if config.agent_meter_reporter_active:
-            __meter_report_coroutine = self.__report_meter()
-            self.background_coroutines.add(__meter_report_coroutine)
+            self.background_coroutines.add(self.__report_meter())
 
             if config.agent_pvm_meter_reporter_active:
                 from skywalking.meter.pvm.cpu_usage import CPUUsageDataSource
@@ -478,15 +472,13 @@ class SkyWalkingAgentAsync(Singleton):
                 from skywalking.meter.pvm.mem_usage import MEMUsageDataSource
                 from skywalking.meter.pvm.thread_data import ThreadDataSource
 
-                # still use thread to collect pvm meter
                 MEMUsageDataSource().register()
                 CPUUsageDataSource().register()
                 GCDataSource().register()
                 ThreadDataSource().register()
 
         if config.agent_log_reporter_active:
-            __log_report_coroutine = self.__report_log()
-            self.background_coroutines.add(__log_report_coroutine)
+            self.background_coroutines.add(self.__report_log())
 
         if config.agent_profile_active:
             # TODO: support profile
@@ -494,7 +486,7 @@ class SkyWalkingAgentAsync(Singleton):
 
     async def __start_event_loop_async(self) -> None:
         self.loop = asyncio.get_running_loop()  # always get the current running loop first
-        # asyncio Queue should be created after the event loop is created
+        # asyncio Queue should be created after the creation of event loop
         self.__segment_queue = asyncio.Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
         if config.agent_meter_reporter_active:
             self.__meter_queue = asyncio.Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
@@ -505,7 +497,6 @@ class SkyWalkingAgentAsync(Singleton):
         # initialize background coroutines
         self.background_coroutines = set()
         self.background_tasks = set()
-        # self.__meter_init = asyncio.Event()
         self._finished = asyncio.Event()
 
         # Install log reporter core
@@ -566,9 +557,6 @@ class SkyWalkingAgentAsync(Singleton):
         self.started_pid = os.getpid()
         atexit.register(self.__fini)
 
-        yappi.set_clock_type("cpu") # Use set_clock_type("wall") for wall time
-        yappi.start()
-
         # can use asyncio.to_thread() in Python 3.9+
         self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, daemon=True)
         self.event_loop_thread.start()
@@ -599,16 +587,6 @@ class SkyWalkingAgentAsync(Singleton):
             task.cancel()
 
     def __fini(self):
-        yappi.stop()
-        
-        yappi.get_func_stats().sort('tsub').print_all(out=open("/home/lgh/logs/sw_asyncio/yappi_func_stats.out", "w"), columns={
-            0: ("name", 100),
-            1: ("ncall", 5),
-            2: ("tsub", 8),
-            3: ("ttot", 8),
-            4: ("tavg", 8)
-        })
-        yappi.get_thread_stats().print_all(out=open("/home/lgh/logs/sw_asyncio/yappi_thread_stats.out", "w"))
         asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
         if not self.loop.is_closed():
             self.loop.close()
@@ -665,26 +643,25 @@ class SkyWalkingAgentAsync(Singleton):
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
-        asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
-        # try:
-        #     self.__segment_queue.put_nowait(segment)
-        #     self.loop
-        # except asyncio.QueueFull:
-        #     logger.warning('the queue is full, the segment will be abandoned')
+        # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
+        try:
+            self.loop.call_soon_threadsafe(self.__segment_queue.put_nowait, segment)
+        except asyncio.QueueFull:
+            logger.warning('the queue is full, the segment will be abandoned')
 
     def archive_log(self, log_data: 'LogData'):
-        asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
-        # try:
-        #     self.__log_queue.put_nowait(log_data)
-        # except asyncio.QueueFull:
-        #     logger.warning('the queue is full, the log will be abandoned')
+        # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
+        try:
+            self.loop.call_soon_threadsafe(self.__log_queue.put_nowait, log_data)
+        except asyncio.QueueFull:
+            logger.warning('the queue is full, the log will be abandoned')
 
     def archive_meter(self, meter_data: 'MeterData'):
-        asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
-        # try:
-        #     self.__meter_queue.put_nowait(meter_data)
-        # except asyncio.QueueFull:
-        #     logger.warning('the queue is full, the meter will be abandoned')
+        # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
+        try:
+            self.loop.call_soon_threadsafe(self.__meter_queue.put_nowait, meter_data)
+        except asyncio.QueueFull:
+            logger.warning('the queue is full, the meter will be abandoned')
 
     async def archive_meter_async(self, meter_data: 'MeterData'):
         await self.__meter_queue.put(meter_data)
