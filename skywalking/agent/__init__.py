@@ -459,8 +459,6 @@ class SkyWalkingAgentAsync(Singleton):
         self.background_coroutines = set()
 
         self.background_coroutines.add(self.__heartbeat())
-
-        __segment_report_coroutine = self.__report_segment()
         self.background_coroutines.add(self.__report_segment())
 
         if config.agent_meter_reporter_active:

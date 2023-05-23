@@ -67,16 +67,19 @@ class MeterServiceAsync():
     def get_meter(self, name: str):
         return self.meter_map.get(name)
 
-    async def generator(self):
-        for meter_data in self.meter_map.values():
-            yield meter_data
-
     async def send(self):
-        async for meterdata in self.generator():
+
+        async def archive_async(meterdata):
+            meterdata = meterdata.transform()
             meterdata.service = config.agent_name
             meterdata.serviceInstance = config.agent_instance_name
             meterdata.timestamp = current_milli_time()
             await agent.archive_meter_async(meterdata)
+
+        for m in self.meter_map.values():
+            task = asyncio.create_task(archive_async(m))
+            self.strong_ref_set.add(task)
+            task.add_done_callback(self.strong_ref_set.discard)
 
     async def start(self):
         logger.debug('Started async meter service')
