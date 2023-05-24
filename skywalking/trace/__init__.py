@@ -21,7 +21,7 @@ import time
 
 
 class GlobalIdGenerator:
-    """o
+    """
     Simplified snowflake algorithm that only rely on local distribution, fast alternative to uuid
     """
 
