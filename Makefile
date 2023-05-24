@@ -65,8 +65,10 @@ install: gen-basic
 
 .PHONY: lint
 # flake8 configurations should go to the file setup.cfg
+# pylint is installed here due to it requires python3.7.2+
 lint: clean
 	poetry run flake8 .
+	poetry run pip install -U pylint==2.17.4
 	poetry run pylint --disable=all --enable=E0602,E0603,E1101 skywalking tests
 
 .PHONY: fix
