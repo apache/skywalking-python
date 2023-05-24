@@ -35,6 +35,7 @@ inject a gunicorn hook that will start the agent after the worker is forked. (wi
 """
 from uwsgidecorators import postfork
 from skywalking import agent, config
+from skywalking.trace import GlobalIDGenerator
 import os
 
 from skywalking.loggings import logger
@@ -54,7 +55,7 @@ def setup_skywalking():
     (e.g. the new agent_instance_name with the new PID)
     """
     config.agent_instance_name = f'{config.agent_instance_name}-child({os.getpid()})'
-
+    GlobalIDGenerator.refresh_process_id()
     agent.start()
     # append pid-suffix to instance name
     logger.info(f'Apache SkyWalking Python agent started in pre-forked worker process PID-{os.getpid()}. '
