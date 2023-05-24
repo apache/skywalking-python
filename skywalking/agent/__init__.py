@@ -637,29 +637,26 @@ class SkyWalkingAgentAsync(Singleton):
         # command dispatch will stuck when there are no commands
         command_service.dispatch()
 
+    async def __asyncio_queue_put_nowait(self, q: asyncio.Queue, queue_name: str, item):
+        try:
+            q.put_nowait(item)
+        except asyncio.QueueFull:
+            logger.warning(f'the {queue_name} queue is full, the item will be abandoned')
+
     def is_segment_queue_full(self):
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
         # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
-        try:
-            self.loop.call_soon_threadsafe(self.__segment_queue.put_nowait, segment)
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the segment will be abandoned')
+        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__segment_queue, 'segment', segment)
 
     def archive_log(self, log_data: 'LogData'):
         # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
-        try:
-            self.loop.call_soon_threadsafe(self.__log_queue.put_nowait, log_data)
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the log will be abandoned')
+        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__log_queue, 'log', log_data)
 
     def archive_meter(self, meter_data: 'MeterData'):
         # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
-        try:
-            self.loop.call_soon_threadsafe(self.__meter_queue.put_nowait, meter_data)
-        except asyncio.QueueFull:
-            logger.warning('the queue is full, the meter will be abandoned')
+        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__meter_queue, 'meter', meter_data)
 
     async def archive_meter_async(self, meter_data: 'MeterData'):
         await self.__meter_queue.put(meter_data)

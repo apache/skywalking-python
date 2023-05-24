@@ -1638,21 +1638,6 @@ files = [
 ]
 
 [[package]]
-name = "janus"
-version = "1.0.0"
-description = "Mixed sync-async queue to interoperate between asyncio tasks and classic threads"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "janus-1.0.0-py3-none-any.whl", hash = "sha256:2596ea5482711c1ee3ef2df6c290aaf370a13c55a007826e8f7c32d696d1d00a"},
-    {file = "janus-1.0.0.tar.gz", hash = "sha256:df976f2cdcfb034b147a2d51edfc34ff6bfb12d4e2643d3ad0e10de058cb1612"},
-]
-
-[package.dependencies]
-typing-extensions = ">=3.7.4.3"
-
-[[package]]
 name = "jinja2"
 version = "3.1.2"
 description = "A very fast and expressive template engine."
@@ -3125,7 +3110,7 @@ files = [
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3856,4 +3841,4 @@ kafka = ["kafka-python"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7, <3.12"
-content-hash = "a99d5b2d1b6cc4b2efeb72192bc25484e4501806cb9f8d862da583ad86e5d8d7"
+content-hash = "d32496d9d445a9918144ae0a0aea8fbe75d87343678990ead84ee0cfe236ed60"
