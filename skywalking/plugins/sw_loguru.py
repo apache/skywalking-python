@@ -83,7 +83,7 @@ def install():
             active_span = context.active_span
             if active_span is not None:
                 active_span_id = active_span.sid
-                primary_endpoint_name = context.primary_endpoint.get_name()
+                primary_endpoint_name = context.primary_endpoint.get_name() if context.primary_endpoint else ''
         except IllegalStateError:
             pass
 
