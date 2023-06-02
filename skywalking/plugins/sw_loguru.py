@@ -74,10 +74,18 @@ def install():
         active_span_id = -1
         primary_endpoint_name = ''
 
-        active_span = context.active_span
-        if active_span is not None:
-            active_span_id = active_span.sid
-            primary_endpoint_name = context.primary_endpoint.get_name()
+        try:
+            # Try to extract active span, if user code/plugin code throws uncaught
+            # exceptions before any span is even created, just ignore these fields and
+            # avoid appending 'no active span' traceback that could be confusing.
+            # Or simply the log is generated outside any span context.
+            # But actually NO need to raise and catch IllegalStateError here.
+            active_span = context.active_span
+            if active_span is not None:
+                active_span_id = active_span.sid
+                primary_endpoint_name = context.primary_endpoint.get_name()
+        except IllegalStateError:
+            pass
 
         log_data = LogData(
             timestamp=round(record['time'].timestamp() * 1000),
