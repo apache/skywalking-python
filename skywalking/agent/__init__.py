@@ -519,13 +519,11 @@ class SkyWalkingAgentAsync(Singleton):
         try:
             asyncio.run(self.__start_event_loop_async())
         except asyncio.CancelledError:
-            logger.info('Closed Python agent asyncio event loop')
+            logger.info('Python agent asyncio event loop is closed')
         except Exception as e:
             logger.error(f'Error in Python agent asyncio event loop: {e}')
         finally:
             self._finished.set()
-            asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
-            self.loop.close()
 
     def start(self) -> None:
         loggings.init()
@@ -585,11 +583,11 @@ class SkyWalkingAgentAsync(Singleton):
             task.cancel()
 
     def __fini(self):
-        asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
         if not self.loop.is_closed():
-            self.loop.close()
+            asyncio.run_coroutine_threadsafe(self.__fini_async(), self.loop)
         self.event_loop_thread.join()
         logger.info('Finished Python agent event_loop thread')
+        # TODO: Unhandled error in sys.excepthook https://github.com/pytest-dev/execnet/issues/30
 
     def stop(self) -> None:
         """
@@ -637,7 +635,7 @@ class SkyWalkingAgentAsync(Singleton):
         # command dispatch will stuck when there are no commands
         command_service.dispatch()
 
-    async def __asyncio_queue_put_nowait(self, q: asyncio.Queue, queue_name: str, item):
+    def __asyncio_queue_put_nowait(self, q: asyncio.Queue, queue_name: str, item):
         try:
             q.put_nowait(item)
         except asyncio.QueueFull:
@@ -647,19 +645,25 @@ class SkyWalkingAgentAsync(Singleton):
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
-        # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
-        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__segment_queue, 'segment', segment)
+        if not self.loop.is_closed():
+            # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
+            self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__segment_queue, 'segment', segment)
 
     def archive_log(self, log_data: 'LogData'):
-        # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
-        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__log_queue, 'log', log_data)
+        if not self.loop.is_closed():
+            # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
+            self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__log_queue, 'log', log_data)
 
     def archive_meter(self, meter_data: 'MeterData'):
-        # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
-        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__meter_queue, 'meter', meter_data)
+        if not self.loop.is_closed():
+            # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
+            self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__meter_queue, 'meter', meter_data)
 
     async def archive_meter_async(self, meter_data: 'MeterData'):
-        await self.__meter_queue.put(meter_data)
+        try:
+            self.__meter_queue.put_nowait(meter_data)
+        except asyncio.QueueFull:
+            logger.warning(f'the meter queue is full, the item will be abandoned')
 
     def add_profiling_snapshot_async(self, snapshot: TracingThreadSnapshot):
         # TODO: support profile
