@@ -67,10 +67,12 @@ class GrpcProtocolAsync(ProtocolAsync):
         self.profile_channel = GrpcProfileTaskChannelServiceAsync(self.channel)
     
     async def query_profile_commands(self):
-        ...
+        if logger_debug_enabled:
+            logger.debug('query profile commands')
+        await self.profile_channel.do_query()
 
     async def notify_profile_task_finish(self, task: ProfileTask):
-        ...
+        await self.profile_channel.finish(task)
 
     async def heartbeat(self):
         try:

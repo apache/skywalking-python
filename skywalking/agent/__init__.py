@@ -31,7 +31,7 @@ from skywalking import loggings
 from skywalking import meter
 from skywalking import profile
 from skywalking.agent.protocol import Protocol, ProtocolAsync
-from skywalking.command import command_service
+from skywalking.command import command_service, command_service_async
 from skywalking.loggings import logger
 from skywalking.profile.profile_task import ProfileTask
 from skywalking.profile.snapshot import TracingThreadSnapshot
@@ -479,8 +479,9 @@ class SkyWalkingAgentAsync(Singleton):
             self.background_coroutines.add(self.__report_log())
 
         if config.agent_profile_active:
-            # TODO: support profile
-            ...
+            self.background_coroutines.add(self.__command_dispatch())
+            self.background_coroutines.add(self.__query_profile_command())
+            self.background_coroutines.add(self.__send_profile_snapshot())
 
     async def __start_event_loop_async(self) -> None:
         self.loop = asyncio.get_running_loop()  # always get the current running loop first
@@ -502,10 +503,6 @@ class SkyWalkingAgentAsync(Singleton):
         if config.agent_log_reporter_active:
             from skywalking import log
             log.install()
-        if config.agent_profile_active:
-            # TODO: support profile
-            ...
-            # profile.init()
         if config.agent_meter_reporter_active:
             # meter.init(force=True)
             await meter.init_async()
@@ -553,6 +550,10 @@ class SkyWalkingAgentAsync(Singleton):
         self.started_pid = os.getpid()
         atexit.register(self.__fini)
 
+        # still init profile here, since it is using threading rather than asyncio
+        if config.agent_profile_active:
+            profile.init()
+
         # can use asyncio.to_thread() in Python 3.9+
         self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, daemon=True)
         self.event_loop_thread.start()
@@ -569,9 +570,7 @@ class SkyWalkingAgentAsync(Singleton):
             queue_join_coroutine_list.append(self.__log_queue.join())
 
         if config.agent_profile_active:
-            # TODO: support profile
-            ...
-            # queue_join_coroutine_list.append(self.__snapshot_queue.join())
+            queue_join_coroutine_list.append(self.__snapshot_queue.join())
 
         if config.agent_meter_reporter_active:
             queue_join_coroutine_list.append(self.__meter_queue.join())
@@ -622,18 +621,20 @@ class SkyWalkingAgentAsync(Singleton):
         if not self.__meter_queue.empty():
             await self.__protocol.report_meter(self.__meter_queue)
 
-    def __send_profile_snapshot(self) -> None:
-        # TODO: support profile
-        ...
+    @report_with_backoff_async(reporter_name='profile_snapshot', init_wait=0.5)
+    async def __send_profile_snapshot(self) -> None:
+        if not self.__snapshot_queue.empty():
+            await self.__protocol.report_snapshot(self.__snapshot_queue)
 
-    def __query_profile_command(self) -> None:
-        # TODO: support profile
-        ...
+    @report_with_backoff_async(reporter_name='query_profile_command',
+                         init_wait=config.agent_collector_get_profile_task_interval)
+    async def __query_profile_command(self) -> None:
+        await self.__protocol.query_profile_commands()
 
     @staticmethod
-    def __command_dispatch() -> None:
+    async def __command_dispatch() -> None:
         # command dispatch will stuck when there are no commands
-        command_service.dispatch()
+        await command_service_async.dispatch()
 
     def __asyncio_queue_put_nowait(self, q: asyncio.Queue, queue_name: str, item):
         try:
@@ -646,17 +647,14 @@ class SkyWalkingAgentAsync(Singleton):
 
     def archive_segment(self, segment: 'Segment'):
         if not self.loop.is_closed():
-            # asyncio.run_coroutine_threadsafe(self.__segment_queue.put(segment), self.loop)
             self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__segment_queue, 'segment', segment)
 
     def archive_log(self, log_data: 'LogData'):
         if not self.loop.is_closed():
-            # asyncio.run_coroutine_threadsafe(self.__log_queue.put(log_data), self.loop)
             self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__log_queue, 'log', log_data)
 
     def archive_meter(self, meter_data: 'MeterData'):
         if not self.loop.is_closed():
-            # asyncio.run_coroutine_threadsafe(self.__meter_queue.put(meter_data), self.loop)
             self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__meter_queue, 'meter', meter_data)
 
     async def archive_meter_async(self, meter_data: 'MeterData'):
@@ -665,21 +663,14 @@ class SkyWalkingAgentAsync(Singleton):
         except asyncio.QueueFull:
             logger.warning(f'the meter queue is full, the item will be abandoned')
 
-    def add_profiling_snapshot_async(self, snapshot: TracingThreadSnapshot):
-        # TODO: support profile
-        ...
-        # try:
-        #     self.__snapshot_queue.put_nowait(snapshot)
-        # except asyncio.QueueFull:
-        #     logger.warning('the snapshot queue is full, the snapshot will be abandoned')
+    def add_profiling_snapshot(self, snapshot: TracingThreadSnapshot):
+        self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__snapshot_queue, 'snapshot', snapshot)
 
-    def notify_profile_finish_async(self, task: ProfileTask):
-        # TODO: support profile
-        ...
-        # try:
-        #     asyncio.run_coroutine_threadsafe(self.__protocol.notify_profile_task_finish(task), self.loop)
-        # except Exception as e:
-        #     logger.error(f'notify profile task finish to backend fail. {e}')
+    def notify_profile_finish(self, task: ProfileTask):
+        try:
+            asyncio.run_coroutine_threadsafe(self.__protocol.notify_profile_task_finish(task), self.loop)
+        except Exception as e:
+            logger.error(f'notify profile task finish to backend fail. {e}')
 
 # Export for user (backwards compatibility)
 # so users still use `from skywalking import agent`

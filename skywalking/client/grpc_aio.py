@@ -20,7 +20,7 @@ import grpc
 from skywalking import config
 from skywalking.client import ServiceManagementClientAsync, TraceSegmentReportServiceAsync, \
     ProfileTaskChannelServiceAsync, LogDataReportServiceAsync, MeterReportServiceAsync
-from skywalking.command import command_service
+from skywalking.command import command_service_async
 from skywalking.loggings import logger, logger_debug_enabled
 from skywalking.profile import profile_task_execution_service
 from skywalking.profile.profile_task import ProfileTask
@@ -92,24 +92,18 @@ class GrpcLogReportServiceAsync(LogDataReportServiceAsync):
 
 
 class GrpcProfileTaskChannelServiceAsync(ProfileTaskChannelServiceAsync):
-    def __init__(self, channel: grpc.Channel):
+    def __init__(self, channel: grpc.aio.Channel):
         self.profile_stub = ProfileTaskStub(channel)
 
     async def do_query(self):
-        """
-        Temporarily unavailable
-
-        TODO: Adapt asyncio
-        """
         query = ProfileTaskCommandQuery(
             service=config.agent_name,
             serviceInstance=config.agent_instance_name,
             lastCommandTime=profile_task_execution_service.get_last_command_create_time()
         )
 
-        # TODO: Async style
-        # commands = self.profile_stub.getProfileTaskCommands(query)
-        # command_service.receive_command(commands)
+        commands = await self.profile_stub.getProfileTaskCommands(query)
+        command_service_async.receive_command(commands)# put_nowait() not need to be awaited
 
     async def report(self, generator):
         await self.profile_stub.collectSnapshot(generator)

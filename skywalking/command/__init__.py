@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
-from skywalking.command.command_service import CommandService
+from skywalking.command.command_service import CommandService, CommandServiceAsync
 
 command_service = CommandService()
+command_service_async = CommandServiceAsync()
