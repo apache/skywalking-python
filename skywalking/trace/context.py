@@ -227,16 +227,18 @@ class SpanContext:
         return False
 
     @staticmethod
-    def peek() -> Optional[Span]:
+    def peek(raise_if_none: bool = False) -> Optional[Span]:
         spans = _spans()
-        return spans[-1] if spans else None
+        if not spans:
+            if raise_if_none:
+                raise IllegalStateError('No active span')
+            else:
+                return None
+        return spans[-1]
 
     @property
     def active_span(self):
-        active_span = self.peek()
-        if not active_span:
-            raise IllegalStateError('No active span')
-        return active_span
+        return self.peek(raise_if_none=False)
 
     def get_correlation(self, key):
         if key in self._correlation:

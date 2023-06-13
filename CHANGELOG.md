@@ -2,6 +2,9 @@
 
 ### 1.1.0
 
+- Fixes:
+  - Fix unexpected 'No active span' IllegalStateError (#311)
+ 
 ### 1.0.1
 
 - Feature:

@@ -79,8 +79,11 @@ def install():
             # exceptions before any span is even created, just ignore these fields and
             # avoid appending 'no active span' traceback that could be confusing.
             # Or simply the log is generated outside any span context.
-            active_span_id = context.active_span.sid
-            primary_endpoint_name = context.primary_endpoint.get_name()
+            # But actually NO need to raise and catch IllegalStateError here.
+            active_span = context.active_span
+            if active_span is not None:
+                active_span_id = active_span.sid
+                primary_endpoint_name = context.primary_endpoint.get_name() if context.primary_endpoint else ''
         except IllegalStateError:
             pass
 
