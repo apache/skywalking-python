@@ -1,6 +1,8 @@
 ## Change Logs
 
 ### 1.1.0
+- Plugins:
+  - Add neo4j plugin.(#312)
 
 ### 1.0.1
 
