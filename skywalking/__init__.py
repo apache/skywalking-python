@@ -52,6 +52,7 @@ class Component(Enum):
     AIORedis = 7017
     Websockets = 7018
     HTTPX = 7019
+    Neo4j = 7020
 
 
 class Layer(Enum):
