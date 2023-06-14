@@ -36,7 +36,7 @@ segmentItems:
                 value: '[{"age": 10}]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7020
+            componentId: 112
             spanType: Exit
             peer: neo4j:7687
             skipAnalysis: false
@@ -55,7 +55,7 @@ segmentItems:
                 value: '[{"age": 10}]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7020
+            componentId: 112
             spanType: Exit
             peer: neo4j:7687
             skipAnalysis: false
@@ -74,7 +74,7 @@ segmentItems:
                 value: '[{"age": 10}]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7020
+            componentId: 112
             spanType: Exit
             peer: neo4j:7687
             skipAnalysis: false
@@ -93,7 +93,7 @@ segmentItems:
                 value: '[{"age": 10}]'
             startTime: gt 0
             endTime: gt 0
-            componentId: 7020
+            componentId: 112
             spanType: Exit
             peer: neo4j:7687
             skipAnalysis: false
