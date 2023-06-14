@@ -38,6 +38,7 @@ class Component(Enum):
     RabbitmqConsumer = 53
     Elasticsearch = 47
     HBase = 94
+    Neo4j = 112
     Urllib3 = 7006
     Sanic = 7007
     AioHttp = 7008
@@ -52,7 +53,6 @@ class Component(Enum):
     AIORedis = 7017
     Websockets = 7018
     HTTPX = 7019
-    Neo4j = 7020
 
 
 class Layer(Enum):
