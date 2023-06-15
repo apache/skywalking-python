@@ -54,6 +54,8 @@ in SkyWalking currently. Celery clients can use whatever protocol they want.
 - While Falcon is instrumented, only Hug is tested.
 Hug is believed to be abandoned project, use this plugin with a bit more caution.
 Instead of Hug, plugin test should move to test actual Falcon.
+- The Neo4j plugin integrates neo4j python driver 5.x.x versions which
+support both Neo4j 5 and 4.4 DBMS.
 - The websocket instrumentation only traces client side connection handshake,
 the actual message exchange (send/recv) is not traced since injecting headers to socket message
 body is the only way to propagate the trace context, which requires customization of message structure
