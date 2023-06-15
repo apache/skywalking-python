@@ -27,7 +27,7 @@ support_matrix = {
         '>=3.7': ['5.*'],
     }
 }
-note = """The Neo4j plugin integrates neo4j python driver 5.x.x versions which 
+note = """The Neo4j plugin integrates neo4j python driver 5.x.x versions which
 support both Neo4j 5 and 4.4 DBMS."""
 
 
