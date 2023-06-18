@@ -38,6 +38,7 @@ class Component(Enum):
     RabbitmqConsumer = 53
     Elasticsearch = 47
     HBase = 94
+    Neo4j = 112
     Urllib3 = 7006
     Sanic = 7007
     AioHttp = 7008

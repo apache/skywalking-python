@@ -132,6 +132,7 @@ websockets = "^10.4"
 loguru = "^0.6.0"
 httpx = "^0.23.3"
 confluent-kafka = "^2.0.2"
+neo4j = "^5.9.0"
 
 [tool.poetry.group.lint.dependencies]
 pylint = '2.13.9'

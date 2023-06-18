@@ -1959,6 +1959,23 @@ files = [
 ]
 
 [[package]]
+name = "neo4j"
+version = "5.9.0"
+description = "Neo4j Bolt driver for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "neo4j-5.9.0.tar.gz", hash = "sha256:b0abc0065f616bfd8230a48b1f6c91f9aacd7e2aea76d72d09a745ae169cf4da"},
+]
+
+[package.dependencies]
+pytz = "*"
+
+[package.extras]
+numpy = ["numpy (>=1.7.0,<2.0.0)"]
+pandas = ["numpy (>=1.7.0,<2.0.0)", "pandas (>=1.1.0,<3.0.0)"]
+
+[[package]]
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
