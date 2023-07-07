@@ -16,7 +16,7 @@
 #
 
 import logging
-from asyncio import Queue, Event
+from asyncio import Queue
 
 from skywalking import config
 from skywalking.agent import ProtocolAsync
