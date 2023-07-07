@@ -1,6 +1,10 @@
 ## Change Logs
 
 ### 1.1.0
+
+- Feature:
+  - Users now can specify the `SW_AGENT_ASYNCIO_ENHANCEMENT` environment variable to enable the performance enhancement with asyncio (#316)
+
 - Plugins:
   - Add neo4j plugin.(#312)
 
