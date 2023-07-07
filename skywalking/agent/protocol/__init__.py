@@ -49,6 +49,7 @@ class Protocol(ABC):
     def notify_profile_task_finish(self, task):
         raise NotImplementedError()
 
+
 class ProtocolAsync(ABC):
     @abstractmethod
     async def heartbeat(self):

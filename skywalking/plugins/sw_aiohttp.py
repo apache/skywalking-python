@@ -43,7 +43,7 @@ def install():
         peer = f"{url.host or ''}:{url.port or ''}"
 
         if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
-            .endswith(f'{url.host}:{url.port}'):
+                .endswith(f'{url.host}:{url.port}'):
             return _request
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
@@ -82,7 +82,7 @@ def install():
     async def _sw_handle_request(self, request: BaseRequest, start_time: float):
 
         if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
-            .endswith(f'{request.url.host}:{request.url.port}'):
+                .endswith(f'{request.url.host}:{request.url.port}'):
             return _handle_request
 
         carrier = Carrier()

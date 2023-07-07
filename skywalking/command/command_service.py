@@ -66,40 +66,40 @@ class CommandService:
 
 
 class CommandServiceAsync:
-    
-        def __init__(self):
-            self._commands = AsyncQueue()  # type: AsyncQueue
-            # don't execute same command twice
-            self._command_serial_number_cache = CommandSerialNumberCache()
-    
-        async def dispatch(self):
-            while True:
-                # block until a command is available
-                command = await self._commands.get()  # type: BaseCommand
-                if not self.__is_command_executed(command):
-                    command_executor_service.execute(command)
-                    self._command_serial_number_cache.add(command.serial_number)
-    
-        def __is_command_executed(self, command: BaseCommand):
-            return self._command_serial_number_cache.contains(command.serial_number)
-    
-        def receive_command(self, commands: Commands):
-            for command in commands.commands:
+
+    def __init__(self):
+        self._commands = AsyncQueue()  # type: AsyncQueue
+        # don't execute same command twice
+        self._command_serial_number_cache = CommandSerialNumberCache()
+
+    async def dispatch(self):
+        while True:
+            # block until a command is available
+            command = await self._commands.get()  # type: BaseCommand
+            if not self.__is_command_executed(command):
+                command_executor_service.execute(command)
+                self._command_serial_number_cache.add(command.serial_number)
+
+    def __is_command_executed(self, command: BaseCommand):
+        return self._command_serial_number_cache.contains(command.serial_number)
+
+    def receive_command(self, commands: Commands):
+        for command in commands.commands:
+            try:
+                base_command = CommandDeserializer.deserialize(command)
+                logger.debug('received command [{%s} {%s}]', base_command.command, base_command.serial_number)
+
+                if self.__is_command_executed(base_command):
+                    logger.warning('command[{%s}] is executed, ignored.', base_command.command)
+                    continue
+
                 try:
-                    base_command = CommandDeserializer.deserialize(command)
-                    logger.debug('received command [{%s} {%s}]', base_command.command, base_command.serial_number)
-    
-                    if self.__is_command_executed(base_command):
-                        logger.warning('command[{%s}] is executed, ignored.', base_command.command)
-                        continue
-    
-                    try:
-                        self._commands.put_nowait(base_command)
-                    except AsyncQueueFull:
-                        logger.warning('command[{%s}, {%s}] cannot add to command list. because the command list is full.',
+                    self._commands.put_nowait(base_command)
+                except AsyncQueueFull:
+                    logger.warning('command[{%s}, {%s}] cannot add to command list. because the command list is full.',
                                     base_command.command, base_command.serial_number)
-                except UnsupportedCommandException as e:
-                    logger.warning('received unsupported command[{%s}].', e.command.command)
+            except UnsupportedCommandException as e:
+                logger.warning('received unsupported command[{%s}].', e.command.command)
 
 
 class CommandSerialNumberCache:

@@ -77,7 +77,6 @@ requests = { version = ">=2.26.0", optional = true }
 kafka-python = { version = "*", optional = true }
 uvloop = "^0.17.0"
 aiokafka = "^0.8.0"
-yappi = "^1.4.0"
 
 [tool.poetry.extras]
 all=[

@@ -51,10 +51,10 @@ class GrpcProtocolAsync(ProtocolAsync):
         # self.state = None
 
         interceptors = [header_adder_interceptor_async('authentication', config.agent_authentication)] \
-                if config.agent_authentication else None
+                        if config.agent_authentication else None
 
         if config.agent_force_tls:
-            self.channel = grpc.aio.secure_channel(config.agent_collector_backend_services, 
+            self.channel = grpc.aio.secure_channel(config.agent_collector_backend_services,
                                                    grpc.ssl_channel_credentials(), interceptors=interceptors)
         else:
             self.channel = grpc.aio.insecure_channel(config.agent_collector_backend_services,
@@ -65,7 +65,7 @@ class GrpcProtocolAsync(ProtocolAsync):
         self.log_reporter = GrpcLogReportServiceAsync(self.channel)
         self.meter_reporter = GrpcMeterReportServiceAsync(self.channel)
         self.profile_channel = GrpcProfileTaskChannelServiceAsync(self.channel)
-    
+
     async def query_profile_commands(self):
         if logger_debug_enabled:
             logger.debug('query profile commands')
@@ -189,7 +189,7 @@ class GrpcProtocolAsync(ProtocolAsync):
         async def generator():
             while True:
                 # Let eventloop schedule blocking instead of user configuration: `config.agent_queue_timeout`
-                snapshot = await queue.get() # type: TracingThreadSnapshot
+                snapshot = await queue.get()  # type: TracingThreadSnapshot
 
                 queue.task_done()
 

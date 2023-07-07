@@ -32,6 +32,7 @@ from skywalking.protocol.management.Management_pb2_grpc import ManagementService
 from skywalking.protocol.profile.Profile_pb2 import ProfileTaskCommandQuery, ProfileTaskFinishReport
 from skywalking.protocol.profile.Profile_pb2_grpc import ProfileTaskStub
 
+
 class GrpcServiceManagementClientAsync(ServiceManagementClientAsync):
     def __init__(self, channel: grpc.aio.Channel):
         super().__init__()
@@ -103,7 +104,7 @@ class GrpcProfileTaskChannelServiceAsync(ProfileTaskChannelServiceAsync):
         )
 
         commands = await self.profile_stub.getProfileTaskCommands(query)
-        command_service_async.receive_command(commands)# put_nowait() not need to be awaited
+        command_service_async.receive_command(commands)  # put_nowait() not need to be awaited
 
     async def report(self, generator):
         await self.profile_stub.collectSnapshot(generator)

@@ -34,6 +34,7 @@ def init(force: bool = False):
     _meter_service = MeterService()
     _meter_service.start()
 
+
 async def init_async(async_event: asyncio.Event = None):
     from skywalking.meter.meter_service import MeterServiceAsync
 

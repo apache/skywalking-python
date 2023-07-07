@@ -21,13 +21,14 @@ import time
 
 from skywalking.utils.counter import AtomicCounter
 
-# Fixme: seem to be useless? 
+# Fixme: seem to be useless?
 _id = AtomicCounter()
 
 
 
 class GlobalIdGenerator:
     PROCESS_ID = uuid.uuid1().hex  # uuid.UUID(int=random.getrandbits(128), version=4).hex
+
 
     class IDContext:
         def __init__(self, last_timestamp, thread_seq):

@@ -135,8 +135,8 @@ class ProfileTaskChannelService(Service):
     def report(self, generator):
         raise NotImplementedError()
 
-# Asyncio Implementation
 
+# Asyncio Implementation
 class ServiceManagementClientAsync(ABC):
     """
     Used to register service and instance to OAP, for Asyncio.
@@ -204,7 +204,7 @@ class ServiceManagementClientAsync(ABC):
         Returns: [KeyStringValuePair, ...]
         """
         return [KeyStringValuePair(key=prop['key'], value=prop['value']) for prop in self.get_instance_properties()]
-    
+
     async def send_heart_beat(self) -> None:
         """
         Each protocol must implement this method to send heart beat to OAP.
@@ -216,7 +216,7 @@ class ServiceManagementClientAsync(ABC):
 class ServiceAsync(ABC):
     @abstractmethod
     async def report(self, segment: bytes) -> None:
-        raise NotImplementedError()    
+        raise NotImplementedError()
 
 
 class TraceSegmentReportServiceAsync(ServiceAsync):

@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
 install_uvloop()
 
+
 def report_with_backoff(reporter_name, init_wait):
     """
     An exponential backoff for retrying reporters.
@@ -70,6 +71,7 @@ def report_with_backoff(reporter_name, init_wait):
 
     return backoff_decorator
 
+
 def report_with_backoff_async(reporter_name, init_wait):
     """
     An exponential async backoff for retrying reporters.
@@ -95,6 +97,7 @@ def report_with_backoff_async(reporter_name, init_wait):
         return backoff_wrapper
 
     return backoff_decorator
+
 
 class SkyWalkingAgent(Singleton):
     """
@@ -530,7 +533,7 @@ class SkyWalkingAgentAsync(Singleton):
             # since 3.6 is EOL, we will not officially support it
             logger.warning('SkyWalking Python agent does not support Python 3.6 and below, '
                            'please upgrade to Python 3.7 or above.')
-        
+
         if not self.__started:
             # if not already started, start the agent
             config.finalize()  # Must be finalized exactly once
@@ -627,7 +630,7 @@ class SkyWalkingAgentAsync(Singleton):
             await self.__protocol.report_snapshot(self.__snapshot_queue)
 
     @report_with_backoff_async(reporter_name='query_profile_command',
-                         init_wait=config.agent_collector_get_profile_task_interval)
+                                init_wait=config.agent_collector_get_profile_task_interval)
     async def __query_profile_command(self) -> None:
         await self.__protocol.query_profile_commands()
 
@@ -661,7 +664,7 @@ class SkyWalkingAgentAsync(Singleton):
         try:
             self.__meter_queue.put_nowait(meter_data)
         except asyncio.QueueFull:
-            logger.warning(f'the meter queue is full, the item will be abandoned')
+            logger.warning('the meter queue is full, the item will be abandoned')
 
     def add_profiling_snapshot(self, snapshot: TracingThreadSnapshot):
         self.loop.call_soon_threadsafe(self.__asyncio_queue_put_nowait, self.__snapshot_queue, 'snapshot', snapshot)
@@ -671,6 +674,7 @@ class SkyWalkingAgentAsync(Singleton):
             asyncio.run_coroutine_threadsafe(self.__protocol.notify_profile_task_finish(task), self.loop)
         except Exception as e:
             logger.error(f'notify profile task finish to backend fail. {e}')
+
 
 # Export for user (backwards compatibility)
 # so users still use `from skywalking import agent`

@@ -55,6 +55,7 @@ class MeterService(Thread):
             time.sleep(config.agent_meter_reporter_period)
             self.send()
 
+
 class MeterServiceAsync():
     def __init__(self):
         self.meter_map = {}

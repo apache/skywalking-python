@@ -15,16 +15,13 @@
 # limitations under the License.
 #
 import json
-
-from asyncio import Event
-
-# import httpx
 import aiohttp
 from google.protobuf import json_format
 
 from skywalking import config
 from skywalking.client import ServiceManagementClientAsync, TraceSegmentReportServiceAsync, LogDataReportServiceAsync
 from skywalking.loggings import logger, logger_debug_enabled
+
 
 class HttpServiceManagementClientAsync(ServiceManagementClientAsync):
     def __init__(self):
@@ -77,44 +74,44 @@ class HttpTraceSegmentReportServiceAsync(TraceSegmentReportServiceAsync):
         async for segment in generator:
             async with self.client as client:
                 res = await client.post(self.url_report, json={
-                'traceId': str(segment.related_traces[0]),
-                'traceSegmentId': str(segment.segment_id),
-                'service': config.agent_name,
-                'serviceInstance': config.agent_instance_name,
-                'spans': [{
-                    'spanId': span.sid,
-                    'parentSpanId': span.pid,
-                    'startTime': span.start_time,
-                    'endTime': span.end_time,
-                    'operationName': span.op,
-                    'peer': span.peer,
-                    'spanType': span.kind.name,
-                    'spanLayer': span.layer.name,
-                    'componentId': span.component.value,
-                    'isError': span.error_occurred,
-                    'logs': [{
-                        'time': int(log.timestamp * 1000),
-                        'data': [{
-                            'key': item.key,
-                            'value': item.val,
-                        } for item in log.items],
-                    } for log in span.logs],
-                    'tags': [{
-                        'key': tag.key,
-                        'value': tag.val,
-                    } for tag in span.iter_tags()],
-                    'refs': [{
-                        'refType': 0,
-                        'traceId': ref.trace_id,
-                        'parentTraceSegmentId': ref.segment_id,
-                        'parentSpanId': ref.span_id,
-                        'parentService': ref.service,
-                        'parentServiceInstance': ref.service_instance,
-                        'parentEndpoint': ref.endpoint,
-                        'networkAddressUsedAtPeer': ref.client_address,
-                    } for ref in span.refs if ref.trace_id]
-                } for span in segment.spans]
-            })
+                    'traceId': str(segment.related_traces[0]),
+                    'traceSegmentId': str(segment.segment_id),
+                    'service': config.agent_name,
+                    'serviceInstance': config.agent_instance_name,
+                    'spans': [{
+                        'spanId': span.sid,
+                        'parentSpanId': span.pid,
+                        'startTime': span.start_time,
+                        'endTime': span.end_time,
+                        'operationName': span.op,
+                        'peer': span.peer,
+                        'spanType': span.kind.name,
+                        'spanLayer': span.layer.name,
+                        'componentId': span.component.value,
+                        'isError': span.error_occurred,
+                        'logs': [{
+                            'time': int(log.timestamp * 1000),
+                            'data': [{
+                                'key': item.key,
+                                'value': item.val,
+                            } for item in log.items],
+                        } for log in span.logs],
+                        'tags': [{
+                            'key': tag.key,
+                            'value': tag.val,
+                        } for tag in span.iter_tags()],
+                        'refs': [{
+                            'refType': 0,
+                            'traceId': ref.trace_id,
+                            'parentTraceSegmentId': ref.segment_id,
+                            'parentSpanId': ref.span_id,
+                            'parentService': ref.service,
+                            'parentServiceInstance': ref.service_instance,
+                            'parentEndpoint': ref.endpoint,
+                            'networkAddressUsedAtPeer': ref.client_address,
+                        } for ref in span.refs if ref.trace_id]
+                    } for span in segment.spans]
+                })
             if logger_debug_enabled:
                 logger.debug('report traces response: %s', res)
 
