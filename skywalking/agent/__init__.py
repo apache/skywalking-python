@@ -629,8 +629,9 @@ class SkyWalkingAgentAsync(Singleton):
         if not self.__snapshot_queue.empty():
             await self.__protocol.report_snapshot(self.__snapshot_queue)
 
-    @report_with_backoff_async(reporter_name='query_profile_command',
-                                init_wait=config.agent_collector_get_profile_task_interval)
+    @report_with_backoff_async(
+        reporter_name='query_profile_command',
+        init_wait=config.agent_collector_get_profile_task_interval)
     async def __query_profile_command(self) -> None:
         await self.__protocol.query_profile_commands()
 

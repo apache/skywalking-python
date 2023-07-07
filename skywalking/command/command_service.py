@@ -96,8 +96,10 @@ class CommandServiceAsync:
                 try:
                     self._commands.put_nowait(base_command)
                 except AsyncQueueFull:
-                    logger.warning('command[{%s}, {%s}] cannot add to command list. because the command list is full.',
-                                    base_command.command, base_command.serial_number)
+                    logger.warning(
+                        'command[{%s}, {%s}] cannot add to command list. because the command list is full.',
+                        base_command.command, 
+                        base_command.serial_number)
             except UnsupportedCommandException as e:
                 logger.warning('received unsupported command[{%s}].', e.command.command)
 

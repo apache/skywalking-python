@@ -51,7 +51,7 @@ class GrpcProtocolAsync(ProtocolAsync):
         # self.state = None
 
         interceptors = [header_adder_interceptor_async('authentication', config.agent_authentication)] \
-                        if config.agent_authentication else None
+                            if config.agent_authentication else None
 
         if config.agent_force_tls:
             self.channel = grpc.aio.secure_channel(config.agent_collector_backend_services,
