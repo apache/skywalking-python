@@ -36,17 +36,12 @@ logger_kafka.setLevel(max(logging.WARN, logger.level))
 
 class KafkaProtocolAsync(ProtocolAsync):
     def __init__(self):
-        self.properties_sent = Event()
         self.service_management = KafkaServiceManagementClientAsync()
         self.traces_reporter = KafkaTraceSegmentReportServiceAsync()
         self.log_reporter = KafkaLogDataReportServiceAsync()
         self.meter_reporter = KafkaMeterDataReportServiceAsync()
 
     async def heartbeat(self):
-        if not self.properties_sent.is_set():
-            await self.service_management.send_instance_props()
-            self.properties_sent.set()
-
         await self.service_management.send_heart_beat()
 
     async def report_segment(self, queue: Queue):

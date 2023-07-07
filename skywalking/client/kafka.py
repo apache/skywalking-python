@@ -66,6 +66,8 @@ class KafkaServiceManagementClient(ServiceManagementClient):
         self.topic_key_register = 'register-'
         self.topic = config.kafka_topic_management
 
+        self.send_instance_props()
+
     def send_instance_props(self):
         instance = InstanceProperties(
             service=config.agent_name,

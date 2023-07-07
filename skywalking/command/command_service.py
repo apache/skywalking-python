@@ -98,7 +98,7 @@ class CommandServiceAsync:
                 except AsyncQueueFull:
                     logger.warning(
                         'command[{%s}, {%s}] cannot add to command list. because the command list is full.',
-                        base_command.command, 
+                        base_command.command,
                         base_command.serial_number)
             except UnsupportedCommandException as e:
                 logger.warning('received unsupported command[{%s}].', e.command.command)

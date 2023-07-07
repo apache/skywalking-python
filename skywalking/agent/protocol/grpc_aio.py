@@ -50,8 +50,9 @@ class GrpcProtocolAsync(ProtocolAsync):
         # and the channel state is only used for debug, the cost of monitoring this value is too high to support.
         # self.state = None
 
-        interceptors = [header_adder_interceptor_async('authentication', config.agent_authentication)] \
-                            if config.agent_authentication else None
+        interceptors = None
+        if config.agent_authentication:
+            interceptors = [header_adder_interceptor_async('authentication', config.agent_authentication)]
 
         if config.agent_force_tls:
             self.channel = grpc.aio.secure_channel(config.agent_collector_backend_services,

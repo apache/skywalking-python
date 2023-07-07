@@ -17,6 +17,7 @@
 
 import ast
 import os
+import asyncio
 from asyncio import Event
 
 from aiokafka import AIOKafkaProducer
@@ -72,6 +73,8 @@ class KafkaServiceManagementClientAsync(ServiceManagementClientAsync):
         self.__producer_start_event = Event()
         self.topic_key_register = 'register-'
         self.topic = config.kafka_topic_management
+
+        asyncio.run_coroutine_threadsafe(self.send_instance_props(), loop=asyncio.get_event_loop())
 
     async def send_instance_props(self):
         if not self.__producer_start_event.is_set():
