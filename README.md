@@ -47,7 +47,7 @@ Before submitting a pull request or pushing a commit, please read our [contribut
 * Mail list: **dev@skywalking.apache.org**. Mail to `dev-subscribe@skywalking.apache.org`, follow the reply to subscribe the mail list.
 * Send `Request to join SkyWalking slack` mail to the mail list(`dev@skywalking.apache.org`), we will invite you in.
 * Twitter, [ASFSkyWalking](https://twitter.com/AsfSkyWalking)
-* QQ Group: 901167865, 392443393
+* For Chinese speaker, send `[CN] Request to join SkyWalking slack` mail to the mail list(`dev@skywalking.apache.org`), we will invite you in.
 * [bilibili B站 视频](https://space.bilibili.com/390683219)
 
 ## License
