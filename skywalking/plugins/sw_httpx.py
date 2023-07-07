@@ -40,9 +40,6 @@ def install():
                              follow_redirects=USE_CLIENT_DEFAULT, ):
         url_object = request.url
 
-        if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/').endswith(url_object.netloc.decode()):
-            return await _async_send(self, request, stream=stream, auth=auth, follow_redirects=follow_redirects)
-
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(
             request.method) else get_context().new_exit_span(op=url_object.path or '/', peer=url_object.netloc.decode(),
                                                              component=Component.HTTPX)
