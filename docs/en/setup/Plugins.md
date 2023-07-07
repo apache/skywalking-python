@@ -33,6 +33,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.7 - ['2.0'];  | `sw_kafka` |
 | [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0', '0.7.0'];  | `sw_loguru` |
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
+| [neo4j](https://neo4j.com/docs/python-manual/5/) | Python >=3.7 - ['5.*'];  | `sw_neo4j` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.11 - ['3.1.*']; Python >=3.7 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
 | [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
@@ -53,6 +54,8 @@ in SkyWalking currently. Celery clients can use whatever protocol they want.
 - While Falcon is instrumented, only Hug is tested.
 Hug is believed to be abandoned project, use this plugin with a bit more caution.
 Instead of Hug, plugin test should move to test actual Falcon.
+- The Neo4j plugin integrates neo4j python driver 5.x.x versions which
+support both Neo4j 5 and 4.4 DBMS.
 - The websocket instrumentation only traces client side connection handshake,
 the actual message exchange (send/recv) is not traced since injecting headers to socket message
 body is the only way to propagate the trace context, which requires customization of message structure
