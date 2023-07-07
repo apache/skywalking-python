@@ -81,10 +81,10 @@ class HttpProtocolAsync(ProtocolAsync):
                 logger.debug('reporting log failed: %s', e)
 
     # meter support requires OAP side HTTP handler to be implemented
-    async def report_meter(self, queue: Queue = True):
+    async def report_meter(self, queue: Queue):
         ...
 
-    async def report_snapshot(self, queue: Queue = True):
+    async def report_snapshot(self, queue: Queue):
         ...
 
     async def query_profile_commands(self):

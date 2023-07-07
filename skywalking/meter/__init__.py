@@ -41,7 +41,7 @@ async def init_async(async_event: asyncio.Event = None):
     global _meter_service
 
     _meter_service = MeterServiceAsync()
-    if async_event:
+    if async_event is not None:
         async_event.set()
     task = asyncio.create_task(_meter_service.start())
     _meter_service.strong_ref_set.add(task)

@@ -32,7 +32,8 @@ note = """"""
 
 def install():
     from aiohttp import ClientSession
-    from aiohttp.web_protocol import RequestHandler, BaseRequest
+    from aiohttp.web_protocol import RequestHandler
+    from aiohttp.web_request import BaseRequest
     from multidict import CIMultiDict, MultiDict, MultiDictProxy
     from yarl import URL
 

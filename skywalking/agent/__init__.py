@@ -24,7 +24,7 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING, Optional
 
-from uvloop import install as install_uvloop
+import uvloop
 
 from skywalking import config, plugins
 from skywalking import loggings
@@ -42,7 +42,7 @@ from skywalking.utils.singleton import Singleton
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
-install_uvloop()
+uvloop.install()
 
 
 def report_with_backoff(reporter_name, init_wait):
@@ -523,7 +523,8 @@ class SkyWalkingAgentAsync(Singleton):
         except Exception as e:
             logger.error(f'Error in Python agent asyncio event loop: {e}')
         finally:
-            self._finished.set()
+            if self._finished is not None:
+                self._finished.set()
 
     def start(self) -> None:
         loggings.init()
@@ -566,7 +567,8 @@ class SkyWalkingAgentAsync(Singleton):
         This method is called when the agent is shutting down.
         Clean up all the queues and stop all the asyncio tasks.
         """
-        self._finished.set()
+        if self._finished is not None:
+            self._finished.set()
         queue_join_coroutine_list = [self.__segment_queue.join()]
 
         if config.agent_log_reporter_active:
