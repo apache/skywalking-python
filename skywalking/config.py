@@ -103,7 +103,6 @@ agent_experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SU
 agent_queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
 # Replace the threads to asyncio coroutines in network IO task with the OAP
 # This option is experimental and may not work as expected.
-# Profile data is temporarily unavailable to sent to the OAP if this option is enabled.
 agent_asyncio_enhancement: bool = os.getenv('SW_AGENT_ASYNCIO_ENHANCEMENT', '').lower() == 'true'
 
 # BEGIN: SW_PYTHON Auto Instrumentation CLI
@@ -242,12 +241,7 @@ def finalize_feature() -> None:
     """
     Examine reporter configuration and warn users about the incompatibility of protocol vs features
     """
-    global agent_profile_active, agent_meter_reporter_active, agent_protocol
-
-    if agent_asyncio_enhancement and agent_profile_active:
-        agent_profile_active = False
-        warnings.warn('Asyncio enhancement temporarily does not work with profiler, \
-                    please disable profiler if you would like to use this feature.')
+    global agent_profile_active, agent_meter_reporter_active
 
     if agent_protocol == 'http' and (agent_profile_active or agent_meter_reporter_active):
         agent_profile_active = False
