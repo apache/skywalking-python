@@ -24,8 +24,6 @@ from queue import Queue, Full
 from threading import Thread, Event
 from typing import TYPE_CHECKING, Optional
 
-import uvloop
-
 from skywalking import config, plugins
 from skywalking import loggings
 from skywalking import meter
@@ -42,7 +40,9 @@ from skywalking.utils.singleton import Singleton
 if TYPE_CHECKING:
     from skywalking.trace.context import Segment
 
-uvloop.install()
+if config.agent_asyncio_enhancement:
+    import uvloop
+    uvloop.install()
 
 
 def report_with_backoff(reporter_name, init_wait):
@@ -558,7 +558,6 @@ class SkyWalkingAgentAsync(Singleton):
         if config.agent_profile_active:
             profile.init()
 
-        # can use asyncio.to_thread() in Python 3.9+
         self.event_loop_thread = Thread(name='event_loop_thread', target=self.__start_event_loop, daemon=True)
         self.event_loop_thread.start()
 
