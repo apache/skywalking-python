@@ -67,4 +67,4 @@ We have shown that the asynchronous enhancement function improves the transmissi
 
 This is mainly because a large part of the data in the `profile` part comes from the monitoring and measurement of Python threads, which is exactly what we need to avoid in asynchronous enhancement. Since operations on threads cannot be bypassed, we may need additional overhead to support cross-thread coroutine communication, which may lead to performance degradation instead of increase.
 
-Asynchronous enhancements involved many code changes and introduced some new dependencies. Since this feature is relatively new, it may cause some unexpected errors and problems. **If you encounter them, please feel free to contact us or submit issues and PRs**!
+Asynchronous enhancements involve many code changes and introduced some new dependencies. Since this feature is relatively new, it may cause some unexpected errors and problems. **If you encounter them, please feel free to contact us or submit issues and PRs**!
