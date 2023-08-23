@@ -28,7 +28,7 @@ In the `SkyWalkingAgentAsync` class, we have employed asyncio coroutines and the
 
 ## Performance improvement
 
-We using [wrk](https://github.com/wg/wrk) to pressure testing the network throughput of the Python agents in a [FastAPI](https://github.com/tiangolo/fastapi) application.
+We use [wrk](https://github.com/wg/wrk) to pressure test the network throughput of the Python agents in a [FastAPI](https://github.com/tiangolo/fastapi) application.
 
 - gRPC
 
