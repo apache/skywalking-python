@@ -26,7 +26,7 @@ In the `SkyWalkingAgentAsync` class, we have employed asyncio coroutines and the
 
 - **Kafka**: We use the [`aiokafka`](https://github.com/aio-libs/aiokafka) module to replace the `kafka-python` module.
 
-## Proformance improvement
+## Performance improvement
 
 We using [wrk](https://github.com/wg/wrk) to pressure testing the network throughput of the Python agents in a [FastAPI](https://github.com/tiangolo/fastapi) application.
 
