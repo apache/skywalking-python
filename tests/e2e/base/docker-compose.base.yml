@@ -118,8 +118,9 @@ services:
       retries: 120
     command: [ "run", "python3", "flask_consumer.py" ]
 
+  # Using bitnami/kafka:3.5.1-debian-11-r3 image
   broker-a:
-    image: docker.io/bitnami/kafka:3.4
+    image: docker.io/bitnami/kafka@sha256:e28e91f169403cf56ec04622ff0a8d7b2f0713717cedf3313dd5ab9d3189d0da
     hostname: broker-a
     expose:
       - 9092
@@ -137,8 +138,9 @@ services:
       timeout: 60s
       retries: 120
 
+  # Using bitnami/kafka:3.5.1-debian-11-r3 image
   broker-b:
-    image: docker.io/bitnami/kafka:3.4
+    image: docker.io/bitnami/kafka@sha256:e28e91f169403cf56ec04622ff0a8d7b2f0713717cedf3313dd5ab9d3189d0da
     hostname: broker-b
     expose:
       - 9092
