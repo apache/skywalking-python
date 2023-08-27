@@ -38,6 +38,8 @@ catalog:
             path: "/en/setup/advanced/MeterReporter"
           - name: "Manual Trace Instrumentation"
             path: "/en/setup/advanced/API"
+          - name: "Asynchronous Enhancement"
+            path: "/en/setup/advanced/AsyncEnhancement"
   - name: "Supported Plugins"
     catalog:
       - name: "Supported Libraries"
