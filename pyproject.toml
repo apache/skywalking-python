@@ -75,9 +75,19 @@ wrapt = '*'
 psutil = '*'
 requests = { version = ">=2.26.0", optional = true }
 kafka-python = { version = "*", optional = true }
+uvloop = { version = "^0.17.0", optional = true }
+aiokafka = { version = "^0.8.0", optional = true }
+aiohttp = { version = "^3.7.4", optional = true }
 
 [tool.poetry.extras]
 all=[
+    'requests',
+    'kafka-python',
+    'uvloop',
+    'aiokafka',
+    'aiohttp',
+]
+sync=[
     'requests',
     'kafka-python',
 ]
@@ -86,6 +96,19 @@ http= [
 ]
 kafka=[
     'kafka-python',
+]
+async=[
+    'uvloop',
+    'aiokafka',
+    'aiohttp',
+]
+asynchttp=[
+    'uvloop',
+    'aiohttp',
+]
+asynckafka=[
+    'uvloop',
+    'aiokafka',
 ]
 
 [tool.poetry.group.dev.dependencies]

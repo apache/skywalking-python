@@ -33,12 +33,19 @@ note = """"""
 def install():
     from aiohttp import ClientSession
     from aiohttp.web_protocol import RequestHandler
+    from aiohttp.web_request import BaseRequest
     from multidict import CIMultiDict, MultiDict, MultiDictProxy
     from yarl import URL
+
+    _request = ClientSession._request
 
     async def _sw_request(self: ClientSession, method: str, str_or_url, **kwargs):
         url = URL(str_or_url).with_user(None).with_password(None)
         peer = f"{url.host or ''}:{url.port or ''}"
+
+        if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
+                .endswith(f'{url.host}:{url.port}'):
+            return _request
 
         span = NoopSpan(NoopContext()) if config.ignore_http_method_check(method) \
             else get_context().new_exit_span(op=url.path or '/', peer=peer, component=Component.AioHttp)
@@ -69,10 +76,16 @@ def install():
 
             return res
 
-    _request = ClientSession._request
     ClientSession._request = _sw_request
 
-    async def _sw_handle_request(self, request, start_time: float):
+    _handle_request = RequestHandler._handle_request
+
+    async def _sw_handle_request(self, request: BaseRequest, start_time: float):
+
+        if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
+                .endswith(f'{request.url.host}:{request.url.port}'):
+            return _handle_request
+
         carrier = Carrier()
         method = request.method
 
@@ -106,5 +119,4 @@ def install():
 
         return resp, reset
 
-    _handle_request = RequestHandler._handle_request
     RequestHandler._handle_request = _sw_handle_request

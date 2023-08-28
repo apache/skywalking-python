@@ -40,6 +40,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | agent_instance_properties_json | SW_AGENT_INSTANCE_PROPERTIES_JSON | <class 'str'> |  | A custom JSON string to be reported as service instance properties, e.g. `{"key": "value"}` |
 | agent_experimental_fork_support | SW_AGENT_EXPERIMENTAL_FORK_SUPPORT | <class 'bool'> | False | The agent will restart itself in any os.fork()-ed child process. Important Note: it's not suitable for short-lived processes as each one will create a new instance in SkyWalking dashboard in format of `service_instance-child(pid)`. This feature may not work when a precise combination of gRPC + Python 3.7 + subprocess (not fork) is used together. The agent will output a warning log when using on Python 3.7 for such a reason. |
 | agent_queue_timeout | SW_AGENT_QUEUE_TIMEOUT | <class 'int'> | 1 | DANGEROUS - This option controls the interval of each bulk report from telemetry data queues Do not modify unless you have evaluated its impact given your service load. |
+| agent_asyncio_enhancement | SW_AGENT_ASYNCIO_ENHANCEMENT | <class 'bool'> | False | Replace the threads to asyncio coroutines to report telemetry data to the OAP. This option is experimental and may not work as expected. |
 ###  SW_PYTHON Auto Instrumentation CLI
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |

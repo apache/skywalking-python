@@ -23,7 +23,7 @@ from time import time
 import grpc
 
 from skywalking import config
-from skywalking.agent import Protocol
+from skywalking.agent.protocol import Protocol
 from skywalking.agent.protocol.interceptors import header_adder_interceptor
 from skywalking.client.grpc import GrpcServiceManagementClient, GrpcTraceSegmentReportService, \
     GrpcProfileTaskChannelService, GrpcLogDataReportService, GrpcMeterReportService

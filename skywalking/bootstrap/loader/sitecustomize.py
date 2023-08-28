@@ -130,7 +130,8 @@ if not (version_match and prefix_match):
     os._exit(1)  # noqa: do not go further
 
 else:
-    from skywalking import agent, config
+    from skywalking import config
+    from skywalking.agent import agent
 
     _sw_loader_logger.info(f'Process-{os.getpid()}, running sitecustomize.py from {__file__}')
     # also override debug for skywalking agent itself

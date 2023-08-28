@@ -101,6 +101,9 @@ agent_experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SU
 # DANGEROUS - This option controls the interval of each bulk report from telemetry data queues
 # Do not modify unless you have evaluated its impact given your service load.
 agent_queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
+# Replace the threads to asyncio coroutines to report telemetry data to the OAP.
+# This option is experimental and may not work as expected.
+agent_asyncio_enhancement: bool = os.getenv('SW_AGENT_ASYNCIO_ENHANCEMENT', '').lower() == 'true'
 
 # BEGIN: SW_PYTHON Auto Instrumentation CLI
 # Special: can only be passed via environment. This config controls the child process agent bootstrap behavior in
