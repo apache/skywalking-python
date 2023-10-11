@@ -4,6 +4,7 @@
 
 - Feature:
   - Users now can specify the `SW_AGENT_ASYNCIO_ENHANCEMENT` environment variable to enable the performance enhancement with asyncio (#316)
+  - Add support printing TID to logs (#323)
 
 - Plugins:
   - Add neo4j plugin.(#312)
