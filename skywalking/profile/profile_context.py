@@ -19,7 +19,6 @@ import sys
 import time
 import traceback
 
-from packaging import version
 from threading import Thread, Event, current_thread
 from typing import Optional
 
@@ -43,13 +42,7 @@ try:
     from gevent.exceptions import BlockingSwitchOutError
 
     if monkey.is_module_patched('threading'):
-        if version.parse(greenlet.__version__) <= version.parse('1.1.3.post0'):
-            # todo: greenlet will raise a segment fault with signal 11 when it upgrade to 2.0.0
-            # this issue may be caused by gevent's compatibility with greenlet
-            # we should do some tests when gevent release a new version to verify if this issue would be fixed
-            THREAD_MODEL = 'greenlet'
-        else:
-            logger.warn('greenlet profiler can not work with version >= 2.0.0')
+        THREAD_MODEL = 'greenlet'
 except ImportError:
     pass
 
