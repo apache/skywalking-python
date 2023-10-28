@@ -32,6 +32,8 @@ def install():
     layout = config.agent_log_reporter_layout  # type: str
     if layout:
         from skywalking.log.formatter import SWFormatter
+        if config.agent_log_print_tid:
+            layout = '%(tid)s ' + layout
         sw_formatter = SWFormatter(fmt=layout, tb_limit=config.agent_cause_exception_depth)
 
     _handle = Logger.handle
@@ -74,6 +76,9 @@ def install():
             return l_tags
 
         context = get_context()
+
+        if config.agent_log_print_tid:
+            record.tid = str(context.segment.related_traces[0])
 
         active_span_id = -1
         primary_endpoint_name = ''

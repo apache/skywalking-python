@@ -268,7 +268,6 @@ class SkyWalkingAgent(Singleton):
             logger.info(f'SkyWalking sync agent instance {config.agent_instance_name} starting in pid-{os.getpid()}.')
 
             # Install log reporter core
-            # TODO - Add support for printing traceID/ context in logs
             if config.agent_log_reporter_active:
                 from skywalking import log
                 log.install()
@@ -502,7 +501,6 @@ class SkyWalkingAgentAsync(Singleton):
         self._finished = asyncio.Event()
 
         # Install log reporter core
-        # TODO - Add support for printing traceID/ context in logs
         if config.agent_log_reporter_active:
             from skywalking import log
             log.install()

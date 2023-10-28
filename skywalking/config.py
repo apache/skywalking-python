@@ -166,6 +166,8 @@ agent_log_reporter_formatted: bool = os.getenv('SW_AGENT_LOG_REPORTER_FORMATTED'
 # Only applies to logging module.
 agent_log_reporter_layout: str = os.getenv('SW_AGENT_LOG_REPORTER_LAYOUT',
                                            '%(asctime)s [%(threadName)s] %(levelname)s %(name)s - %(message)s')
+# If `True`, the log reporter will print the trace ID in logs.
+agent_log_print_tid: bool = os.getenv('SW_AGENT_LOG_PRINT_TID', '').lower() == 'true'
 # This configuration is shared by log reporter and tracer.
 # This config limits agent to report up to `limit` stacktrace, please refer to [Python traceback](
 # https://docs.python.org/3/library/traceback.html#traceback.print_tb) for more explanations.

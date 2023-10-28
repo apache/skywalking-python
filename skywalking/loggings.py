@@ -22,21 +22,12 @@ from skywalking import config
 logger_debug_enabled = False
 
 
-class SWFilter(logging.Filter):
-    def filter(self, record):
-        from skywalking.trace.context import get_context
-        context = get_context()
-        record.tid = str(context.segment.related_traces[0])
-        return True
-
-
 def getLogger(name=None):  # noqa
     logger = logging.getLogger(name)
     ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s %(name)s %(tid)s [pid:%(process)d] [%(threadName)s] [%(levelname)s] %(message)s')
+    formatter = logging.Formatter('%(asctime)s %(name)s [pid:%(process)d] [%(threadName)s] [%(levelname)s] %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
-    logger.addFilter(SWFilter())
     logger.propagate = False
 
     return logger
