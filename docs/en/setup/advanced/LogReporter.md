@@ -106,4 +106,5 @@ Will result in:
 ```
 
 ## Print trace ID in your logs
-You can choose the agent to print trace ID in your logs through agent_log_print_tid=True.
+You can choose to print the trace ID in logs by setting `agent_log_print_tid=True`.
+The trace ID will be printed at the front of the specified layout.
