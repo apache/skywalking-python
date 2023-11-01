@@ -18,5 +18,5 @@
 #
 
 set -ex
-pip install gunicorn gevent "greenlet<2.0.0"
+pip install gunicorn gevent "greenlet>=3"
 gunicorn -k gevent -b :9090 --chdir /services entrypoint:app
