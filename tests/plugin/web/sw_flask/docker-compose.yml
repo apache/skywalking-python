@@ -31,7 +31,7 @@ services:
       - 9091:9091
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip install flask itsdangerous==2.0.1 && pip install -r /app/requirements.txt && sw-python run python3 /app/services/provider.py']
+    command: ['bash', '-c', 'pip install flask itsdangerous==2.0.1 "Werkzeug<3" && pip install -r /app/requirements.txt && sw-python run python3 /app/services/provider.py']
     depends_on:
       collector:
         condition: service_healthy
@@ -52,7 +52,7 @@ services:
       - 9090:9090
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip install flask itsdangerous==2.0.1 && pip install -r /app/requirements.txt && sw-python run python3 /app/services/consumer.py']
+    command: ['bash', '-c', 'pip install flask itsdangerous==2.0.1 "Werkzeug<3" && pip install -r /app/requirements.txt && sw-python run python3 /app/services/consumer.py']
     depends_on:
       collector:
         condition: service_healthy

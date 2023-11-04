@@ -31,7 +31,7 @@ RUN cd /skywalking-python && apt-get update && apt-get install -y make && make i
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc build-essential\
     && rm -rf /var/lib/apt/lists/* \
-    && pip install uwsgi fastapi uvicorn aiohttp flask gunicorn\
+    && pip install uwsgi fastapi uvicorn aiohttp flask "Werkzeug<3" gunicorn \
     && apt-get purge -y --auto-remove gcc build-essential
 
 # Entrypoint with agent attached
