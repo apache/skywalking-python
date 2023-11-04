@@ -23,7 +23,8 @@ RUN pip install --upgrade pip
 RUN pip install poetry
 COPY ./ /tmp/
 RUN make -C /tmp package
-RUN pip wheel psutil -w /tmp/dist/
+# This is a temporary workaround, see #11481
+RUN pip wheel "psutil<=5.9.5" -w /tmp/dist/
 
 FROM base AS final
 COPY --from=builder /tmp/dist/*.whl /tmp/
