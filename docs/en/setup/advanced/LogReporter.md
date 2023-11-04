@@ -104,3 +104,9 @@ Will result in:
   ]
 }
 ```
+
+## Print trace ID in your logs
+To print out the trace IDs in the logs, simply add `%(tid)s` to the `agent_log_reporter_layout`.
+
+You can take advantage of this feature to print out the trace IDs on any channel you desire, not limited to reporting logs to OAP,
+this can be achieved by using any formatter you prefer in your own application logic.

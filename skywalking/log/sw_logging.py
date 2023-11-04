@@ -75,6 +75,9 @@ def install():
 
         context = get_context()
 
+        if '%(tid)s' in layout:
+            record.tid = str(context.segment.related_traces[0])
+
         active_span_id = -1
         primary_endpoint_name = ''
 
