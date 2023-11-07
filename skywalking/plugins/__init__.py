@@ -20,7 +20,7 @@ import pkgutil
 import re
 import traceback
 
-import pkg_resources
+import importlib.metadata
 from packaging import version
 
 import skywalking
@@ -78,8 +78,8 @@ def pkg_version_check(plugin):
     rules = plugin.version_rule.get('rules')
 
     try:
-        current_pkg_version = pkg_resources.get_distribution(pkg_name).version
-    except pkg_resources.DistributionNotFound:
+        current_pkg_version = importlib.metadata.version(pkg_name)
+    except importlib.metadata.PackageNotFoundError:
         # when failed to get the version, we consider it as supported.
         return supported
 
