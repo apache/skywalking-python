@@ -13,6 +13,7 @@
   - Fix unexpected 'No active span' IllegalStateError (#311)
   - **Tentative**: Set upper bound <=5.9.5 for psutil package due to test failure. (#326)
   - Fix `pkg_resources` DeprecationWarning by replace `pkg_resources` with `importlib_metadata` (#329)
+
 ### 1.0.1
 
 - Feature:
