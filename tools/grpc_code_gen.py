@@ -18,7 +18,6 @@ import glob
 import os
 import re
 
-import importlib.metadata
 from grpc_tools import protoc
 from packaging import version
 import sys
