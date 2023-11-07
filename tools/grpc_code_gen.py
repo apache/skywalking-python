@@ -18,11 +18,18 @@ import glob
 import os
 import re
 
-import pkg_resources
 from grpc_tools import protoc
 from packaging import version
+import sys
 
-grpc_tools_version = pkg_resources.get_distribution('grpcio-tools').version
+if sys.version_info < (3, 8):
+    import pkg_resources
+    grpc_tools_version = pkg_resources.get_distribution('grpcio-tools').version
+
+else:
+    import importlib.metadata
+    grpc_tools_version = importlib.metadata.version('grpcio-tools')
+
 dest_dir = 'skywalking/protocol'
 src_dir = 'protocol'
 
