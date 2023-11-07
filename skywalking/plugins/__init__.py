@@ -20,7 +20,22 @@ import pkgutil
 import re
 import traceback
 
-import importlib.metadata
+import sys
+
+if sys.version_info < (3, 8):
+    import pkg_resources
+    PackageNotFoundException = pkg_resources.DistributionNotFound
+
+    def get_pkg_version(pkg_name):
+        return pkg_resources.get_distribution(pkg_name).version
+
+else:
+    import importlib.metadata
+    PackageNotFoundException = importlib.metadata.PackageNotFoundError
+
+    def get_pkg_version(pkg_name):
+        return importlib.metadata.version(pkg_name)
+
 from packaging import version
 
 import skywalking
@@ -78,8 +93,8 @@ def pkg_version_check(plugin):
     rules = plugin.version_rule.get('rules')
 
     try:
-        current_pkg_version = importlib.metadata.version(pkg_name)
-    except importlib.metadata.PackageNotFoundError:
+        current_pkg_version = get_pkg_version(pkg_name)
+    except PackageNotFoundException:
         # when failed to get the version, we consider it as supported.
         return supported
 
