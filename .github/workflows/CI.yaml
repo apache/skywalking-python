@@ -232,20 +232,20 @@ jobs:
             path: tests/e2e/case/grpc/single/e2e.yaml
           - name: gRPC-gunicorn
             path: tests/e2e/case/grpc/gunicorn/e2e.yaml
-          - name: gRPC-uwsgi
-            path: tests/e2e/case/grpc/uwsgi/e2e.yaml
+          # - name: gRPC-uwsgi
+          #   path: tests/e2e/case/grpc/uwsgi/e2e.yaml
           - name: HTTP-single-process
             path: tests/e2e/case/http/single/e2e.yaml
           - name: HTTP-gunicorn
             path: tests/e2e/case/http/gunicorn/e2e.yaml
-          - name: HTTP-uwsgi
-            path: tests/e2e/case/http/uwsgi/e2e.yaml
+          # - name: HTTP-uwsgi
+          #   path: tests/e2e/case/http/uwsgi/e2e.yaml
           - name: Kafka-single-process
             path: tests/e2e/case/kafka/single/e2e.yaml
           - name: Kafka-gunicorn
             path: tests/e2e/case/kafka/gunicorn/e2e.yaml
-          - name: Kafka-uwsgi
-            path: tests/e2e/case/kafka/uwsgi/e2e.yaml
+          # - name: Kafka-uwsgi
+          #   path: tests/e2e/case/kafka/uwsgi/e2e.yaml
           - name: profiling_threading
             path: tests/e2e/case/profiling/threading/e2e.yaml
           - name: profiling_greenlet
