@@ -32,6 +32,9 @@ def install():
     import wrapt
     import MySQLdb
 
+    if hasattr(MySQLdb, 'install_as_MySQLdb'):
+        raise ImportError('SKIP MySQLdb module mapped by PyMySQL', name='MySQLdb', path='')
+
     _connect = MySQLdb.connect
 
     def _sw_connect(*args, **kwargs):
