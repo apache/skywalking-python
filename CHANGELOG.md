@@ -8,6 +8,7 @@
 
 - Plugins:
   - Add neo4j plugin.(#312)
+  - Add pulsar plugin.(#337)
 
 - Fixes:
   - Fix unexpected 'No active span' IllegalStateError (#311)
