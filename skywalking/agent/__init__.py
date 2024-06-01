@@ -119,6 +119,10 @@ class SkyWalkingAgent(Singleton):
     def __bootstrap(self):
         # when forking, already instrumented modules must not be instrumented again
         # otherwise it will cause double instrumentation! (we should provide an un-instrument method)
+
+        # Initialize queues for segment, log, meter and profiling snapshots
+        self.__init_queues()
+
         if config.agent_protocol == 'grpc':
             from skywalking.agent.protocol.grpc import GrpcProtocol
             self.__protocol = GrpcProtocol()
@@ -129,18 +133,29 @@ class SkyWalkingAgent(Singleton):
             from skywalking.agent.protocol.kafka import KafkaProtocol
             self.__protocol = KafkaProtocol()
 
-        # Initialize queues for segment, log, meter and profiling snapshots
-        self.__segment_queue: Optional[Queue] = None
+        # Start reporter threads and register queues
+        self.__init_threading()
+
+    def __init_queues(self) -> None:
+        """
+        This method initializes all the queues for the agent and reporters.
+        """
+        self.__segment_queue = Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
         self.__log_queue: Optional[Queue] = None
         self.__meter_queue: Optional[Queue] = None
         self.__snapshot_queue: Optional[Queue] = None
 
-        # Start reporter threads and register queues
-        self.__init_threading()
+        if config.agent_meter_reporter_active:
+            self.__meter_queue = Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
+        if config.agent_log_reporter_active:
+            self.__log_queue = Queue(maxsize=config.agent_log_reporter_max_buffer_size)
+        if config.agent_profile_active:
+            self.__snapshot_queue = Queue(maxsize=config.agent_profile_snapshot_transport_buffer_size)
+
 
     def __init_threading(self) -> None:
         """
-        This method initializes all the queues and threads for the agent and reporters.
+        This method initializes all the threads for the agent and reporters.
         Upon os.fork(), callback will reinitialize threads and queues by calling this method
 
         Heartbeat thread is started by default.
@@ -152,12 +167,10 @@ class SkyWalkingAgent(Singleton):
         __heartbeat_thread = Thread(name='HeartbeatThread', target=self.__heartbeat, daemon=True)
         __heartbeat_thread.start()
 
-        self.__segment_queue = Queue(maxsize=config.agent_trace_reporter_max_buffer_size)
         __segment_report_thread = Thread(name='SegmentReportThread', target=self.__report_segment, daemon=True)
         __segment_report_thread.start()
 
         if config.agent_meter_reporter_active:
-            self.__meter_queue = Queue(maxsize=config.agent_meter_reporter_max_buffer_size)
             __meter_report_thread = Thread(name='MeterReportThread', target=self.__report_meter, daemon=True)
             __meter_report_thread.start()
 
@@ -173,7 +186,6 @@ class SkyWalkingAgent(Singleton):
                 ThreadDataSource().register()
 
         if config.agent_log_reporter_active:
-            self.__log_queue = Queue(maxsize=config.agent_log_reporter_max_buffer_size)
             __log_report_thread = Thread(name='LogReportThread', target=self.__report_log, daemon=True)
             __log_report_thread.start()
 
@@ -182,8 +194,6 @@ class SkyWalkingAgent(Singleton):
             __command_dispatch_thread = Thread(name='CommandDispatchThread', target=self.__command_dispatch,
                                                daemon=True)
             __command_dispatch_thread.start()
-
-            self.__snapshot_queue = Queue(maxsize=config.agent_profile_snapshot_transport_buffer_size)
 
             __query_profile_thread = Thread(name='QueryProfileCommandThread', target=self.__query_profile_command,
                                             daemon=True)
