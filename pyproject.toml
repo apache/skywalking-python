@@ -123,7 +123,7 @@ kafka-python = "*"
 requests = "*"
 
 [tool.poetry.group.plugins.dependencies]
-urllib3 = "1.26.7"
+urllib3 = "1.26.19"
 aiohttp = "3.7.4"
 celery = "5.1.2"
 django = "3.2.8"
