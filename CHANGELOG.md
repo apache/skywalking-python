@@ -15,6 +15,7 @@
   - **Tentative**: Set upper bound <=5.9.5 for psutil package due to test failure. (#326)
   - Remove `DeprecationWarning` from `pkg_resources` by replace it with `importlib_metadata` (#329)
   - Fix unexpected 'decode' AttributeError when MySQLdb module is mapped by PyMySQL (#336)
+  - Fix SkyWalking agent failed to start if using kafka protocol with sasl_mechanism=PLAIN. (#343)
 
 ### 1.0.1
 
