@@ -36,6 +36,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [neo4j](https://neo4j.com/docs/python-manual/5/) | Python >=3.7 - ['5.*'];  | `sw_neo4j` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.11 - ['3.1.*']; Python >=3.7 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
+| [pulsar-client](https://github.com/apache/pulsar-client-python) | Python >=3.8 - ['3.3.0'];  | `sw_pulsar` |
 | [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
 | [pymysql](https://pymysql.readthedocs.io/en/latest/) | Python >=3.7 - ['1.0'];  | `sw_pymysql` |
 | [pyramid](https://trypyramid.com) | Python >=3.7 - ['1.10', '2.0'];  | `sw_pyramid` |

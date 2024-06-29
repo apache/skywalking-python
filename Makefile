@@ -43,9 +43,11 @@ poetry:
 ifeq ($(OS),Windows)
 	-powershell (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 	poetry self update
-else
+else ifeq ($(OS),Darwin)
 	-curl -sSL https://install.python-poetry.org | python3 -
 	poetry self update || $(MAKE) poetry-fallback
+else
+	-curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
 endif
 
 .PHONY: gen
