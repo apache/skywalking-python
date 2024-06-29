@@ -36,6 +36,8 @@ class Component(Enum):
     KafkaConsumer = 41
     RabbitmqProducer = 52
     RabbitmqConsumer = 53
+    PulsarProducer = 73
+    PulsarConsumer = 74
     Elasticsearch = 47
     HBase = 94
     Neo4j = 112
