@@ -16,7 +16,7 @@
 
 [tool.poetry]
 name = "apache-skywalking"
-version = "1.0.1"
+version = "1.1.0"
 description = "The Python Agent for Apache SkyWalking, which provides the native tracing/metrics/logging/profiling abilities for Python projects."
 license = "Apache-2.0"
 authors = ["Apache Software Foundation <dev@skywalking.apache.org>"]
