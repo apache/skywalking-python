@@ -40,7 +40,8 @@ def install():
     _request = ClientSession._request
 
     async def _sw_request(self: ClientSession, method: str, str_or_url, **kwargs):
-        url = URL(str_or_url).with_user(None).with_password(None)
+        abs_url = self._build_url(str_or_url) if hasattr(self, '_build_url') else URL(str_or_url)
+        url = abs_url.with_user(None).with_password(None)
         peer = f"{url.host or ''}:{url.port or ''}"
 
         if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
