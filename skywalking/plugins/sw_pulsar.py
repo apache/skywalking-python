@@ -45,8 +45,8 @@ def install():
         nonlocal _peer
         _peer = value
 
-    def _sw_init(self, service_url):
-        __init(self, service_url)
+    def _sw_init(self, service_url, *args, **kwargs):
+        __init(self, service_url, *args, **kwargs)
         set_peer(service_url)
 
     def _sw_send_func(_send):
