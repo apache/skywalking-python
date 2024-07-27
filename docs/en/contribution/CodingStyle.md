@@ -38,7 +38,7 @@ if logger_debug_enabled:
 # Imports
 Please make sure the imports are placed in a good order, or flake8-isort will notify you of the violations.
 
-Run `make dev-fix` to automatically fix the sorting problem.
+Run `make fix` to automatically fix the sorting problem.
 
 # Naming
 In PEP8 convention, we are required to use snake_case as the accepted style.
