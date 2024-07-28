@@ -22,7 +22,22 @@ if __name__ == '__main__':
     from pulsar import BatchingType
 
     app = Flask(__name__)
-    client = pulsar.Client(service_url='pulsar://pulsar-server:6650')
+    client = pulsar.Client(
+        service_url='pulsar://pulsar-server:6650',
+        authentication=None,
+        operation_timeout_seconds=30,
+        io_threads=1,
+        message_listener_threads=1,
+        concurrent_lookup_requests=50000,
+        log_conf_file_path=None,
+        use_tls=False,
+        tls_trust_certs_file_path=None,
+        tls_allow_insecure_connection=False,
+        tls_validate_hostname=False,
+        logger=None,
+        connection_timeout_ms=10000,
+        listener_name=None
+    )
     producer = client.create_producer(
         'sw-topic',
         block_if_queue_full=True,
