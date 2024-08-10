@@ -27,6 +27,7 @@ endif
 
 .PHONY: env
 env: poetry gen
+	poetry lock [--no-update]
 	poetry install --all-extras
 	poetry run pip install --upgrade pip
 
