@@ -21,7 +21,7 @@ D := docker
 
 P := grpc http kafka
 
-TARGETS := py3.7 py3.8 py3.9 py3.10 py3.7-slim py3.8-slim py3.9-slim py3.10-slim
+TARGETS := py3.7 py3.8 py3.9 py3.10 py3.7-slim py3.8-slim py3.9-slim py3.10-slim py3.11-slim py3.12-slim
 
 py3.7: BASE_PYTHON_IMAGE = python:3.7
 py3.8: BASE_PYTHON_IMAGE = python:3.8
@@ -33,6 +33,7 @@ py3.8-slim: BASE_PYTHON_IMAGE = python:3.8-slim
 py3.9-slim: BASE_PYTHON_IMAGE = python:3.9-slim
 py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
 py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
+py3.12-slim: BASE_PYTHON_IMAGE = python:3.12-slim
 
 push-py3.7: BASE_PYTHON_IMAGE = python:3.7
 push-py3.8: BASE_PYTHON_IMAGE = python:3.8
@@ -44,6 +45,7 @@ push-py3.8-slim: BASE_PYTHON_IMAGE = python:3.8-slim
 push-py3.9-slim: BASE_PYTHON_IMAGE = python:3.9-slim
 push-py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
 push-py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
+push-py3.12-slim: BASE_PYTHON_IMAGE = python:3.12-slim
 
 push-py3.7: BUILDER_PYTHON_IMAGE = python:3.7
 push-py3.8: BUILDER_PYTHON_IMAGE = python:3.8
@@ -55,6 +57,7 @@ push-py3.8-slim: BUILDER_PYTHON_IMAGE = python:3.8
 push-py3.9-slim: BUILDER_PYTHON_IMAGE = python:3.9
 push-py3.10-slim: BUILDER_PYTHON_IMAGE = python:3.10
 push-py3.11-slim: BUILDER_PYTHON_IMAGE = python:3.11
+push-py3.12-slim: BUILDER_PYTHON_IMAGE = python:3.12
 
 PUSH_TARGETS := $(TARGETS:%=push-%)
 
