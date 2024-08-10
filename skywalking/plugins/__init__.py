@@ -56,7 +56,7 @@ def install():
             logger.info("plugin %s is disabled and thus won't be installed", modname)
             continue
         logger.debug('installing plugin %s', modname)
-        plugin = importer.find_module(modname).load_module(modname)
+        plugin = importer.find_spec(modname).loader.load_module()
 
         # todo: refactor the version checker, currently it doesn't really work as intended
         supported = pkg_version_check(plugin)
