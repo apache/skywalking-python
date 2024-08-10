@@ -68,7 +68,7 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.7"
+python = ">=3.7, <4.0"
 grpcio = '*'
 grpcio-tools = '*'
 packaging = '*'
