@@ -29,8 +29,6 @@ RUN cd /skywalking-python && apt-get update && apt-get install -y make && make i
 
 # Extra dependencies for e2e services
 RUN apt-get update \
-    && apt-get purge -y --auto-remove gcc build-essential\
-    && rm -rf /var/lib/apt/lists/* \
     && apt-get install -y --no-install-recommends gcc build-essential\
     && pip install uwsgi fastapi uvicorn aiohttp flask "Werkzeug<3" gunicorn
 
