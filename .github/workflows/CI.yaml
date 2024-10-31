@@ -264,7 +264,7 @@ jobs:
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Run E2E Tests
-        uses: apache/skywalking-infra-e2e@2f20482135ba3a933bc0bb48c41f538ad1aa3048
+        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
