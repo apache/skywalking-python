@@ -1,5 +1,16 @@
 ## Change Logs
 
+### 1.2.0
+
+- Feature:
+  - Drop support for 3.7 (#356)
+
+- Fixes:
+  - Fix: user/password replacement is not allowed for relative URLs (#349)
+  - Fix pulsar client does not support init arguments other than service_url (#351)
+  - Fix outdated make dev-fix rule in CodeStyle.md (#350)
+  - Fix TestClient for fastapi cause the req.client None error (#355)
+
 ### 1.1.0
 
 - Feature:
