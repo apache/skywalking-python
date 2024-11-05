@@ -3,7 +3,7 @@
 **Download the source tar from the [official website](http://skywalking.apache.org/downloads/), 
 and run the following commands to build from source**
 
-**Make sure you have Python 3.7+ and the `python3` command available**
+**Make sure you have Python 3.8+ and the `python3` command available**
 
 ```shell
 $ tar -zxf skywalking-python-src-<version>.tgz

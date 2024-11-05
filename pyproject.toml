@@ -26,31 +26,33 @@ homepage = "https://skywalking.apache.org/"
 repository = "https://github.com/apache/skywalking-python"
 documentation = "https://skywalking.apache.org/docs/skywalking-python/next/readme/"
 keywords = [
-    "skywalking", "tracing", "metrics", "logging", "profiling", 
-    "observability", "distributed-tracing", "apm",
-    "python"
+  "skywalking",
+  "tracing",
+  "metrics",
+  "logging",
+  "profiling",
+  "observability",
+  "distributed-tracing",
+  "apm",
+  "python",
 ]
-classifiers=[
-    'License :: OSI Approved :: Apache Software License',
+classifiers = [
+  'License :: OSI Approved :: Apache Software License',
 
-    'Operating System :: OS Independent',
+  'Operating System :: OS Independent',
 
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
 
-    'Topic :: System :: Monitoring',
-    'Topic :: Software Development',
+  'Topic :: System :: Monitoring',
+  'Topic :: Software Development',
 ]
 
-packages = [
-    { include = "skywalking" },
-    { include = "sw_python" }
-]
+packages = [{ include = "skywalking" }, { include = "sw_python" }]
 
 # poetry will ignore generated files as .gitignore, but we need them in package
 include = ['skywalking/protocol/**/*']
@@ -67,7 +69,7 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.7, <3.12"
+python = ">=3.8, <3.12"
 grpcio = '*'
 grpcio-tools = '*'
 packaging = '*'
@@ -80,36 +82,13 @@ aiokafka = { version = "^0.8.0", optional = true }
 aiohttp = { version = "^3.7.4", optional = true }
 
 [tool.poetry.extras]
-all=[
-    'requests',
-    'kafka-python',
-    'uvloop',
-    'aiokafka',
-    'aiohttp',
-]
-sync=[
-    'requests',
-    'kafka-python',
-]
-http= [
-    'requests',
-]
-kafka=[
-    'kafka-python',
-]
-async=[
-    'uvloop',
-    'aiokafka',
-    'aiohttp',
-]
-asynchttp=[
-    'uvloop',
-    'aiohttp',
-]
-asynckafka=[
-    'uvloop',
-    'aiokafka',
-]
+all = ['requests', 'kafka-python', 'uvloop', 'aiokafka', 'aiohttp']
+sync = ['requests', 'kafka-python']
+http = ['requests']
+kafka = ['kafka-python']
+async = ['uvloop', 'aiokafka', 'aiohttp']
+asynchttp = ['uvloop', 'aiohttp']
+asynckafka = ['uvloop', 'aiokafka']
 
 [tool.poetry.group.dev.dependencies]
 pkginfo = "^1.8.3"
@@ -132,7 +111,7 @@ flask = "2.0.2"
 gevent = "22.10.2"
 hug = "2.6.1"
 pika = "1.2.0"
-psycopg = {extras = ["binary"], version = "^3.1.7"}
+psycopg = { extras = ["binary"], version = "^3.1.7" }
 psycopg2-binary = "^2.9"
 pymongo = "3.12.0"
 pymysql = "1.0.2"
