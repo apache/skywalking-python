@@ -13,7 +13,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 ### Plugin Support Table
 | Library | Python Version - Lib Version | Plugin Name |
 | :--- | :--- | :--- |
-| [aiohttp](https://docs.aiohttp.org) | Python >=3.7 - ['3.8.*'];  | `sw_aiohttp` |
+| [aiohttp](https://docs.aiohttp.org) | Python >=3.8 - NOT SUPPORTED YET;  | `sw_aiohttp` |
 | [aioredis](https://aioredis.readthedocs.io/) | Python >=3.7 - ['2.0.*'];  | `sw_aioredis` |
 | [aiormq](https://pypi.org/project/aiormq/) | Python >=3.7 - ['6.3', '6.4'];  | `sw_aiormq` |
 | [amqp](https://pypi.org/project/amqp/) | Python >=3.7 - ['2.6.1'];  | `sw_amqp` |
