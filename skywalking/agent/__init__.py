@@ -15,19 +15,16 @@
 # limitations under the License.
 #
 
+import asyncio
 import atexit
 import functools
 import os
 import sys
-import asyncio
-from queue import Queue, Full
-from threading import Thread, Event
+from queue import Full, Queue
+from threading import Event, Thread
 from typing import TYPE_CHECKING, Optional
 
-from skywalking import config, plugins
-from skywalking import loggings
-from skywalking import meter
-from skywalking import profile
+from skywalking import config, loggings, meter, plugins, profile, sampling
 from skywalking.agent.protocol import Protocol, ProtocolAsync
 from skywalking.command import command_service, command_service_async
 from skywalking.loggings import logger
@@ -306,6 +303,8 @@ class SkyWalkingAgent(Singleton):
             profile.init()
         if config.agent_meter_reporter_active:
             meter.init(force=True)  # force re-init after fork()
+        if config.sample_n_per_3_secs > 0:
+            sampling.init(force=True)
 
         self.__bootstrap()  # calls init_threading
 
@@ -517,6 +516,8 @@ class SkyWalkingAgentAsync(Singleton):
         if config.agent_meter_reporter_active:
             # meter.init(force=True)
             await meter.init_async()
+        if config.sample_n_per_3_secs > 0:
+            await sampling.init_async()
 
         self.__bootstrap()  # gather all coroutines
 

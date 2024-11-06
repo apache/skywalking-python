@@ -32,8 +32,8 @@ any documentation to reflect changes here, just make sure to run `make doc-gen` 
 import os
 import re
 import uuid
-from typing import List, Pattern
 import warnings
+from typing import List, Pattern
 
 RE_IGNORE_PATH: Pattern = re.compile('^$')
 RE_HTTP_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
@@ -212,6 +212,10 @@ plugin_fastapi_collect_http_params: bool = os.getenv('SW_PLUGIN_FASTAPI_COLLECT_
 plugin_bottle_collect_http_params: bool = os.getenv('SW_PLUGIN_BOTTLE_COLLECT_HTTP_PARAMS', '').lower() == 'true'
 # The maximum length of `celery` functions parameters, longer than this will be truncated, 0 turns off
 plugin_celery_parameters_length: int = int(os.getenv('SW_PLUGIN_CELERY_PARAMETERS_LENGTH', '512'))
+
+# BEGIN: Sampling Configurations
+# The number of samples to take in every 3 seconds, 0 turns off
+sample_n_per_3_secs: int = int(os.getenv('SW_SAMPLE_N_PER_3_SECS', '0'))
 
 # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
 options = [key for key in globals() if key not in options]  # THIS MUST FOLLOW DIRECTLY AFTER LIST OF CONFIG OPTIONS!
