@@ -56,7 +56,7 @@ def install():
         with span:
             span.layer = Layer.Http
             span.component = Component.FastAPI
-            span.peer = f'{req.client.host}:{req.client.port}'
+            span.peer = f'{req.client.host}:{req.client.port}' if req.client else 'unknown'
             span.tag(TagHttpMethod(method))
             span.tag(TagHttpURL(str(req.url).split('?')[0]))
             if config.plugin_fastapi_collect_http_params and req.query_params:
