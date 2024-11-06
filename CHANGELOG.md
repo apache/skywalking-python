@@ -4,6 +4,7 @@
 
 - Feature:
   - Drop support for 3.7 (#356)
+  - Support sampling rate setup. Provide `SW_SAMPLE_N_PER_3_SECS` environment variable to control it (#357)
 
 - Fixes:
   - Fix: user/password replacement is not allowed for relative URLs (#349)

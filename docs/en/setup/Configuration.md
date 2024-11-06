@@ -97,3 +97,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | plugin_fastapi_collect_http_params | SW_PLUGIN_FASTAPI_COLLECT_HTTP_PARAMS | <class 'bool'> | False | This config item controls that whether the FastAPI plugin should collect the parameters of the request. |
 | plugin_bottle_collect_http_params | SW_PLUGIN_BOTTLE_COLLECT_HTTP_PARAMS | <class 'bool'> | False | This config item controls that whether the Bottle plugin should collect the parameters of the request. |
 | plugin_celery_parameters_length | SW_PLUGIN_CELERY_PARAMETERS_LENGTH | <class 'int'> | 512 | The maximum length of `celery` functions parameters, longer than this will be truncated, 0 turns off |
+###  Sampling Configurations
+| Configuration | Environment Variable | Type | Default Value | Description |
+| :------------ | :------------ | :------------ | :------------ | :------------ |
+| sample_n_per_3_secs | SW_SAMPLE_N_PER_3_SECS | <class 'int'> | 0 | The number of samples to take in every 3 seconds, 0 turns off |

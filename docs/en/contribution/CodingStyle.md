@@ -6,7 +6,7 @@ Since Python 3.5 is end of life, we fully utilize the clarity and performance bo
 Please do not use other styles - `+`, `%` or `.format` unless f-string is absolutely unfeasible in the context, or
 it is a logger message, which is [optimized](https://docs.python.org/3/howto/logging.html#optimization) for the `%` style
 
-Run `make dev-fix` to invoke [flynt](https://github.com/ikamensh/flynt) to convert other formats to f-string, pay **extra care** to possible corner 
+Run `make fix` to invoke [flynt](https://github.com/ikamensh/flynt) to convert other formats to f-string, pay **extra care** to possible corner 
 cases leading to a semantically different conversion.
 
 ### Quotes 
@@ -23,7 +23,7 @@ foo = f"I'm a string"
 bar = f"This repo is called 'skywalking-python'"
 ```
 
-Run `make dev-fix` to invoke [unify](https://github.com/myint/unify) to deal with your quotes if flake8 complaints about it.
+Run `make fix` to invoke [unify](https://github.com/myint/unify) to deal with your quotes if flake8 complaints about it.
 
 ## Debug messages
 Please import the `logger_debug_enabled` variable and wrap your debug messages with a check.
