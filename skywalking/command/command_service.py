@@ -68,11 +68,11 @@ class CommandService:
 class CommandServiceAsync:
 
     def __init__(self):
-        self._commands = AsyncQueue()  # type: AsyncQueue
         # don't execute same command twice
         self._command_serial_number_cache = CommandSerialNumberCache()
 
     async def dispatch(self):
+        self._commands = AsyncQueue()  # type: AsyncQueue
         while True:
             # block until a command is available
             command = await self._commands.get()  # type: BaseCommand

@@ -11,6 +11,7 @@
   - Fix pulsar client does not support init arguments other than service_url (#351)
   - Fix outdated make dev-fix rule in CodeStyle.md (#350)
   - Fix TestClient for fastapi cause the req.client None error (#355)
+  - Fix agent start failed in async mode when profiling is enabled (#360)
 
 ### 1.1.0
 
