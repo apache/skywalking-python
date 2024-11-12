@@ -15,17 +15,22 @@
 # limitations under the License.
 #
 
-from typing import Optional
-import uuid
-
-from skywalking.utils.counter import AtomicCounter
-
-_id = AtomicCounter()
+from typing import Any
+from skywalking.trace.context import NoopContext
+from skywalking.trace.span import NoopSpan
 
 
-class ID(object):
-    def __init__(self, raw_id: Optional[str] = None):
-        self.value = raw_id or str(uuid.uuid1()).replace('-', '')
+def test_noopspan_1000(benchmark: Any):
+    result = benchmark(lambda: [NoopSpan(NoopContext()) for _ in range(1000)])
+    assert result
 
-    def __str__(self):
-        return self.value
+
+def test_noopspan_40000(benchmark: Any):
+    result = benchmark(lambda: [NoopSpan(NoopContext()) for _ in range(40000)])
+    assert result
+
+
+def test_noopspan_200k(benchmark: Any):
+    result = benchmark(
+        lambda: [NoopSpan(NoopContext()) for _ in range(200000)])
+    assert result

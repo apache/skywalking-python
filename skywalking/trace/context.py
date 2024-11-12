@@ -23,7 +23,7 @@ from skywalking.profile.profile_status import ProfileStatusReference
 from skywalking import sampling
 from skywalking.trace import ID
 from skywalking.trace.carrier import Carrier
-from skywalking.trace.segment import Segment, SegmentRef
+from skywalking.trace.segment import NoopSegment, Segment, SegmentRef
 from skywalking.trace.snapshot import Snapshot
 from skywalking.trace.span import Span, Kind, NoopSpan, EntrySpan, ExitSpan
 from skywalking.utils.counter import Counter
@@ -95,7 +95,7 @@ class PrimaryEndpoint:
 
 class SpanContext:
     def __init__(self):
-        self.segment: Segment = Segment()
+        self.segment = Segment()
         self._sid: Counter = Counter()
         self._correlation: dict = {}
         self._nspans: int = 0
@@ -285,7 +285,13 @@ class SpanContext:
 
 class NoopContext(SpanContext):
     def __init__(self):
-        super().__init__()
+        self.segment = NoopSegment()
+        self._sid: Counter = Counter()
+        self._correlation: dict = {}
+        self._nspans: int = 0
+        self.profile_status: Optional[ProfileStatusReference] = None
+        self.create_time = 0
+        self.primary_endpoint: Optional[PrimaryEndpoint] = None
 
     def new_local_span(self, op: str) -> Span:
         return NoopSpan(self)

@@ -14,18 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from typing import Optional
-import uuid
-
-from skywalking.utils.counter import AtomicCounter
-
-_id = AtomicCounter()
-
-
-class ID(object):
-    def __init__(self, raw_id: Optional[str] = None):
-        self.value = raw_id or str(uuid.uuid1()).replace('-', '')
-
-    def __str__(self):
-        return self.value
