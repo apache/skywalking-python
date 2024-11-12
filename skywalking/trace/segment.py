@@ -68,6 +68,12 @@ class _NewID(ID):
     pass
 
 
+class _NewNoopID(ID):
+
+    def __init__(self):
+        self.value = ''
+
+
 @tostring
 class Segment(object):
     def __init__(self):
@@ -83,3 +89,11 @@ class Segment(object):
         if isinstance(self.related_traces[0], _NewID):
             del self.related_traces[-1]
         self.related_traces.append(trace_id)
+
+
+class NoopSegment(Segment):
+    def __init__(self):
+        self.segment_id = _NewNoopID()
+        self.spans = []
+        self.timestamp = 0
+        self.related_traces = [_NewNoopID()]

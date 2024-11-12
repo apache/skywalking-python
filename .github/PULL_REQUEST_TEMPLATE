@@ -13,7 +13,7 @@
 
 <!-- ==== 📈 Remove this line WHEN AND ONLY WHEN you're improving the performance, follow the checklist 👇 ====
 ### Improve the performance of <class or module or ...>
-- [ ] Add a benchmark for the improvement, refer to [the existing ones](https://github.com/apache/skywalking/blob/master/apm-commons/apm-datacarrier/src/test/java/org/apache/skywalking/apm/commons/datacarrier/LinkedArrayBenchmark.java)
+- [ ] Add a benchmark for the improvement, refer to [the existing ones](https://github.com/apache/skywalking/blob/master/oap-server/microbench/src/main/java/org/apache/skywalking/oap/server/microbench/library/datacarrier/LinkedArrayBenchmark.java)
 - [ ] The benchmark result.
 ```text
 <Paste the benchmark results here>
