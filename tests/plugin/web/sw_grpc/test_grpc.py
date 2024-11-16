@@ -14,13 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Any, Callable
 
-from skywalking.meter.gauge import Gauge
+import pytest
+import requests
+
+from skywalking.plugins.sw_grpc import support_matrix
+from tests.orchestrator import get_test_vector
+from tests.plugin.base import TestPluginBase
 
 
-class DataSource:
-    def register(self):
-        for name in dir(self):
-            if name.endswith('generator'):
-                generator = getattr(self, name)()
-                Gauge.Builder(f'instance_pvm_{name[:-10]}', generator).build()
+@pytest.fixture
+def prepare() -> Callable[..., None]:
+
+    def f(*_: Any) -> None:
+        requests.get('http://127.0.0.1:50052/', timeout=5)
+        requests.get('http://127.0.0.1:50062/', timeout=5)
+
+    return f
+
+
+class TestPlugin(TestPluginBase):
+    @pytest.mark.parametrize('version', get_test_vector(lib_name='grpcio', support_matrix=support_matrix))
+    def test_plugin(self, docker_compose, version):
+        import time
+
+        time.sleep(100)
+        self.validate()

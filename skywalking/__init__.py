@@ -55,6 +55,7 @@ class Component(Enum):
     AIORedis = 7017
     Websockets = 7018
     HTTPX = 7019
+    Grpc = 23
 
 
 class Layer(Enum):
@@ -89,6 +90,6 @@ LogItem = namedtuple('LogItem', 'key val')
 
 class Log(object):
 
-    def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None): # noqa
+    def __init__(self, timestamp: time = time.time(), items: List[LogItem] = None):  # noqa
         self.timestamp = timestamp
         self.items = items or []

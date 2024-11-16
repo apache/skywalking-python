@@ -1,0 +1,384 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+segmentItems:
+  - serviceName: provider
+    segmentSize: 4
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHello
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHello }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHello,
+                  networkAddress: "provider:50051",
+                  refType: CrossProcess,
+                  parentSpanId: 1,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloUS
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloUS }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloUS,
+                  networkAddress: "provider:50051",
+                  refType: CrossProcess,
+                  parentSpanId: 2,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloSU
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSU }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloSU,
+                  networkAddress: "provider:50051",
+                  refType: CrossProcess,
+                  parentSpanId: 3,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloSS
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSS }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloSS,
+                  networkAddress: "provider:50051",
+                  refType: CrossProcess,
+                  parentSpanId: 4,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: consumer,
+                  traceId: not null,
+                }
+  - serviceName: consumer
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHello
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: provider:50051
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHello }
+              - { key: grpc.url, value: "provider:50051" }
+          - operationName: /example.Greeter/SayHelloUS
+            parentSpanId: 0
+            spanId: 2
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: provider:50051
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloUS }
+              - { key: grpc.url, value: "provider:50051" }
+          - operationName: /example.Greeter/SayHelloSU
+            parentSpanId: 0
+            spanId: 3
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: provider:50051
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSU }
+              - { key: grpc.url, value: "provider:50051" }
+          - operationName: /example.Greeter/SayHelloSS
+            parentSpanId: 0
+            spanId: 4
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: provider:50051
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSS }
+              - { key: grpc.url, value: "provider:50051" }
+          - operationName: /
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7000
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: http.method, value: GET }
+              - { key: http.url, value: "http://127.0.0.1:50052/" }
+              - { key: http.status_code, value: "200" }
+  - serviceName: aio_provider
+    segmentSize: 4
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHello
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHello }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHello,
+                  networkAddress: "aio_provider:50061",
+                  refType: CrossProcess,
+                  parentSpanId: 1,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: aio_consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloUS
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloUS }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloUS,
+                  networkAddress: "aio_provider:50061",
+                  refType: CrossProcess,
+                  parentSpanId: 2,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: aio_consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloSU
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSU }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloSU,
+                  networkAddress: "aio_provider:50061",
+                  refType: CrossProcess,
+                  parentSpanId: 3,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: aio_consumer,
+                  traceId: not null,
+                }
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHelloSS
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSS }
+            refs:
+              - {
+                  parentEndpoint: /example.Greeter/SayHelloSS,
+                  networkAddress: "aio_provider:50061",
+                  refType: CrossProcess,
+                  parentSpanId: 4,
+                  parentTraceSegmentId: not null,
+                  parentServiceInstance: not null,
+                  parentService: aio_consumer,
+                  traceId: not null,
+                }
+  - serviceName: aio_consumer
+    segmentSize: 1
+    segments:
+      - segmentId: not null
+        spans:
+          - operationName: /example.Greeter/SayHello
+            parentSpanId: 0
+            spanId: 1
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: aio_provider:50061
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHello }
+              - { key: grpc.url, value: "aio_provider:50061" }
+          - operationName: /example.Greeter/SayHelloUS
+            parentSpanId: 0
+            spanId: 2
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: aio_provider:50061
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloUS }
+              - { key: grpc.url, value: "aio_provider:50061" }
+          - operationName: /example.Greeter/SayHelloSU
+            parentSpanId: 0
+            spanId: 3
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: aio_provider:50061
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSU }
+              - { key: grpc.url, value: "aio_provider:50061" }
+          - operationName: /example.Greeter/SayHelloSS
+            parentSpanId: 0
+            spanId: 4
+            spanLayer: RPCFramework
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 23
+            isError: false
+            spanType: Exit
+            peer: aio_provider:50061
+            skipAnalysis: false
+            tags:
+              - { key: grpc.method, value: /example.Greeter/SayHelloSS }
+              - { key: grpc.url, value: "aio_provider:50061" }
+          - operationName: /
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7000
+            isError: false
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
+            tags:
+              - { key: http.method, value: GET }
+              - { key: http.url, value: "http://127.0.0.1:50062/" }
+              - { key: http.status_code, value: "200" }

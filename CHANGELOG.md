@@ -6,6 +6,9 @@
   - Drop support for 3.7 (#356)
   - Support sampling rate setup. Provide `SW_SAMPLE_N_PER_3_SECS` environment variable to control it (#357)
 
+- Plugins:
+  - Add gRPC plugin (#362)
+
 - Fixes:
   - Fix: user/password replacement is not allowed for relative URLs (#349)
   - Fix pulsar client does not support init arguments other than service_url (#351)

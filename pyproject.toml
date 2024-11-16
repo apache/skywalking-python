@@ -137,6 +137,7 @@ httpx = "^0.23.3"
 confluent-kafka = "^2.0.2"
 neo4j = "^5.9.0"
 pulsar-client = "3.3.0"
+grpcio = "^1.49.1"
 
 [tool.poetry.group.lint.dependencies]
 pylint = '2.13.9'

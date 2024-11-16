@@ -37,6 +37,7 @@ from typing import List, Pattern
 
 RE_IGNORE_PATH: Pattern = re.compile('^$')
 RE_HTTP_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
+RE_GRPC_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
 
 options = None  # here to include 'options' in globals
 options = globals().copy()
@@ -212,6 +213,8 @@ plugin_fastapi_collect_http_params: bool = os.getenv('SW_PLUGIN_FASTAPI_COLLECT_
 plugin_bottle_collect_http_params: bool = os.getenv('SW_PLUGIN_BOTTLE_COLLECT_HTTP_PARAMS', '').lower() == 'true'
 # The maximum length of `celery` functions parameters, longer than this will be truncated, 0 turns off
 plugin_celery_parameters_length: int = int(os.getenv('SW_PLUGIN_CELERY_PARAMETERS_LENGTH', '512'))
+# Comma-delimited list of user-defined grpc methods to ignore, like /package.Service/Method1,/package.Service/Method2
+plugin_grpc_ignored_methods: str = os.getenv('SW_PLUGIN_GRPC_IGNORED_METHODS', '').upper()
 
 # BEGIN: Sampling Configurations
 # The number of samples to take in every 3 seconds, 0 turns off
@@ -284,6 +287,7 @@ def finalize_regex() -> None:
     reesc = re.compile(r'([.*+?^=!:${}()|\[\]\\])')
     suffix = r'^.+(?:' + '|'.join(reesc.sub(r'\\\1', s.strip()) for s in agent_ignore_suffix.split(',')) + ')$'
     method = r'^' + '|'.join(s.strip() for s in plugin_http_ignore_method.split(',')) + '$'
+    grpc_method = r'^' + '|'.join(s.strip() for s in plugin_grpc_ignored_methods.split(',')) + '$'
     path = '^(?:' + \
            '|'.join(  # replaces ","
                '/(?:[^/]*/)*'.join(  # replaces "/**/"
@@ -297,13 +301,18 @@ def finalize_regex() -> None:
                ) for p0 in agent_trace_ignore_path.split(',')
            ) + ')$'
 
-    global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD
+    global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD, RE_GRPC_IGNORE_METHOD
     RE_IGNORE_PATH = re.compile(f'{suffix}|{path}')
     RE_HTTP_IGNORE_METHOD = re.compile(method, re.IGNORECASE)
+    RE_GRPC_IGNORE_METHOD = re.compile(grpc_method, re.IGNORECASE)
 
 
 def ignore_http_method_check(method: str):
     return RE_HTTP_IGNORE_METHOD.match(method)
+
+
+def ignore_grpc_method_check(method: str):
+    return RE_GRPC_IGNORE_METHOD.match(method)
 
 
 def finalize() -> None:
