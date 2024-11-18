@@ -49,7 +49,7 @@ try:  # attempt to use async-local instead of thread-local context and spans
         return spans
 
     def _spans_dup():
-        spans = __spans.get()[:]
+        spans = __spans.get([])[:]
         __spans.set(spans)
 
         return spans

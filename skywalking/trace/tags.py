@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+
 class Tag:
     key: str = ''
     overridable: bool = True
@@ -93,3 +94,15 @@ class TagMqQueue(Tag):
 
 class TagCeleryParameters(Tag):
     key = 'celery.parameters'
+
+
+class TagGrpcMethod(Tag):
+    key = 'grpc.method'
+
+
+class TagGrpcUrl(Tag):
+    key = 'grpc.url'
+
+
+class TagGrpcStatusCode(Tag):
+    key = 'grpc.status_code'

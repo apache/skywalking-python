@@ -97,6 +97,7 @@ export SW_AGENT_YourConfiguration=YourValue
 | plugin_fastapi_collect_http_params | SW_PLUGIN_FASTAPI_COLLECT_HTTP_PARAMS | <class 'bool'> | False | This config item controls that whether the FastAPI plugin should collect the parameters of the request. |
 | plugin_bottle_collect_http_params | SW_PLUGIN_BOTTLE_COLLECT_HTTP_PARAMS | <class 'bool'> | False | This config item controls that whether the Bottle plugin should collect the parameters of the request. |
 | plugin_celery_parameters_length | SW_PLUGIN_CELERY_PARAMETERS_LENGTH | <class 'int'> | 512 | The maximum length of `celery` functions parameters, longer than this will be truncated, 0 turns off |
+| plugin_grpc_ignored_methods | SW_PLUGIN_GRPC_IGNORED_METHODS | <class 'str'> |  | Comma-delimited list of user-defined grpc methods to ignore, like /package.Service/Method1,/package.Service/Method2 |
 ###  Sampling Configurations
 | Configuration | Environment Variable | Type | Default Value | Description |
 | :------------ | :------------ | :------------ | :------------ | :------------ |
