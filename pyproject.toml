@@ -104,7 +104,7 @@ pytest-benchmark = "4.0.0"
 
 [tool.poetry.group.plugins.dependencies]
 urllib3 = "1.26.7"
-aiohttp = "3.7.4"
+aiohttp = "3.10.11"
 celery = "5.1.2"
 django = "3.2.8"
 elasticsearch = "7.15.1"
