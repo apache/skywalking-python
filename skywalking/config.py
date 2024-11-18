@@ -37,7 +37,7 @@ from typing import List, Pattern
 
 RE_IGNORE_PATH: Pattern = re.compile('^$')
 RE_HTTP_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
-RE_GRPC_IGNORE_METHOD: Pattern = RE_IGNORE_PATH
+RE_GRPC_IGNORED_METHODS: Pattern = RE_IGNORE_PATH
 
 options = None  # here to include 'options' in globals
 options = globals().copy()
@@ -301,10 +301,10 @@ def finalize_regex() -> None:
                ) for p0 in agent_trace_ignore_path.split(',')
            ) + ')$'
 
-    global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD, RE_GRPC_IGNORE_METHOD
+    global RE_IGNORE_PATH, RE_HTTP_IGNORE_METHOD, RE_GRPC_IGNORED_METHODS
     RE_IGNORE_PATH = re.compile(f'{suffix}|{path}')
     RE_HTTP_IGNORE_METHOD = re.compile(method, re.IGNORECASE)
-    RE_GRPC_IGNORE_METHOD = re.compile(grpc_method, re.IGNORECASE)
+    RE_GRPC_IGNORED_METHODS = re.compile(grpc_method, re.IGNORECASE)
 
 
 def ignore_http_method_check(method: str):
@@ -312,7 +312,7 @@ def ignore_http_method_check(method: str):
 
 
 def ignore_grpc_method_check(method: str):
-    return RE_GRPC_IGNORE_METHOD.match(method)
+    return RE_GRPC_IGNORED_METHODS.match(method)
 
 
 def finalize() -> None:
