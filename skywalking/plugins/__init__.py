@@ -58,7 +58,7 @@ def install():
         logger.debug('installing plugin %s', modname)
         if sys.version_info < (3, 12):
             plugin = importer.find_module(modname).load_module(modname)
-        else: 
+        else:
             plugin = importlib.util.module_from_spec(importer.find_spec(modname))
 
         # todo: refactor the version checker, currently it doesn't really work as intended
