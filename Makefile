@@ -52,18 +52,18 @@ endif
 
 .PHONY: gen
 gen:
-	poetry run pip install grpcio-tools packaging
+	poetry run pip install grpcio-tools==1.68.0 packaging
 	poetry run python3 tools/grpc_code_gen.py
 
 .PHONY: gen-basic
 gen-basic:
-	python3 -m pip install grpcio-tools packaging
+	python3 -m pip install grpcio-tools==1.68.0 packaging
 	python3 tools/grpc_code_gen.py
 
 .PHONY: install
 install: gen-basic
 	python3 -m pip install --upgrade pip
-	python3 -m pip install .[all]
+	python3 -m pip install -e .[all]
 
 .PHONY: lint
 # flake8 configurations should go to the file setup.cfg

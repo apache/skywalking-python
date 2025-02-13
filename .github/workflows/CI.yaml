@@ -36,11 +36,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Check License
         uses: apache/skywalking-eyes/header@501a28d2fb4a9b962661987e50cf0219631b32ff
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
       - name: Lint codes
         run: |
           make poetry
@@ -54,9 +58,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
       - name: Check plugin doc
         run: |
           make env
@@ -73,7 +81,7 @@ jobs:
     outputs:
       agent: ${{ steps.filter.outputs.agent }}
     steps:
-      - uses: actions/checkout@v3  # required for push event
+      - uses: actions/checkout@v4  # required for push event
       - name: Check for file changes
         uses: getsentry/paths-filter@v2.11.1
         id: filter
@@ -107,7 +115,7 @@ jobs:
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: set-matrix
         run: |
           sudo apt-get install jq
@@ -131,7 +139,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build SkyWalking Python agent base plugin image
@@ -139,7 +147,7 @@ jobs:
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
           docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
       - name: Upload docker image with specific python version
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
           path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
@@ -164,7 +172,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Install docker-compose
@@ -177,7 +185,7 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           fi
       - name: Pull SkyWalking Python agent base image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}-slim
           path: docker-images
@@ -185,7 +193,7 @@ jobs:
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Set up Python ${{ matrix.python-version }}
         # This step is crucial for correct plugin matrix in test orchestration
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run unit tests
@@ -210,7 +218,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-image-variant }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Build SkyWalking Python agent base e2e image
@@ -218,7 +226,7 @@ jobs:
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
           docker save -o docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar apache/skywalking-python-agent:latest-e2e
       - name: Upload docker image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar
@@ -262,11 +270,11 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
       - name: Pull SkyWalking Python agent base image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images
@@ -278,7 +286,7 @@ jobs:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
       - name: Upload Logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: e2e_logs_${{ matrix.case.name }}_${{ matrix.python-image-variant }}
