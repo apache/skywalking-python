@@ -78,6 +78,7 @@ class HttpTraceSegmentReportServiceAsync(TraceSegmentReportServiceAsync):
                     'traceSegmentId': str(segment.segment_id),
                     'service': config.agent_name,
                     'serviceInstance': config.agent_instance_name,
+                    'isSizeLimited': segment.is_size_limited,
                     'spans': [{
                         'spanId': span.sid,
                         'parentSpanId': span.pid,

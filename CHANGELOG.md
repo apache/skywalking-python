@@ -5,7 +5,8 @@
 - Feature:
   - Drop support for 3.7 (#356)
   - Support sampling rate setup. Provide `SW_SAMPLE_N_PER_3_SECS` environment variable to control it (#357)
-  - Add suport for 3.13 (#366)
+  - Add support for 3.13 (#366)
+  - Add isSizeLimited in SegmentObject (#367)
 
 - Plugins:
   - Add gRPC plugin (#362)

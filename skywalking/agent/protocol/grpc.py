@@ -119,6 +119,7 @@ class GrpcProtocol(Protocol):
                     traceSegmentId=str(segment.segment_id),
                     service=config.agent_name,
                     serviceInstance=config.agent_instance_name,
+                    isSizeLimited=segment.is_size_limited,
                     spans=[SpanObject(
                         spanId=span.sid,
                         parentSpanId=span.pid,
