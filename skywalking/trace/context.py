@@ -104,7 +104,7 @@ class SpanContext:
         self.primary_endpoint: Optional[PrimaryEndpoint] = None
 
     @staticmethod
-    def ignore_check(op: str, kind: Kind, carrier: Optional[Carrier] = None):
+    def ignore_check(op: str, carrier: Optional[Carrier] = None):
         if config.RE_IGNORE_PATH.match(op) or agent.is_segment_queue_full() or (carrier is not None and carrier.is_suppressed):
             return NoopSpan(context=NoopContext())
 
@@ -136,7 +136,7 @@ class SpanContext:
         return span
 
     def new_local_span(self, op: str) -> Span:
-        span = self.ignore_check(op, Kind.Local)
+        span = self.ignore_check(op)
         if span is not None:
             return span
 
@@ -144,7 +144,7 @@ class SpanContext:
         return self.new_span(parent, Span, op=op, kind=Kind.Local)
 
     def new_entry_span(self, op: str, carrier: Optional[Carrier] = None, inherit: Optional[Component] = None) -> Span:
-        span = self.ignore_check(op, Kind.Entry, carrier)
+        span = self.ignore_check(op, carrier)
         if span is not None:
             return span
 
@@ -173,7 +173,7 @@ class SpanContext:
 
     def new_exit_span(self, op: str, peer: str,
                       component: Optional[Component] = None, inherit: Optional[Component] = None) -> Span:
-        span = self.ignore_check(op, Kind.Exit)
+        span = self.ignore_check(op)
         if span is not None:
             return span
 
@@ -222,6 +222,7 @@ class SpanContext:
 
         self._nspans -= 1
         if self._nspans == 0:
+            self.segment.is_size_limited = agent.is_segment_queue_full()
             agent.archive_segment(self.segment)
             return True
 

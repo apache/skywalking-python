@@ -81,6 +81,7 @@ class Segment(object):
         self.spans = []  # type: List[Span]
         self.timestamp = int(time.time() * 1000)  # type: int
         self.related_traces = [_NewID()]  # type: List[ID]
+        self.is_size_limited = False  # type: bool
 
     def archive(self, span: 'Span'):
         self.spans.append(span)
