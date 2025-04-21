@@ -36,6 +36,8 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || (github.event_name != 'schedule')
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           use-quiet-mode: 'no'
