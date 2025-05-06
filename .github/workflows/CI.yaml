@@ -48,8 +48,7 @@ jobs:
           python-version: 3.8
       - name: Lint codes
         run: |
-          make poetry
-          poetry install --only lint
+          make env
           make lint
 
   # Check if the plugin doc is generated correctly
