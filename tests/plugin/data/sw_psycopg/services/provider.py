@@ -27,7 +27,7 @@ if __name__ == '__main__':
     @app.route('/users', methods=['POST', 'GET'])
     def application():
         time.sleep(0.5)
-        connection = psycopg.connect(host='postgres', user='root', password='root', dbname='admin', port=5432)
+        connection: psycopg.Connection = psycopg.connect(host='postgres', user='root', password='root', dbname='admin', port=5432)  # type: psycopg.Connection
         with connection.cursor() as cursor:
             sql = 'select * from user where user = %s'
             cursor.execute(sql, ('root',))
