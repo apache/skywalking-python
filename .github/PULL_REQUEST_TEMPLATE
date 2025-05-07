@@ -39,4 +39,3 @@
      ==== 📱 Remove this line WHEN AND ONLY WHEN you're adding a new feature, follow the checklist 👆 ==== -->
 
 - [ ] If this pull request closes/resolves/fixes an existing issue, replace the issue url. Closes: <URL to main repo issue>
-- [ ] Update the [`CHANGELOG.md`](https://github.com/apache/skywalking-python/blob/master/CHANGELOG.md).
