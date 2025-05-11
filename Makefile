@@ -92,7 +92,7 @@ check-doc-gen: doc-gen
 
 .PHONY: license
 license: clean
-	docker run -it --rm -v $(shell pwd):/github/workspace ghcr.io/apache/skywalking-eyes/license-eye:20da317d1ad158e79e24355fdc28f53370e94c8a header check
+	docker run -i --rm -v $(shell pwd):/github/workspace ghcr.io/apache/skywalking-eyes/license-eye:20da317d1ad158e79e24355fdc28f53370e94c8a header check
 
 .PHONY: test
 test: env
@@ -132,6 +132,6 @@ clean:
 
 .PHONY: release
 release: clean lint license
-	tar -zcvf skywalking-python-src-$VERSION.tgz --exclude .venv *
-	gpg --batch --yes --armor --detach-sig skywalking-python-src-$VERSION.tgz
-	shasum -a 512 skywalking-python-src-$VERSION.tgz > skywalking-python-src-$VERSION.tgz.sha512
+	tar -zcvf skywalking-python-src-$(VERSION).tgz --exclude .venv *
+	gpg --batch --yes --armor --detach-sig skywalking-python-src-$(VERSION).tgz
+	shasum -a 512 skywalking-python-src-$(VERSION).tgz > skywalking-python-src-$(VERSION).tgz.sha512
