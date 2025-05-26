@@ -27,10 +27,14 @@ py3.8: BASE_PYTHON_IMAGE = python:3.8
 py3.9: BASE_PYTHON_IMAGE = python:3.9
 py3.10: BASE_PYTHON_IMAGE = python:3.10
 py3.11: BASE_PYTHON_IMAGE = python:3.11
+py3.12: BASE_PYTHON_IMAGE = python:3.12
+py3.13: BASE_PYTHON_IMAGE = python:3.13
 py3.8-slim: BASE_PYTHON_IMAGE = python:3.8-slim
 py3.9-slim: BASE_PYTHON_IMAGE = python:3.9-slim
 py3.10-slim: BASE_PYTHON_IMAGE = python:3.10-slim
 py3.11-slim: BASE_PYTHON_IMAGE = python:3.11-slim
+py3.12-slim: BASE_PYTHON_IMAGE = python:3.12-slim
+py3.13-slim: BASE_PYTHON_IMAGE = python:3.13-slim
 
 push-py3.8: BASE_PYTHON_IMAGE = python:3.8
 push-py3.9: BASE_PYTHON_IMAGE = python:3.9

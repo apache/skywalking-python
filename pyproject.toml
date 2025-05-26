@@ -47,6 +47,8 @@ classifiers = [
   'Programming Language :: Python :: 3.9',
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
 
   'Topic :: System :: Monitoring',
   'Topic :: Software Development',
@@ -69,7 +71,7 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.8, <=3.13"
+python = ">=3.8, <=3.14"
 grpcio = '*'
 grpcio-tools = '*'
 packaging = '*'
