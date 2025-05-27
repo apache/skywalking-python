@@ -24,8 +24,8 @@ COPY tests/e2e/base/consumer/* /services/
 COPY tests/e2e/base/provider/* /services/
 
 # Copy the project and build
-COPY . /skywalking-python/
-RUN cd /skywalking-python && apt-get update && apt-get install -y make && make install
+COPY apache_skywalking.whl /apache_skywalking.whl
+RUN pip install /apache_skywalking.whl
 
 # Extra dependencies for e2e services
 RUN apt-get update \

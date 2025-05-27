@@ -59,8 +59,6 @@ PUSH_TARGETS := $(TARGETS:%=push-%)
 build: $(TARGETS)
 push: $(PUSH_TARGETS)
 
-
-
 $(TARGETS):
 	cd ..; \
 	for p in $(P); do \

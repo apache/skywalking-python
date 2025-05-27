@@ -128,10 +128,34 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
+  build-wheel:
+    name: Build Wheel
+    needs: [ license-and-lint, changes, plugin-doc-check ]
+    if: |
+      ( always() && ! cancelled() ) &&
+      ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source codes
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          persist-credentials: false
+      - name: Build Wheel
+        run: |
+          make env
+          make wheel
+      - name: Upload Wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: apache_skywalking.whl
+          path: dist/apache_skywalking-$(poetry version | sed 's/apache-skywalking //g')-py3-none-any.whl
+          retention-days: 1
+
   docker-plugin:
     # build docker image for plugin tests, with matrix of Python versions
     name: Build Plugin Test Image
-    needs: [ license-and-lint, changes, plugin-doc-check, prep-plugin-and-unit-tests ]
+    needs: [ license-and-lint, changes, plugin-doc-check, build-wheel, prep-plugin-and-unit-tests ]
     if: |
       ( always() && ! cancelled() ) &&
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
@@ -148,6 +172,11 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
+      - name: Download wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: apache_skywalking.whl
+          path: apache_skywalking.whl
       - name: Build SkyWalking Python agent base plugin image
         run: |
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
@@ -211,7 +240,7 @@ jobs:
   docker-e2e:
     # build docker image for E2E tests, single Python version for now.
     name: Build E2E Test Image
-    needs: [ license-and-lint, changes, plugin-doc-check ]
+    needs: [ license-and-lint, changes, plugin-doc-check, build-wheel ]
     if: |
       ( always() && ! cancelled() ) && 
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
