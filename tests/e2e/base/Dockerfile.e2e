@@ -24,8 +24,11 @@ COPY tests/e2e/base/consumer/* /services/
 COPY tests/e2e/base/provider/* /services/
 
 # Copy the project and build
-COPY apache_skywalking.whl /apache_skywalking.whl
-RUN pip install /apache_skywalking.whl
+COPY ./apache_skywalking*.whl /
+RUN <<EOT
+  wheel_name=$(ls /apache_skywalking*.whl)
+  pip install $wheel_name[all]
+EOT
 
 # Extra dependencies for e2e services
 RUN apt-get update \

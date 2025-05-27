@@ -100,10 +100,6 @@ test: env
 	docker build --build-arg BASE_PYTHON_IMAGE=3.8-slim -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
 	poetry run pytest -v $(bash tests/gather_test_paths.sh)
 
-.PHONY: wheel
-wheel:
-	poetry build --format wheel
-
 .PHONY: package
 package: clean gen
 	poetry build

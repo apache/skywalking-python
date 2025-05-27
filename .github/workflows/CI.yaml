@@ -144,16 +144,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.10
+          python-version: "3.10"
       - name: Build Wheel
         run: |
           make env
-          make wheel
+          make package
+      - id: get-path
+        run: |
+          echo "path=./dist/apache_skywalking-$(poetry version | sed 's/apache-skywalking //g')-py3-none-any.whl" >> $GITHUB_OUTPUT
       - name: Upload Wheel
         uses: actions/upload-artifact@v4
         with:
           name: apache_skywalking.whl
-          path: dist/apache_skywalking-$(poetry version | sed 's/apache-skywalking //g')-py3-none-any.whl
+          path: ${{ steps.get-path.outputs.path }}
           retention-days: 1
 
   docker-plugin:
@@ -180,9 +183,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: apache_skywalking.whl
-          path: apache_skywalking.whl
+          path: .
       - name: Build SkyWalking Python agent base plugin image
         run: |
+          ls -alh
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
           docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
       - name: Upload docker image with specific python version
@@ -236,9 +240,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Download wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: apache_skywalking.whl
+          path: .
       - name: Run unit tests
         run: |
-          make env
+          make poetry gen-basic
+          pip install $(ls apache_skywalking*.whl)[all]
+          poetry install --with=dev
           poetry run pytest -v ${{ matrix.test-path }}
 
   docker-e2e:
@@ -262,6 +273,11 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
+      - name: Download wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: apache_skywalking.whl
+          path: .
       - name: Build SkyWalking Python agent base e2e image
         run: |
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e

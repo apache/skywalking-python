@@ -19,8 +19,12 @@ FROM python:${BASE_PYTHON_IMAGE}
 
 WORKDIR /agent
 
-COPY apache_skywalking.whl /apache_skywalking.whl
+COPY ./apache_skywalking*.whl /
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential procps \
-    && pip install /apache_skywalking.whl
+    && apt-get install -y --no-install-recommends build-essential procps
+
+RUN <<EOT
+  wheel_name=$(ls /apache_skywalking*.whl)
+  pip install $wheel_name[all]
+EOT
