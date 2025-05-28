@@ -45,7 +45,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Lint codes
         run: |
           make env
@@ -65,7 +65,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Check plugin doc
         run: |
           make env
@@ -169,7 +169,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: # may support pypy in the future
-        python-version: [ "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
+        python-version: [ "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
@@ -208,7 +208,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13" ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         test-path: ${{fromJson(needs.prep-plugin-and-unit-tests.outputs.matrix)}}
       fail-fast: false
     env:
@@ -263,7 +263,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python-image-variant: [ "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
+        python-image-variant: [ "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
       fail-fast: false
     env:
       BASE_PYTHON_IMAGE: ${{ matrix.python-image-variant }}
@@ -300,7 +300,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python-image-variant: [ "3.8-slim", "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
+        python-image-variant: [ "3.9-slim", "3.10-slim", "3.11-slim", "3.12-slim", "3.13-slim" ]
         case:
           - name: gRPC-single-process
             path: tests/e2e/case/grpc/single/e2e.yaml
