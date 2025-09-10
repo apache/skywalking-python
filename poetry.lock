@@ -910,20 +910,21 @@ profile = ["gprof2dot (>=2022.7.29)"]
 
 [[package]]
 name = "django"
-version = "3.2.8"
-description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+version = "4.2.24"
+description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 groups = ["plugins"]
 files = [
-    {file = "Django-3.2.8-py3-none-any.whl", hash = "sha256:42573831292029639b798fe4d3812996bfe4ff3275f04566da90764daec011a5"},
-    {file = "Django-3.2.8.tar.gz", hash = "sha256:f6d2c4069c9b9bfac03bedff927ea1f9e0d29e34525cec8a68fd28eb2a8df7af"},
+    {file = "django-4.2.24-py3-none-any.whl", hash = "sha256:a6527112c58821a0dfc5ab73013f0bdd906539790a17196658e36e66af43c350"},
+    {file = "django-4.2.24.tar.gz", hash = "sha256:40cd7d3f53bc6cd1902eadce23c337e97200888df41e4a73b42d682f23e71d80"},
 ]
 
 [package.dependencies]
-asgiref = ">=3.3.2,<4"
-pytz = "*"
-sqlparse = ">=0.2.2"
+asgiref = ">=3.6.0,<4"
+"backports.zoneinfo" = {version = "*", markers = "python_version < \"3.9\""}
+sqlparse = ">=0.3.1"
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 argon2 = ["argon2-cffi (>=19.1.0)"]
@@ -4145,4 +4146,4 @@ sync = ["kafka-python", "requests"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8, <3.12"
-content-hash = "aa8e253750aaa3c513c55f1ee29059793135dd34a31e2df595f38442aaddbfd9"
+content-hash = "023fcd968dd6dd6694ba7179e942cae0a563c806814cfe32ced2be667e5ba19a"
