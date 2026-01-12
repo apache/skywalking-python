@@ -37,7 +37,7 @@ services:
       retries: 120
 
   kafka-server:
-    image: bitnami/kafka:2.1.1
+    image: bitnamilegacy/kafka:2.1.1
     hostname: kafka-server
     ports:
       - 9092:9092
