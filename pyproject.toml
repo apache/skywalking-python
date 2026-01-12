@@ -43,10 +43,11 @@ classifiers = [
 
   'Programming Language :: Python',
   'Programming Language :: Python :: 3',
-  'Programming Language :: Python :: 3.8',
   'Programming Language :: Python :: 3.9',
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
 
   'Topic :: System :: Monitoring',
   'Topic :: Software Development',
@@ -69,17 +70,18 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.8, <=3.13"
+python = ">=3.9, <=3.14"
 grpcio = '*'
 grpcio-tools = '*'
 packaging = "^25.0"
 wrapt = '*'
-psutil = '<=5.9.5'
+psutil = "7.0.0"
 requests = { version = ">=2.26.0", optional = true }
 kafka-python = { version = "*", optional = true }
-uvloop = { version = "^0.17.0", optional = true }
+uvloop = { version = "^0.21.0", optional = true }
 aiokafka = { version = "^0.8.0", optional = true }
 aiohttp = { version = "^3.7.4", optional = true }
+pyyaml = "6.0.2"
 
 [tool.poetry.extras]
 all = ['requests', 'kafka-python', 'uvloop', 'aiokafka', 'aiohttp']
@@ -109,7 +111,7 @@ celery = "5.1.2"
 django = "3.2.8"
 elasticsearch = "7.15.1"
 flask = "2.0.2"
-gevent = "22.10.2"
+gevent = "25.5.1"
 hug = "2.6.1"
 pika = "1.2.0"
 psycopg = { extras = ["binary"], version = "^3.1.7" }
@@ -118,7 +120,7 @@ pymongo = "3.12.0"
 pymysql = "1.0.2"
 mysqlclient = "^2.1.1"
 pyramid = "2.0"
-pyyaml = "6.0"
+pyyaml = "6.0.2"
 redis = "3.5.3"
 sanic = "21.9.1"
 tornado = "6.1"
