@@ -47,7 +47,7 @@ else ifeq ($(OS),Darwin)
 	-curl -sSL https://install.python-poetry.org | python3 -
 	poetry self update || $(MAKE) poetry-fallback
 else
-	-curl -sSL https://install.python-poetry.org | python3 - --version 1.5.1
+	-curl -sSL https://install.python-poetry.org | python3 -
 endif
 
 .PHONY: gen
