@@ -22,12 +22,6 @@ import pkgutil
 import re
 import traceback
 
-PackageNotFoundException = importlib.metadata.PackageNotFoundError
-
-
-def get_pkg_version(pkg_name):
-    return importlib.metadata.version(pkg_name)
-
 from packaging import version
 
 import skywalking
@@ -35,6 +29,12 @@ from skywalking import config
 from skywalking.loggings import logger
 from skywalking.utils.comparator import operators
 from skywalking.utils.exception import VersionRuleException
+
+PackageNotFoundException = importlib.metadata.PackageNotFoundError
+
+
+def get_pkg_version(pkg_name):
+    return importlib.metadata.version(pkg_name)
 
 
 def install():
