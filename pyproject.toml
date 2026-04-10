@@ -147,7 +147,7 @@ grpcio = ">=1.49"
 optional = true
 
 [tool.poetry.group.lint.dependencies]
-pylint = '2.13.9'
+pylint = '>=2.13.9'
 flake8 = "^5.0.4"
 # isort = "^5.10.1"
 unify = "^0.5"
