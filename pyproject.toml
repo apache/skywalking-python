@@ -43,10 +43,11 @@ classifiers = [
 
   'Programming Language :: Python',
   'Programming Language :: Python :: 3',
-  'Programming Language :: Python :: 3.8',
-  'Programming Language :: Python :: 3.9',
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: 3.14',
 
   'Topic :: System :: Monitoring',
   'Topic :: Software Development',
@@ -69,15 +70,15 @@ sw-python = 'skywalking.bootstrap.cli.sw_python:start'
 
 
 [tool.poetry.dependencies]
-python = ">=3.8, <=3.13"
+python = ">=3.10, <3.15"
 grpcio = '*'
 grpcio-tools = '*'
-packaging = "^25.0"
-wrapt = '*'
-psutil = '<=5.9.5'
+packaging = '*'
+wrapt = '>=1.14'
+psutil = '*'
 requests = { version = ">=2.26.0", optional = true }
 kafka-python = { version = "*", optional = true }
-uvloop = { version = "^0.17.0", optional = true }
+uvloop = { version = ">=0.17.0", optional = true }
 aiokafka = { version = "^0.8.0", optional = true }
 aiohttp = { version = "^3.7.4", optional = true }
 
@@ -95,49 +96,55 @@ pkginfo = "^1.8.3"
 testcontainers = "*"
 pyyaml = "*"
 pytest = "*"
-uwsgi = "*"
 gunicorn = "*"
 uvicorn = "*"
 kafka-python = "*"
 requests = "*"
-pytest-benchmark = "4.0.0"
+pytest-benchmark = "^4.0"
 
+[tool.poetry.group.plugins]
+optional = true
+
+# NOTE: These are for dev-machine installation only. Actual tested versions
+# are defined in each plugin's support_matrix and enforced via Docker.
 [tool.poetry.group.plugins.dependencies]
-urllib3 = "1.26.7"
-aiohttp = "3.7.4"
-celery = "5.1.2"
-django = "3.2.8"
-elasticsearch = "7.15.1"
-flask = "2.0.2"
-gevent = "22.10.2"
-hug = "2.6.1"
-pika = "1.2.0"
-psycopg = { extras = ["binary"], version = "^3.1.7" }
-psycopg2-binary = "^2.9"
-pymongo = "3.12.0"
-pymysql = "1.0.2"
-mysqlclient = "^2.1.1"
-pyramid = "2.0"
-pyyaml = "6.0"
-redis = "3.5.3"
-sanic = "21.9.1"
-tornado = "6.1"
-werkzeug = "2.0.2"
-fastapi = "0.89.1"
-uvicorn = "0.16.0"
-gunicorn = "23.0.0"
-bottle = "0.12.21"
-aioredis = "^2.0.1"
-aiormq = "^6.4.2"
-asyncpg = "^0.27.0"
-happybase = "1.2.0"
-websockets = "^10.4"
-loguru = "^0.6.0"
-httpx = "^0.23.3"
-confluent-kafka = "^2.0.2"
-neo4j = "^5.9.0"
-pulsar-client = "3.3.0"
-grpcio = "^1.49.1"
+urllib3 = ">=1.26"
+aiohttp = ">=3.7"
+celery = ">=5.1"
+django = ">=3.2"
+elasticsearch = ">=7.15"
+flask = ">=2.0"
+gevent = ">=22.10"
+pika = ">=1.2"
+psycopg = { extras = ["binary"], version = ">=3.1.7" }
+psycopg2-binary = ">=2.9"
+pymongo = ">=3.12"
+pymysql = ">=1.0"
+mysqlclient = ">=2.1"
+pyramid = ">=2.0"
+pyyaml = ">=6.0"
+redis = ">=3.5"
+sanic = ">=21.9"
+tornado = ">=6.1"
+werkzeug = ">=2.0"
+fastapi = ">=0.89"
+uvicorn = ">=0.16"
+gunicorn = ">=23.0"
+bottle = ">=0.12"
+aioredis = ">=2.0"
+aiormq = ">=6.4"
+asyncpg = ">=0.27"
+happybase = ">=1.2"
+websockets = ">=10.4"
+loguru = ">=0.6"
+httpx = ">=0.23"
+confluent-kafka = ">=2.0"
+neo4j = ">=5.9"
+pulsar-client = ">=3.3"
+grpcio = ">=1.49"
+
+[tool.poetry.group.lint]
+optional = true
 
 [tool.poetry.group.lint.dependencies]
 pylint = '2.13.9'

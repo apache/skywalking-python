@@ -14,27 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import importlib.metadata
+import importlib.util
 import inspect
 import logging
 import pkgutil
 import re
 import traceback
 
-import sys
+PackageNotFoundException = importlib.metadata.PackageNotFoundError
 
-if sys.version_info < (3, 8):
-    import pkg_resources
-    PackageNotFoundException = pkg_resources.DistributionNotFound
 
-    def get_pkg_version(pkg_name):
-        return pkg_resources.get_distribution(pkg_name).version
-
-else:
-    import importlib.metadata
-    PackageNotFoundException = importlib.metadata.PackageNotFoundError
-
-    def get_pkg_version(pkg_name):
-        return importlib.metadata.version(pkg_name)
+def get_pkg_version(pkg_name):
+    return importlib.metadata.version(pkg_name)
 
 from packaging import version
 
@@ -56,12 +48,9 @@ def install():
             logger.info("plugin %s is disabled and thus won't be installed", modname)
             continue
         logger.debug('installing plugin %s', modname)
-        if sys.version_info < (3, 12):
-            plugin = importer.find_module(modname).load_module(modname)
-        else:
-            spec = importer.find_spec(modname)
-            plugin = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(plugin)
+        spec = importer.find_spec(modname)
+        plugin = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(plugin)
 
         # todo: refactor the version checker, currently it doesn't really work as intended
         supported = pkg_version_check(plugin)

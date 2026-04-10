@@ -52,12 +52,12 @@ endif
 
 .PHONY: gen
 gen:
-	poetry run pip install grpcio-tools==1.68.0 packaging
+	poetry run pip install 'grpcio-tools>=1.68.0' packaging
 	poetry run python3 tools/grpc_code_gen.py
 
 .PHONY: gen-basic
 gen-basic:
-	python3 -m pip install grpcio-tools==1.68.0 packaging
+	python3 -m pip install 'grpcio-tools>=1.68.0' packaging
 	python3 tools/grpc_code_gen.py
 
 .PHONY: install
@@ -97,7 +97,7 @@ license: clean
 .PHONY: test
 test: env
 	sudo apt-get -y install jq
-	docker build --build-arg BASE_PYTHON_IMAGE=3.8-slim -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
+	docker build --build-arg BASE_PYTHON_IMAGE=3.11-slim -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
 	poetry run pytest -v $(bash tests/gather_test_paths.sh)
 
 .PHONY: package

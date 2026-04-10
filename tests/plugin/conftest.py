@@ -48,7 +48,13 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
         with open(os.path.join(cwd, 'requirements.txt'), mode='w') as req:
             req.write(version)
 
-    with DockerCompose(filepath=cwd) as compose:
+    # testcontainers v4+ uses 'context', v3 uses 'filepath'
+    try:
+        compose = DockerCompose(context=cwd, wait=False)
+    except TypeError:
+        compose = DockerCompose(filepath=cwd)
+
+    with compose:
         exception = None
         exception_delay = 0
         stdout, stderr = None, None
@@ -68,9 +74,11 @@ def docker_compose(request: FixtureRequest, prepare: Callable, version: str) -> 
             stdout, stderr = compose.get_logs()
 
         if exception:
-            print(f'STDOUT:\n{stdout.decode("utf-8")}')
+            stdout_str = stdout.decode('utf-8') if isinstance(stdout, bytes) else stdout
+            stderr_str = stderr.decode('utf-8') if isinstance(stderr, bytes) else stderr
+            print(f'STDOUT:\n{stdout_str}')
             print('==================================')
-            print(f'STDERR:\n{stderr.decode("utf-8")}')
+            print(f'STDERR:\n{stderr_str}')
 
             raise Exception(f"""Wait time exceeded {exception_delay} secs. {exception}""")
 
