@@ -6,6 +6,9 @@ source**
 This image hosts the SkyWalking Python agent package on top of official Python base images (full & slim) providing support from 
 Python 3.10 - 3.14.
 
+### Known Limitations
+- **Python 3.14**: greenlet/gevent profiling is not supported yet (greenlet does not have 3.14 wheels). Thread-based profiling works normally.
+
 ## How to use this image
 
 The images are hosted at [Docker Hub](https://hub.docker.com/r/apache/skywalking-python).

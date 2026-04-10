@@ -278,6 +278,11 @@ jobs:
             path: tests/e2e/case/profiling/threading/e2e.yaml
           - name: profiling_greenlet
             path: tests/e2e/case/profiling/greenlet/e2e.yaml
+        exclude:
+          # gevent/greenlet does not support Python 3.14 yet
+          - python-image-variant: "3.14-slim"
+            case:
+              name: profiling_greenlet
       fail-fast: false
     steps:
       - name: Checkout source codes
