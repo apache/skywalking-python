@@ -49,3 +49,6 @@ automatically follow environment.
 
 # Next
 Refer to the [Plugin Development Guide](How-to-develop-plugin.md) to learn how to build a new plugin for a library.
+
+## Claude Code Skills
+This project includes Claude Code configuration for AI-assisted development. See [Claude Code Skills](Claude-Code-Skills.md) for available skills (`/new-plugin`, `/plugin-test`) and what `CLAUDE.md` covers.
