@@ -162,6 +162,22 @@ Plugin library failed to install in Docker. Check:
 - requirements.txt content in the test directory
 - Docker compose command for the service
 
+### Failure - Permanent 502 / Empty Segments
+If the consumer returns 502 indefinitely and no segments are collected:
+- Check container logs: `docker logs sw_<name>-consumer-1`
+- Look for whether Flask actually started (should see `* Running on http://`)
+- Common cause: `pip install -r requirements.txt` in the Docker container downgrades shared dependencies (urllib3, charset-normalizer) that break the Flask/agent startup
+- Run `docker exec sw_<name>-consumer-1 pip list` to check installed package versions
+- The Docker image has pre-installed packages from `make install`; test-specific `pip install` can create conflicts
+
+### Local vs CI Differences
+- CI runs on Linux with native Docker — faster, more reliable networking
+- macOS Docker Desktop runs containers in a Linux VM — additional latency
+- Some tests may fail locally due to dependency conflicts in containers but pass in CI where the environment is cleaner
+- For authoritative span data verification, rely on CI results
+- Locally, verify: (1) Docker image builds, (2) agent loads all plugins (`docker run --rm <image> python3 -c "from skywalking.plugins import install"`)  
+- To debug container issues locally: `docker compose -f <path>/docker-compose.yml up` (foreground) and watch logs
+
 ## Plugin Name to Test Path Mapping
 
 | Plugin | Test Path |
