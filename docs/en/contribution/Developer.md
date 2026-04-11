@@ -28,7 +28,7 @@ Once you have `make` ready, run `make env`, this will automatically install the 
 Note: Make sure you have `python3` aliased to `python` available on Windows computers instead of pointing to the Microsoft app store.
 
 ### Switching between Multiple Python Versions
-Do not develop/test on Python < 3.8, since Poetry and some other functionalities we implement rely on Python 3.8+
+Do not develop/test on Python < 3.10, since Python 3.8/3.9 have reached end of life
 
 If you would like to test on multiple Python versions, run the following to switch and recreate virtual environment:
 #### Without Python Version Tools
@@ -39,7 +39,7 @@ poetry install
 
 #### With Python Version Tools
 ```shell
-pyenv shell 3.9.11
+pyenv shell 3.13.0
 poetry env use $(pyenv which python)
 poetry install
 ```
