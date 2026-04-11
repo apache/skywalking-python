@@ -22,8 +22,8 @@ from skywalking.trace.tags import TagDbType, TagDbStatement
 link_vector = ['https://happybase.readthedocs.io']
 support_matrix = {
     'happybase': {
+        '>=3.12': [],  # TODO: thriftpy2 dependency fails to build on Python 3.12+
         '>=3.10': ['1.2.0'],
-        # TODO: thriftpy2 dependency fails to build on Python 3.12+
     }
 }
 note = """"""

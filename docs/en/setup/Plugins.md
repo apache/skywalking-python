@@ -27,7 +27,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
 | [flask](https://flask.palletsprojects.com) | Python >=3.14 - ['3.0']; Python >=3.10 - ['2.0'];  | `sw_flask` |
 | [grpcio](https://grpc.io/docs/languages/python) | Python >=3.8 - ['1.*'];  | `sw_grpc` |
-| [happybase](https://happybase.readthedocs.io) | Python >=3.10 - ['1.2.0'];  | `sw_happybase` |
+| [happybase](https://happybase.readthedocs.io) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.2.0'];  | `sw_happybase` |
 | [http_server](https://docs.python.org/3/library/http.server.html) | Python >=3.7 - ['*'];  | `sw_http_server` |
 | [werkzeug](https://werkzeug.palletsprojects.com/) | Python >=3.7 - ['1.0.1', '2.0'];  | `sw_http_server` |
 | [httpx](https://www.python-httpx.org/) | Python >=3.7 - ['0.23.*', '0.22.*'];  | `sw_httpx` |
@@ -46,7 +46,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
-| [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
+| [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib_request](https://docs.python.org/3/library/urllib.request.html) | Python >=3.7 - ['*'];  | `sw_urllib_request` |
 | [websockets](https://websockets.readthedocs.io) | Python >=3.7 - ['10.3', '10.4'];  | `sw_websockets` |
 ### Notes
