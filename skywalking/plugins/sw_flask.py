@@ -24,7 +24,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 link_vector = ['https://flask.palletsprojects.com']
 support_matrix = {
     'flask': {
-        '>=3.7': ['2.0']  # 1.x removed due to EOL
+        '>=3.14': ['3.0'],
+        '>=3.10': ['2.0'],
     }
 }
 note = """"""

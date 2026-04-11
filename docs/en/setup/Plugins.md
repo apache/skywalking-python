@@ -18,14 +18,14 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [aiormq](https://pypi.org/project/aiormq/) | Python >=3.7 - ['6.3', '6.4'];  | `sw_aiormq` |
 | [amqp](https://pypi.org/project/amqp/) | Python >=3.7 - ['2.6.1'];  | `sw_amqp` |
 | [asyncpg](https://github.com/MagicStack/asyncpg) | Python >=3.7 - ['0.25.0'];  | `sw_asyncpg` |
-| [bottle](http://bottlepy.org/docs/dev/) | Python >=3.7 - ['0.12.23'];  | `sw_bottle` |
+| [bottle](http://bottlepy.org/docs/dev/) | Python >=3.13 - ['0.13']; Python >=3.10 - ['0.12.23'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.7 - ['5.1'];  | `sw_celery` |
 | [confluent_kafka](https://www.confluent.io/) | Python >=3.7 - ['1.5.0', '1.7.0', '1.8.2'];  | `sw_confluent_kafka` |
-| [django](https://www.djangoproject.com/) | Python >=3.7 - ['3.2'];  | `sw_django` |
+| [django](https://www.djangoproject.com/) | Python >=3.13 - ['4.2']; Python >=3.10 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.7 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.11 - NOT SUPPORTED YET; Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
-| [flask](https://flask.palletsprojects.com) | Python >=3.7 - ['2.0'];  | `sw_flask` |
+| [flask](https://flask.palletsprojects.com) | Python >=3.14 - ['3.0']; Python >=3.10 - ['2.0'];  | `sw_flask` |
 | [grpcio](https://grpc.io/docs/languages/python) | Python >=3.8 - ['1.*'];  | `sw_grpc` |
 | [happybase](https://happybase.readthedocs.io) | Python >=3.10 - ['1.2.0'];  | `sw_happybase` |
 | [http_server](https://docs.python.org/3/library/http.server.html) | Python >=3.7 - ['*'];  | `sw_http_server` |
@@ -45,8 +45,8 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [redis](https://github.com/andymccurdy/redis-py/) | Python >=3.7 - ['3.5.*', '4.5.1'];  | `sw_redis` |
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
-| [tornado](https://www.tornadoweb.org) | Python >=3.7 - ['6.0', '6.1'];  | `sw_tornado` |
-| [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - ['2.0', '1.26']; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
+| [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
+| [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib_request](https://docs.python.org/3/library/urllib.request.html) | Python >=3.7 - ['*'];  | `sw_urllib_request` |
 | [websockets](https://websockets.readthedocs.io) | Python >=3.7 - ['10.3', '10.4'];  | `sw_websockets` |
 ### Notes

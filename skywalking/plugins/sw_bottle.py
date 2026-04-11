@@ -24,7 +24,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpParams, TagHttpStatusCod
 link_vector = ['http://bottlepy.org/docs/dev/']
 support_matrix = {
     'bottle': {
-        '>=3.7': ['0.12.23']
+        '>=3.13': ['0.13'],
+        '>=3.10': ['0.12.23'],
     }
 }
 note = """"""
