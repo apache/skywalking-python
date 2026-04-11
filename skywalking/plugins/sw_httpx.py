@@ -23,6 +23,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://www.python-httpx.org/']
 support_matrix = {
     'httpx': {
+        '>=3.14': ['0.28.*', '0.23.*'],
         '>=3.13': ['0.23.*'],
         '>=3.10': ['0.23.*', '0.22.*'],
     }
