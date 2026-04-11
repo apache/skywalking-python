@@ -21,7 +21,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [bottle](http://bottlepy.org/docs/dev/) | Python >=3.13 - ['0.13']; Python >=3.10 - ['0.12.23'];  | `sw_bottle` |
 | [celery](https://docs.celeryq.dev) | Python >=3.7 - ['5.1'];  | `sw_celery` |
 | [confluent_kafka](https://www.confluent.io/) | Python >=3.7 - ['1.5.0', '1.7.0', '1.8.2'];  | `sw_confluent_kafka` |
-| [django](https://www.djangoproject.com/) | Python >=3.13 - ['4.2']; Python >=3.10 - ['3.2'];  | `sw_django` |
+| [django](https://www.djangoproject.com/) | Python >=3.13 - ['5.1']; Python >=3.10 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.7 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.11 - NOT SUPPORTED YET; Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
@@ -30,12 +30,12 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [happybase](https://happybase.readthedocs.io) | Python >=3.12 - ['1.3.0']; Python >=3.10 - ['1.2.0'];  | `sw_happybase` |
 | [http_server](https://docs.python.org/3/library/http.server.html) | Python >=3.7 - ['*'];  | `sw_http_server` |
 | [werkzeug](https://werkzeug.palletsprojects.com/) | Python >=3.7 - ['1.0.1', '2.0'];  | `sw_http_server` |
-| [httpx](https://www.python-httpx.org/) | Python >=3.7 - ['0.23.*', '0.22.*'];  | `sw_httpx` |
+| [httpx](https://www.python-httpx.org/) | Python >=3.13 - ['0.23.*']; Python >=3.10 - ['0.23.*', '0.22.*'];  | `sw_httpx` |
 | [kafka-python](https://kafka-python.readthedocs.io) | Python >=3.12 - ['2.3']; Python >=3.10 - ['2.0'];  | `sw_kafka` |
 | [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0', '0.7.0'];  | `sw_loguru` |
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
 | [neo4j](https://neo4j.com/docs/python-manual/5/) | Python >=3.7 - ['5.*'];  | `sw_neo4j` |
-| [psycopg[binary]](https://www.psycopg.org/) | Python >=3.11 - ['3.1.*']; Python >=3.7 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
+| [psycopg[binary]](https://www.psycopg.org/) | Python >=3.13 - ['3.2.*']; Python >=3.11 - ['3.1.*']; Python >=3.10 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
 | [pulsar-client](https://github.com/apache/pulsar-client-python) | Python >=3.12 - ['3.9.0']; Python >=3.10 - ['3.3.0'];  | `sw_pulsar` |
 | [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
