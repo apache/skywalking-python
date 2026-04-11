@@ -4,7 +4,10 @@
 source**
 
 This image hosts the SkyWalking Python agent package on top of official Python base images (full & slim) providing support from 
-Python 3.8 - 3.11.
+Python 3.10 - 3.14.
+
+### Known Limitations
+- **Python 3.14**: greenlet/gevent profiling is not supported yet (greenlet does not have 3.14 wheels). Thread-based profiling works normally.
 
 ## How to use this image
 

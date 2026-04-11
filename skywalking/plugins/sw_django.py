@@ -24,8 +24,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode, 
 link_vector = ['https://www.djangoproject.com/']
 support_matrix = {
     'django': {
-        '>=3.7': ['3.2'],
-        # ">=3.8": ["4.0a1"]  # expected Dec 2021
+        '>=3.13': ['5.1'],
+        '>=3.10': ['3.2'],
     }
 }
 note = """"""

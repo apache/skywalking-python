@@ -18,6 +18,7 @@
 """
 A tool to generate test matrix report for SkyWalking Python Plugins
 """
+import importlib.util
 import pkgutil
 
 from skywalking.plugins import __path__ as plugins_path
@@ -51,7 +52,9 @@ def generate_plugin_doc():
     table_entries = []
     note_entries = []
     for importer, modname, _ispkg in pkgutil.iter_modules(plugins_path):
-        plugin = importer.find_module(modname).load_module(modname)
+        spec = importer.find_spec(modname)
+        plugin = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(plugin)
 
         try:
             plugin_support_matrix = plugin.support_matrix  # type: dict

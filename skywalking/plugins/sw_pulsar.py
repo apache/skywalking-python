@@ -22,7 +22,8 @@ from skywalking.trace.tags import TagMqTopic, TagMqBroker
 link_vector = ['https://github.com/apache/pulsar-client-python']
 support_matrix = {
     'pulsar-client': {
-        '>=3.8': ['3.3.0']
+        '>=3.12': ['3.9.0'],
+        '>=3.10': ['3.3.0'],
     }
 }
 note = """"""

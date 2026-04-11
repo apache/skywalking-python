@@ -23,7 +23,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://urllib3.readthedocs.io/en/latest/']
 support_matrix = {
     'urllib3': {
-        '>=3.7': ['1.26', '1.25']
+        '>=3.12': [],  # urllib3 2.x removed urllib3.request.RequestMethods, plugin needs adaptation
+        '>=3.10': ['1.26', '1.25'],
     }
 }
 note = """"""

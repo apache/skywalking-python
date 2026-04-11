@@ -19,7 +19,7 @@ import sys
 import time
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import path
 from django.http import JsonResponse
 
 settings.configure(
@@ -35,7 +35,7 @@ def index(request):
 
 
 urlpatterns = (
-    url('users', index),
+    path('users', index),
 )
 
 
