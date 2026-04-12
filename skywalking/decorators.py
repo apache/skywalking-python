@@ -66,6 +66,54 @@ def trace(
     return decorator
 
 
+class _RunnableWrapper:
+    """Wrapper returned by @runnable. Call continue_tracing() on the parent thread
+    to capture the current trace context, then pass the result as Thread target."""
+
+    def __init__(self, func, op, layer, component, tags):
+        self._func = func
+        self._op = op
+        self._layer = layer
+        self._component = component
+        self._tags = tags
+        # Preserve original function attributes
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
+        self.__module__ = getattr(func, '__module__', None)
+        self.__wrapped__ = func
+
+    def __call__(self, *args, **kwargs):
+        """Direct call — creates a local span (same as @trace)."""
+        context = get_context()
+        with context.new_local_span(op=self._op) as span:
+            span.layer = self._layer
+            span.component = self._component
+            if self._tags:
+                for tag in self._tags:
+                    span.tag(tag)
+            return self._func(*args, **kwargs)
+
+    def continue_tracing(self):
+        """Capture the current trace context snapshot on the calling thread.
+        Returns a callable to be used as Thread target that will propagate
+        the trace context to the child thread via CrossThread reference."""
+        snapshot = get_context().capture()
+
+        def _continued_wrapper(*args, **kwargs):
+            context = get_context()
+            with context.new_local_span(op=self._op) as span:
+                if snapshot is not None:
+                    context.continued(snapshot)
+                span.layer = self._layer
+                span.component = self._component
+                if self._tags:
+                    for tag in self._tags:
+                        span.tag(tag)
+                return self._func(*args, **kwargs)
+
+        return _continued_wrapper
+
+
 def runnable(
         op: str = None,
         layer: Layer = Layer.Unknown,
@@ -73,21 +121,7 @@ def runnable(
         tags: List[Tag] = None,
 ):
     def decorator(func):
-        snapshot = get_context().capture()
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            _op = op or f'Thread/{func.__name__}'
-            context = get_context()
-            with context.new_local_span(op=_op) as span:
-                context.continued(snapshot)
-                span.layer = layer
-                span.component = component
-                if tags:
-                    for tag in tags:
-                        span.tag(tag)
-                func(*args, **kwargs)
-
-        return wrapper
+        _op = op or f'Thread/{func.__name__}'
+        return _RunnableWrapper(func, _op, layer, component, tags)
 
     return decorator
