@@ -76,6 +76,8 @@ class _RunnableWrapper:
         self._layer = layer
         self._component = component
         self._tags = tags
+        # Capture snapshot at decoration time — supports inline @runnable usage
+        self._snapshot = get_context().capture()
         # Preserve original function attributes
         self.__name__ = func.__name__
         self.__doc__ = func.__doc__
@@ -83,9 +85,12 @@ class _RunnableWrapper:
         self.__wrapped__ = func
 
     def __call__(self, *args, **kwargs):
-        """Direct call — creates a local span (same as @trace)."""
+        """Direct call — creates a local span with cross-thread propagation
+        using the snapshot captured at decoration time (inline @runnable pattern)."""
         context = get_context()
         with context.new_local_span(op=self._op) as span:
+            if self._snapshot is not None:
+                context.continued(self._snapshot)
             span.layer = self._layer
             span.component = self._component
             if self._tags:
