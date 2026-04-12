@@ -73,14 +73,17 @@ def runnable(
         tags: List[Tag] = None,
 ):
     def decorator(func):
-        snapshot = get_context().capture()
+        _op = op or f'Thread/{func.__name__}'
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            _op = op or f'Thread/{func.__name__}'
+            import threading
+            snapshot = getattr(threading.current_thread(), '_sw_snapshot', None)
+
             context = get_context()
             with context.new_local_span(op=_op) as span:
-                context.continued(snapshot)
+                if snapshot is not None:
+                    context.continued(snapshot)
                 span.layer = layer
                 span.component = component
                 if tags:
@@ -88,6 +91,7 @@ def runnable(
                         span.tag(tag)
                 func(*args, **kwargs)
 
+        wrapper._sw_runnable = True
         return wrapper
 
     return decorator
