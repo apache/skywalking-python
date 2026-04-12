@@ -46,7 +46,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [redis](https://github.com/andymccurdy/redis-py/) | Python >=3.7 - ['3.5.*', '4.5.1'];  | `sw_redis` |
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
-| [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - ['23.12.*', '24.12.*'];  | `sw_sanic_v2` |
+| [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.14 - ['24.12.*']; Python >=3.10 - ['23.12.*', '24.12.*'];  | `sw_sanic_v2` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - ['2.3', '2.0'];  | `sw_urllib3_v2` |

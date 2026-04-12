@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 link_vector = ['https://sanic.readthedocs.io/en/latest']
 support_matrix = {
     'sanic': {
+        '>=3.14': ['24.12.*'],
         '>=3.10': ['23.12.*', '24.12.*'],
     }
 }
