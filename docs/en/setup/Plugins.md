@@ -47,6 +47,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.14 - ['24.12.*']; Python >=3.10 - ['23.12.*', '24.12.*'];  | `sw_sanic_v2` |
+| [threading](https://docs.python.org/3/library/threading.html) | Python >=3.7 - ['*'];  | `sw_threading` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - ['2.3', '2.0'];  | `sw_urllib3_v2` |
@@ -66,6 +67,7 @@ support both Neo4j 5 and 4.4 DBMS.
 For legacy Sanic <=21.3, see sw_sanic.
 Note: Sanic's touchup system recompiles handle_request at startup,
 so we use signal listeners instead of monkey-patching handle_request.
+- Automatically propagates trace context across threads.
 - urllib3 1.x plugin. For urllib3 2.x, see sw_urllib3_v2.
 - urllib3 2.x plugin. For urllib3 1.x, see sw_urllib3.
 - The websocket instrumentation only traces client side connection handshake,
