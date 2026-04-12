@@ -19,7 +19,7 @@ traces:
   - segmentid: {{ notEmpty .segmentid }}
     endpointnames:
     {{- contains .endpointnames }}
-      - /artist-provider
+      - {{ notEmpty (index .endpointnames 0) }}
     {{- end }}
     duration: {{ ge .duration 0 }}
     start: {{ notEmpty .start}}
