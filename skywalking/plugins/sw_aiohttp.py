@@ -24,7 +24,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://docs.aiohttp.org']
 support_matrix = {
     'aiohttp': {
-        '>=3.8': []
+        '>=3.10': ['3.9', '3.11'],
     }
 }
 note = """"""
@@ -81,7 +81,7 @@ def install():
 
     _handle_request = RequestHandler._handle_request
 
-    async def _sw_handle_request(self, request: BaseRequest, start_time: float):
+    async def _sw_handle_request(self, request: BaseRequest, start_time: float, *args, **kwargs):
 
         if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
                 .endswith(f'{request.url.host}:{request.url.port}'):
@@ -109,9 +109,13 @@ def install():
                 span.peer = f'{peer_name}'
 
             span.tag(TagHttpMethod(method))  # pyre-ignore
-            span.tag(TagHttpURL(str(request.url)))  # pyre-ignore
+            try:
+                span.tag(TagHttpURL(str(request.url)))  # pyre-ignore
+            except ValueError:
+                # yarl >= 1.18 rejects host:port in URL.build; fallback to path
+                span.tag(TagHttpURL(f'{request.scheme}://{request.host}{request.path}'))
 
-            resp, reset = await _handle_request(self, request, start_time)
+            resp, reset = await _handle_request(self, request, start_time, *args, **kwargs)
 
             span.tag(TagHttpStatusCode(resp.status))
 
