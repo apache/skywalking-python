@@ -43,9 +43,11 @@ class TestPluginBase:
 
             response = requests.post(url='http://localhost:12800/dataValidate', data=expected_data)
 
-            if response.status_code != 200:
-                # heuristically retry once
-                time.sleep(10)
+            # Retry with backoff — segments may not have been reported yet
+            for i in range(3):
+                if response.status_code == 200:
+                    break
+                time.sleep(5 * (i + 1))
                 response = requests.post(url='http://localhost:12800/dataValidate', data=expected_data)
 
             if response.status_code != 200:
