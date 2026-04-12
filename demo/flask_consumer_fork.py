@@ -38,7 +38,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def application():
-    res = requests.get('http://localhost:9999')
+    res = requests.get('http://localhost:9999', timeout=10.0)
     return res.json()
 
 
