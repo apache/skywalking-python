@@ -47,6 +47,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
+| [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - ['2.3', '2.0'];  | `sw_urllib3_v2` |
 | [urllib_request](https://docs.python.org/3/library/urllib.request.html) | Python >=3.7 - ['*'];  | `sw_urllib_request` |
 | [websockets](https://websockets.readthedocs.io) | Python >=3.7 - ['10.3', '10.4'];  | `sw_websockets` |
 ### Notes
@@ -58,6 +59,8 @@ Hug is believed to be abandoned project, use this plugin with a bit more caution
 Instead of Hug, plugin test should move to test actual Falcon.
 - The Neo4j plugin integrates neo4j python driver 5.x.x versions which
 support both Neo4j 5 and 4.4 DBMS.
+- urllib3 1.x plugin. For urllib3 2.x, see sw_urllib3_v2.
+- urllib3 2.x plugin. For urllib3 1.x, see sw_urllib3.
 - The websocket instrumentation only traces client side connection handshake,
 the actual message exchange (send/recv) is not traced since injecting headers to socket message
 body is the only way to propagate the trace context, which requires customization of message structure

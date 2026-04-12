@@ -23,19 +23,27 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://urllib3.readthedocs.io/en/latest/']
 support_matrix = {
     'urllib3': {
-        '>=3.12': [],  # urllib3 1.x can't install on 3.12+, see sw_urllib3_v2 for 2.x
-        '>=3.10': ['1.26', '1.25'],
+        '>=3.12': ['2.3', '2.0'],
     }
 }
-note = """urllib3 1.x plugin. For urllib3 2.x, see sw_urllib3_v2."""
+note = """urllib3 2.x plugin. For urllib3 1.x, see sw_urllib3."""
 
 
 def install():
-    from urllib3.request import RequestMethods
+    from urllib3 import PoolManager
 
-    _request = RequestMethods.request
+    # urllib3 2.x removed RequestMethods base class;
+    # PoolManager.request is the direct entry point.
+    # Guard: if RequestMethods still exists, this is urllib3 1.x — let sw_urllib3 handle it.
+    try:
+        from urllib3.request import RequestMethods  # noqa: F401
+        return  # urllib3 1.x detected, skip — sw_urllib3 handles it
+    except ImportError:
+        pass  # urllib3 2.x, proceed
 
-    def _sw_request(this: RequestMethods, method, url, fields=None, headers=None, **urlopen_kw):
+    _request = PoolManager.request
+
+    def _sw_request(this: PoolManager, method, url, body=None, fields=None, headers=None, json=None, **urlopen_kw):
         from skywalking.utils.filter import sw_urlparse
 
         url_param = sw_urlparse(url)
@@ -50,13 +58,15 @@ def install():
 
             if headers is None:
                 headers = {}
+            else:
+                headers = dict(headers)
             for item in carrier:
                 headers[item.key] = item.val
 
             span.tag(TagHttpMethod(method.upper()))
             span.tag(TagHttpURL(url_param.geturl()))
 
-            res = _request(this, method, url, fields=fields, headers=headers, **urlopen_kw)
+            res = _request(this, method, url, body=body, fields=fields, headers=headers, json=json, **urlopen_kw)
 
             span.tag(TagHttpStatusCode(res.status))
             if res.status >= 400:
@@ -64,4 +74,4 @@ def install():
 
             return res
 
-    RequestMethods.request = _sw_request
+    PoolManager.request = _sw_request
