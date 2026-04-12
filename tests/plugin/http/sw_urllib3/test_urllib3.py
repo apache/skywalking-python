@@ -19,9 +19,14 @@ from typing import Callable
 import pytest
 import requests
 
-from skywalking.plugins.sw_urllib3 import support_matrix
+from skywalking.plugins.sw_urllib3 import support_matrix as v1_matrix
+from skywalking.plugins.sw_urllib3_v2 import support_matrix as v2_matrix
 from tests.orchestrator import get_test_vector
 from tests.plugin.base import TestPluginBase
+
+# Merge v1 and v2 test vectors — get_test_vector returns versions for the current Python
+_versions = (get_test_vector(lib_name='urllib3', support_matrix=v1_matrix)
+             + get_test_vector(lib_name='urllib3', support_matrix=v2_matrix))
 
 
 @pytest.fixture
@@ -31,6 +36,6 @@ def prepare():
 
 
 class TestPlugin(TestPluginBase):
-    @pytest.mark.parametrize('version', get_test_vector(lib_name='urllib3', support_matrix=support_matrix))
+    @pytest.mark.parametrize('version', _versions)
     def test_plugin(self, docker_compose, version):
         self.validate()
