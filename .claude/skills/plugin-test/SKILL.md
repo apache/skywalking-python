@@ -137,21 +137,21 @@ Note: E2E tests require the `e2e` CLI tool from SkyWalking infra-e2e. They are t
 
 ## Version Format in support_matrix
 
-Use `.*` wildcard to test the **latest patch** of each minor version:
+Pin **exact versions** (latest patch of each minor) for deterministic tests:
 ```python
 support_matrix = {
     'falcon': {
-        '>=3.13': ['4.2.*'],        # pip resolves to latest 4.2.x (e.g., 4.2.1)
-        '>=3.10': ['3.1.*', '4.2.*'],
+        '>=3.13': ['4.2.0'],
+        '>=3.10': ['3.1.3', '4.2.0'],
     }
 }
 ```
 
-- `'4.2.*'` → pip installs `falcon==4.2.*` → resolves to latest 4.2.x patch
-- `'4.2'` → pip installs `falcon==4.2` → always 4.2.0 (misses patches)
-- `'4.*'` → pip installs `falcon==4.*` → latest 4.x entirely (too broad)
+- `'4.2.0'` → pip installs `falcon==4.2.0` → deterministic, same result every CI run
+- `'4.2.*'` → pip installs `falcon==4.2.*` → dynamic, could change between runs (avoid)
+- `'4.2'` → pip installs `falcon==4.2` → resolves to 4.2.0 only (misses patches)
 
-**Convention**: always use `minor.*` format (e.g., `'3.11.*'`, `'2.9.*'`, `'24.12.*'`) to get the latest patch release for each tested minor version.
+**Convention**: pin the latest patch version available at the time of writing (e.g., `'3.11.18'`, `'2.9.11'`, `'24.12.0'`). Update when newer patches are released.
 
 ## Step 4: Interpret Results
 

@@ -34,8 +34,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['<documentation URL>']
 support_matrix = {
     '<pip-package-name>': {
-        '>=3.13': ['<version>.*'],  # use minor.* to test latest patch
-        '>=3.10': ['<older_version>.*', '<version>.*'],
+        '>=3.13': ['<version>'],  # pin exact latest patch version (e.g., '4.2.0')
+        '>=3.10': ['<older_version>', '<version>'],
     }
 }
 note = """"""

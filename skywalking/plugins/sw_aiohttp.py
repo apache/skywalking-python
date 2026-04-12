@@ -24,7 +24,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusCode
 link_vector = ['https://docs.aiohttp.org']
 support_matrix = {
     'aiohttp': {
-        '>=3.10': ['3.9.*', '3.11.*'],
+        '>=3.10': ['3.9.5', '3.11.18'],
     }
 }
 note = """"""

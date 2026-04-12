@@ -24,8 +24,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpParams, TagH
 link_vector = ['https://falcon.readthedocs.io/en/stable/']
 support_matrix = {
     'falcon': {
-        '>=3.13': ['4.2.*'],
-        '>=3.10': ['3.1.*', '4.2.*'],
+        '>=3.13': ['4.2.0'],
+        '>=3.10': ['3.1.3', '4.2.0'],
     }
 }
 note = """Falcon 3.x/4.x plugin. For legacy hug-based instrumentation, see sw_falcon."""
