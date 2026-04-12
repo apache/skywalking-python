@@ -24,7 +24,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [django](https://www.djangoproject.com/) | Python >=3.13 - ['5.1']; Python >=3.10 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.7 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.11 - NOT SUPPORTED YET; Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
-| [falcon](https://falcon.readthedocs.io/en/stable/) | Python >=3.13 - ['4.0']; Python >=3.10 - ['3.1', '4.0'];  | `sw_falcon_v3` |
+| [falcon](https://falcon.readthedocs.io/en/stable/) | Python >=3.13 - ['4.2']; Python >=3.10 - ['3.1', '4.2'];  | `sw_falcon_v3` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
 | [flask](https://flask.palletsprojects.com) | Python >=3.14 - ['3.0']; Python >=3.10 - ['2.0'];  | `sw_flask` |
 | [grpcio](https://grpc.io/docs/languages/python) | Python >=3.8 - ['1.*'];  | `sw_grpc` |
