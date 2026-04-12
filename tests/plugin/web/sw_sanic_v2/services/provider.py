@@ -15,11 +15,16 @@
 # limitations under the License.
 #
 
-  cases:
-    # logs list
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql logs list --service-name=e2e-service-provider --trace-id=$( \
-            swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-              | yq e '.traces | select(.[].endpointnames[] == "/artist-provider") | .[0].traceids[0]' -
-        )
-      expected: expected/logs-list.yml
+import time
+
+if __name__ == '__main__':
+    from sanic import Sanic, json
+
+    app = Sanic('provider')
+
+    @app.route('/users', methods=['GET'])
+    async def application(req):
+        time.sleep(0.5)
+        return json({'song': 'Despacito', 'artist': 'Luis Fonsi'})
+
+    app.run(host='0.0.0.0', port=9091, single_process=True)

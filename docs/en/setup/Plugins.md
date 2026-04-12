@@ -13,7 +13,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 ### Plugin Support Table
 | Library | Python Version - Lib Version | Plugin Name |
 | :--- | :--- | :--- |
-| [aiohttp](https://docs.aiohttp.org) | Python >=3.8 - NOT SUPPORTED YET;  | `sw_aiohttp` |
+| [aiohttp](https://docs.aiohttp.org) | Python >=3.10 - ['3.9.*', '3.11.*'];  | `sw_aiohttp` |
 | [aioredis](https://aioredis.readthedocs.io/) | Python >=3.7 - ['2.0.*'];  | `sw_aioredis` |
 | [aiormq](https://pypi.org/project/aiormq/) | Python >=3.7 - ['6.3', '6.4'];  | `sw_aiormq` |
 | [amqp](https://pypi.org/project/amqp/) | Python >=3.7 - ['2.6.1'];  | `sw_amqp` |
@@ -24,6 +24,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [django](https://www.djangoproject.com/) | Python >=3.13 - ['5.1']; Python >=3.10 - ['3.2'];  | `sw_django` |
 | [elasticsearch](https://github.com/elastic/elasticsearch-py) | Python >=3.7 - ['7.13', '7.14', '7.15'];  | `sw_elasticsearch` |
 | [hug](https://falcon.readthedocs.io/en/stable/) | Python >=3.11 - NOT SUPPORTED YET; Python >=3.10 - ['2.5', '2.6']; Python >=3.7 - ['2.4.1', '2.5', '2.6'];  | `sw_falcon` |
+| [falcon](https://falcon.readthedocs.io/en/stable/) | Python >=3.13 - ['4.*']; Python >=3.10 - ['3.1.*', '4.*'];  | `sw_falcon_v3` |
 | [fastapi](https://fastapi.tiangolo.com) | Python >=3.7 - ['0.89.*', '0.88.*'];  | `sw_fastapi` |
 | [flask](https://flask.palletsprojects.com) | Python >=3.14 - ['3.0']; Python >=3.10 - ['2.0'];  | `sw_flask` |
 | [grpcio](https://grpc.io/docs/languages/python) | Python >=3.8 - ['1.*'];  | `sw_grpc` |
@@ -36,7 +37,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
 | [neo4j](https://neo4j.com/docs/python-manual/5/) | Python >=3.7 - ['5.*'];  | `sw_neo4j` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.13 - ['3.2.*']; Python >=3.11 - ['3.1.*']; Python >=3.10 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
-| [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['2.9'];  | `sw_psycopg2` |
+| [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - ['2.9.*'];  | `sw_psycopg2` |
 | [pulsar-client](https://github.com/apache/pulsar-client-python) | Python >=3.12 - ['3.9.0']; Python >=3.10 - ['3.3.0'];  | `sw_pulsar` |
 | [pymongo](https://pymongo.readthedocs.io) | Python >=3.7 - ['3.11.*'];  | `sw_pymongo` |
 | [pymysql](https://pymysql.readthedocs.io/en/latest/) | Python >=3.7 - ['1.0'];  | `sw_pymysql` |
@@ -45,6 +46,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [redis](https://github.com/andymccurdy/redis-py/) | Python >=3.7 - ['3.5.*', '4.5.1'];  | `sw_redis` |
 | [requests](https://requests.readthedocs.io/en/master/) | Python >=3.7 - ['2.26', '2.25'];  | `sw_requests` |
 | [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.10 - NOT SUPPORTED YET; Python >=3.7 - ['20.12'];  | `sw_sanic` |
+| [sanic](https://sanic.readthedocs.io/en/latest) | Python >=3.14 - ['24.12.*']; Python >=3.10 - ['23.12.*', '24.12.*'];  | `sw_sanic_v2` |
 | [tornado](https://www.tornadoweb.org) | Python >=3.14 - ['6.4']; Python >=3.10 - ['6.0', '6.1'];  | `sw_tornado` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - NOT SUPPORTED YET; Python >=3.10 - ['1.26', '1.25'];  | `sw_urllib3` |
 | [urllib3](https://urllib3.readthedocs.io/en/latest/) | Python >=3.12 - ['2.3', '2.0'];  | `sw_urllib3_v2` |
@@ -57,8 +59,13 @@ in SkyWalking currently. Celery clients can use whatever protocol they want.
 - While Falcon is instrumented, only Hug is tested.
 Hug is believed to be abandoned project, use this plugin with a bit more caution.
 Instead of Hug, plugin test should move to test actual Falcon.
+- Falcon 3.x/4.x plugin. For legacy hug-based instrumentation, see sw_falcon.
 - The Neo4j plugin integrates neo4j python driver 5.x.x versions which
 support both Neo4j 5 and 4.4 DBMS.
+- Sanic 21.9+ plugin using signal listeners.
+For legacy Sanic <=21.3, see sw_sanic.
+Note: Sanic's touchup system recompiles handle_request at startup,
+so we use signal listeners instead of monkey-patching handle_request.
 - urllib3 1.x plugin. For urllib3 2.x, see sw_urllib3_v2.
 - urllib3 2.x plugin. For urllib3 1.x, see sw_urllib3.
 - The websocket instrumentation only traces client side connection handshake,
