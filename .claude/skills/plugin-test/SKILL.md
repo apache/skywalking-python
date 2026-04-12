@@ -135,6 +135,24 @@ docker build --build-arg BASE_PYTHON_IMAGE=3.11-slim \
 
 Note: E2E tests require the `e2e` CLI tool from SkyWalking infra-e2e. They are typically only run in CI. Inform the user if they ask for E2E.
 
+## Version Format in support_matrix
+
+Use `.*` wildcard to test the **latest patch** of each minor version:
+```python
+support_matrix = {
+    'falcon': {
+        '>=3.13': ['4.2.*'],        # pip resolves to latest 4.2.x (e.g., 4.2.1)
+        '>=3.10': ['3.1.*', '4.2.*'],
+    }
+}
+```
+
+- `'4.2.*'` → pip installs `falcon==4.2.*` → resolves to latest 4.2.x patch
+- `'4.2'` → pip installs `falcon==4.2` → always 4.2.0 (misses patches)
+- `'4.*'` → pip installs `falcon==4.*` → latest 4.x entirely (too broad)
+
+**Convention**: always use `minor.*` format (e.g., `'3.11.*'`, `'2.9.*'`, `'24.12.*'`) to get the latest patch release for each tested minor version.
+
 ## Step 4: Interpret Results
 
 ### Success
