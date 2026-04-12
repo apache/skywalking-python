@@ -137,21 +137,21 @@ Note: E2E tests require the `e2e` CLI tool from SkyWalking infra-e2e. They are t
 
 ## Version Format in support_matrix
 
-Pin **exact versions** (latest patch of each minor) for deterministic tests:
+Use `.*` wildcard to always test the **latest patch** of each minor version:
 ```python
 support_matrix = {
     'falcon': {
-        '>=3.13': ['4.2.0'],
-        '>=3.10': ['3.1.3', '4.2.0'],
+        '>=3.13': ['4.*'],         # latest falcon 4.x
+        '>=3.10': ['3.1.*', '4.*'],
     }
 }
 ```
 
-- `'4.2.0'` → pip installs `falcon==4.2.0` → deterministic, same result every CI run
-- `'4.2.*'` → pip installs `falcon==4.2.*` → dynamic, could change between runs (avoid)
-- `'4.2'` → pip installs `falcon==4.2` → resolves to 4.2.0 only (misses patches)
+- `'4.*'` → pip installs `falcon==4.*` → latest 4.x (e.g., 4.2.0 today, 4.3.0 when released)
+- `'4.2.*'` → pip installs `falcon==4.2.*` → latest 4.2.x patch
+- `'4.2'` → pip installs `falcon==4.2` → always 4.2.0 (misses patches)
 
-**Convention**: pin the latest patch version available at the time of writing (e.g., `'3.11.18'`, `'2.9.11'`, `'24.12.0'`). Update when newer patches are released.
+**Convention**: use `major.*` (e.g., `'4.*'`) when the plugin supports the whole major version, or `minor.*` (e.g., `'3.11.*'`) when only specific minors are tested. This keeps CI testing fresh and the Plugins.md doc meaningful.
 
 ## Step 4: Interpret Results
 
