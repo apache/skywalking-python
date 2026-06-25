@@ -27,7 +27,12 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9090/users', timeout=5)
+    # HBase cold-start `create_table` over Thrift can exceed a few seconds. A short
+    # client timeout makes the readiness loop (conftest) retry while the server has
+    # already created the table, so the retried request hits AlreadyExists -> 500 and
+    # an extra error segment leaks into the collector (breaking segmentSize: 1).
+    # Use a generous timeout so the first reachable request completes cleanly.
+    return lambda *_: requests.get('http://0.0.0.0:9090/users', timeout=60)
 
 
 class TestPlugin(TestPluginBase):
