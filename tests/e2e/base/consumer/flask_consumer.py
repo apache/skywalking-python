@@ -31,7 +31,7 @@ def artist():
     try:
         time.sleep(random.random())
         payload = request.get_json()
-        requests.post('http://provider:9090/artist-provider', data=payload)
+        requests.post('http://provider:9090/artist-provider', data=payload, timeout=10.0)
 
         return {'artist': 'song'}
     except Exception as e:  # noqa
