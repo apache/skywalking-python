@@ -15,11 +15,30 @@
 # limitations under the License.
 #
 
-  cases:
-    # logs list
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql logs list --service-name=e2e-service-provider --trace-id=$( \
-            swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-              | yq e '.traces | select(.[].endpointnames[] == "/artist-provider") | .[0].traceids[0]' -
-        )
-      expected: expected/logs-list.yml
+import requests
+
+from skywalking.decorators import runnable
+
+
+# Module-level @runnable — this is the pattern from issue #11605
+@runnable(op='/post')
+def post():
+    requests.post('http://provider:9091/users', timeout=5)
+
+
+if __name__ == '__main__':
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    @app.route('/users', methods=['POST', 'GET'])
+    def application():
+        from threading import Thread
+        t = Thread(target=post.continue_tracing())
+        t.start()
+        t.join()
+
+        return jsonify({'status': 'ok'})
+
+    PORT = 9090
+    app.run(host='0.0.0.0', port=PORT, debug=True)

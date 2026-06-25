@@ -15,11 +15,21 @@
 # limitations under the License.
 #
 
-  cases:
-    # logs list
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql logs list --service-name=e2e-service-provider --trace-id=$( \
-            swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-              | yq e '.traces | select(.[].endpointnames[] == "/artist-provider") | .[0].traceids[0]' -
-        )
-      expected: expected/logs-list.yml
+import falcon
+import requests
+
+
+class UsersResource:
+    def on_get(self, req, resp):
+        res = requests.get('http://provider:9091/users', timeout=5)
+        resp.content_type = falcon.MEDIA_JSON
+        resp.text = res.text
+
+
+app = falcon.App()
+app.add_route('/users', UsersResource())
+
+if __name__ == '__main__':
+    from wsgiref.simple_server import make_server
+    with make_server('', 9090, app) as httpd:
+        httpd.serve_forever()

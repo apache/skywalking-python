@@ -15,11 +15,18 @@
 # limitations under the License.
 #
 
-  cases:
-    # logs list
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql logs list --service-name=e2e-service-provider --trace-id=$( \
-            swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-              | yq e '.traces | select(.[].endpointnames[] == "/artist-provider") | .[0].traceids[0]' -
-        )
-      expected: expected/logs-list.yml
+import time
+
+
+if __name__ == '__main__':
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    @app.route('/users', methods=['POST', 'GET'])
+    def application():
+        time.sleep(0.5)
+        return jsonify({'status': 'ok'})
+
+    PORT = 9091
+    app.run(host='0.0.0.0', port=PORT, debug=True)

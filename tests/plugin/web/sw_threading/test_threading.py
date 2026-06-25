@@ -14,12 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Callable
 
-  cases:
-    # logs list
-    - query: |
-        swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql logs list --service-name=e2e-service-provider --trace-id=$( \
-            swctl --display yaml --base-url=http://${oap_host}:${oap_12800}/graphql trace ls \
-              | yq e '.traces | select(.[].endpointnames[] == "/artist-provider") | .[0].traceids[0]' -
-        )
-      expected: expected/logs-list.yml
+import pytest
+import requests
+
+from tests.plugin.base import TestPluginBase
+
+
+@pytest.fixture
+def prepare():
+    # type: () -> Callable
+    return lambda *_: requests.get('http://0.0.0.0:9090/users', timeout=5)
+
+
+class TestPlugin(TestPluginBase):
+    def test_plugin(self, docker_compose):
+        self.validate()
