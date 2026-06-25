@@ -50,6 +50,8 @@ catalog:
         path: "/en/setup/faq/How-to-use-with-gunicorn"
       - name: "How To Use With uWSGI"
         path: "/en/setup/faq/How-to-use-with-uwsgi"
+      - name: "How To Use With Odoo"
+        path: "/en/setup/faq/How-to-use-with-odoo"
       - name: "How To Disable Plugins"
         path: "/en/setup/faq/How-to-disable-plugin"
       - name: "Performance Best Practices"

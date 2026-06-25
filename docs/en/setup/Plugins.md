@@ -36,6 +36,7 @@ or a limitation of SkyWalking auto-instrumentation (welcome to contribute!)
 | [loguru](https://pypi.org/project/loguru/) | Python >=3.7 - ['0.6.0', '0.7.0'];  | `sw_loguru` |
 | [mysqlclient](https://mysqlclient.readthedocs.io/) | Python >=3.7 - ['2.1.*'];  | `sw_mysqlclient` |
 | [neo4j](https://neo4j.com/docs/python-manual/5/) | Python >=3.7 - ['5.*'];  | `sw_neo4j` |
+| [odoo](https://www.odoo.com/documentation/13.0/) | Python >=3.10 - ['13.0'];  | `sw_odoo` |
 | [psycopg[binary]](https://www.psycopg.org/) | Python >=3.13 - ['3.2.*']; Python >=3.11 - ['3.1.*']; Python >=3.10 - ['3.0.18', '3.1.*'];  | `sw_psycopg` |
 | [psycopg2-binary](https://www.psycopg.org/) | Python >=3.10 - ['2.9.*'];  | `sw_psycopg2` |
 | [pulsar-client](https://github.com/apache/pulsar-client-python) | Python >=3.12 - ['3.9.0']; Python >=3.10 - ['3.3.0'];  | `sw_pulsar` |
@@ -73,4 +74,3 @@ the actual message exchange (send/recv) is not traced since injecting headers to
 body is the only way to propagate the trace context, which requires customization of message structure
 and extreme care. (Feel free to add this feature by instrumenting the send/recv methods commented out in the code
 by either injecting sw8 headers or propagate the trace context in a separate message)
-
