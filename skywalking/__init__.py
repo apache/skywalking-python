@@ -55,6 +55,7 @@ class Component(Enum):
     AIORedis = 7017
     Websockets = 7018
     HTTPX = 7019
+    Odoo = 7020
     Grpc = 23
 
 
