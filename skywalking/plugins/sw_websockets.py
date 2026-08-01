@@ -21,7 +21,7 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusMsg
 link_vector = ['https://websockets.readthedocs.io']
 support_matrix = {
     'websockets': {
-        '>=3.7': ['10.3', '10.4']
+        '>=3.7': ['10.3', '10.4', '17.0.1']
     }
 }
 note = """The websocket instrumentation only traces client side connection handshake,

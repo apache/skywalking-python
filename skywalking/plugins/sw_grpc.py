@@ -448,25 +448,32 @@ def install_async() -> None:
             ) -> grpc.aio._call.StreamStreamCall:
                 return await self._intercept(continuation, client_call_details, request_iterator)
 
-        def _sw_grpc_aio_channel_factory(
-            target: str,
-            options: grpc.aio.ChannelArgumentType,
-            credentials: Optional[grpc.ChannelCredentials],
-            compression: Optional[grpc.Compression],
-            interceptors: Optional[Sequence[grpc.aio.ClientInterceptor]],
-        ):
-            if target == config.agent_collector_backend_services:
-                return _aio_grpc_channel(target, options, credentials, compression, interceptors)
-            _sw_interceptors: List[grpc.aio.ClientInterceptor] = [
-                _AioClientUnaryUnaryInterceptor(target),
-                _AioClientUnaryStreamInterceptor(target),
-                _AioClientStreamUnaryInterceptor(target),
-                _AioClientStreamStreamInterceptor(target),
-            ]
-            _sw_interceptors.extend(interceptors or [])
-            return _aio_grpc_channel(target, options, credentials, compression, _sw_interceptors)
+        # Must remain a class assigned to the module-global name `Channel`:
+        # since grpcio 1.83.0, grpc.aio._channel._BaseMultiCallable.__init__ validates
+        # `isinstance(self._references[0], Channel)` against this module global, so
+        # rebinding it to a plain factory function raises
+        # `TypeError: isinstance() arg 2 must be a type, ...` on every stub creation.
+        class _SWAioChannel(_aio_grpc_channel):
+            def __init__(
+                self,
+                target: str,
+                options: grpc.aio.ChannelArgumentType,
+                credentials: Optional[grpc.ChannelCredentials],
+                compression: Optional[grpc.Compression],
+                interceptors: Optional[Sequence[grpc.aio.ClientInterceptor]],
+            ):
+                if target != config.agent_collector_backend_services:
+                    _sw_interceptors: List[grpc.aio.ClientInterceptor] = [
+                        _AioClientUnaryUnaryInterceptor(target),
+                        _AioClientUnaryStreamInterceptor(target),
+                        _AioClientStreamUnaryInterceptor(target),
+                        _AioClientStreamStreamInterceptor(target),
+                    ]
+                    _sw_interceptors.extend(interceptors or [])
+                    interceptors = _sw_interceptors
+                super().__init__(target, options, credentials, compression, interceptors)
 
-        _aio_channel.Channel = _sw_grpc_aio_channel_factory
+        _aio_channel.Channel = _SWAioChannel
 
     install_async_client()
     install_async_server()
