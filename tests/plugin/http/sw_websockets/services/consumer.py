@@ -14,7 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from websockets.client import connect
+try:
+    # new asyncio implementation, websockets >= 13 (the default since 14)
+    from websockets.asyncio.client import connect
+except ImportError:
+    from websockets.client import connect
 
 import asyncio
 
@@ -26,7 +30,7 @@ if __name__ == '__main__':
 
     @app.get('/ws')
     async def websocket_ping():
-        async with connect('ws://provider:9091/ws', extra_headers=None) as websocket:
+        async with connect('ws://provider:9091/ws') as websocket:
             await websocket.send('Ping')
 
             response = await websocket.recv()

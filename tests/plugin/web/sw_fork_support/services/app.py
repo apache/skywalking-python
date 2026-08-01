@@ -36,7 +36,17 @@ if __name__ == '__main__':
 
         backend.run(host='0.0.0.0', port=9091)
     else:
+        import socket
         import requests
+
+        # serve only once the forked child's backend is reachable, so early readiness
+        # probes cannot produce error spans through an instrumented parent
+        for _ in range(120):
+            try:
+                socket.create_connection(('127.0.0.1', 9091), timeout=1).close()
+                break
+            except OSError:
+                time.sleep(1)
 
         frontend = Flask('frontend')
 
