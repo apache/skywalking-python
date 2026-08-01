@@ -163,8 +163,16 @@ else:
             if prefork_server_detected == 'gunicorn':
                 # We need to enable experimental fork support for Gunicorn
                 config.agent_experimental_fork_support = True
-                # Luckily Gunicorn is based on os.fork and can be safely forked with experimental fork support
-                agent.start()
+                # Instrument the master only; the full agent (incl. gRPC channel) starts in each
+                # forked worker — a pre-fork channel is unsafe with grpcio >= 1.80, see
+                # https://github.com/apache/skywalking/issues/13958
+                if config.agent_asyncio_enhancement:
+                    _sw_loader_logger.error('SW_AGENT_ASYNCIO_ENHANCEMENT does not support pre-forking '
+                                            'servers, agent NOT started: a gRPC channel created in the '
+                                            'Gunicorn master breaks forked workers. Remove the asyncio '
+                                            'enhancement option, or run Gunicorn without sw-python -p.')
+                else:
+                    agent.start_prefork_master()
         else:  # Either there's some prefix like supervisor, or it simply doesn't use uwsgi/gunicorn
             agent.start()  # CHECK: Not sure what happens when supervisor + gunicorn is used? Will it even work?
 

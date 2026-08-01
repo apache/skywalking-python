@@ -39,8 +39,8 @@ def prefork_handler(command: List[str]) -> None:
     if command[0] == 'gunicorn':
         # Maybe should also check 1: since there could be a command before gunicorn
         cli_logger.info('We noticed you are using Gunicorn, '
-                        'agent will automatically start the SkyWalking Python Agent'
-                        'in all child (worker) processes and the master.')
+                        'agent will automatically start the SkyWalking Python Agent '
+                        'in all child (worker) processes; the master is instrumented only.')
         os.environ['prefork'] = 'gunicorn'
     elif command[0] == 'uwsgi':
         cli_logger.info('We noticed you are using uWSGI, '

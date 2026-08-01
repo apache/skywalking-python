@@ -50,14 +50,16 @@ else
 	-curl -sSL https://install.python-poetry.org | python3 -
 endif
 
+# grpcio-tools pinned: generated stubs refuse grpcio older than the tools version,
+# keep in sync with the grpcio floor declared in pyproject.toml
 .PHONY: gen
 gen:
-	poetry run pip install 'grpcio-tools>=1.68.0' packaging
+	poetry run pip install 'grpcio-tools~=1.83.0' packaging
 	poetry run python3 tools/grpc_code_gen.py
 
 .PHONY: gen-basic
 gen-basic:
-	python3 -m pip install 'grpcio-tools>=1.68.0' packaging
+	python3 -m pip install 'grpcio-tools~=1.83.0' packaging
 	python3 tools/grpc_code_gen.py
 
 .PHONY: install

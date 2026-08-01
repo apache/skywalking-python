@@ -112,6 +112,9 @@ class SkyWalkingAgent(Singleton):
         self.started_pid = None
         self.__protocol: Optional[Protocol] = None
         self._finished: Optional[Event] = None
+        # True only after __bootstrap() in the current process; stays False in a pre-fork master
+        self.__reporting: bool = False
+        self.__at_fork_registered: bool = False
 
     def __bootstrap(self):
         # when forking, already instrumented modules must not be instrumented again
@@ -132,6 +135,8 @@ class SkyWalkingAgent(Singleton):
 
         # Start reporter threads and register queues
         self.__init_threading()
+
+        self.__reporting = True
 
     def __init_queues(self) -> None:
         """
@@ -252,8 +257,7 @@ class SkyWalkingAgent(Singleton):
             # since 3.6 is EOL, we will not officially support it
             logger.warning('SkyWalking Python agent does not support Python 3.6 and below, '
                            'please upgrade to Python 3.7 or above.')
-        # Below is required for grpcio to work with fork()
-        # https://github.com/grpc/grpc/blob/master/doc/fork_support.md
+        # Required for grpcio to work with fork(), see grpc/grpc doc/fork_support.md.
         if config.agent_protocol == 'grpc' and config.agent_experimental_fork_support:
             python_major_version: tuple = sys.version_info[:2]
             if python_major_version == (3, 7):
@@ -264,22 +268,15 @@ class SkyWalkingAgent(Singleton):
                                'or use HTTP/Kafka protocol, or disable experimental fork support '
                                'if your application did not start successfully.')
 
-            os.environ['GRPC_ENABLE_FORK_SUPPORT'] = 'true'
-            os.environ['GRPC_POLL_STRATEGY'] = 'poll'
+            # GRPC_POLL_STRATEGY=poll must NOT be set: the legacy poller is broken across
+            # fork() on grpcio >= 1.80 (the agent requires >= 1.83),
+            # see https://github.com/apache/skywalking/issues/13958
+            os.environ['GRPC_ENABLE_FORK_SUPPORT'] = 'true'  # must precede `import grpc`
 
         if not self.__started:
             # if not already started, start the agent
-            config.finalize()  # Must be finalized exactly once
-
-            self.__started = True
             logger.info(f'SkyWalking sync agent instance {config.agent_instance_name} starting in pid-{os.getpid()}.')
-
-            # Install log reporter core
-            if config.agent_log_reporter_active:
-                from skywalking import log
-                log.install()
-            # Here we install all other lib plugins on first time start (parent process)
-            plugins.install()
+            self.__init_instrumentation()
         elif self.__started and os.getpid() == self.started_pid:
             # if already started, and this is the same process, raise an error
             raise RuntimeError('SkyWalking Python agent has already been started in this process, '
@@ -311,15 +308,63 @@ class SkyWalkingAgent(Singleton):
         atexit.register(self.__fini)
 
         if config.agent_experimental_fork_support:
-            if hasattr(os, 'register_at_fork'):
-                os.register_at_fork(before=self.__fork_before, after_in_parent=self.__fork_after_in_parent,
-                                    after_in_child=self.__fork_after_in_child)
+            self.__register_fork_hooks()
+
+    def __init_instrumentation(self) -> None:
+        """
+        Install instrumentation once per process lineage; forked children inherit
+        the patches and the __started flag, so they skip this.
+        """
+        config.finalize()  # Must be finalized exactly once
+
+        self.__started = True
+
+        # Install log reporter core
+        if config.agent_log_reporter_active:
+            from skywalking import log
+            log.install()
+        # Here we install all other lib plugins on first time start (parent process)
+        plugins.install()
+
+    def __register_fork_hooks(self) -> None:
+        # at-fork registrations cannot be removed and are fork-inherited; never register twice
+        if self.__at_fork_registered:
+            return
+        if hasattr(os, 'register_at_fork'):
+            self.__at_fork_registered = True
+            os.register_at_fork(before=self.__fork_before, after_in_parent=self.__fork_after_in_parent,
+                                after_in_child=self.__fork_after_in_child)
+
+    def start_prefork_master(self) -> None:
+        """
+        Prepare the agent in a pre-forking server master (Gunicorn): install instrumentation
+        and arm the fork hooks only. The full agent — queues, gRPC channel, reporter threads —
+        starts in each forked worker; a channel living across fork() is unsafe with
+        grpcio >= 1.80, see https://github.com/apache/skywalking/issues/13958.
+        """
+        loggings.init()
+
+        if config.agent_protocol == 'grpc' and config.agent_experimental_fork_support:
+            # Must be exported before the first `import grpc`; plugins.install() below imports grpc
+            os.environ['GRPC_ENABLE_FORK_SUPPORT'] = 'true'
+
+        if not self.__started:
+            self.__init_instrumentation()
+            logger.info(f'SkyWalking Python agent instrumented pre-fork master pid-{os.getpid()}, '
+                        f'reporters will start in forked worker processes.')
+
+        self.started_pid = os.getpid()
+
+        if config.agent_experimental_fork_support:
+            self.__register_fork_hooks()
 
     def __fini(self):
         """
         This method is called when the agent is shutting down.
         Clean up all the queues and threads.
         """
+        if not self.__reporting:  # never bootstrapped in this process (e.g. pre-fork master)
+            return
         self.__protocol.report_segment(self.__segment_queue, False)
         self.__segment_queue.join()
 
@@ -343,6 +388,7 @@ class SkyWalkingAgent(Singleton):
         """
         atexit.unregister(self.__fini)
         self.__fini()
+        self.__reporting = False
         self.__started = False
 
     @report_with_backoff(reporter_name='heartbeat', init_wait=config.agent_collector_heartbeat_period)
@@ -388,28 +434,45 @@ class SkyWalkingAgent(Singleton):
         # command dispatch will stuck when there are no commands
         command_service.dispatch()
 
+    def started(self) -> bool:
+        """
+        Whether reporting (queues, protocol clients, reporter threads) is active in this process.
+        False in a pre-forking server master, where only instrumentation is installed.
+        """
+        return self.__reporting
+
     def is_segment_queue_full(self):
+        if not self.__reporting:
+            return True  # treated as full so span creation short-circuits to NoopSpan
         return self.__segment_queue.full()
 
     def archive_segment(self, segment: 'Segment'):
+        if not self.__reporting:
+            return
         try:  # unlike checking __queue.full() then inserting, this is atomic
             self.__segment_queue.put(segment, block=False)
         except Full:
             logger.warning('the queue is full, the segment will be abandoned')
 
     def archive_log(self, log_data: 'LogData'):
+        if not self.__reporting:
+            return
         try:
             self.__log_queue.put(log_data, block=False)
         except Full:
             logger.warning('the queue is full, the log will be abandoned')
 
     def archive_meter(self, meter_data: 'MeterData'):
+        if not self.__reporting:
+            return
         try:
             self.__meter_queue.put(meter_data, block=False)
         except Full:
             logger.warning('the queue is full, the meter will be abandoned')
 
     def add_profiling_snapshot(self, snapshot: TracingThreadSnapshot):
+        if not self.__reporting:
+            return
         try:
             self.__snapshot_queue.put(snapshot)
         except Full:

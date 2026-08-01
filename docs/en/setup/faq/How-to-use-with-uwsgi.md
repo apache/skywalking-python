@@ -13,8 +13,8 @@ Some of the original discussion can be found here:
 > You can always fall back to the manual approach. 
 > (although it's also possible to pass postfork hook without changing code, which is essentially how sw-python is implemented)
 
-> Limitation: regardless of the approach used, uWSGI master process cannot be safely monitored. Since it doesn't take any requests, it is generally acceptable.
-> Alternatively, you could switch to Gunicorn, where its master process can be monitored properly along with all child workers.
+> Limitation: regardless of the approach used, the uWSGI master process is not monitored. Since it doesn't take any requests, it is generally acceptable.
+> Gunicorn behaves the same way — only worker processes are monitored, which is the fork-safe design.
 
 **Important**: The `--enable-threads` and `--master` option must be given to allow the usage of post_fork hooks and threading in workers. 
 In the `sw-python` CLI, these two options will be automatically injected for you in addition to the post_fork hook.

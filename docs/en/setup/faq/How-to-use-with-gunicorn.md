@@ -14,7 +14,7 @@ serves requests.
 
 > Note: Python 3.10+ is required. Earlier versions (3.7-3.9) are no longer supported.
 
-**TL;DR:** specify `-p` or `--prefork` in `sw-python run -p` and all Gunicorn workers and master will get their own working agent.
+**TL;DR:** specify `-p` or `--prefork` in `sw-python run -p` and every Gunicorn worker will get its own working agent (the master is instrumented only and runs no agent).
 
 **Important:** if the call to gunicorn is prefixed with other commands, this approach will fail 
 since agent currently looks for the command line input at index 0 for safety as an experimental feature.
@@ -29,17 +29,28 @@ sw-python run -p gunicorn gunicorn_consumer_prefork:app --workers 2 --worker-cla
 By specifying the -p or --prefork option in sw-python CLI, the `agent_experimental_fork_support` agent option will be turned on automatically. 
 
 Startup flow:
-sw-python -> gunicorn -> master process (agent starts) -> fork -> worker process (agent restarts due to os.register_at_fork)
+sw-python -> gunicorn -> master process (instrumentation only) -> fork -> worker process (full agent starts due to os.register_at_fork)
 
-The master process will get its own agent, although it won't report any trace, since obviously it doesn't take requests, 
-it still reports metrics that is useful for debugging
+The master process does not run a full agent: it only installs instrumentation, and the reporters plus the
+gRPC channel are created in each forked worker. Therefore the master does not appear as a service instance
+(it takes no requests anyway). A gRPC channel created before fork() is unsafe with grpcio >= 1.80, see
+[apache/skywalking#13958](https://github.com/apache/skywalking/issues/13958).
 
 > A runnable example can be found in the demo folder of skywalking-python GitHub repository
 
+### Known issue with agent <= 1.2.0 and grpcio >= 1.80
+
+Agent versions up to 1.2.0 started a full agent (including a gRPC channel) in the Gunicorn master before forking.
+With grpcio >= 1.80 this produces continuous `Kick Failure (eventfd_write: Bad file descriptor)` errors
+and can silently hang workers. Tracing generally keeps working — the errors come from the gRPC client polling
+engine and are unrelated to the OAP version. Workarounds on old agents: pin `grpcio<1.80` or use `SW_AGENT_PROTOCOL=http`.
+Fixed agent versions require `grpcio >= 1.83` and never create a gRPC channel in the master.
+
 ## Manual Approach (only use when sw-python doesn't work)
 
-**Limitation**: Using normal postfork hook will not add observability to the master process, you could also define a prefork hook to
-start an agent in the master process, with a instance name like `instance-name-master(<pid>)`
+**Limitation**: Using normal postfork hook will not add observability to the master process.
+Do NOT start an agent in the master process (e.g. from a prefork hook): a gRPC channel created before
+fork() is unsafe with grpcio >= 1.80 and can deadlock workers.
 
 The following is just an example, since Gunicorn's automatic injection approach is likely to work in many situations.
 

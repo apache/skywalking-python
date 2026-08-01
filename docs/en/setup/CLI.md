@@ -53,7 +53,7 @@ or
 
 `uwsgi --die-on-term --http 0.0.0.0:5000 --http-manage-expect --master --workers 3 --enable-threads --threads 3 --manage-script-name --mount /=main:app`
 
-Please change it to (**the `-p` option starts one agent in each process, which is the correct behavior**):
+Please change it to (**the `-p` option starts one agent in each worker process and none in the master, which is the correct behavior**):
 
 **Important:** if the call to uwsgi/gunicorn is prefixed with other commands, this approach will fail 
 since agent currently looks for the command line input at index 0 for safety as an experimental feature.
@@ -71,6 +71,9 @@ Note that `sw-python` also work with spawned subprocess (os.exec*/subprocess) as
 
 Additionally, `sw-python` started agent works well with `os.fork` when your application forks workers, 
 as long as the `SW_AGENT_EXPERIMENTAL_FORK_SUPPORT` is turned on. (It will be automatically turned on when gunicorn is detected)
+Avoid calling `os.fork()` while the agent is actively talking to the collector (e.g. immediately at startup, during
+registration): a fork during an in-flight gRPC call can trip gRPC's own at-fork handling (see grpc/grpc#43055) and
+hang the child. Forking a moment after startup, or between requests, is safe.
 
 ## Configuring the agent 
 
