@@ -25,7 +25,10 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    return lambda *_: requests.get('http://0.0.0.0:9090/users', timeout=5).raise_for_status()
+    # /ping (parent-only) also seeds the service name in the mock collector before the
+    # parent and child post their /users segments concurrently: the collector's very first
+    # insert for a service name is not concurrency-safe and can silently drop one segment
+    return lambda *_: requests.get('http://0.0.0.0:9090/ping', timeout=5).raise_for_status()
 
 
 class TestPlugin(TestPluginBase):
@@ -40,6 +43,9 @@ class TestPlugin(TestPluginBase):
 
     @pytest.mark.parametrize('version', ['grpcio>=1.83'])
     def test_plugin(self, docker_compose, version):
+        response = requests.get('http://0.0.0.0:9090/users', timeout=5)
+        assert response.status_code == 200
+
         self.validate()
 
         stdout, stderr = docker_compose.get_logs()
