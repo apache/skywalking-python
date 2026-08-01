@@ -115,6 +115,7 @@ class SkyWalkingAgent(Singleton):
         # True only after __bootstrap() in the current process; stays False in a pre-fork master
         self.__reporting: bool = False
         self.__at_fork_registered: bool = False
+        self.__fini_registered: bool = False
 
     def __bootstrap(self):
         # when forking, already instrumented modules must not be instrumented again
@@ -273,6 +274,12 @@ class SkyWalkingAgent(Singleton):
             # see https://github.com/apache/skywalking/issues/13958
             os.environ['GRPC_ENABLE_FORK_SUPPORT'] = 'true'  # must precede `import grpc`
 
+            if not os.getenv('prefork'):  # Gunicorn prefork creates channels only after fork() and is safe
+                logger.warning('Explicit os.fork() with a live gRPC channel is unreliable on '
+                               'grpcio >= 1.80 (see grpc/grpc#43055) and may silently break '
+                               'reporting in either process; prefer SW_AGENT_PROTOCOL=http or '
+                               'kafka for forking applications.')
+
         if not self.__started:
             # if not already started, start the agent
             logger.info(f'SkyWalking sync agent instance {config.agent_instance_name} starting in pid-{os.getpid()}.')
@@ -305,7 +312,11 @@ class SkyWalkingAgent(Singleton):
 
         self.__bootstrap()  # calls init_threading
 
-        atexit.register(self.__fini)
+        # atexit registrations are fork-inherited; register once per lineage so a
+        # fork-restarted child does not stack a duplicate __fini
+        if not self.__fini_registered:
+            self.__fini_registered = True
+            atexit.register(self.__fini)
 
         if config.agent_experimental_fork_support:
             self.__register_fork_hooks()
@@ -387,6 +398,7 @@ class SkyWalkingAgent(Singleton):
         Stops the agent and reset the started flag.
         """
         atexit.unregister(self.__fini)
+        self.__fini_registered = False
         self.__fini()
         self.__reporting = False
         self.__started = False

@@ -71,9 +71,13 @@ Note that `sw-python` also work with spawned subprocess (os.exec*/subprocess) as
 
 Additionally, `sw-python` started agent works well with `os.fork` when your application forks workers, 
 as long as the `SW_AGENT_EXPERIMENTAL_FORK_SUPPORT` is turned on. (It will be automatically turned on when gunicorn is detected)
-Avoid calling `os.fork()` while the agent is actively talking to the collector (e.g. immediately at startup, during
-registration): a fork during an in-flight gRPC call can trip gRPC's own at-fork handling (see grpc/grpc#43055) and
-hang the child. Forking a moment after startup, or between requests, is safe.
+
+**Important**: with the default gRPC reporter, explicit `os.fork()` is NOT reliable on grpcio >= 1.80: the agent's
+background reporters enter gRPC at any time (heartbeat, segment flush) independent of application requests, and a
+fork while a channel is live is subject to open upstream races (grpc/grpc#43055, grpc/grpc#43062) that can silently
+break reporting in either process. Applications that fork should use `SW_AGENT_PROTOCOL=http` (or `kafka`).
+Gunicorn via `sw-python run -p` is NOT affected: there the agent creates its channels only after the fork,
+which is gRPC's supported model.
 
 ## Configuring the agent 
 

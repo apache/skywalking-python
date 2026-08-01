@@ -60,6 +60,8 @@ in SkyWalking currently. Celery clients can use whatever protocol they want.
 Hug is believed to be abandoned project, use this plugin with a bit more caution.
 Instead of Hug, plugin test should move to test actual Falcon.
 - Falcon 3.x/4.x plugin. For legacy hug-based instrumentation, see sw_falcon.
+- The agent package itself depends on grpcio >= 1.83, which is therefore the
+effective minimum version of the instrumented library as well.
 - The Neo4j plugin integrates neo4j python driver 5.x.x versions which
 support both Neo4j 5 and 4.4 DBMS.
 - Sanic 21.9+ plugin using signal listeners.

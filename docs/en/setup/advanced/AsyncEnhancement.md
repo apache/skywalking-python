@@ -6,6 +6,10 @@ Since `1.1.0`, the Python agent supports asynchronous reporting of ALL telemetry
 export SW_AGENT_ASYNCIO_ENHANCEMENT=true
 ```
 
+> Limitation: this option is incompatible with pre-forking servers via `sw-python run -p` (e.g. Gunicorn) —
+> the asyncio agent has no fork support, so the agent refuses to start and the application runs without
+> observability. See the [Gunicorn FAQ](../faq/How-to-use-with-gunicorn.md).
+
 ## Why we need this feature
 
 Before version `1.1.0`, SkyWalking Python agent had only an implementation with the Threading module to provide data reporters. Yet with the growth of the Python agent, it is now fully capable and requires more resources than when only tracing was supported (we start many threads and gRPC itself creates even more threads when streaming).

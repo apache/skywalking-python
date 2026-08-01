@@ -29,7 +29,7 @@ services:
       file: ../../docker-compose.base.yml
     volumes:
       - .:/app
-    command: ['bash', '-c', 'pip install flask gunicorn && pip install -r /app/requirements.txt && cd /app/services && sw-python run -p gunicorn provider:app --workers 2 --threads 2 --bind 0.0.0.0:9091']
+    command: ['bash', '-c', 'pip install flask gunicorn && pip install -r /app/requirements.txt && cd /app/services && sw-python run -p gunicorn provider:app --preload --workers 2 --threads 2 --bind 0.0.0.0:9091']
     depends_on:
       collector:
         condition: service_healthy

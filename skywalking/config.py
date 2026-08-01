@@ -102,7 +102,8 @@ agent_experimental_fork_support: bool = os.getenv('SW_AGENT_EXPERIMENTAL_FORK_SU
 # Do not modify unless you have evaluated its impact given your service load.
 agent_queue_timeout: int = int(os.getenv('SW_AGENT_QUEUE_TIMEOUT', '1'))
 # Replace the threads to asyncio coroutines to report telemetry data to the OAP.
-# This option is experimental and may not work as expected.
+# This option is experimental and may not work as expected. Not compatible with pre-forking
+# servers (`sw-python run -p`): the agent refuses to start under a Gunicorn master.
 agent_asyncio_enhancement: bool = os.getenv('SW_AGENT_ASYNCIO_ENHANCEMENT', '').lower() == 'true'
 
 # BEGIN: SW_PYTHON Auto Instrumentation CLI

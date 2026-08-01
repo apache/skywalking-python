@@ -14,7 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import requests
 from flask import Flask, jsonify
+
+try:
+    # under gunicorn --preload this module imports in the PRE-FORK master, where the
+    # agent is instrumentation-only: this instrumented call must silently noop
+    # (NoopSpan via agent.started() guard) instead of crashing the master
+    requests.get('http://collector:12800/receiveData', timeout=5)
+except Exception:  # noqa
+    pass
 
 app = Flask(__name__)
 

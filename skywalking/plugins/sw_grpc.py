@@ -27,7 +27,8 @@ from skywalking.trace.tags import TagGrpcMethod, TagGrpcStatusCode, TagGrpcUrl
 
 link_vector = ['https://grpc.io/docs/languages/python']
 support_matrix = {'grpcio': {'>=3.8': ['1.*']}}
-note = """"""
+note = """The agent package itself depends on grpcio >= 1.83, which is therefore the
+effective minimum version of the instrumented library as well."""
 
 
 def _get_factory_and_method(rpc_handler: Any) -> Tuple[Callable[..., Any], Callable[..., Any]]:

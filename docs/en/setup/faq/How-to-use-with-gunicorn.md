@@ -46,6 +46,12 @@ and can silently hang workers. Tracing generally keeps working — the errors co
 engine and are unrelated to the OAP version. Workarounds on old agents: pin `grpcio<1.80` or use `SW_AGENT_PROTOCOL=http`.
 Fixed agent versions require `grpcio >= 1.83` and never create a gRPC channel in the master.
 
+### Incompatible with the asyncio enhancement
+
+`SW_AGENT_ASYNCIO_ENHANCEMENT=true` is incompatible with `sw-python run -p gunicorn`: the asyncio agent has no
+fork support, so the agent refuses to start (an error is logged) and the application serves WITHOUT observability.
+Remove the asyncio enhancement option, or run Gunicorn without `-p`.
+
 ## Manual Approach (only use when sw-python doesn't work)
 
 **Limitation**: Using normal postfork hook will not add observability to the master process.
