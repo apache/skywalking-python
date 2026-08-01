@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import time
 from typing import Callable
 
 import pytest
@@ -26,10 +25,7 @@ from tests.plugin.base import TestPluginBase
 @pytest.fixture
 def prepare():
     # type: () -> Callable
-    # /ping (parent-only) also seeds the service name in the mock collector before the
-    # parent and child post their /users segments concurrently: the collector's very first
-    # insert for a service name is not concurrency-safe and can silently drop one segment
-    return lambda *_: requests.get('http://0.0.0.0:9090/ping', timeout=5).raise_for_status()
+    return lambda *_: requests.get('http://0.0.0.0:9090/users', timeout=5).raise_for_status()
 
 
 class TestPlugin(TestPluginBase):
@@ -44,19 +40,6 @@ class TestPlugin(TestPluginBase):
 
     @pytest.mark.parametrize('version', ['grpcio>=1.83'])
     def test_plugin(self, docker_compose, version):
-        # the /ping seed segment must be REGISTERED by the collector before /users makes
-        # the parent and child report concurrently, otherwise all three segments can be
-        # in flight together and the collector's first-insert race still drops one
-        for _ in range(30):
-            if '/ping' in requests.get('http://localhost:12800/receiveData', timeout=5).text:
-                break
-            time.sleep(1)
-        else:
-            raise Exception('the /ping seed segment never reached the collector')
-
-        response = requests.get('http://0.0.0.0:9090/users', timeout=5)
-        assert response.status_code == 200
-
         self.validate()
 
         stdout, stderr = docker_compose.get_logs()

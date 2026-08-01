@@ -38,9 +38,10 @@ tools/
 
 ## Python Version Support
 
-- **Current (master):** Python 3.8 - 3.11 (tested in CI), declared >=3.8 <=3.13
-- **In-progress (PR #374):** Dropping 3.8, adding 3.12 + 3.13 to CI matrix
-- **Upcoming:** Python 3.14 support needed
+- Declared `>=3.10, <3.15`; CI runs the plugin/unit matrix on Python 3.10 - 3.14.
+- The agent requires `grpcio >= 1.83`. The generated protobuf stubs refuse an older grpcio
+  at import (`GRPC_GENERATED_VERSION`), so the codegen `grpcio-tools` in the Makefile is
+  pinned in lockstep — bumping it raises the runtime floor for every user.
 
 ## Build & Development
 
@@ -71,6 +72,32 @@ Plugin-specific settings (all via `SW_` env vars):
 - `plugin_grpc_ignored_methods`: comma-delimited gRPC methods to ignore
 
 Filter functions: `config.ignore_http_method_check(method)`, `config.ignore_grpc_method_check(method)`
+
+## Agent Lifecycle & Fork Support
+
+`SkyWalkingAgent` (skywalking/agent/__init__.py) has two entry points:
+
+- `start()` — full agent: `config.finalize()` (once per lineage; `finalize_name` is NOT
+  idempotent), `log.install()` + `plugins.install()`, then `__bootstrap()` creates the queues,
+  the protocol client (the gRPC channel lives here) and the reporter threads.
+- `start_prefork_master()` — instrumentation only: everything above EXCEPT queues, protocol
+  and threads. Used for the Gunicorn master.
+
+**Never create a gRPC channel before `fork()`.** With grpcio >= 1.80 a channel that survives
+`fork()` produces `Kick Failure` stderr spam and can silently deadlock the child inside gRPC's
+own at-fork handlers (grpc/grpc#43055, apache/skywalking#13958). So:
+
+- Gunicorn (`sw-python run -p gunicorn`): master instruments only, each forked worker runs the
+  full agent via the `os.register_at_fork(after_in_child=...)` hook. The master is not a
+  service instance. uWSGI has always worked this way, via its `@postfork` hook.
+- `SW_AGENT_ASYNCIO_ENHANCEMENT` has no fork support at all and is rejected under `-p`.
+- Explicit `os.fork()` over gRPC is unreliable regardless (reporters enter gRPC independently
+  of requests) — document HTTP/Kafka for forking apps.
+
+`agent.started()` reports whether reporting is live in this process. It is False in a prefork
+master, where `is_segment_queue_full()` returns True so span creation short-circuits to
+`NoopSpan` and `archive_*` drop — otherwise instrumented code running at `--preload` import
+time would hit uninitialized queues.
 
 ## Context & Carrier API Details
 
@@ -281,6 +308,8 @@ class TestPlugin(TestPluginBase):
 - Services install the plugin lib via `pip install -r /app/requirements.txt`
 - Use `sw-python run python3 /app/services/provider.py` to start with agent
 - External services (Redis, Kafka, etc.) added as needed with healthchecks
+- The mock collector is pinned by image SHA in `docker-compose.base.yml`. Bumping it also
+  pulls in validator changes — verify the whole plugin matrix on CI, not just one test.
 
 ### Expected Data Format (expected.data.yml)
 
@@ -306,7 +335,17 @@ segmentItems:
             skipAnalysis: false
 ```
 
-Validation operators: `not null`, `gt 0`, exact string match.
+Validation operators: `not null`, `gt 0`, `start with`, `end with`, exact string match.
+
+Validation notes:
+- Segments and spans are matched by content, and the expected `segmentSize` / span count must
+  match exactly; only services named in the expected file are checked.
+- `logItems` entries are ORDER-SIGNIFICANT: the collector sorts expected and actual logs by
+  their raw body text before comparing pairwise, so a `text: not null` placeholder sorts as
+  the literal string `"not null"`. See `sw_loguru`, which pins a log layout to keep the
+  ordering deterministic — it is the only test asserting `logItems`.
+- `prepare()` fixtures should call `.raise_for_status()`; otherwise an HTTP error passes the
+  fixture silently and surfaces later as a confusing empty-data diff.
 
 ### Running Tests
 
@@ -334,10 +373,10 @@ poetry run pytest -v $(bash tests/gather_test_paths.sh)
 7. Run `make doc-gen` to regenerate Plugins.md
 8. Verify with `make lint`
 
-## All 35 Plugins
+## All 38 Plugins
 
-Web: sw_flask, sw_django, sw_fastapi, sw_sanic, sw_tornado, sw_bottle, sw_pyramid, sw_falcon
-HTTP: sw_requests, sw_urllib3, sw_urllib_request, sw_aiohttp, sw_httpx, sw_http_server
+Web: sw_flask, sw_django, sw_fastapi, sw_sanic, sw_sanic_v2, sw_tornado, sw_bottle, sw_pyramid, sw_falcon, sw_falcon_v3
+HTTP: sw_requests, sw_urllib3, sw_urllib3_v2, sw_urllib_request, sw_aiohttp, sw_httpx, sw_http_server
 Database: sw_pymysql, sw_mysqlclient, sw_psycopg, sw_psycopg2, sw_pymongo, sw_elasticsearch, sw_happybase, sw_neo4j, sw_asyncpg
 Cache: sw_redis, sw_aioredis
 MQ: sw_kafka, sw_rabbitmq, sw_celery, sw_pulsar, sw_confluent_kafka, sw_aiormq, sw_amqp

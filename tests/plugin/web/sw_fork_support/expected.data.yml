@@ -17,27 +17,8 @@
 
 segmentItems:
   - serviceName: provider
-    segmentSize: 3
+    segmentSize: 2
     segments:
-      - segmentId: not null
-        spans:
-          - operationName: /ping
-            parentSpanId: -1
-            spanId: 0
-            spanLayer: Http
-            tags:
-              - key: http.method
-                value: GET
-              - key: http.url
-                value: http://0.0.0.0:9090/ping
-              - key: http.status_code
-                value: '200'
-            startTime: gt 0
-            endTime: gt 0
-            componentId: 7001
-            spanType: Entry
-            peer: not null
-            skipAnalysis: false
       - segmentId: not null
         spans:
           - operationName: /users

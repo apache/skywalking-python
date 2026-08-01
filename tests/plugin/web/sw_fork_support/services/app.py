@@ -50,14 +50,6 @@ if __name__ == '__main__':
 
         frontend = Flask('frontend')
 
-        # readiness/warm-up endpoint: its segment arrives alone and seeds the service name
-        # in the mock collector, whose first-insert for a service is not concurrency-safe
-        # (SegmentItems.addSegmentItem check-then-act) — the parent and child later report
-        # their /users segments concurrently under the same service name
-        @frontend.route('/ping', methods=['GET'])
-        def ping():
-            return jsonify({'song': 'Despacito'})
-
         @frontend.route('/users', methods=['GET'])
         def call_backend():
             res = requests.get('http://127.0.0.1:9091/users', timeout=5)

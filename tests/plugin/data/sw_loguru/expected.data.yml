@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+# The collector sorts expected and actual logs by their body text and then compares them
+# pairwise, so the order here is significant. The two loguru records sort by their literal
+# text; the two `logging` records are matched by `text: not null`, which sorts after them,
+# and among themselves they follow the order the collector sees - CRITICAL before ERROR,
+# given the log layout pinned in docker-compose.yml.
 logItems:
   - serviceName: provider
     logSize: 4
@@ -38,26 +43,6 @@ logItems:
             - key: thread
               value: not null
             - key: exception
-              value: not null
-        layer: ''
-
-      - timestamp: gt 0
-        endpoint: '/users'
-        body:
-          type: 'text'
-          content:
-            text: not null
-        traceContext:
-          traceId: not null
-          traceSegmentId: not null
-          spanId: 0
-        tags:
-          data:
-            - key: level
-              value: ERROR
-            - key: logger
-              value: not null
-            - key: thread
               value: not null
         layer: ''
 
@@ -95,6 +80,26 @@ logItems:
           data:
             - key: level
               value: CRITICAL
+            - key: logger
+              value: not null
+            - key: thread
+              value: not null
+        layer: ''
+
+      - timestamp: gt 0
+        endpoint: '/users'
+        body:
+          type: 'text'
+          content:
+            text: not null
+        traceContext:
+          traceId: not null
+          traceSegmentId: not null
+          spanId: 0
+        tags:
+          data:
+            - key: level
+              value: ERROR
             - key: logger
               value: not null
             - key: thread

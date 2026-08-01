@@ -20,7 +20,7 @@ version: '2.1'
 
 services:
   collector:
-    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:7f20775e0631356c4823d9372b09d653db0e6540
+    image: ghcr.io/apache/skywalking-agent-test-tool/mock-collector:c6b91a0eaef16d427268e9806d5df65949e2a9bf
     ports:
       - 19876:19876
       - 12800:12800

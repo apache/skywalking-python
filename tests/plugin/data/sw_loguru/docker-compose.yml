@@ -44,6 +44,12 @@ services:
       SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: DEBUG
       SW_AGENT_LOG_REPORTER_LEVEL: INFO
+      # The collector sorts expected and actual logs by their body text before comparing
+      # them pairwise, so the reported text must order deterministically. The default
+      # layout leads with the timestamp, which sorts the `logging` records ahead of the
+      # loguru ones and ahead of the `not null` placeholders they are matched by; leading
+      # with the logger name keeps them last and stable. See expected.data.yml.
+      SW_AGENT_LOG_REPORTER_LAYOUT: '%(name)s [%(threadName)s] %(levelname)s - %(message)s'
 
   consumer:
     extends:
