@@ -44,5 +44,10 @@ services:
       SW_AGENT_NAME: provider
       SW_AGENT_LOGGING_LEVEL: INFO
       SW_AGENT_EXPERIMENTAL_FORK_SUPPORT: 'true'
+      # HTTP reporter keeps this test deterministic: forking with a live gRPC channel
+      # is subject to upstream at-fork races (grpc/grpc#43055) that can silently drop
+      # either side's segments; the gRPC transport is covered by sw_gunicorn
+      SW_AGENT_PROTOCOL: http
+      SW_AGENT_COLLECTOR_BACKEND_SERVICES: collector:12800
 networks:
   beyond:

@@ -31,11 +31,11 @@ def prepare():
 class TestPlugin(TestPluginBase):
     """
     Explicit os.fork() with SW_AGENT_EXPERIMENTAL_FORK_SUPPORT: the parent keeps its
-    agent and the forked child restarts one as a `-child(pid)` instance.
-    The child's own segment (entry with a CrossProcess ref) is best-effort — forking
-    with a live parent gRPC channel is subject to upstream at-fork races
-    (grpc/grpc#43055) — so only the parent's segment is asserted here; the fully
-    deterministic cross-process validation lives in the sw_gunicorn test.
+    agent, the forked child restarts one as a `-child(pid)` instance, and the trace
+    stays continuous across the fork (parent entry/exit -> child entry with ref).
+    Runs over the HTTP reporter: forking with a live gRPC channel is subject to
+    upstream at-fork races (grpc/grpc#43055) that can silently drop either side's
+    segments; the gRPC transport path is covered deterministically by sw_gunicorn.
     """
 
     @pytest.mark.parametrize('version', ['grpcio>=1.83'])

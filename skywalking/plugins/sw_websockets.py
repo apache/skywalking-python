@@ -21,8 +21,8 @@ from skywalking.trace.tags import TagHttpMethod, TagHttpURL, TagHttpStatusMsg
 link_vector = ['https://websockets.readthedocs.io']
 support_matrix = {
     'websockets': {
-        '>=3.11': ['10.3', '10.4', '17.0.1'],
-        '>=3.7': ['10.3', '10.4']  # websockets >= 14 requires Python >= 3.11
+        '>=3.11': ['10.3', '10.4', '13.1', '17.0.1'],
+        '>=3.7': ['10.3', '10.4', '13.1']  # websockets >= 14 requires Python >= 3.11
     }
 }
 note = """Both the legacy (websockets.legacy, websockets <= 13) and the new asyncio
@@ -99,7 +99,8 @@ def _install_new_client(ClientConnection):  # noqa
     _connection_handshake = ClientConnection.handshake
 
     async def _sw_connection_handshake(self, *args, **kwargs):
-        uri = self.protocol.uri
+        # the sans-io ClientProtocol renamed the attribute wsuri -> uri over time
+        uri = getattr(self.protocol, 'uri', None) or self.protocol.wsuri
         span = get_context().new_exit_span(op=uri.path or '/', peer=f'{uri.host}:{uri.port}',
                                            component=Component.Websockets)
         with span:

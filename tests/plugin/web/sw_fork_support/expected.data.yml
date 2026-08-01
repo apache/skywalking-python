@@ -15,14 +15,38 @@
 # limitations under the License.
 #
 
-# The forked child's own segment (entry span with a CrossProcess ref) is delivered
-# on a best-effort basis: reporting from a child forked while the parent's gRPC
-# channel is live can be broken by upstream at-fork races (grpc/grpc#43055), so
-# only the deterministic parent segment is asserted (segmentSize: ge 1).
 segmentItems:
   - serviceName: provider
-    segmentSize: ge 1
+    segmentSize: 2
     segments:
+      - segmentId: not null
+        spans:
+          - operationName: /users
+            parentSpanId: -1
+            spanId: 0
+            spanLayer: Http
+            tags:
+              - key: http.method
+                value: GET
+              - key: http.url
+                value: http://127.0.0.1:9091/users
+              - key: http.status_code
+                value: '200'
+            refs:
+              - parentEndpoint: /users
+                networkAddress: '127.0.0.1:9091'
+                refType: CrossProcess
+                parentSpanId: 1
+                parentTraceSegmentId: not null
+                parentServiceInstance: not null
+                parentService: provider
+                traceId: not null
+            startTime: gt 0
+            endTime: gt 0
+            componentId: 7001
+            spanType: Entry
+            peer: not null
+            skipAnalysis: false
       - segmentId: not null
         spans:
           - operationName: /users
