@@ -27,7 +27,7 @@ endif
 
 .PHONY: env
 env: poetry gen
-	poetry install --all-extras
+	poetry install --all-extras --with lint
 	poetry run pip install --upgrade pip
 
 .PHONY: poetry poetry-fallback
@@ -69,7 +69,7 @@ install: gen-basic
 
 .PHONY: lint
 # flake8 configurations should go to the file setup.cfg
-lint: clean
+lint: clean gen
 	poetry run flake8 .
 	poetry run pylint --disable=all --enable=E0602,E0603,E1101 skywalking tests
 

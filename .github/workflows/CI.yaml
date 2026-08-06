@@ -47,11 +47,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Lint codes
-        run: |
-          make poetry
-          poetry install --all-extras --with lint
-          make gen
-          make lint
+        run: make env lint
 
   # Check if the plugin doc is generated correctly
   plugin-doc-check:
