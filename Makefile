@@ -27,8 +27,15 @@ endif
 
 .PHONY: env
 env: poetry gen
-	poetry install --all-extras --with lint
+	poetry install --all-extras
 	poetry run pip install --upgrade pip
+
+# The lint group is kept out of `env` on purpose: `unify` (and its `untokenize`
+# dependency) are unmaintained and their sdists fail to build on Python >= 3.12,
+# so installing them would break `make env` on the newer interpreters.
+.PHONY: env-lint
+env-lint:
+	poetry install --only lint
 
 .PHONY: poetry poetry-fallback
 # poetry installer may not work on macOS's default python
@@ -69,13 +76,13 @@ install: gen-basic
 
 .PHONY: lint
 # flake8 configurations should go to the file setup.cfg
-lint: clean gen
+lint: env-lint clean gen
 	poetry run flake8 .
 	poetry run pylint --disable=all --enable=E0602,E0603,E1101 skywalking tests
 
 .PHONY: fix
 # fix problems described in CodingStyle.md - verify outcome with extra care
-fix:
+fix: env-lint
 	poetry run unify -r --in-place .
 	poetry run flynt -tc -v .
 
