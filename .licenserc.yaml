@@ -32,5 +32,6 @@ header:
     - '**/*.json'
     - '.venv'
     - 'poetry.lock'
+    - '**/*.txt'
 
   comment: on-failure
