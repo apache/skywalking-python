@@ -85,7 +85,7 @@ def install():
 
         if config.agent_protocol == 'http' and config.agent_collector_backend_services.rstrip('/') \
                 .endswith(f'{request.url.host}:{request.url.port}'):
-            return _handle_request
+            return await _handle_request(self, request, start_time, *args, **kwargs)
 
         carrier = Carrier()
         method = request.method
