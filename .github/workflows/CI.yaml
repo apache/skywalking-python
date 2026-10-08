@@ -80,49 +80,30 @@ jobs:
     outputs:
       agent: ${{ steps.filter.outputs.agent }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4  # required for push event
         with:
-          fetch-depth: 0
           persist-credentials: false
       - name: Check for file changes
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
-        shell: python3 {0}
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          EVENT_NAME: ${{ github.event_name }}
-        run: |
-          import fnmatch
-          import json
-          import os
-          import subprocess
-
-          base = os.environ['BASE_SHA']
-          head = os.environ['HEAD_SHA']
-          if os.environ['EVENT_NAME'] == 'pull_request':
-              revisions = [f'{base}...{head}']
-          else:
-              if not base.strip('0'):
-                  base = subprocess.check_output(
-                      ['git', 'hash-object', '-t', 'tree', '--stdin'], input=b''
-                  ).decode().strip()
-              revisions = [base, head]
-          paths = subprocess.check_output(
-              ['git', 'diff', '--name-only', '--no-renames', '-z', *revisions, '--']
-          ).decode().split('\0')
-          patterns = (
-              '*.py', 'Dockerfile*', 'Makefile', '*.bat', '*.sh', '*.ps1',
-              'pyproject.toml', 'poetry.lock', '*.cfg',
-          )
-          matched = [path for path in paths if path and (
-              path.startswith(('protocol/', 'tests/'))
-              or (path.startswith('.github/') and path.endswith('.yaml'))
-              or any(fnmatch.fnmatchcase(path.rsplit('/', 1)[-1], pattern) for pattern in patterns)
-          )]
-          print(json.dumps(matched))
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              output.write(f"agent={str(bool(matched)).lower()}\n")
-
+        with:
+          # The following filters indicate a category along with
+          # the files that should not be ignored by CI when modified.
+          filters: |
+            agent:
+              - '.github/**/*.yaml'
+              - '**/*.py'
+              - '**/Dockerfile*'
+              - '**/Makefile'
+              - 'protocol/**'
+              - 'tests/**'
+              - '**/*.bat'
+              - '**/*.sh'
+              - '**/*.ps1'
+              - '**/pyproject.toml'
+              - '**/poetry.lock'
+              - '**/*.cfg'
+          list-files: json  # logs matched files
 
   # Only run the Plugin and E2E jobs if there are essential changes as stated above
   prep-plugin-and-unit-tests:
