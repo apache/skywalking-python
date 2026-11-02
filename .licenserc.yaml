@@ -34,5 +34,6 @@ header:
     - '.venv'
     - 'poetry.lock'
     - '**/*.txt'
+    - 'protocol'
 
   comment: on-failure
