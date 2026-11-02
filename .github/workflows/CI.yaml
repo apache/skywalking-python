@@ -36,14 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
       - name: Check License
-        uses: apache/skywalking-eyes/header@501a28d2fb4a9b962661987e50cf0219631b32ff
+        uses: apache/skywalking-eyes/header@a196742f472feaffafea537ce5a2a4c3c53a8de4 # v0.9.0
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Lint codes
@@ -56,12 +56,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
       - name: Check plugin doc
@@ -80,7 +80,7 @@ jobs:
     outputs:
       agent: ${{ steps.filter.outputs.agent }}
     steps:
-      - uses: actions/checkout@v4  # required for push event
+      - uses: actions/checkout@v7  # required for push event
         with:
           persist-credentials: false
       - name: Check for file changes
@@ -115,7 +115,7 @@ jobs:
       ((github.event_name == 'schedule' && github.repository == 'apache/skywalking-python') || needs.changes.outputs.agent == 'true')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - id: set-matrix
@@ -141,7 +141,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
@@ -150,7 +150,7 @@ jobs:
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-plugin --no-cache . -f tests/plugin/Dockerfile.plugin
           docker save -o docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar apache/skywalking-python-agent:latest-plugin
       - name: Upload docker image with specific python version
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}
           path: docker-images-skywalking-python-plugin-${{ matrix.python-version }}.tar
@@ -175,7 +175,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-version }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
@@ -189,7 +189,7 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           fi
       - name: Pull SkyWalking Python agent base image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-images-skywalking-python-plugin-${{ matrix.python-version }}-slim
           path: docker-images
@@ -197,7 +197,7 @@ jobs:
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Set up Python ${{ matrix.python-version }}
         # This step is crucial for correct plugin matrix in test orchestration
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run unit tests
@@ -224,7 +224,7 @@ jobs:
       BASE_PYTHON_IMAGE: ${{ matrix.python-image-variant }}
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
@@ -233,7 +233,7 @@ jobs:
           docker build --build-arg BASE_PYTHON_IMAGE -t apache/skywalking-python-agent:latest-e2e --no-cache . -f tests/e2e/base/Dockerfile.e2e
           docker save -o docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar apache/skywalking-python-agent:latest-e2e
       - name: Upload docker image
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}.tar
@@ -286,24 +286,24 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
       - name: Pull SkyWalking Python agent base image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Run E2E Tests
-        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
+        uses: apache/skywalking-infra-e2e@56ac8befeb5f910f2dc9339e65d07cd18953f90e
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: ${{ matrix.case.path }}
       - name: Upload Logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: e2e_logs_${{ matrix.case.name }}_${{ matrix.python-image-variant }}
@@ -327,24 +327,24 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout source codes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: true
           persist-credentials: false
       - name: Pull SkyWalking Python agent base image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: docker-images-skywalking-python-e2e-${{ matrix.python-image-variant }}
           path: docker-images
       - name: Load docker images
         run: find docker-images -name "*.tar" -exec docker load -i {} \;
       - name: Run Failover E2E
-        uses: apache/skywalking-infra-e2e@cf589b4a0b9f8e6f436f78e9cfd94a1ee5494180
+        uses: apache/skywalking-infra-e2e@56ac8befeb5f910f2dc9339e65d07cd18953f90e
         with:
           log-dir: /tmp/e2e-logs
           e2e-file: tests/e2e/case/grpc/failover/e2e.yaml
       - name: Upload Logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: e2e_logs_gRPC-failover_${{ matrix.python-image-variant }}

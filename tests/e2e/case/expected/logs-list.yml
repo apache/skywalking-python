@@ -16,9 +16,6 @@
 errorreason: null
 logs:
   {{- contains .logs }}
-  # FIXME: issues/8752, now first entry is not verified at all
-  - e2e-placeholder: workaround-placeholder-for-e2e
-    placeholder: ISHOULDNOTEXIST
   - servicename: e2e-service-provider
     serviceid: {{ b64enc "e2e-service-provider" }}.1
     serviceinstancename: {{ regexp .serviceinstancename "provider.*" }}
@@ -28,7 +25,7 @@ logs:
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
-    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com"}}
+    content: {{ regexp .content "(?s).+Leak basic auth info at https://example.com" | printf "%q" }}
     tags:
     {{- contains .tags }}
     - key: level
@@ -47,7 +44,7 @@ logs:
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
-    content: {{ regexp .content "(?s).+E2E Provider Warning.+"}}
+    content: {{ regexp .content "(?s).+E2E Provider Warning.+" | printf "%q" }}
     tags:
     {{- contains .tags }}
     - key: level
@@ -66,7 +63,7 @@ logs:
     traceid: {{ notEmpty .traceid }}
     timestamp: {{ gt .timestamp 0 }}
     contenttype: TEXT
-    content: {{ regexp .content "(?s).+E2E Provider Exception.+Traceback(most recent call last).+" }}
+    content: {{ regexp .content "(?s).+E2E Provider Exception.+Traceback \\(most recent call last\\).+" | printf "%q" }}
     tags:
     {{- contains .tags }}
     - key: level
